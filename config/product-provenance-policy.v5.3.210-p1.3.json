@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "policy_version": "v5.3.210-p1.3",
+  "reviewed_at": "2026-07-18",
+  "baseline_product_version": "v5.3.190",
+  "output_product_version": "v5.3.210-p1.3",
+  "nutrient_fields": [
+    "kcal",
+    "protein_per_100g",
+    "fat_per_100g",
+    "carbs_per_100g",
+    "sugar_per_100g",
+    "fiber_per_100g",
+    "sfa",
+    "unsat",
+    "added_sugar",
+    "salt",
+    "calcium_mg",
+    "iron_mg",
+    "magnesium_mg",
+    "phosphorus_mg",
+    "potassium_mg",
+    "sodium_mg",
+    "zinc_mg",
+    "copper_mg",
+    "manganese_mg",
+    "selenium_ug",
+    "vitamin_a_mcg",
+    "vitamin_e_mg",
+    "vitamin_d_mcg",
+    "vitamin_c_mg",
+    "vitamin_b1_mg",
+    "vitamin_b2_mg",
+    "vitamin_b3_mg",
+    "vitamin_b5_mg",
+    "vitamin_b6_mg",
+    "vitamin_b9_mcg",
+    "vitamin_b12_mcg",
+    "choline_mg",
+    "vitamin_k_mcg"
+  ],
+  "macro_label_fields": [
+    "kcal",
+    "protein_per_100g",
+    "fat_per_100g",
+    "carbs_per_100g",
+    "sugar_per_100g",
+    "fiber_per_100g",
+    "sfa",
+    "unsat",
+    "added_sugar",
+    "salt",
+    "sodium_mg"
+  ],
+  "source_kinds": [
+    "PRIMARY_DATASET",
+    "OFFICIAL_LABEL",
+    "RECIPE_MODEL",
+    "BORROWED_PROXY",
+    "DERIVED_MODEL",
+    "MIXED_SOURCE",
+    "UNRESOLVED"
+  ],
+  "nutrient_methods": [
+    "MEASURED",
+    "LABEL",
+    "CALCULATED",
+    "BORROWED",
+    "IMPUTED",
+    "SOURCE_REPORTED_ZERO",
+    "ASSUMED_ZERO",
+    "MISSING"
+  ],
+  "confidence_tiers": {
+    "HIGH": {
+      "minimum_score": 0.82
+    },
+    "MEDIUM": {
+      "minimum_score": 0.55
+    },
+    "LOW": {
+      "minimum_score": 0.0
+    }
+  },
+  "method_relative_uncertainty": {
+    "MEASURED": 0.05,
+    "LABEL": 0.1,
+    "CALCULATED": 0.15,
+    "BORROWED": 0.25,
+    "IMPUTED": 0.35,
+    "SOURCE_REPORTED_ZERO": 0.03,
+    "ASSUMED_ZERO": 1.0,
+    "MISSING": 1.0
+  },
+  "review_statuses": [
+    "VERIFIED",
+    "CONDITIONALLY_ACCEPTED",
+    "REVIEW_REQUIRED",
+    "BLOCKED"
+  ],
+  "zero_policy": {
+    "compatibility_rule": "Numeric zero is retained for runtime compatibility, but every zero is classified explicitly.",
+    "source_reported_zero": "Allowed only for a concrete primary dataset row or a field explicitly covered by an official label.",
+    "assumed_zero": "Must lower nutrient coverage and must never be described as a measured absence.",
+    "missing": "Reserved for absent or null source values; runtime generation fails if a calculation nutrient is absent."
+  },
+  "quality_gate": {
+    "require_unique_product_keys": true,
+    "require_all_nutrients_numeric": true,
+    "require_all_nutrients_classified_once": true,
+    "require_product_source_identity": true,
+    "maximum_blocked_products": 0,
+    "maximum_unresolved_products": 0,
+    "maximum_unclassified_nutrients": 0
+  }
+}

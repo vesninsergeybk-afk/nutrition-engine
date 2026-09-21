@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "registry_version": "v5.3.210-p1.3",
+  "reviewed_at": "2026-07-18",
+  "sources": [
+    {
+      "id": "USDA_FDC",
+      "name": "USDA FoodData Central",
+      "authority": "USDA Agricultural Research Service",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://fdc.nal.usda.gov/",
+      "data_url": "https://fdc.nal.usda.gov/download-datasets",
+      "version_policy": "Record the FDC data type, download release or access date, and concrete FDC ID.",
+      "priority": 1
+    },
+    {
+      "id": "USDA_FNDDS",
+      "name": "Food and Nutrient Database for Dietary Studies",
+      "authority": "USDA Agricultural Research Service",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fndds/",
+      "version_policy": "Record the exact survey release and FNDDS food code or linked FDC ID.",
+      "priority": 1
+    },
+    {
+      "id": "USDA_FPED",
+      "name": "Food Patterns Equivalents Database",
+      "authority": "USDA Agricultural Research Service",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/food-surveys-research-group/docs/fped-databases/",
+      "version_policy": "FPED/FPID release must match the associated FNDDS/WWEIA release.",
+      "priority": 1
+    },
+    {
+      "id": "ANSES_CIQUAL",
+      "name": "ANSES-CIQUAL food composition table",
+      "authority": "ANSES",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://ciqual.anses.fr/",
+      "version_policy": "Record CIQUAL edition and food item identifier; current registry reference is the 2025 table.",
+      "priority": 2
+    },
+    {
+      "id": "UK_COFID",
+      "name": "Composition of Foods Integrated Dataset",
+      "authority": "UK public health food composition programme",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://www.gov.uk/government/publications/composition-of-foods-integrated-dataset-cofid",
+      "version_policy": "Record the published CoFID edition and food code; registry reference is the 2021 update.",
+      "priority": 2
+    },
+    {
+      "id": "FRIDA",
+      "name": "Frida food composition databank",
+      "authority": "Technical University of Denmark food data service",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://frida.fooddata.dk/data?lang=en",
+      "version_policy": "Record download/access date and concrete food identifier.",
+      "priority": 2
+    },
+    {
+      "id": "MATVARETABELLEN",
+      "name": "Norwegian Food Composition Table",
+      "authority": "Norwegian Food Safety Authority",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://www.matvaretabellen.no/en/",
+      "data_url": "https://www.matvaretabellen.no/en/api/",
+      "version_policy": "Record annual table edition or retrieval date and concrete food identifier; registry reference updated January 2026.",
+      "priority": 2
+    },
+    {
+      "id": "NZFCD",
+      "name": "New Zealand Food Composition Database FOODfiles",
+      "authority": "Plant & Food Research and New Zealand Ministry of Health",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://www.foodcomposition.co.nz/foodfiles",
+      "version_policy": "Record FOODfiles release and concrete food record; registry reference is FOODfiles 2024.",
+      "priority": 2
+    },
+    {
+      "id": "OFFICIAL_LABEL",
+      "name": "Manufacturer or retailer nutrition declaration",
+      "authority": "Named manufacturer or retailer",
+      "kind": "OFFICIAL_LABEL",
+      "version_policy": "Capture product/SKU, market, URL or image reference, declared basis, and access date.",
+      "priority": 3
+    },
+    {
+      "id": "INTERNAL_RECIPE_MODEL",
+      "name": "Source-backed recipe calculation",
+      "authority": "Nutrition calculator governed model",
+      "kind": "RECIPE_MODEL",
+      "version_policy": "Record ingredient source IDs, mass fractions, yield/retention assumptions and model version.",
+      "priority": 4
+    },
+    {
+      "id": "INTERNAL_PROXY_MODEL",
+      "name": "Declared proxy or imputation model",
+      "authority": "Nutrition calculator governed model",
+      "kind": "BORROWED_PROXY",
+      "version_policy": "Record donor product/source, matching rationale, adjusted fields, uncertainty and review owner.",
+      "priority": 5
+    }
+  ]
+}

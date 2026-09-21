@@ -1,0 +1,807 @@
+{
+  "formulas": [
+    {
+      "equation": "weight_kg/(height_m^2)",
+      "golden_case_required": true,
+      "id": "anthropometry.bmi",
+      "implementation": [
+        "assets/js/04-needs-norms.js::computeBMI"
+      ],
+      "inputs": [
+        "height_cm",
+        "weight_kg"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "bmi_kg_m2"
+      ],
+      "rounding": "0.1",
+      "source_ids": [
+        "arithmetic_identity"
+      ],
+      "status": "active",
+      "title_ru": "Индекс массы тела"
+    },
+    {
+      "equation": "male: 50+0.9*(height_cm-152); female:45.5+0.9*(height_cm-152); undefined below 152 cm",
+      "golden_case_required": true,
+      "id": "anthropometry.devine_ibw",
+      "implementation": [
+        "assets/js/04-needs-norms.js::computeIBW"
+      ],
+      "inputs": [
+        "sex",
+        "height_cm"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "Историческая формула для расчётной массы; не является универсальной целью массы.",
+      "outputs": [
+        "ibw_kg"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "devine_1974"
+      ],
+      "status": "active",
+      "title_ru": "Расчётная масса Devine"
+    },
+    {
+      "equation": "ibw+factor*(actual-ibw)",
+      "golden_case_required": true,
+      "id": "anthropometry.adjusted_weight",
+      "implementation": [
+        "assets/js/04-needs-norms.js::computeAdjusted"
+      ],
+      "inputs": [
+        "ibw_kg",
+        "actual_weight_kg",
+        "factor"
+      ],
+      "kind": "LOCAL_POLICY",
+      "materiality": "material",
+      "notes_ru": "Локальная расчётная политика, не самостоятельная клиническая рекомендация.",
+      "outputs": [
+        "adjusted_weight_kg"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Скорректированная масса"
+    },
+    {
+      "equation": "max(0,(previous-current)/previous*100)",
+      "golden_case_required": true,
+      "id": "anthropometry.weight_loss_pct",
+      "implementation": [
+        "assets/js/04-needs-norms.js::computeUnintentionalWeightLossPct"
+      ],
+      "inputs": [
+        "previous_weight_kg",
+        "current_weight_kg"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "weight_loss_pct"
+      ],
+      "rounding": "0.1",
+      "source_ids": [
+        "nice_cg32"
+      ],
+      "status": "active",
+      "title_ru": "Непреднамеренная потеря массы"
+    },
+    {
+      "equation": "one major OR two minor criteria; extreme if BMI<14 or intake>15 days",
+      "golden_case_required": true,
+      "id": "safety.nice_refeeding_screen",
+      "implementation": [
+        "assets/js/04-needs-norms.js::assessAdultRefeedingRisk"
+      ],
+      "inputs": [
+        "age",
+        "bmi",
+        "weight_loss_pct",
+        "low_intake_days",
+        "electrolytes",
+        "additional_factors"
+      ],
+      "kind": "DECISION_RULE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "risk_level",
+        "high_risk",
+        "extreme_risk"
+      ],
+      "rounding": "categorical",
+      "source_ids": [
+        "nice_cg32"
+      ],
+      "status": "active",
+      "title_ru": "Скрининг риска рефидинга NICE"
+    },
+    {
+      "equation": "10*w+6.25*h-5*age+s; s=5 male, -161 female",
+      "golden_case_required": true,
+      "id": "energy.mifflin_st_jeor",
+      "implementation": [
+        "assets/js/04-needs-norms.js::mifflinBMR"
+      ],
+      "inputs": [
+        "sex",
+        "weight_kg",
+        "height_cm",
+        "age_years"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "bmr_kcal_day"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "mifflin_1990"
+      ],
+      "status": "active",
+      "title_ru": "Основной обмен Mifflin–St Jeor"
+    },
+    {
+      "equation": "BMR*PAL*state_factor",
+      "golden_case_required": true,
+      "id": "energy.ordinary_pal",
+      "implementation": [
+        "assets/js/04-needs-norms.js::energyByMifflinSF"
+      ],
+      "inputs": [
+        "bmr_kcal_day",
+        "pal",
+        "state_factor"
+      ],
+      "kind": "LOCAL_POLICY",
+      "materiality": "material",
+      "notes_ru": "PAL и диапазон +10% являются локальной политикой калькулятора.",
+      "outputs": [
+        "tee_low_kcal",
+        "tee_high_kcal"
+      ],
+      "rounding": "integer",
+      "source_ids": [
+        "mifflin_1990",
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Оценка TEE через PAL"
+    },
+    {
+      "equation": "kcal_per_kg*weight*activity_scale*state_factor; high=low*1.15",
+      "golden_case_required": true,
+      "id": "energy.weight_screen",
+      "implementation": [
+        "assets/js/04-needs-norms.js::energyByWeightMethod"
+      ],
+      "inputs": [
+        "state",
+        "activity",
+        "weight_kg"
+      ],
+      "kind": "LOCAL_POLICY",
+      "materiality": "material",
+      "notes_ru": "Скрининговая, а не лечебная формула; клинические режимы исключены.",
+      "outputs": [
+        "energy_low_kcal",
+        "energy_high_kcal"
+      ],
+      "rounding": "integer",
+      "source_ids": [
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Весовой скрининговый диапазон энергии"
+    },
+    {
+      "equation": "maintain 1.00; lose 0.85; gain 1.10; rehab_gain 1.10",
+      "golden_case_required": true,
+      "id": "energy.goal_factor",
+      "implementation": [
+        "assets/js/04-needs-norms.js::goalFactorByKey"
+      ],
+      "inputs": [
+        "goal"
+      ],
+      "kind": "LOCAL_POLICY",
+      "materiality": "material",
+      "notes_ru": "Локальная настройка; блокируется защитными режимами.",
+      "outputs": [
+        "factor"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Целевой множитель энергии"
+    },
+    {
+      "equation": "state/activity table + goal bump + age floor, clamped to state corridor",
+      "golden_case_required": true,
+      "id": "protein.ordinary_target",
+      "implementation": [
+        "assets/js/04-needs-norms.js::proteinPerKgFor"
+      ],
+      "inputs": [
+        "state",
+        "activity",
+        "age",
+        "goal",
+        "weight_kg",
+        "sex"
+      ],
+      "kind": "LOCAL_POLICY",
+      "materiality": "material",
+      "notes_ru": "Локальная политика. Клинические состояния требуют внешней цели.",
+      "outputs": [
+        "protein_g_kg_day"
+      ],
+      "rounding": "0.01",
+      "source_ids": [
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Обычная цель белка"
+    },
+    {
+      "equation": "energy_kcal*fat_percent/100/9",
+      "golden_case_required": true,
+      "id": "macros.fat_share",
+      "implementation": [
+        "assets/js/04-needs-norms.js::calcNeeds_internal"
+      ],
+      "inputs": [
+        "energy_kcal",
+        "fat_percent"
+      ],
+      "kind": "DERIVED",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "fat_g"
+      ],
+      "rounding": "0.1",
+      "source_ids": [
+        "arithmetic_identity",
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Жиры из доли энергии"
+    },
+    {
+      "equation": "max(0,(energy-protein_g*4-fat_g*9)/4)",
+      "golden_case_required": true,
+      "id": "macros.carb_residual",
+      "implementation": [
+        "assets/js/04-needs-norms.js::calcNeeds_internal"
+      ],
+      "inputs": [
+        "energy_kcal",
+        "protein_g",
+        "fat_g"
+      ],
+      "kind": "DERIVED",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "carbs_g"
+      ],
+      "rounding": "0.1",
+      "source_ids": [
+        "arithmetic_identity",
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Углеводы как остаток энергии"
+    },
+    {
+      "equation": "fluid_ml_per_kg*calculation_weight",
+      "golden_case_required": true,
+      "id": "fluids.ordinary_screen",
+      "implementation": [
+        "assets/js/04-needs-norms.js::calcNeeds_internal"
+      ],
+      "inputs": [
+        "fluid_ml_per_kg",
+        "weight_kg"
+      ],
+      "kind": "LOCAL_POLICY",
+      "materiality": "material",
+      "notes_ru": "Не применяется при клинических ограничениях жидкости.",
+      "outputs": [
+        "fluid_ml_day"
+      ],
+      "rounding": "integer",
+      "source_ids": [
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Обычная оценка жидкости"
+    },
+    {
+      "equation": "daily_target*meal_percent/100",
+      "golden_case_required": true,
+      "id": "meals.energy_split",
+      "implementation": [
+        "assets/js/04-needs-norms.js::parseSplit",
+        "assets/js/04-needs-norms.js::calcNeeds_internal"
+      ],
+      "inputs": [
+        "daily_targets",
+        "meal_percentages"
+      ],
+      "kind": "DERIVED",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "meal_targets"
+      ],
+      "rounding": "mixed",
+      "source_ids": [
+        "arithmetic_identity"
+      ],
+      "status": "active",
+      "title_ru": "Распределение по приёмам"
+    },
+    {
+      "equation": "PAL-specific linear equation in age, height and weight",
+      "golden_case_required": true,
+      "id": "energy.nasem_adult_female_2023",
+      "implementation": [
+        "assets/js/05-protected-modes-v5.3.210.js::adultFemaleTee"
+      ],
+      "inputs": [
+        "pal",
+        "age_years",
+        "height_cm",
+        "weight_kg"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "tee_kcal_day"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "nasem_energy_2023"
+      ],
+      "status": "active",
+      "title_ru": "NASEM 2023 EER для взрослых женщин"
+    },
+    {
+      "equation": "trimester/PAL-specific equation plus BMI-dependent deposition",
+      "golden_case_required": true,
+      "id": "energy.nasem_pregnancy_2023",
+      "implementation": [
+        "assets/js/05-protected-modes-v5.3.210.js::pregnancyTee"
+      ],
+      "inputs": [
+        "pal",
+        "age_years",
+        "height_cm",
+        "current_weight_kg",
+        "gestation_week",
+        "prepreg_weight_kg"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "target_kcal_day",
+        "deposition_kcal",
+        "trimester"
+      ],
+      "rounding": "integer",
+      "source_ids": [
+        "nasem_energy_2023"
+      ],
+      "status": "active",
+      "title_ru": "NASEM 2023 энергия при беременности"
+    },
+    {
+      "equation": "adult female EER +404 (exclusive 0-6) or +380 (partial 7-12)",
+      "golden_case_required": true,
+      "id": "energy.nasem_lactation_2023",
+      "implementation": [
+        "assets/js/05-protected-modes-v5.3.210.js::lactationTee"
+      ],
+      "inputs": [
+        "pal",
+        "age_years",
+        "height_cm",
+        "current_weight_kg",
+        "postpartum_month",
+        "feeding"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "target_kcal_day"
+      ],
+      "rounding": "integer",
+      "source_ids": [
+        "nasem_energy_2023"
+      ],
+      "status": "active",
+      "title_ru": "NASEM 2023 энергия при лактации"
+    },
+    {
+      "equation": "per100_value*grams/100",
+      "golden_case_required": true,
+      "id": "product.per100_scaling",
+      "implementation": [
+        "assets/js/03-app-core-v5.3.208.js::Calc.scaledPerItem",
+        "assets/legacy/js/03-app-core-v5.3.208.js::Calc.scaledPerItem"
+      ],
+      "inputs": [
+        "per100_value",
+        "grams"
+      ],
+      "kind": "ARITHMETIC",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "scaled_value"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "arithmetic_identity"
+      ],
+      "status": "active",
+      "title_ru": "Масштабирование значений на массу продукта"
+    },
+    {
+      "equation": "sodium_mg=salt_g*393 when sodium is absent",
+      "golden_case_required": true,
+      "id": "product.salt_to_sodium",
+      "implementation": [
+        "assets/js/03-app-core-v5.3.208.js::Calc.scaledPerItem",
+        "assets/legacy/js/03-app-core-v5.3.208.js::Calc.scaledPerItem"
+      ],
+      "inputs": [
+        "salt_g"
+      ],
+      "kind": "LOCAL_POLICY",
+      "materiality": "material",
+      "notes_ru": "Коэффициент соответствует 39.3% натрия в NaCl; применяется только как fallback.",
+      "outputs": [
+        "sodium_mg"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "internal_local_policy"
+      ],
+      "status": "active",
+      "title_ru": "Fallback соли в натрий"
+    },
+    {
+      "equation": "sum(scaled product values)",
+      "golden_case_required": true,
+      "id": "ration.nutrient_sum",
+      "implementation": [
+        "assets/js/03-app-core-v5.3.208.js::Calc.totals",
+        "assets/legacy/js/03-app-core-v5.3.208.js::Calc.totals"
+      ],
+      "inputs": [
+        "ration_items"
+      ],
+      "kind": "ARITHMETIC",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "nutrient_totals"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "arithmetic_identity"
+      ],
+      "status": "active",
+      "title_ru": "Суммирование нутриентов рациона"
+    },
+    {
+      "equation": "energy_kcal*4.184/1000*value_per_mj",
+      "golden_case_required": true,
+      "id": "norm.per_mj",
+      "implementation": [
+        "assets/data/normative-registry.v5.3.210-p1.2.js::evaluateRule(per_mj_energy)"
+      ],
+      "inputs": [
+        "energy_kcal",
+        "value_per_mj"
+      ],
+      "kind": "DERIVED",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "target_value"
+      ],
+      "rounding": "0.01",
+      "source_ids": [
+        "arithmetic_identity"
+      ],
+      "status": "active",
+      "title_ru": "Норма на мегаджоуль"
+    },
+    {
+      "equation": "energy_kcal*percent/100/kcal_per_g",
+      "golden_case_required": true,
+      "id": "norm.percent_energy_to_grams",
+      "implementation": [
+        "assets/data/normative-registry.v5.3.210-p1.2.js::evaluateRule(percent_energy_to_grams)"
+      ],
+      "inputs": [
+        "energy_kcal",
+        "percent",
+        "kcal_per_g"
+      ],
+      "kind": "DERIVED",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "grams"
+      ],
+      "rounding": "0.01",
+      "source_ids": [
+        "arithmetic_identity"
+      ],
+      "status": "active",
+      "title_ru": "Процент энергии в граммы"
+    },
+    {
+      "equation": "0.83*prepreg_weight + trimester addition (1/9/28 g)",
+      "golden_case_required": true,
+      "id": "protein.efsa_pregnancy",
+      "implementation": [
+        "assets/data/normative-registry.v5.3.210-p1.2.js::resolveLifeStageProfile"
+      ],
+      "inputs": [
+        "prepreg_weight_kg",
+        "gestation_week"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "protein_g_day"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "efsa_dietary_reference_values"
+      ],
+      "status": "active",
+      "title_ru": "Белок EFSA при беременности"
+    },
+    {
+      "equation": "0.83*current_weight +19 g first 6 months, +13 g thereafter",
+      "golden_case_required": true,
+      "id": "protein.efsa_lactation",
+      "implementation": [
+        "assets/data/normative-registry.v5.3.210-p1.2.js::resolveLifeStageProfile"
+      ],
+      "inputs": [
+        "current_weight_kg",
+        "postpartum_month"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "protein_g_day"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "efsa_dietary_reference_values"
+      ],
+      "status": "active",
+      "title_ru": "Белок EFSA при лактации"
+    },
+    {
+      "equation": "component_amount*1000/reference_energy_kcal",
+      "golden_case_required": true,
+      "id": "hei.density",
+      "implementation": [
+        "assets/js/01-hei-module.js::score",
+        "assets/legacy/js/01-hei-module.js::score"
+      ],
+      "inputs": [
+        "component_amount",
+        "energy_ref_kcal"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "density_per_1000_kcal"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "nci_hei_2020"
+      ],
+      "status": "active",
+      "title_ru": "HEI плотность на 1000 ккал"
+    },
+    {
+      "equation": "linear from 0 points at zero to max points at standard",
+      "golden_case_required": true,
+      "id": "hei.adequacy_component",
+      "implementation": [
+        "assets/js/01-hei-module.js::scoreFromDensity",
+        "assets/legacy/js/01-hei-module.js::scoreFromDensity"
+      ],
+      "inputs": [
+        "density",
+        "standard",
+        "max_points"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "points"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "nci_hei_2020"
+      ],
+      "status": "active",
+      "title_ru": "HEI adequacy interpolation"
+    },
+    {
+      "equation": "max points <= max standard; zero >= minimum standard; linear between",
+      "golden_case_required": true,
+      "id": "hei.moderation_component",
+      "implementation": [
+        "assets/js/01-hei-module.js::scoreFromDensity",
+        "assets/legacy/js/01-hei-module.js::scoreFromDensity"
+      ],
+      "inputs": [
+        "density",
+        "max_standard",
+        "zero_standard",
+        "max_points"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "points"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "nci_hei_2020"
+      ],
+      "status": "active",
+      "title_ru": "HEI moderation interpolation"
+    },
+    {
+      "equation": "(MUFA+PUFA)/SFA; max standard 2.5, zero standard 1.2",
+      "golden_case_required": true,
+      "id": "hei.fatty_acid_ratio",
+      "implementation": [
+        "assets/js/01-hei-module.js::score",
+        "assets/legacy/js/01-hei-module.js::score"
+      ],
+      "inputs": [
+        "unsaturated_fat_g",
+        "saturated_fat_g"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "ratio",
+        "points"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "nci_hei_2020"
+      ],
+      "status": "active",
+      "title_ru": "HEI отношение ненасыщенных к насыщенным жирам"
+    },
+    {
+      "equation": "sum of 13 component scores, range 0-100",
+      "golden_case_required": true,
+      "id": "hei.total",
+      "implementation": [
+        "assets/js/01-hei-module.js::scoreFromDensity",
+        "assets/legacy/js/01-hei-module.js::scoreFromDensity"
+      ],
+      "inputs": [
+        "component_points"
+      ],
+      "kind": "AUTHORITATIVE",
+      "materiality": "material",
+      "notes_ru": "",
+      "outputs": [
+        "hei_total"
+      ],
+      "rounding": "none",
+      "source_ids": [
+        "nci_hei_2020"
+      ],
+      "status": "active",
+      "title_ru": "Суммарный HEI-2020"
+    }
+  ],
+  "quality_policy": {
+    "authoritative_requires_source": true,
+    "boundary_case_required_for_decision_rules": true,
+    "clinical_profiles_external_target_only": true,
+    "local_policy_must_be_labeled": true,
+    "material_requires_golden_cases": true,
+    "minimum_cases_per_material_formula": 2
+  },
+  "registry_version": "v5.3.210-p1.4",
+  "released_at": "2026-07-18",
+  "review_due_at": "2027-07-18",
+  "reviewed_at": "2026-07-18",
+  "schema_version": 1,
+  "scope": "Material, user-observable calculation and decision formulas. Search ranking and visual heuristics are excluded.",
+  "sources": {
+    "arithmetic_identity": {
+      "authority": "mathematical_identity",
+      "reviewed_at": "2026-07-18",
+      "title": "Dimensional arithmetic identity"
+    },
+    "devine_1974": {
+      "authority": "historical_peer_reviewed",
+      "citation": "Devine BJ. Gentamicin therapy. Drug Intell Clin Pharm. 1974;8:650–655.",
+      "reviewed_at": "2026-07-18",
+      "title": "Devine ideal body weight equation (historical dosage rule)"
+    },
+    "efsa_dietary_reference_values": {
+      "authority": "official_scientific_opinion",
+      "reviewed_at": "2026-07-18",
+      "title": "EFSA dietary reference values and life-stage additions",
+      "url": "https://www.efsa.europa.eu/en/topics/topic/dietary-reference-values"
+    },
+    "internal_local_policy": {
+      "authority": "internal_policy",
+      "document": "NUTRITION_CALCULATOR_V5_3_210_P1_4_FORMULA_REGISTRY_REPORT_RU.md",
+      "reviewed_at": "2026-07-18",
+      "title": "Nutrition Calculator local screening policy"
+    },
+    "mifflin_1990": {
+      "authority": "peer_reviewed_primary",
+      "reviewed_at": "2026-07-18",
+      "title": "Mifflin–St Jeor resting energy equation",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/2305711/"
+    },
+    "nasem_energy_2023": {
+      "authority": "authoritative_report",
+      "doi": "10.17226/26818",
+      "reviewed_at": "2026-07-18",
+      "title": "Dietary Reference Intakes for Energy, NASEM 2023",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK591024/"
+    },
+    "nci_hei_2020": {
+      "authority": "official_methodology",
+      "reviewed_at": "2026-07-18",
+      "title": "Healthy Eating Index 2020 scoring standards",
+      "url": "https://epi.grants.cancer.gov/hei/hei-2020-scoring-metric.html"
+    },
+    "nice_cg32": {
+      "authority": "official_guideline",
+      "reviewed_at": "2026-07-18",
+      "title": "NICE CG32 Nutrition support for adults",
+      "url": "https://www.nice.org.uk/guidance/cg32"
+    }
+  }
+}
