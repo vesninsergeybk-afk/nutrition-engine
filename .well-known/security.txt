@@ -1,0 +1,5 @@
+Contact: https://nutrient.page.gd/security.html
+Policy: https://nutrient.page.gd/security.html
+Canonical: https://nutrient.page.gd/.well-known/security.txt
+Preferred-Languages: ru, en
+Expires: 2027-07-22T00:00:00Z

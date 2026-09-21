@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "release_version": "v6-next-base-2026-09-09",
+  "artifact_kind": "canonical-development-private",
+  "created_at": "2026-09-09T13:27:38.086634Z",
+  "purpose": "Canonical source base only; no UX, formula, HEI, CKD or other functional redesign in this pass.",
+  "source_rule": {
+    "foundation": "CURRENT_V6_BETA7 from AI_TRANSFER_RECOVERY_V5_2026-08-18.zip (full development/test tree)",
+    "runtime_overlay": "V6.0.0 BETA6 HOTFIX4 hosting-private (later runtime wins for every overlapping path)",
+    "stable_v5": "STABLE_WEB_V5_HOTFIX28 retained only as archival reference; no files copied into canonical base in this pass."
+  },
+  "source_artifacts": [
+    {
+      "name": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX4_THEME_PARITY_TYPOGRAPHY_HOSTING_PRIVATE.zip",
+      "sha256": "c3c0262751b02985be5406c0a6e7b8600ddef84e533d3d2864128619e4e5958a",
+      "role": "later hosting runtime + private Gemini credential pool"
+    },
+    {
+      "name": "AI_TRANSFER_RECOVERY_V5_2026-08-18.zip",
+      "sha256": "31c60491faf4ea9f9ddcbdf7bd143f0ca951027ed6ec4254591b7a58dda4ee33",
+      "role": "Beta7 full source/test tree + stable V5 archive"
+    }
+  ],
+  "merge_evidence": {
+    "beta7_file_count": 1566,
+    "hotfix4_file_count": 369,
+    "common_paths": 338,
+    "common_byte_identical": 331,
+    "common_different": 7,
+    "hotfix4_only_paths": 31,
+    "beta7_only_paths": 1228,
+    "overlay_precedence": "hotfix4"
+  },
+  "protected_invariants": {
+    "products_count": 1105,
+    "product_chunk_count": 12,
+    "product_manifest_hashes_verified": true,
+    "product_data_source": "byte-identical in Hotfix4 and Beta7 for canonical P1.3 chunks",
+    "gemini_primary_present": true,
+    "gemini_backup_present": true,
+    "gemini_credential_source": "Hotfix4 private server-side api/gemini-secret.php",
+    "gemini_values_logged": false,
+    "gemini_secret_direct_access_expected": "HTTP 404 with empty body"
+  },
+  "known_non_gate_issue": {
+    "test": "tests/p1-3-product-provenance.test.js",
+    "status": "runtime/data assertions pass, but historical analytical-artifact assertion expects reports/p1-3b-analytics.json which is absent from both extracted source trees; not fabricated in this pass."
+  }
+}
