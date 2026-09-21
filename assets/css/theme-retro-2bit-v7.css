@@ -1,0 +1,548 @@
+/* nutrition calculator v5.3.158 — live 2-bit matrix parity with PDF
+   Scope: screen-only presentation of the HEI × structure matrix.
+   Calculation, coordinates, zone selection and report generation remain untouched. */
+
+@media screen {
+  html[data-theme="retro-2bit"] .diet-matrix-card-v540 {
+    color: var(--retro-ink) !important;
+    background: var(--retro-paper) !important;
+    border: 3px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    box-shadow: 6px 6px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-map-topline-v540,
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 > div,
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 strong,
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 small,
+  html[data-theme="retro-2bit"] .diet-matrix-dashboard-v540,
+  html[data-theme="retro-2bit"] .diet-matrix-axis-pill,
+  html[data-theme="retro-2bit"] .diet-matrix-x-scale,
+  html[data-theme="retro-2bit"] .diet-matrix-y-scale {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 {
+    background: var(--retro-light) !important;
+    border: 0 !important;
+    border-bottom: 3px double var(--retro-ink) !important;
+    padding: 12px 12px 10px !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 small {
+    opacity: 1 !important;
+    font-weight: 700 !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-matrix-title-icon-v5338 {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-matrix-title-icon-v5338 span,
+  html[data-theme="retro-2bit"] .diet-matrix-title-icon-v5338 span::before,
+  html[data-theme="retro-2bit"] .diet-matrix-title-icon-v5338 span::after {
+    border-color: var(--retro-ink) !important;
+    background-color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 > span#dietMatrixZoneLabel {
+    display: inline-block !important;
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 7px;
+    padding: 3px 7px !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    color: var(--retro-ink) !important;
+    box-shadow: 2px 2px 0 var(--retro-dark) !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1.15 !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-matrix-dashboard-v540 .diet-matrix-axis-pill {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 4px 6px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: .025em;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540,
+  html[data-theme="retro-2bit"] .diet-matrix-grid-v5337.diet-matrix-grid-v5338.diet-matrix-grid-v540 {
+    position: relative;
+    width: 100% !important;
+    min-height: 0 !important;
+    aspect-ratio: 4 / 3 !important;
+    overflow: visible !important;
+    isolation: isolate;
+    border: 3px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: 5px 5px 0 var(--retro-dark) !important;
+  }
+
+  /* The mid-lines match the PDF's single 50/50 grid. */
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540::before,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540::after {
+    content: "" !important;
+    position: absolute !important;
+    z-index: 4 !important;
+    display: block !important;
+    background: var(--retro-ink) !important;
+    opacity: 1 !important;
+    pointer-events: none !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540::before {
+    left: 50% !important;
+    top: 0 !important;
+    width: 1px !important;
+    height: 100% !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540::after {
+    left: 0 !important;
+    top: 50% !important;
+    width: 100% !important;
+    height: 1px !important;
+  }
+
+  /* Four PDF-equivalent regions. The mature area begins at 70 on both axes. */
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-zone-q {
+    z-index: 1 !important;
+    display: block !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    cursor: pointer;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .zone-q-structure {
+    left: 0 !important;
+    right: auto !important;
+    top: 0 !important;
+    bottom: auto !important;
+    width: 70% !important;
+    height: 30% !important;
+    background: var(--retro-light) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .zone-q-strong {
+    left: 70% !important;
+    right: auto !important;
+    top: 0 !important;
+    bottom: auto !important;
+    width: 30% !important;
+    height: 30% !important;
+    background: var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .zone-q-complex {
+    left: 0 !important;
+    right: auto !important;
+    top: 30% !important;
+    bottom: auto !important;
+    width: 70% !important;
+    height: 70% !important;
+    background: var(--retro-paper) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .zone-q-quality {
+    left: 70% !important;
+    right: auto !important;
+    top: 30% !important;
+    bottom: auto !important;
+    width: 30% !important;
+    height: 70% !important;
+    background: var(--retro-light) !important;
+  }
+
+  /* The PDF uses a clean field; zone names remain available to assistive tech and on focus. */
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-zone-q b,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-zone-q span {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-zone-q.is-current-zone {
+    outline: 2px dashed var(--retro-ink) !important;
+    outline-offset: -7px !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .zone-q-strong.is-current-zone {
+    outline-color: var(--retro-paper) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-zone-q:focus-visible,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-zone-q.is-selected-zone {
+    outline: 3px double var(--retro-ink) !important;
+    outline-offset: -10px !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .zone-q-strong:focus-visible,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .zone-q-strong.is-selected-zone {
+    outline-color: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .threshold-x50,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .threshold-y50,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-x50,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-y50 {
+    display: none !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .threshold-x70,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .threshold-y70 {
+    z-index: 5 !important;
+    display: block !important;
+    background: transparent !important;
+    opacity: 1 !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .threshold-x70 {
+    left: 70% !important;
+    top: 0 !important;
+    width: 0 !important;
+    height: 100% !important;
+    border-left: 2px dashed var(--retro-ink) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .threshold-y70 {
+    left: 0 !important;
+    top: 30% !important;
+    width: 100% !important;
+    height: 0 !important;
+    border-top: 2px dashed var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-x70,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-y70 {
+    z-index: 8 !important;
+    display: block !important;
+    min-width: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    color: var(--retro-ink) !important;
+    box-shadow: none !important;
+    padding: 1px 3px !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-x70 {
+    left: 70% !important;
+    right: auto !important;
+    bottom: 4px !important;
+    top: auto !important;
+    transform: translateX(-50%) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-y70 {
+    left: 4px !important;
+    right: auto !important;
+    top: 30% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .projection-hei,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .projection-structure {
+    z-index: 7 !important;
+    display: block !important;
+    background: transparent !important;
+    border-color: var(--retro-ink) !important;
+    border-style: dashed !important;
+    opacity: 1 !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .projection-hei {
+    height: 0 !important;
+    border-top-width: 1.5px !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .projection-structure {
+    width: 0 !important;
+    border-left-width: 1.5px !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-projection-badge {
+    display: none !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337,
+  html[data-theme="retro-2bit"] .diet-matrix-grid-v5338 .diet-matrix-point-v5337 {
+    z-index: 12 !important;
+    width: 18px !important;
+    height: 18px !important;
+    border: 3px solid var(--retro-paper) !important;
+    border-radius: 50% !important;
+    background: var(--retro-ink) !important;
+    box-shadow: 0 0 0 7px var(--retro-light), 0 0 0 8px var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337::before,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337::after {
+    content: none !important;
+    display: none !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337 span {
+    display: none !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337:hover,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337:focus-visible,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337.is-selected-inspect {
+    outline: 2px dotted var(--retro-ink) !important;
+    outline-offset: 12px !important;
+    box-shadow: 0 0 0 9px var(--retro-light), 0 0 0 11px var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-caption-v5337 {
+    z-index: 11 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    width: auto !important;
+    transform: translate(12px, -22px) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    color: var(--retro-ink) !important;
+    box-shadow: none !important;
+    padding: 3px 5px !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540[data-point-side="left"] .diet-matrix-point-caption-v5337 {
+    transform: translate(calc(-100% - 12px), -22px) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-caption-v5337::before {
+    content: none !important;
+    display: none !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-caption-v5337 b {
+    display: block !important;
+    margin: 0 !important;
+    color: var(--retro-ink) !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-caption-v5337 span {
+    display: none !important;
+  }
+
+  /* The PDF presents only the endpoint labels; 70+ is shown on the threshold itself. */
+  html[data-theme="retro-2bit"] .diet-matrix-x-scale span:nth-child(2),
+  html[data-theme="retro-2bit"] .diet-matrix-x-scale span:nth-child(3),
+  html[data-theme="retro-2bit"] .diet-matrix-x-scale span:nth-child(4),
+  html[data-theme="retro-2bit"] .diet-matrix-y-scale span:nth-child(2),
+  html[data-theme="retro-2bit"] .diet-matrix-y-scale span:nth-child(3),
+  html[data-theme="retro-2bit"] .diet-matrix-y-scale span:nth-child(4) {
+    visibility: hidden !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    color: var(--retro-ink) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card::before {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card,
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card span,
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card strong,
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card em,
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card i,
+  html[data-theme="retro-2bit"] .diet-map-summary-strip-v540 .diet-map-score-card b {
+    color: var(--retro-ink) !important;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 {
+    padding: 10px 9px 9px !important;
+  }
+  html[data-theme="retro-2bit"] .diet-map-topline-v540 > span#dietMatrixZoneLabel {
+    grid-column: 1 / -1;
+    margin-left: 0;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540,
+  html[data-theme="retro-2bit"] .diet-matrix-grid-v5337.diet-matrix-grid-v5338.diet-matrix-grid-v540 {
+    aspect-ratio: 4 / 3 !important;
+    overflow: visible !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-v5337 {
+    width: 15px !important;
+    height: 15px !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 5px var(--retro-light), 0 0 0 6px var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-caption-v5337 {
+    transform: translate(9px, -18px) !important;
+    padding: 2px 4px !important;
+    font-size: 9.5px !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540[data-point-side="left"] .diet-matrix-point-caption-v5337 {
+    transform: translate(calc(-100% - 9px), -18px) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .diet-matrix-point-caption-v5337 b {
+    font-size: 9.5px !important;
+  }
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-x70,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540 .label-y70 {
+    font-size: 9px !important;
+  }
+}
+
+/* ID-level overrides for the design-audit layer, which intentionally uses !important. */
+@media screen {
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-card-v540,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-topline-v540,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-topline-v540 strong,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-topline-v540 small,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.diet-matrix-axis-pill {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.diet-matrix-axis-pill {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.diet-matrix-zone-q {
+    border: 0 !important;
+    border-radius: 0 !important;
+    color: var(--retro-ink) !important;
+    box-shadow: none !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.zone-q-structure {
+    background: var(--retro-light) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.zone-q-strong {
+    background: var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.zone-q-complex {
+    background: var(--retro-paper) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.zone-q-quality {
+    background: var(--retro-light) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.diet-matrix-zone-q b,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.diet-matrix-zone-q span {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.diet-matrix-point-v5337 {
+    width: 18px !important;
+    height: 18px !important;
+    border: 3px solid var(--retro-paper) !important;
+    border-radius: 50% !important;
+    background: var(--retro-ink) !important;
+    color: var(--retro-paper) !important;
+    box-shadow: 0 0 0 7px var(--retro-light), 0 0 0 8px var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-score-card,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-score-card strong,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-score-card span,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-score-card em {
+    color: var(--retro-ink) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-score-card {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel button.diet-matrix-point-v5337 {
+    width: 15px !important;
+    height: 15px !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 5px var(--retro-light), 0 0 0 6px var(--retro-dark) !important;
+  }
+}
+
+@media screen {
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-grid-v540 .diet-matrix-zone-q.is-current-zone {
+    outline: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-point-caption-v5337 {
+    z-index: 14 !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    text-align: center !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-grid-v540[data-point-side="left"] .diet-matrix-point-caption-v5337 {
+    transform: translate(calc(-100% - 18px), -20px) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-grid-v540:not([data-point-side="left"]) .diet-matrix-point-caption-v5337 {
+    transform: translate(18px, -20px) !important;
+  }
+
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-summary-strip-v540 .diet-map-score-card::before {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-summary-strip-v540 .diet-map-score-card::after,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-summary-strip-v540 .diet-map-score-card-quality::after,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-summary-strip-v540 .diet-map-score-card-structure::after,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-map-summary-strip-v540 .diet-map-score-card-zone::after {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-insight-v540 {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    color: var(--retro-ink) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-insight-v540 strong {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+    color: var(--retro-ink) !important;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  html[data-theme="retro-2bit"] #dietAnalysisMatrix {
+    overflow: visible !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-point-caption-v5337 {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-grid-v540[data-point-side="left"] .diet-matrix-point-caption-v5337 {
+    transform: translate(calc(-100% - 12px), -17px) !important;
+  }
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel .diet-matrix-grid-v540:not([data-point-side="left"]) .diet-matrix-point-caption-v5337 {
+    transform: translate(12px, -17px) !important;
+  }
+}

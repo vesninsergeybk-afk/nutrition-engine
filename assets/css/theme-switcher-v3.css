@@ -1,0 +1,279 @@
+/* nutrition calculator v5.3.155 — compact theme switcher, verified cascade
+   One accessible switch with separate modern and authentic 2-bit visuals.
+   The visible control stays compact; its interactive hit area is enlarged without
+   allowing legacy mobile toolbar rules to stretch it to full width. */
+
+@media screen {
+  /* High-specificity structure: overrides legacy header mobile rules. */
+  header .toolbar > .theme-switcher,
+  .toolbar > .theme-switcher,
+  .theme-switcher {
+    box-sizing: border-box;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    justify-self: start !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+    gap: 7px !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 3px 5px !important;
+    overflow: visible !important;
+  }
+
+  .theme-switcher__label {
+    flex: 0 0 auto;
+    margin: 0 !important;
+    white-space: nowrap;
+    font-size: 10.5px !important;
+    line-height: 1 !important;
+    letter-spacing: .02em !important;
+    text-transform: none !important;
+  }
+
+  header .toolbar .theme-switcher__toggle,
+  .toolbar .theme-switcher__toggle,
+  .theme-switcher__toggle {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex: 0 0 auto !important;
+    gap: 7px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    margin: 0 !important;
+    padding: 3px 4px !important;
+    border: 0 !important;
+    border-radius: 9px !important;
+    background: transparent !important;
+    color: inherit !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* A 44px-high touch area without making the visible switch bulky. */
+  .theme-switcher__toggle::after {
+    content: "";
+    position: absolute;
+    inset: -5px 0;
+  }
+
+  .theme-switcher__track {
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: 36px;
+    height: 20px;
+    box-sizing: border-box;
+    border: 1px solid #b8c5d3;
+    border-radius: 999px;
+    background: #dfe7ef;
+    box-shadow: inset 0 1px 2px rgba(15,35,55,.12);
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+
+  .theme-switcher__thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 1px solid rgba(35,57,79,.16);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(19,42,67,.25);
+    transform: translateX(0);
+    transition: transform 160ms cubic-bezier(.2,.8,.2,1), background-color 150ms ease;
+  }
+
+  .theme-switcher__current {
+    display: block;
+    flex: 0 0 auto;
+    min-width: 68px;
+    overflow: hidden;
+    color: #33475d;
+    font-size: 0;
+    font-weight: 750;
+    line-height: 1.1;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .theme-switcher__current::before {
+    content: "Современная";
+    font-size: 11px;
+  }
+
+  .theme-switcher__toggle[aria-checked="true"] .theme-switcher__track {
+    border-color: #2167b7;
+    background: #2674ca;
+  }
+
+  .theme-switcher__toggle[aria-checked="true"] .theme-switcher__thumb {
+    transform: translateX(16px);
+  }
+
+  .theme-switcher__toggle:hover .theme-switcher__track {
+    border-color: #7592af;
+  }
+
+  .theme-switcher__toggle:focus-visible {
+    outline: 2px solid #1f63ad !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+  }
+
+  /* Modern theme: light, thin, unobtrusive. */
+  html:not([data-theme="retro-2bit"]) header .toolbar > .theme-switcher,
+  html:not([data-theme="retro-2bit"]) .theme-switcher {
+    border: 1px solid #d7e1eb !important;
+    border-radius: 11px !important;
+    background: rgba(255,255,255,.92) !important;
+    box-shadow: 0 3px 10px rgba(31,55,79,.06) !important;
+  }
+
+  html:not([data-theme="retro-2bit"]) .theme-switcher__label {
+    color: #68798c !important;
+  }
+
+  /* 2-bit theme: rectangular hardware-style pixel toggle. */
+  html[data-theme="retro-2bit"] header .toolbar > .theme-switcher,
+  html[data-theme="retro-2bit"] .theme-switcher {
+    grid-template-columns: none !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 2px 2px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__label {
+    grid-column: auto !important;
+    color: var(--retro-dark) !important;
+    font-family: ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace !important;
+    font-weight: 900 !important;
+    letter-spacing: .04em !important;
+    text-transform: uppercase !important;
+  }
+
+  html[data-theme="retro-2bit"] header .toolbar .theme-switcher__toggle,
+  html[data-theme="retro-2bit"] .theme-switcher__toggle {
+    min-height: 32px !important;
+    height: 32px !important;
+    padding: 3px 4px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    color: var(--retro-ink) !important;
+    box-shadow: none !important;
+    transition: none !important;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__toggle::after {
+    inset: -6px 0;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__track {
+    width: 38px;
+    height: 20px;
+    border: 2px solid var(--retro-ink);
+    border-radius: 0;
+    background: var(--retro-paper);
+    box-shadow: 2px 2px 0 var(--retro-dark);
+    transition: none;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__track::before {
+    content: "";
+    position: absolute;
+    inset: 2px 2px 2px 17px;
+    background: repeating-linear-gradient(45deg,var(--retro-light) 0 2px,var(--retro-paper) 2px 4px);
+    pointer-events: none;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__thumb {
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border: 0;
+    border-radius: 0;
+    background: var(--retro-ink);
+    box-shadow: none;
+    transform: translateX(18px);
+    transition: none;
+  }
+
+  /* data-theme itself establishes the initial visual state before deferred JS runs. */
+  html[data-theme="retro-2bit"] .theme-switcher__toggle[aria-checked="false"] .theme-switcher__thumb,
+  html[data-theme="retro-2bit"] .theme-switcher__toggle[aria-checked="true"] .theme-switcher__thumb {
+    transform: translateX(18px);
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__toggle[aria-checked="false"] .theme-switcher__track,
+  html[data-theme="retro-2bit"] .theme-switcher__toggle[aria-checked="true"] .theme-switcher__track {
+    border-color: var(--retro-ink);
+    background: var(--retro-paper);
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__current {
+    min-width: 62px;
+    color: var(--retro-ink) !important;
+    font-family: ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace !important;
+    font-size: 0;
+    font-weight: 900;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__current::before {
+    content: "2-bit";
+    font-size: 10.5px;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__toggle:hover .theme-switcher__track {
+    background: var(--retro-paper);
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__toggle:focus-visible {
+    outline: 2px dashed var(--retro-ink) !important;
+    outline-offset: 2px !important;
+  }
+
+  @media (max-width: 760px) {
+    header .toolbar > .theme-switcher,
+    html[data-theme="retro-2bit"] header .toolbar > .theme-switcher,
+    html:not([data-theme="retro-2bit"]) header .toolbar > .theme-switcher {
+      width: max-content !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      justify-self: start !important;
+    }
+
+    header .toolbar .theme-switcher__toggle,
+    html[data-theme="retro-2bit"] header .toolbar .theme-switcher__toggle {
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      flex: 0 0 auto !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-switcher__track,
+    .theme-switcher__thumb {
+      transition: none !important;
+    }
+  }
+}

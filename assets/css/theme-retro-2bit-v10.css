@@ -1,0 +1,142 @@
+/* nutrition calculator v5.3.163 — 2-bit icon remaster
+   Replaces the earlier ultra-primitive sprite with a more legible and more
+   detailed pixel icon set while preserving the strict four-tone retro look.
+   No logic, layout geometry or calculations are changed. */
+@media screen {
+  html[data-theme="retro-2bit"] {
+    --retro-icon-size-v163: 18px;
+    --retro-icon-gap-v163: 8px;
+    --retro-section-icon-size-v163: 22px;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-icon],
+  html[data-theme="retro-2bit"] [data-retro-section-icon] {
+    --retro-icon-image-v163: none;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-icon]::before,
+  html[data-theme="retro-2bit"] [data-retro-section-icon]::before {
+    width: var(--retro-icon-size-v163) !important;
+    height: var(--retro-icon-size-v163) !important;
+    flex: 0 0 var(--retro-icon-size-v163) !important;
+    margin-inline-end: var(--retro-icon-gap-v163) !important;
+    background-image: var(--retro-icon-image-v163) !important;
+    background-size: contain !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    filter: none;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-section-icon]::before {
+    width: var(--retro-section-icon-size-v163) !important;
+    height: var(--retro-section-icon-size-v163) !important;
+    flex-basis: var(--retro-section-icon-size-v163) !important;
+    opacity: .88 !important;
+    margin-top: .06em !important;
+  }
+
+  html[data-theme="retro-2bit"] button[data-retro-icon]:not(.secondary):not(.ghost)::before,
+  html[data-theme="retro-2bit"] .btn[data-retro-icon]:not(.secondary):not(.ghost)::before,
+  html[data-theme="retro-2bit"] [role="button"][data-retro-icon]:not(.secondary):not(.ghost)::before {
+    filter: invert(1) contrast(1.03);
+  }
+
+  html[data-theme="retro-2bit"] .retro-icon-only {
+    width: 46px !important;
+    min-width: 46px !important;
+    min-height: 44px !important;
+  }
+
+  html[data-theme="retro-2bit"] .retro-icon-only::before {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  /* Individual icon mapping. */
+  html[data-theme="retro-2bit"] [data-retro-icon="info"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="info"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/info.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="close"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="close"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/close.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="search"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="search"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/search.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="add"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="add"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/add.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="remove"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="remove"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/remove.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="edit"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="edit"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/edit.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="print"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="print"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/print.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="pdf"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="pdf"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/pdf.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="calculate"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="calculate"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/calculate.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="ration"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="ration"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/ration.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="hei"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="hei"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/hei.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="norms"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="norms"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/norms.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="matrix"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="matrix"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/matrix.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="plate"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="plate"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/plate.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="ai"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="ai"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/ai.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="upload"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="upload"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/upload.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="camera"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="camera"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/camera.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="audio"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="audio"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/audio.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="reset"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="reset"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/reset.svg"); }
+  html[data-theme="retro-2bit"] [data-retro-icon="check"],
+  html[data-theme="retro-2bit"] [data-retro-section-icon="check"] { --retro-icon-image-v163: url("../icons/retro-2bit-v2/check.svg"); }
+
+  /* Checkboxes and radio buttons are also small theme symbols: give them a
+     clearer pixel motif so they match the remastered icon family. */
+  html[data-theme="retro-2bit"] input[type="checkbox"]:checked {
+    background-color: var(--retro-paper) !important;
+    background-image: url("../icons/retro-2bit-v2/check.svg") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 12px 12px !important;
+  }
+
+  html[data-theme="retro-2bit"] input[type="radio"]:checked {
+    background: linear-gradient(var(--retro-ink), var(--retro-ink)) center / 8px 8px no-repeat, var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] input[type="checkbox"],
+  html[data-theme="retro-2bit"] input[type="radio"] {
+    box-shadow: 1px 1px 0 var(--retro-dark) !important;
+  }
+
+  /* Status symbols stay text-based, but the box becomes cleaner and more precise. */
+  html[data-theme="retro-2bit"] .alert::before,
+  html[data-theme="retro-2bit"] [data-retro-state-glyph]::before {
+    width: 17px !important;
+    height: 17px !important;
+    border-width: 1px !important;
+    font-size: 11px !important;
+    line-height: 1 !important;
+    box-shadow: 1px 1px 0 currentColor;
+    background: var(--retro-paper);
+  }
+
+  @media (max-width: 760px) {
+    html[data-theme="retro-2bit"] {
+      --retro-icon-size-v163: 17px;
+      --retro-section-icon-size-v163: 20px;
+      --retro-icon-gap-v163: 7px;
+    }
+
+    html[data-theme="retro-2bit"] .retro-icon-only {
+      width: 44px !important;
+      min-width: 44px !important;
+    }
+  }
+}

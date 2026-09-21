@@ -1,0 +1,75 @@
+/* HF20: visible view switcher, reliable profile return, and prominent AI entry methods. */
+.workspace-view-switcher{display:inline-flex;align-items:center;gap:4px;min-width:0;padding:4px;border:1px solid #d2deeb;border-radius:12px;background:#f6f9fc}
+.workspace-view-switcher>span{padding:0 5px;color:#586d85;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.workspace-view-switcher button{min-height:34px!important;padding:6px 10px!important;border:1px solid transparent!important;border-radius:8px!important;background:transparent!important;color:#405670!important;box-shadow:none!important;font-size:12px!important;font-weight:750!important}
+.workspace-view-switcher button.is-active,.workspace-view-switcher button[aria-pressed="true"]{border-color:#8fb8e6!important;background:#fff!important;color:#075dbf!important;box-shadow:0 1px 3px rgba(27,60,94,.08)!important}
+.workspace-view-switcher button:focus-visible{outline:3px solid rgba(11,97,214,.24)!important;outline-offset:2px}
+
+html[data-navigation-shell="workspace"] #mainContent>header{grid-template-columns:minmax(220px,1fr) auto!important}
+html[data-navigation-shell="workspace"] #mainContent>header>.title{grid-column:1;grid-row:1;align-self:center}
+html[data-navigation-shell="workspace"] #workspaceViewSwitcher{grid-column:2;grid-row:1;justify-self:end;align-self:center}
+html[data-navigation-shell="workspace"] #mainContent>header>.toolbar{grid-column:1/-1;grid-row:2}
+html[data-navigation-shell="long"] #workspaceViewSwitcher{margin-left:auto}
+
+.workspace-profile-back-action{align-self:start;min-height:38px!important;padding:7px 11px!important;border:1px solid #c8daec!important;border-radius:10px!important;background:#fff!important;color:#24577f!important;box-shadow:none!important;font-size:12px!important;font-weight:800!important;white-space:nowrap}
+.workspace-profile-back-action[hidden]{display:none!important}
+html[data-navigation-shell="workspace"] #navigationShellContext .workspace-profile-back-action:hover{border-color:#8fb4d8!important;background:#f5f9fd!important}
+
+.workspace-ration-entry-methods{display:grid;grid-template-columns:minmax(190px,.72fr) minmax(0,1.7fr);gap:12px;margin:2px 0 14px;padding:13px;border:1px solid #d6e3ef;border-radius:14px;background:#f7fafc}
+.workspace-ration-entry-methods__copy{display:grid;align-content:center;gap:2px;min-width:0;padding:2px 4px}
+.workspace-ration-entry-methods__copy>span{color:#5c7189;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.workspace-ration-entry-methods__copy>strong{color:#1d3650;font-size:15px;line-height:1.25}
+.workspace-ration-entry-methods__copy>small{color:#5d7188;font-size:11.5px;line-height:1.4}
+.workspace-ration-entry-methods__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;min-width:0}
+.workspace-ration-entry-methods__grid button{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:8px;min-width:0;min-height:58px!important;padding:8px 9px!important;border:1px solid #ceddea!important;border-radius:11px!important;background:#fff!important;color:#284964!important;box-shadow:none!important;text-align:left!important}
+.workspace-ration-entry-methods__grid button:hover{border-color:#8eb6df!important;background:#f5f9fd!important}
+.workspace-ration-entry-methods__grid button:focus-visible{outline:3px solid rgba(11,97,214,.22)!important;outline-offset:2px}
+.workspace-ration-entry-methods__grid svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.workspace-ration-entry-methods__grid button>span{display:grid;gap:1px;min-width:0}
+.workspace-ration-entry-methods__grid b{overflow:hidden;font-size:12px;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}
+.workspace-ration-entry-methods__grid small{overflow:hidden;color:#64798e;font-size:10.5px;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+.workspace-ration-entry-methods__grid button[data-ration-entry-method="photo"],.workspace-ration-entry-methods__grid button[data-ration-entry-method="voice"]{border-color:#a9c9e8!important;background:#f3f8fe!important;color:#175f9c!important}
+
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary strong{font-size:15px}
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary small{font-size:12px}
+
+@media(max-width:980px){
+  .workspace-ration-entry-methods{grid-template-columns:1fr}
+  .workspace-ration-entry-methods__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:860px){
+  html[data-navigation-shell="workspace"] #mainContent>header{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important}
+  html[data-navigation-shell="workspace"] #workspaceViewSwitcher{max-width:100%}
+  html[data-navigation-shell="long"] #mainContent>header{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important}
+  html[data-navigation-shell="long"] #mainContent>header>.title{grid-column:1;grid-row:1}
+  html[data-navigation-shell="long"] #workspaceViewSwitcher{grid-column:2;grid-row:1;justify-self:end;margin:0}
+  html[data-navigation-shell="long"] #mainContent>header>.toolbar{grid-column:1/-1;grid-row:2}
+  .workspace-profile-back-action{grid-column:1/-1;justify-self:start}
+}
+@media(max-width:560px){
+  html[data-navigation-shell="workspace"] #mainContent>header,html[data-navigation-shell="long"] #mainContent>header{grid-template-columns:1fr!important}
+  html[data-navigation-shell="workspace"] #mainContent>header>.title,html[data-navigation-shell="long"] #mainContent>header>.title{grid-column:1;grid-row:1}
+  html[data-navigation-shell="workspace"] #workspaceViewSwitcher,html[data-navigation-shell="long"] #workspaceViewSwitcher{grid-column:1;grid-row:2;justify-self:start;width:100%;box-sizing:border-box}
+  .workspace-view-switcher button{flex:1 1 0}
+  html[data-navigation-shell="workspace"] #mainContent>header>.toolbar,html[data-navigation-shell="long"] #mainContent>header>.toolbar{grid-column:1;grid-row:3}
+  .workspace-profile-back-action{width:100%;justify-self:stretch}
+  .workspace-ration-entry-methods{padding:11px}
+  .workspace-ration-entry-methods__grid{grid-template-columns:1fr 1fr;gap:6px}
+  .workspace-ration-entry-methods__grid button{grid-template-columns:24px minmax(0,1fr);min-height:56px!important;padding:8px!important}
+  .workspace-ration-entry-methods__grid svg{width:22px;height:22px}
+  .workspace-ration-entry-methods__grid small{white-space:normal}
+}
+@media(max-width:380px){
+  .workspace-ration-entry-methods__grid{grid-template-columns:1fr}
+}
+@media print{#workspaceViewSwitcher,#workspaceProfileBackAction,#workspaceRationEntryMethods{display:none!important}}
+html[data-theme="retro-2bit"] #workspaceViewSwitcher,html[data-theme="retro-2bit"] #workspaceRationEntryMethods,html[data-theme="retro-2bit"] #workspaceProfileBackAction,html[data-theme="retro-2bit"] .workspace-ration-entry-methods__grid button{border-radius:0!important;box-shadow:3px 3px 0 rgba(10,31,56,.18)!important}
+
+/* The workspace shell uses dedicated overview panels. Legacy long-canvas
+   analysis sections must only reappear when the user explicitly selects
+   “Полотно”; otherwise they leak below every current section. */
+html[data-navigation-shell="workspace"] #mainContent>#heiPanel,
+html[data-navigation-shell="workspace"] #mainContent>#totalsSection,
+html[data-navigation-shell="workspace"] #mainContent>#dietAnalysisProfilePanel,
+html[data-navigation-shell="workspace"] #mainContent>#strictHarvardPlateDetails,
+html[data-navigation-shell="workspace"] #mainContent>#dataQualityPanel{display:none!important}

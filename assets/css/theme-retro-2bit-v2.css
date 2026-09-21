@@ -1,0 +1,1037 @@
+/* nutrition calculator v5.3.147 — 2-bit retro theme, pass 2 of 4
+   Full screen UI system for search, ration, HEI, nutrient norms, analysis matrix,
+   Harvard plate, Gemini, dialogs, service states and mobile layouts.
+   Scope is visual only: html[data-theme="retro-2bit"] under @media screen.
+   Print/PDF, loader artwork and pixel iconography remain reserved for pass 3. */
+
+@media screen {
+  html[data-theme="retro-2bit"] {
+    --primary: var(--retro-ink);
+    --primary-2: var(--retro-dark);
+    --primary-soft: var(--retro-light);
+    --text: var(--retro-ink);
+    --muted: var(--retro-dark);
+    --border: var(--retro-dark);
+    --surface: var(--retro-paper);
+    --surface-2: var(--retro-light);
+    --ok: var(--retro-dark);
+    --warning: var(--retro-dark);
+    --danger: var(--retro-ink);
+    --focus: var(--retro-ink);
+    --retro-dither-25:
+      linear-gradient(45deg, transparent 75%, var(--retro-dark) 75%) 0 0 / 4px 4px,
+      linear-gradient(45deg, var(--retro-dark) 25%, transparent 25%) 2px 2px / 4px 4px,
+      var(--retro-paper);
+    --retro-dither-50:
+      linear-gradient(45deg, var(--retro-dark) 25%, transparent 25%, transparent 75%, var(--retro-dark) 75%) 0 0 / 4px 4px,
+      linear-gradient(45deg, var(--retro-dark) 25%, transparent 25%, transparent 75%, var(--retro-dark) 75%) 2px 2px / 4px 4px,
+      var(--retro-paper);
+    --retro-stripes:
+      repeating-linear-gradient(135deg, var(--retro-paper) 0 4px, var(--retro-light) 4px 8px);
+  }
+
+  /* Shared hierarchy and states */
+  html[data-theme="retro-2bit"] ::selection {
+    color: var(--retro-paper);
+    background: var(--retro-ink);
+  }
+
+  html[data-theme="retro-2bit"] a {
+    color: var(--retro-ink);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+
+  html[data-theme="retro-2bit"] hr,
+  html[data-theme="retro-2bit"] .hr {
+    height: 2px;
+    border: 0;
+    background: var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] input[type="checkbox"],
+  html[data-theme="retro-2bit"] input[type="radio"] {
+    accent-color: var(--retro-ink);
+  }
+
+  html[data-theme="retro-2bit"] table {
+    color: var(--retro-ink);
+    border-collapse: collapse;
+  }
+
+  html[data-theme="retro-2bit"] th {
+    color: var(--retro-paper) !important;
+    background: var(--retro-ink) !important;
+    border-color: var(--retro-ink) !important;
+    font-weight: 900;
+    letter-spacing: .02em;
+  }
+
+  html[data-theme="retro-2bit"] td {
+    color: var(--retro-ink);
+    border-color: var(--retro-dark) !important;
+    background-color: var(--retro-paper);
+  }
+
+  html[data-theme="retro-2bit"] tbody tr:nth-child(even) > td {
+    background-color: var(--retro-light);
+  }
+
+  html[data-theme="retro-2bit"] .table-wrap,
+  html[data-theme="retro-2bit"] .ration-table-wrap,
+  html[data-theme="retro-2bit"] .norm-region-help-table-wrap,
+  html[data-theme="retro-2bit"] .composite-search-table-wrap {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] .alert,
+  html[data-theme="retro-2bit"] .alert.good,
+  html[data-theme="retro-2bit"] .alert.neutral,
+  html[data-theme="retro-2bit"] .alert.bad,
+  html[data-theme="retro-2bit"] .alert-danger,
+  html[data-theme="retro-2bit"] [data-state="error"],
+  html[data-theme="retro-2bit"] [data-state="success"],
+  html[data-theme="retro-2bit"] [data-state="working"] {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    box-shadow: 3px 3px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] .alert.good,
+  html[data-theme="retro-2bit"] [data-state="success"] {
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .alert.neutral,
+  html[data-theme="retro-2bit"] [data-state="working"] {
+    background: var(--retro-stripes) !important;
+  }
+
+  html[data-theme="retro-2bit"] .alert.bad,
+  html[data-theme="retro-2bit"] .alert-danger,
+  html[data-theme="retro-2bit"] [data-state="error"] {
+    color: var(--retro-paper) !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .progress,
+  html[data-theme="retro-2bit"] [class*="-meter"],
+  html[data-theme="retro-2bit"] [class*="-track"],
+  html[data-theme="retro-2bit"] [class*="-scorebar"] {
+    border-radius: 0 !important;
+  }
+
+  html[data-theme="retro-2bit"] .progress {
+    height: 12px;
+    border: 2px solid var(--retro-ink);
+    background: var(--retro-paper);
+    overflow: hidden;
+  }
+
+  html[data-theme="retro-2bit"] .progress .bar,
+  html[data-theme="retro-2bit"] .bar {
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .pill,
+  html[data-theme="retro-2bit"] .chip,
+  html[data-theme="retro-2bit"] .badge,
+  html[data-theme="retro-2bit"] [class*="-badge"],
+  html[data-theme="retro-2bit"] [class*="-chip"] {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+    box-shadow: 2px 2px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] dialog {
+    color: var(--retro-ink);
+    border: 3px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 8px 8px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] dialog::backdrop {
+    background:
+      linear-gradient(45deg, rgba(17,17,17,.72) 25%, transparent 25%, transparent 75%, rgba(17,17,17,.72) 75%) 0 0 / 6px 6px,
+      rgba(74,74,74,.72) !important;
+  }
+
+  html[data-theme="retro-2bit"] .dialog-head,
+  html[data-theme="retro-2bit"] .norm-region-help-dialog__head {
+    color: var(--retro-paper) !important;
+    background: var(--retro-ink) !important;
+    border-bottom: 3px solid var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .dialog-head *,
+  html[data-theme="retro-2bit"] .norm-region-help-dialog__head * {
+    color: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .close-btn {
+    color: var(--retro-paper) !important;
+    border: 2px solid var(--retro-paper) !important;
+    background: var(--retro-ink) !important;
+    box-shadow: none !important;
+  }
+
+  /* Needs profile and regional norms */
+  html[data-theme="retro-2bit"] #needs,
+  html[data-theme="retro-2bit"] #needsCompact,
+  html[data-theme="retro-2bit"] .norm-region-switcher,
+  html[data-theme="retro-2bit"] .needs-age-profile-card,
+  html[data-theme="retro-2bit"] .needs-personal-child-norm {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .norm-region-switcher {
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .norm-region-switcher #regionSeg,
+  html[data-theme="retro-2bit"] .norm-region-help-dialog__profiles section,
+  html[data-theme="retro-2bit"] .norm-region-help-dialog__change-grid section,
+  html[data-theme="retro-2bit"] .norm-region-help-dialog__scope,
+  html[data-theme="retro-2bit"] .norm-region-help-dialog__examples,
+  html[data-theme="retro-2bit"] .norm-region-help-dialog__unchanged,
+  html[data-theme="retro-2bit"] .norm-region-change-points > div,
+  html[data-theme="retro-2bit"] .norm-region-comparison-details,
+  html[data-theme="retro-2bit"] .needs-age-profile-content,
+  html[data-theme="retro-2bit"] .needs-age-profile-why {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .norm-region-comparison-details > summary,
+  html[data-theme="retro-2bit"] .needs-age-profile-head,
+  html[data-theme="retro-2bit"] .needs-age-profile-why > summary {
+    color: var(--retro-ink) !important;
+    background: var(--retro-light) !important;
+    border-radius: 0 !important;
+  }
+
+  html[data-theme="retro-2bit"] .norm-region-help-table td[data-different="true"] {
+    background: var(--retro-stripes) !important;
+  }
+
+  html[data-theme="retro-2bit"] .needs-age-profile-progress {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .needs-age-profile-progress-track i {
+    height: 10px !important;
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .needs-age-profile-progress-track i.is-filled,
+  html[data-theme="retro-2bit"] .needs-age-profile-progress-track i.is-current {
+    background: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .needs-age-profile-indicator {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+
+  /* Search */
+  html[data-theme="retro-2bit"] #globalSearchSection.search-hero {
+    border: 3px solid var(--retro-ink) !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 7px 7px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .search-hero-head {
+    border-bottom: 3px double var(--retro-ink);
+    padding-bottom: 12px;
+  }
+
+  html[data-theme="retro-2bit"] .search-db-count {
+    color: var(--retro-paper) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-ink) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] .search-db-count strong,
+  html[data-theme="retro-2bit"] .search-db-count span {
+    color: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .search-field-card,
+  html[data-theme="retro-2bit"] .search-grams-card {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .quick-searches button,
+  html[data-theme="retro-2bit"] .quick-grams button {
+    min-height: 34px;
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    background: var(--retro-light) !important;
+    box-shadow: 2px 2px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .search-status {
+    color: var(--retro-ink) !important;
+    border-left: 6px solid var(--retro-ink);
+    background: var(--retro-light) !important;
+    padding: 9px 11px;
+  }
+
+  html[data-theme="retro-2bit"] .search-added-toast,
+  html[data-theme="retro-2bit"] .search-empty-state {
+    color: var(--retro-ink) !important;
+    border: 2px dashed var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .search-result-card,
+  html[data-theme="retro-2bit"] .composite-search-preview {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .search-result-card:hover,
+  html[data-theme="retro-2bit"] .search-result-card:focus-within {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .search-result-title,
+  html[data-theme="retro-2bit"] .search-result-meta,
+  html[data-theme="retro-2bit"] .search-result-trust,
+  html[data-theme="retro-2bit"] .search-result-weighing-note {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .search-result-nutrients span,
+  html[data-theme="retro-2bit"] .composite-search-kind,
+  html[data-theme="retro-2bit"] .composite-search-flags span {
+    color: var(--retro-ink) !important;
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .composite-search-details,
+  html[data-theme="retro-2bit"] .composite-search-note,
+  html[data-theme="retro-2bit"] .composite-search-model-meta {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-stripes) !important;
+  }
+
+  /* Ration, composite folders and editable rows */
+  html[data-theme="retro-2bit"] #rationSection {
+    border-width: 3px;
+  }
+
+  html[data-theme="retro-2bit"] .ration-head-enhanced {
+    padding-bottom: 12px;
+    border-bottom: 3px double var(--retro-ink);
+  }
+
+  html[data-theme="retro-2bit"] .ration-kpi-strip,
+  html[data-theme="retro-2bit"] .ration-attention-strip,
+  html[data-theme="retro-2bit"] .mobile-ration-summary {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-attention-strip {
+    background: var(--retro-stripes) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-ui-legend {
+    border: 2px dashed var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-legend-composite,
+  html[data-theme="retro-2bit"] .ration-legend-impact,
+  html[data-theme="retro-2bit"] .ration-impact-dot,
+  html[data-theme="retro-2bit"] .composite-badge-dot {
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-table {
+    border: 2px solid var(--retro-ink);
+  }
+
+  html[data-theme="retro-2bit"] .ration-row,
+  html[data-theme="retro-2bit"] .ration-details td,
+  html[data-theme="retro-2bit"] .composite-folder-row > td,
+  html[data-theme="retro-2bit"] .composite-folder-details-row > td {
+    color: var(--retro-ink) !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-row-attention > td {
+    background: var(--retro-stripes) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-name,
+  html[data-theme="retro-2bit"] .ration-title,
+  html[data-theme="retro-2bit"] .ration-serving-hint,
+  html[data-theme="retro-2bit"] .ration-impact-caption,
+  html[data-theme="retro-2bit"] .composite-folder-note,
+  html[data-theme="retro-2bit"] .composite-child-flags,
+  html[data-theme="retro-2bit"] .composite-child-impact {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-impact-chip,
+  html[data-theme="retro-2bit"] .ration-impact-more,
+  html[data-theme="retro-2bit"] .ration-ai-import-badge,
+  html[data-theme="retro-2bit"] .composite-badge,
+  html[data-theme="retro-2bit"] .composite-confidence {
+    color: var(--retro-ink) !important;
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+    box-shadow: 2px 2px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .ration-impact-high,
+  html[data-theme="retro-2bit"] .ration-impact-over,
+  html[data-theme="retro-2bit"] .ration-impact-notice {
+    color: var(--retro-paper) !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .composite-folder-details,
+  html[data-theme="retro-2bit"] .composite-impact-summary,
+  html[data-theme="retro-2bit"] .composite-inner-editor,
+  html[data-theme="retro-2bit"] .composite-child-table {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .composite-impact-summary.is-quiet,
+  html[data-theme="retro-2bit"] .composite-inner-editor-help {
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .composite-open-after-add-highlight {
+    outline: 4px dashed var(--retro-ink) !important;
+    outline-offset: 2px;
+  }
+
+  /* HEI desktop, mobile dashboard and recommendations */
+  html[data-theme="retro-2bit"] #heiPanel,
+  html[data-theme="retro-2bit"] .hei-mobile-dashboard,
+  html[data-theme="retro-2bit"] .hei-mobile-card,
+  html[data-theme="retro-2bit"] .hei-mobile-total,
+  html[data-theme="retro-2bit"] .hei-mobile-priority,
+  html[data-theme="retro-2bit"] .hei-p1-component,
+  html[data-theme="retro-2bit"] .hei-p1-action,
+  html[data-theme="retro-2bit"] .hei-p2-grounding,
+  html[data-theme="retro-2bit"] .hei-p2-profile-context,
+  html[data-theme="retro-2bit"] .hei-p2-reliability {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #heiSummary,
+  html[data-theme="retro-2bit"] .hei-mobile-dashboard-head,
+  html[data-theme="retro-2bit"] .hei-mobile-total-head,
+  html[data-theme="retro-2bit"] .hei-mobile-card__head,
+  html[data-theme="retro-2bit"] .hei-mobile-indicator-title,
+  html[data-theme="retro-2bit"] .hei-p1-heading,
+  html[data-theme="retro-2bit"] .hei-p1-action-head {
+    color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .hei-mobile-total-bar,
+  html[data-theme="retro-2bit"] .hei-mobile-scorebar,
+  html[data-theme="retro-2bit"] .hei-mobile-indicator-body,
+  html[data-theme="retro-2bit"] .hei-p1-potential {
+    height: 12px !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    overflow: hidden;
+  }
+
+  html[data-theme="retro-2bit"] .hei-mobile-total-bar i,
+  html[data-theme="retro-2bit"] .hei-mobile-scorebar i,
+  html[data-theme="retro-2bit"] .hei-mobile-indicator-body i,
+  html[data-theme="retro-2bit"] .hei-p1-potential i,
+  html[data-theme="retro-2bit"] [data-tone="ok"] i,
+  html[data-theme="retro-2bit"] [data-tone="warn"] i,
+  html[data-theme="retro-2bit"] [data-tone="bad"] i {
+    border-radius: 0 !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .hei-mobile-priority-rank,
+  html[data-theme="retro-2bit"] .hei-mobile-card__score,
+  html[data-theme="retro-2bit"] .hei-mobile-indicator-score {
+    color: var(--retro-paper) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] #heiRecs .rec,
+  html[data-theme="retro-2bit"] #heiRecs .rec.ok,
+  html[data-theme="retro-2bit"] #heiRecs .rec.warn,
+  html[data-theme="retro-2bit"] #heiRecs .rec.bad,
+  html[data-theme="retro-2bit"] #heiRecs .rec-top,
+  html[data-theme="retro-2bit"] .hei-p1-start,
+  html[data-theme="retro-2bit"] .hei-p1-reason,
+  html[data-theme="retro-2bit"] .hei-p1-calculation,
+  html[data-theme="retro-2bit"] .hei-p1-method,
+  html[data-theme="retro-2bit"] .hei-p1-all-fold {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] #heiRecs .rec.warn,
+  html[data-theme="retro-2bit"] #heiRecs .rec.bad {
+    background: var(--retro-stripes) !important;
+  }
+
+  /* Daily nutrient totals and data quality */
+  html[data-theme="retro-2bit"] #totalsSection,
+  html[data-theme="retro-2bit"] .total-card,
+  html[data-theme="retro-2bit"] .norms,
+  html[data-theme="retro-2bit"] .micro-group-title,
+  html[data-theme="retro-2bit"] .data-quality-card,
+  html[data-theme="retro-2bit"] .data-quality-summary,
+  html[data-theme="retro-2bit"] .data-quality-details,
+  html[data-theme="retro-2bit"] .data-quality-metric,
+  html[data-theme="retro-2bit"] .data-quality-note,
+  html[data-theme="retro-2bit"] .data-quality-warning {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .total-card,
+  html[data-theme="retro-2bit"] .data-quality-card {
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .total-row,
+  html[data-theme="retro-2bit"] .micro,
+  html[data-theme="retro-2bit"] .data-quality-table tr {
+    border-color: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .data-quality-meter {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .data-quality-meter > i {
+    background: var(--retro-dark) !important;
+  }
+
+  /* Integrated analysis profile and matrix */
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel,
+  html[data-theme="retro-2bit"] .diet-analysis-card,
+  html[data-theme="retro-2bit"] .diet-overview-card,
+  html[data-theme="retro-2bit"] .diet-matrix-card,
+  html[data-theme="retro-2bit"] .diet-clinical-map-card,
+  html[data-theme="retro-2bit"] .diet-map-score-card,
+  html[data-theme="retro-2bit"] .diet-interpretation-card,
+  html[data-theme="retro-2bit"] .diet-domain-detail,
+  html[data-theme="retro-2bit"] .diet-limiter-panel,
+  html[data-theme="retro-2bit"] .diet-personal-plan,
+  html[data-theme="retro-2bit"] .diet-personal-item,
+  html[data-theme="retro-2bit"] .diet-step-card,
+  html[data-theme="retro-2bit"] .diet-method-facts,
+  html[data-theme="retro-2bit"] .diet-context-help,
+  html[data-theme="retro-2bit"] .diet-plant-balance-help,
+  html[data-theme="retro-2bit"] .diet-matrix-inspect-accordion,
+  html[data-theme="retro-2bit"] .diet-matrix-zone-explain {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-analysis-head,
+  html[data-theme="retro-2bit"] .diet-overview-kicker,
+  html[data-theme="retro-2bit"] .diet-map-topline,
+  html[data-theme="retro-2bit"] .diet-map-summary-strip,
+  html[data-theme="retro-2bit"] .diet-matrix-inspect-accordion > summary,
+  html[data-theme="retro-2bit"] .diet-method-facts > summary,
+  html[data-theme="retro-2bit"] .diet-context-help > summary,
+  html[data-theme="retro-2bit"] .diet-plant-balance-help > summary {
+    color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-overview-metric,
+  html[data-theme="retro-2bit"] .diet-map-score-card,
+  html[data-theme="retro-2bit"] .diet-matrix-axis-pill,
+  html[data-theme="retro-2bit"] .diet-matrix-projection-badge,
+  html[data-theme="retro-2bit"] .diet-domain-status,
+  html[data-theme="retro-2bit"] .diet-acc-metric,
+  html[data-theme="retro-2bit"] .diet-reliability-compact,
+  html[data-theme="retro-2bit"] .diet-point-passport {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540,
+  html[data-theme="retro-2bit"] .diet-matrix-grid-v5337,
+  html[data-theme="retro-2bit"] .diet-matrix-grid-v5338 {
+    border: 3px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background:
+      linear-gradient(90deg, transparent 49.5%, var(--retro-dark) 49.5% 50.5%, transparent 50.5%),
+      linear-gradient(transparent 49.5%, var(--retro-dark) 49.5% 50.5%, transparent 50.5%),
+      repeating-linear-gradient(135deg, var(--retro-paper) 0 8px, var(--retro-light) 8px 9px) !important;
+    box-shadow: 5px 5px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540::before,
+  html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540::after,
+  html[data-theme="retro-2bit"] .diet-matrix-threshold,
+  html[data-theme="retro-2bit"] .diet-matrix-threshold-v5337,
+  html[data-theme="retro-2bit"] .diet-matrix-projection-line {
+    border-color: var(--retro-dark) !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-matrix-zone-q,
+  html[data-theme="retro-2bit"] .diet-matrix-zone-q b,
+  html[data-theme="retro-2bit"] .diet-matrix-axis-label,
+  html[data-theme="retro-2bit"] .diet-matrix-x-scale,
+  html[data-theme="retro-2bit"] .diet-matrix-y-scale,
+  html[data-theme="retro-2bit"] .diet-matrix-point-caption-v5337 {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-matrix-point-v5337,
+  html[data-theme="retro-2bit"] .diet-matrix-point {
+    width: 24px !important;
+    height: 24px !important;
+    border: 4px solid var(--retro-paper) !important;
+    border-radius: 0 !important;
+    background: var(--retro-ink) !important;
+    box-shadow: 0 0 0 3px var(--retro-ink), 5px 5px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-domain-track,
+  html[data-theme="retro-2bit"] .diet-acc-microbar,
+  html[data-theme="retro-2bit"] .diet-reliability-meter,
+  html[data-theme="retro-2bit"] .diet-limiter-meter {
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-domain-fill,
+  html[data-theme="retro-2bit"] .diet-acc-microbar > i,
+  html[data-theme="retro-2bit"] .diet-reliability-meter > i,
+  html[data-theme="retro-2bit"] .diet-limiter-meter > i {
+    border-radius: 0 !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .diet-matrix-insight-v540,
+  html[data-theme="retro-2bit"] .diet-matrix-reading-v5337,
+  html[data-theme="retro-2bit"] .diet-personal-note,
+  html[data-theme="retro-2bit"] .diet-personal-narrative,
+  html[data-theme="retro-2bit"] .diet-domain-placeholder {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-stripes) !important;
+  }
+
+  /* Harvard plate */
+  html[data-theme="retro-2bit"] #harvardPlatePanel,
+  html[data-theme="retro-2bit"] .harvard-plate-card,
+  html[data-theme="retro-2bit"] .harvard-plate-visual-wrap,
+  html[data-theme="retro-2bit"] .harvard-plate-status,
+  html[data-theme="retro-2bit"] .harvard-plate-companion,
+  html[data-theme="retro-2bit"] .harvard-plate-explain,
+  html[data-theme="retro-2bit"] .harvard-plate-diagnostics,
+  html[data-theme="retro-2bit"] .harvard-hei-bridge,
+  html[data-theme="retro-2bit"] .hp-sector-card,
+  html[data-theme="retro-2bit"] .hp-active-panel {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .harvard-plate-head,
+  html[data-theme="retro-2bit"] .harvard-plate-explain > summary,
+  html[data-theme="retro-2bit"] .harvard-plate-diagnostics > summary,
+  html[data-theme="retro-2bit"] .hp-active-panel h3 {
+    color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .harvard-plate-visual {
+    border: 3px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-dither-25) !important;
+    box-shadow: inset 0 0 0 3px var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .harvard-plate-svg-shell {
+    border: 2px solid var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .harvard-plate-score-ring {
+    border: 3px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    color: var(--retro-ink) !important;
+    text-shadow: 1px 1px 0 var(--retro-paper), -1px -1px 0 var(--retro-paper), 1px -1px 0 var(--retro-paper), -1px 1px 0 var(--retro-paper);
+    background:
+      linear-gradient(to top, var(--retro-ink) calc(var(--plate-score, 0) * 1%), var(--retro-light) 0) !important;
+    box-shadow: inset 0 0 0 5px var(--retro-paper), 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .hp-active-bar,
+  html[data-theme="retro-2bit"] .hpacc-bar,
+  html[data-theme="retro-2bit"] .hhb-bar,
+  html[data-theme="retro-2bit"] .hpwi-bar,
+  html[data-theme="retro-2bit"] .rbs-bar {
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .hp-active-bar span,
+  html[data-theme="retro-2bit"] .hpacc-bar i,
+  html[data-theme="retro-2bit"] .hhb-bar i,
+  html[data-theme="retro-2bit"] .hpwi-bar i,
+  html[data-theme="retro-2bit"] .rbs-bar i {
+    border-radius: 0 !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .harvard-plate-visual svg,
+  html[data-theme="retro-2bit"] .harvard-plate-companion svg,
+  html[data-theme="retro-2bit"] .nr-harvard-svg {
+    filter: grayscale(1) contrast(1.25);
+  }
+
+  html[data-theme="retro-2bit"] .harvard-plate-empty,
+  html[data-theme="retro-2bit"] .harvard-plate-stage-empty,
+  html[data-theme="retro-2bit"] .harvard-plate-auto-note {
+    color: var(--retro-ink) !important;
+    border: 2px dashed var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  /* Gemini explanation and multimodal ration import */
+  html[data-theme="retro-2bit"] #geminiAiSection,
+  html[data-theme="retro-2bit"] #geminiRationImportSection,
+  html[data-theme="retro-2bit"] .gemini-ai-output,
+  html[data-theme="retro-2bit"] .gemini-ai-group,
+  html[data-theme="retro-2bit"] .gemini-ai-item,
+  html[data-theme="retro-2bit"] .gemini-ai-strategy,
+  html[data-theme="retro-2bit"] .gemini-ai-summary,
+  html[data-theme="retro-2bit"] .gemini-ai-offline,
+  html[data-theme="retro-2bit"] .gemini-ai-plain-text,
+  html[data-theme="retro-2bit"] .gemini-ration-draft,
+  html[data-theme="retro-2bit"] .gemini-ration-media-card,
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row,
+  html[data-theme="retro-2bit"] .gemini-ration-raw-text,
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__package {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ai-head,
+  html[data-theme="retro-2bit"] .gemini-ration-import__head,
+  html[data-theme="retro-2bit"] .gemini-ration-draft__head,
+  html[data-theme="retro-2bit"] .gemini-ai-strategy--primary {
+    color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ai-kicker,
+  html[data-theme="retro-2bit"] .gemini-ration-import__kicker,
+  html[data-theme="retro-2bit"] .gemini-ai-intro,
+  html[data-theme="retro-2bit"] .gemini-ai-value,
+  html[data-theme="retro-2bit"] .gemini-ai-meta,
+  html[data-theme="retro-2bit"] .gemini-ration-import__intro,
+  html[data-theme="retro-2bit"] .gemini-ration-import__limits,
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__meta,
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__match,
+  html[data-theme="retro-2bit"] .gemini-ration-raw-text__body {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ai-privacy,
+  html[data-theme="retro-2bit"] .gemini-ration-import__privacy,
+  html[data-theme="retro-2bit"] .gemini-ration-draft__warnings,
+  html[data-theme="retro-2bit"] .gemini-ration-draft__sources,
+  html[data-theme="retro-2bit"] .gemini-ai-caution,
+  html[data-theme="retro-2bit"] .gemini-ai-strategy--caution {
+    color: var(--retro-ink) !important;
+    border: 2px dashed var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-stripes) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-media-card > img,
+  html[data-theme="retro-2bit"] .gemini-ration-media-card__audio {
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    image-rendering: auto;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ai-progress,
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress {
+    gap: 4px;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ai-progress span,
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress span {
+    height: 10px !important;
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ai-progress span::after,
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress[data-step="1"] span:nth-child(-n+1),
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress[data-step="2"] span:nth-child(-n+2),
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress[data-step="3"] span:nth-child(-n+3),
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress[data-step="4"] span:nth-child(-n+4),
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress[data-step="5"] span:nth-child(-n+5) {
+    background: var(--retro-ink) !important;
+  }
+
+  /* Additional tools, catalog and meal planner */
+  html[data-theme="retro-2bit"] .additional-tools,
+  html[data-theme="retro-2bit"] .catalog-drawer,
+  html[data-theme="retro-2bit"] .meal-planner-drawer,
+  html[data-theme="retro-2bit"] .meal-slot,
+  html[data-theme="retro-2bit"] .meal-item,
+  html[data-theme="retro-2bit"] .meal-day-summary,
+  html[data-theme="retro-2bit"] .meal-stale-box,
+  html[data-theme="retro-2bit"] .meal-empty-state,
+  html[data-theme="retro-2bit"] .meal-unassigned,
+  html[data-theme="retro-2bit"] .meal-split-box {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .additional-tools > summary,
+  html[data-theme="retro-2bit"] .catalog-drawer > summary,
+  html[data-theme="retro-2bit"] .meal-planner-drawer > summary,
+  html[data-theme="retro-2bit"] .meal-slot-head,
+  html[data-theme="retro-2bit"] .meal-day-summary-head,
+  html[data-theme="retro-2bit"] .meal-why > summary {
+    color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .meal-slot--ok,
+  html[data-theme="retro-2bit"] .meal-slot--warn,
+  html[data-theme="retro-2bit"] .meal-slot--bad,
+  html[data-theme="retro-2bit"] .meal-status--ok,
+  html[data-theme="retro-2bit"] .meal-status--warn,
+  html[data-theme="retro-2bit"] .meal-status--bad {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-ink) !important;
+    background: var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .meal-slot--warn,
+  html[data-theme="retro-2bit"] .meal-slot--bad,
+  html[data-theme="retro-2bit"] .meal-warnings,
+  html[data-theme="retro-2bit"] .meal-stale-box {
+    background: var(--retro-stripes) !important;
+  }
+
+  /* Fixed/global actions and service panels */
+  html[data-theme="retro-2bit"] #globalActions,
+  html[data-theme="retro-2bit"] .ui-ration-tools,
+  html[data-theme="retro-2bit"] .dev-panel {
+    color: var(--retro-ink) !important;
+    border: 2px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    box-shadow: 5px 5px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .spinner,
+  html[data-theme="retro-2bit"] [class*="spinner"] {
+    border-color: var(--retro-light) !important;
+    border-top-color: var(--retro-ink) !important;
+    border-radius: 0 !important;
+  }
+
+  /* Mobile: keep information dense but touch-safe, with no horizontal overflow. */
+  @media (max-width: 760px) {
+    html[data-theme="retro-2bit"] .search-main-grid,
+    html[data-theme="retro-2bit"] .harvard-plate-layout,
+    html[data-theme="retro-2bit"] .diet-analysis-grid,
+    html[data-theme="retro-2bit"] .diet-overview-metrics,
+    html[data-theme="retro-2bit"] .diet-map-summary-strip,
+    html[data-theme="retro-2bit"] .gemini-ai-columns,
+    html[data-theme="retro-2bit"] .gemini-ai-strategy-grid,
+    html[data-theme="retro-2bit"] .meal-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    html[data-theme="retro-2bit"] .mobile-results-anchor #globalResults.search-results-enhanced.has-query {
+      left: 8px !important;
+      right: 8px !important;
+      width: auto !important;
+      border: 3px solid var(--retro-ink) !important;
+      border-radius: 0 !important;
+      background: var(--retro-paper) !important;
+      box-shadow: 7px 7px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] .mobile-results-anchor #globalResults.search-results-enhanced.has-query::before {
+      color: var(--retro-paper) !important;
+      background: var(--retro-ink) !important;
+      border-radius: 0 !important;
+    }
+
+    html[data-theme="retro-2bit"] .search-result-card,
+    html[data-theme="retro-2bit"] .gemini-ration-media-card,
+    html[data-theme="retro-2bit"] .gemini-ration-draft-row,
+    html[data-theme="retro-2bit"] .meal-item {
+      box-shadow: 3px 3px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] .ration-table thead {
+      color: var(--retro-paper) !important;
+      background: var(--retro-ink) !important;
+    }
+
+    html[data-theme="retro-2bit"] .ration-row,
+    html[data-theme="retro-2bit"] .ration-details,
+    html[data-theme="retro-2bit"] .composite-folder-row,
+    html[data-theme="retro-2bit"] .composite-folder-details-row {
+      border: 2px solid var(--retro-ink) !important;
+      border-radius: 0 !important;
+      background: var(--retro-paper) !important;
+      box-shadow: 3px 3px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] .diet-profile-v540 .diet-matrix-grid-v540,
+    html[data-theme="retro-2bit"] .diet-matrix-grid-v5337,
+    html[data-theme="retro-2bit"] .diet-matrix-grid-v5338 {
+      min-width: 0 !important;
+      box-shadow: 3px 3px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] .harvard-plate-companions {
+      grid-template-columns: 1fr !important;
+    }
+
+    html[data-theme="retro-2bit"] dialog,
+    html[data-theme="retro-2bit"] .norm-region-help-dialog {
+      width: calc(100vw - 16px) !important;
+      max-width: calc(100vw - 16px) !important;
+      max-height: calc(100svh - 16px) !important;
+      margin: 8px !important;
+      box-shadow: 4px 4px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] #globalActions,
+    html[data-theme="retro-2bit"] .ui-ration-tools {
+      left: 8px !important;
+      right: 8px !important;
+      bottom: 8px !important;
+      width: auto !important;
+      box-shadow: 4px 4px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] button,
+    html[data-theme="retro-2bit"] .btn,
+    html[data-theme="retro-2bit"] input,
+    html[data-theme="retro-2bit"] select,
+    html[data-theme="retro-2bit"] textarea {
+      min-height: 44px;
+    }
+
+    html[data-theme="retro-2bit"] .icon-btn,
+    html[data-theme="retro-2bit"] .close-btn {
+      min-width: 40px;
+      min-height: 40px;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    html[data-theme="retro-2bit"] .card,
+    html[data-theme="retro-2bit"] button,
+    html[data-theme="retro-2bit"] input,
+    html[data-theme="retro-2bit"] select,
+    html[data-theme="retro-2bit"] textarea,
+    html[data-theme="retro-2bit"] dialog {
+      border-width: 3px !important;
+    }
+  }
+}

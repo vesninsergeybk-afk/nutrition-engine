@@ -1,0 +1,81 @@
+/* nutrition calculator v5.3.193 — 2-bit mobile vertical-rail reduction
+   Screen-only visual layer. Long expanded containers keep horizontal pixel
+   separators, while persistent side borders and lateral shadows are removed.
+   Calculation, data, interaction and print/PDF behavior are untouched. */
+@media screen and (max-width: 760px) {
+  /* The page shell already frames the mobile screen. Major sections therefore
+     use horizontal separators instead of adding another full-height frame. */
+  html[data-theme="retro-2bit"] #mainContent > section.card,
+  html[data-theme="retro-2bit"] #mainContent > #needsCompact,
+  html[data-theme="retro-2bit"] #mainContent > #globalActions,
+  html[data-theme="retro-2bit"] #mainContent > .legal-note {
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    box-shadow: 0 4px 0 var(--retro-dark) !important;
+  }
+
+  /* A long Gemini draft is content of the parent section, not another window.
+     Keep its opening/closing rules but remove the two persistent side rails. */
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    border-top-width: 2px !important;
+    border-bottom-width: 2px !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft__head {
+    padding: 12px !important;
+    border-bottom: 2px solid var(--retro-ink) !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft__rows {
+    gap: 16px !important;
+    padding: 0 !important;
+  }
+
+  /* Individual entries remain recognisable cards, but depth is shown below
+     the card instead of as another vertical stripe down its right edge. */
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft-row,
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft-row.is-included {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-shadow: 0 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft-row.is-excluded {
+    box-shadow: none !important;
+  }
+
+  /* Tertiary information is integrated into the current entry. It no longer
+     creates a fourth nested framed window. */
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft-row__package,
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft-row__component,
+  html[data-theme="retro-2bit"] #geminiRationImportSection .preparation-family-gemini-ui {
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #geminiRationImportSection .gemini-ration-draft-row__package,
+  html[data-theme="retro-2bit"] #geminiRationImportSection .preparation-family-gemini-ui {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    background: transparent !important;
+  }
+
+  /* The same rule applies to long nested cards inside open accordions: the
+     accordion owns the frame, while its reading surfaces use separators. */
+  html[data-theme="retro-2bit"] #mainContent details[open] .card .card,
+  html[data-theme="retro-2bit"] #mainContent .accordion-item.open .card .card {
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    box-shadow: none !important;
+  }
+}

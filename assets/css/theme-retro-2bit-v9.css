@@ -1,0 +1,312 @@
+/* nutrition calculator v5.3.161 — 2-bit visual-noise reduction
+   Screen-only calming layer. Keeps the four-tone palette, square geometry and
+   strong section hierarchy while removing high-frequency decoration from
+   reading surfaces and nested controls. Calculation, layout and print logic
+   are not touched. */
+@media screen {
+  html[data-theme="retro-2bit"] {
+    --retro-calm-line: var(--retro-dark);
+    --retro-calm-soft: var(--retro-light);
+  }
+
+  /* The retro identity is carried by geometry and hierarchy, not a tiled field. */
+  html[data-theme="retro-2bit"] body {
+    background-color: var(--retro-light) !important;
+    background-image: none !important;
+  }
+
+  /* Keep the main windows firm, but make their offset shadow less dominant. */
+  html[data-theme="retro-2bit"] section.card,
+  html[data-theme="retro-2bit"] #needsCompact,
+  html[data-theme="retro-2bit"] #geminiRationImportSection,
+  html[data-theme="retro-2bit"] #globalSearchSection,
+  html[data-theme="retro-2bit"] #rationSection,
+  html[data-theme="retro-2bit"] #heiPanel,
+  html[data-theme="retro-2bit"] #totalsSection,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel,
+  html[data-theme="retro-2bit"] #harvardPlatePanel,
+  html[data-theme="retro-2bit"] #dataQualityPanel,
+  html[data-theme="retro-2bit"] #presetsPanel,
+  html[data-theme="retro-2bit"] #geminiAiSection,
+  html[data-theme="retro-2bit"] #globalActions,
+  html[data-theme="retro-2bit"] .legal-note {
+    box-shadow: 4px 4px 0 var(--retro-dark) !important;
+  }
+
+  /* One outline is enough for secondary expandable surfaces. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item {
+    border-width: 1px !important;
+    border-color: var(--retro-dark) !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details details {
+    border-width: 1px !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head {
+    border-bottom: 1px solid var(--retro-dark) !important;
+    background: var(--retro-paper) !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head {
+    color: var(--retro-ink) !important;
+    border-bottom: 2px solid var(--retro-ink) !important;
+    background: var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > summary *,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head * {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-dark) !important;
+  }
+
+  /* Major analytical accordions remain strong visual anchors. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent #dietMatrixInspectAccordions > .diet-matrix-inspect-accordion[open] > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent #dietMatrixInspectAccordions > .diet-matrix-inspect-accordion.open > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent #heiFullRecsFold[open] > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .ui-analysis-fold[open] > summary {
+    color: var(--retro-paper) !important;
+    border-color: var(--retro-paper) !important;
+    background: var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent #dietMatrixInspectAccordions > .diet-matrix-inspect-accordion[open] > summary *,
+  html[data-theme="retro-2bit"] #mainContent#mainContent #heiFullRecsFold[open] > summary *,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .ui-analysis-fold[open] > summary * {
+    color: var(--retro-paper) !important;
+    border-color: var(--retro-paper) !important;
+  }
+
+  /* Remove nested offset shadows: the previous version created borders inside
+     borders inside patterned frames, especially in long mobile explanations. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .rec,.alert,.hei-p1-strengths,.hei-p1-all,.hei-p2-component-context,
+    .diet-personal-narrative,.diet-reliability-mini,.diet-limiter-item,.diet-personal-action,
+    .diet-domain-intro,.diet-domain-detail-body,.diet-analysis-help-body,.diet-analysis-extra-harvard-body,
+    .diet-gram-action,.diet-context-help-current,.diet-context-help-action,
+    .hpacc-section,.hpacc-item,.hpacc-body,.hpacc-note,.hpacc-empty,.hpacc-flags,
+    .hpsr-card,.hpsr-method,.hpwi-row,.hpwi-preview,.hpwi-intro,.hpwi-steps,
+    .hpapply-cols section,.hpapply-status,.hpapply-lead,.data-quality-warning,
+    .serving-unit-hint,.unit-quick-input,.catalog-mode-help,.meal-planner-intro,
+    .diet-zone-explain-grid > div,.diet-point-passport > div,.diet-method-facts > div,
+    .hp-explain-group,.hpacc-extra-cluster,.hpacc-inline-feedback,.hhb-compact-weak,
+    .diet-limiter-action,.diet-domain-profile,.additional-body > section.card
+  ) {
+    border-width: 1px !important;
+    border-color: var(--retro-dark) !important;
+    background-color: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] :is(
+    .diet-personal-plan,.diet-personal-item,.diet-step-card,
+    .diet-analysis-card,.diet-overview-card,.diet-clinical-map-card,
+    .diet-map-score-card,.diet-interpretation-card,.diet-domain-detail,
+    .diet-limiter-panel,.diet-method-facts,.diet-context-help,
+    .diet-plant-balance-help,.diet-matrix-zone-explain
+  ) {
+    border-width: 1px !important;
+    border-color: var(--retro-dark) !important;
+    box-shadow: none !important;
+  }
+
+  /* Warning/achievement texture is reduced to a semantic rail. Long patterned
+     backgrounds were the largest source of high-frequency visual flicker. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .rec.warn,.rec.bad,.hei-p1-component.attention,.hei-p1-component.near,
+    [data-tone="warn"],[data-tone="bad"],[data-severity="warn"],[data-severity="bad"],
+    .hpacc-extra-cluster[data-cluster="attention"],.data-quality-warning,.hpapply-status[data-good="0"],
+    .diet-personal-note,.diet-matrix-insight-v540,.diet-matrix-reading-v5337,.diet-domain-placeholder
+  ) {
+    border: 1px solid var(--retro-dark) !important;
+    border-left: 4px solid var(--retro-ink) !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .rec.ok,.hei-p1-component.achieved,[data-tone="ok"],.hpapply-status[data-good="1"]
+  ) {
+    border: 1px solid var(--retro-dark) !important;
+    border-left: 4px solid var(--retro-dark) !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Inner action blocks read as part of the parent card instead of another
+     floating window. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent .diet-gram-action,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .diet-personal-action,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .diet-limiter-action {
+    border: 0 !important;
+    border-top: 1px solid var(--retro-dark) !important;
+    padding-inline: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Small labels should not compete with titles and primary actions. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .pill,.chip,.badge,.cat-count,.diet-acc-chip,.diet-domain-status,.diet-domain-value,
+    .hpacc-value,.hpacc-target,.hpsr-badge,.hpwi-status span,.data-quality-version,
+    .unit-quick-input-btn,.catalog-drawer-indicator
+  ),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head .cat-count {
+    border-width: 1px !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(input,select,textarea),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(input,select,textarea) {
+    border-width: 1px !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(button,.btn,[role="button"]),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(button,.btn,[role="button"]) {
+    box-shadow: 2px 2px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(button.secondary,button.ghost,.btn.secondary),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(button.secondary,button.ghost,.btn.secondary) {
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-included {
+    border-width: 2px !important;
+    box-shadow: 3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-excluded {
+    border-width: 1px !important;
+    box-shadow: none !important;
+  }
+
+  /* Preserve the already approved matrix drawing itself. */
+  html[data-theme="retro-2bit"] :is(
+    .diet-profile-v540 .diet-matrix-grid-v540,.diet-matrix-grid-v5337,.diet-matrix-grid-v5338,
+    .diet-matrix-card,.diet-matrix-point-v5337,.diet-matrix-point
+  ) {
+    /* intentionally left to the matrix-specific v7 layer */
+  }
+
+  @media (max-width:760px) {
+    html[data-theme="retro-2bit"] section.card,
+    html[data-theme="retro-2bit"] #needsCompact,
+    html[data-theme="retro-2bit"] #geminiRationImportSection,
+    html[data-theme="retro-2bit"] #globalSearchSection,
+    html[data-theme="retro-2bit"] #rationSection,
+    html[data-theme="retro-2bit"] #heiPanel,
+    html[data-theme="retro-2bit"] #totalsSection,
+    html[data-theme="retro-2bit"] #dietAnalysisProfilePanel,
+    html[data-theme="retro-2bit"] #harvardPlatePanel,
+    html[data-theme="retro-2bit"] #dataQualityPanel,
+    html[data-theme="retro-2bit"] #presetsPanel,
+    html[data-theme="retro-2bit"] #geminiAiSection,
+    html[data-theme="retro-2bit"] #globalActions,
+    html[data-theme="retro-2bit"] .legal-note {
+      margin-block: 18px !important;
+      box-shadow: 3px 3px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item {
+      box-shadow: none !important;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details > summary,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head {
+      min-height: 44px !important;
+      padding: 10px !important;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > :not(summary),
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .catalog-drawer-body {
+      line-height: 1.5 !important;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+      .diet-personal-item,.diet-step-card,.diet-personal-plan,.diet-personal-note,
+      .diet-zone-explain-grid > div,.diet-point-passport > div,.diet-method-facts > div,
+      .diet-domain-detail-body,.diet-personal-narrative,.hpacc-item,.hpsr-card,.hpwi-row
+    ) {
+      margin-block: 10px !important;
+      padding: 12px !important;
+    }
+
+    html[data-theme="retro-2bit"] h2 {
+      font-size: clamp(22px,7vw,30px) !important;
+      line-height: 1.16 !important;
+    }
+
+    html[data-theme="retro-2bit"] [data-retro-section-icon]::before {
+      opacity: .72;
+    }
+  }
+}
+
+@media screen {
+  /* Specificity correction for action blocks generated inside analytical details. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .diet-gram-action,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .diet-personal-action,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .diet-limiter-action {
+    border: 0 !important;
+    border-top: 1px solid var(--retro-dark) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  @media (max-width:760px) {
+    /* HEI summaries must not squeeze explanatory text into a one-word column. */
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-all-fold > summary,
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-component > summary {
+      display: grid !important;
+      grid-template-columns: minmax(0,1fr) !important;
+      align-items: start !important;
+      justify-content: stretch !important;
+      gap: 8px !important;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-all-fold > summary > span,
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-all-fold > summary > b,
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-component > summary > span,
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-component > summary > b {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      white-space: normal !important;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-all-fold > summary > b,
+    html[data-theme="retro-2bit"] #mainContent#mainContent details.hei-p1-component > summary > b {
+      padding: 6px 8px !important;
+      border-width: 1px !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+@media screen {
+  /* Runtime analytical modules inject equally specific card rules after load;
+     this final shield keeps action blocks visually integrated with their parent. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent#mainContent details .diet-gram-action,
+  html[data-theme="retro-2bit"] #mainContent#mainContent#mainContent details .diet-personal-action,
+  html[data-theme="retro-2bit"] #mainContent#mainContent#mainContent details .diet-limiter-action {
+    border-top: 1px solid var(--retro-dark) !important;
+    border-right-width: 0 !important;
+    border-bottom-width: 0 !important;
+    border-left-width: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}

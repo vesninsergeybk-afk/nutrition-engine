@@ -1,0 +1,41 @@
+/* v6 theme foundation: shared tokens and stable control states. */
+:root{
+  --ui-control-min:44px;
+  --ui-focus-ring:0 0 0 3px rgba(15,98,190,.22);
+  --ui-motion-fast:140ms;
+  --ui-motion-base:190ms;
+}
+html[data-theme="ivory-brass"]{
+  color-scheme:light;
+  --ib-bg:#f4efe5;
+  --ib-bg-deep:#ece4d6;
+  --ib-surface:#fffdf8;
+  --ib-surface-soft:#faf6ee;
+  --ib-surface-strong:#f0e8d9;
+  --ib-ink:#24251f;
+  --ib-muted:#6d685e;
+  --ib-line:#ddd3c1;
+  --ib-line-strong:#cbbda5;
+  --ib-brass:#98702b;
+  --ib-brass-dark:#755016;
+  --ib-olive:#41451d;
+  --ib-olive-soft:#e9eadb;
+  --ib-positive:#66834f;
+  --ib-warning:#d89412;
+  --ib-danger:#c65045;
+  --ib-info:#4d7893;
+  --ib-shadow:0 14px 40px rgba(73,59,36,.08);
+  --ib-shadow-soft:0 6px 22px rgba(73,59,36,.055);
+  --ib-serif:Georgia,"Times New Roman",serif;
+  --ib-sans:Inter,Manrope,"Segoe UI",Roboto,Arial,sans-serif;
+}
+:where(button,a,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])):focus-visible{outline:3px solid rgba(20,91,155,.25);outline-offset:2px}
+html[data-theme="ivory-brass"] :where(button,a,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])):focus-visible{outline-color:rgba(152,112,43,.42)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Route headings receive tabindex=-1 only so screen readers announce navigation.
+   They are not controls and must not inherit the global input-like focus halo. */
+:where(h1,h2,h3,h4,h5,h6)[tabindex="-1"]:focus,
+[role="heading"][tabindex="-1"]:focus{
+  outline:none!important;box-shadow:none!important;
+}

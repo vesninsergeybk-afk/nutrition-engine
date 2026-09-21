@@ -1,0 +1,64 @@
+/* nutrition calculator v5.3.149 — 2-bit final regression hardening, pass 4
+   Scope: accessibility, focus, touch ergonomics and overflow safeguards.
+   No calculation, state or report data rules are present. */
+
+@media screen {
+  html[data-theme="retro-2bit"] input[readonly]:not(:disabled),
+  html[data-theme="retro-2bit"] textarea[readonly]:not(:disabled) {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] a[href]:focus-visible,
+  html[data-theme="retro-2bit"] [role="button"]:focus-visible,
+  html[data-theme="retro-2bit"] [tabindex]:not([tabindex="-1"]):focus-visible {
+    outline: 3px dashed var(--retro-ink) !important;
+    outline-offset: 3px !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] button,
+  html[data-theme="retro-2bit"] .btn,
+  html[data-theme="retro-2bit"] [role="button"],
+  html[data-theme="retro-2bit"] .theme-switcher__button {
+    touch-action: manipulation;
+  }
+
+  html[data-theme="retro-2bit"] #needsCompact,
+  html[data-theme="retro-2bit"] #globalSearchSection,
+  html[data-theme="retro-2bit"] #rationSection,
+  html[data-theme="retro-2bit"] #heiPanel,
+  html[data-theme="retro-2bit"] #totalsSection {
+    scroll-margin-top: 12px;
+  }
+
+  @media (max-width: 760px) {
+    html[data-theme="retro-2bit"] .theme-switcher__button,
+    html[data-theme="retro-2bit"] .retro-icon-only,
+    html[data-theme="retro-2bit"] .icon-btn,
+    html[data-theme="retro-2bit"] .close-btn {
+      min-width: 44px !important;
+      min-height: 44px !important;
+    }
+
+    html[data-theme="retro-2bit"] .card,
+    html[data-theme="retro-2bit"] .accordion-body,
+    html[data-theme="retro-2bit"] details,
+    html[data-theme="retro-2bit"] dialog,
+    html[data-theme="retro-2bit"] td,
+    html[data-theme="retro-2bit"] th {
+      overflow-wrap: anywhere;
+    }
+  }
+
+  @media (forced-colors: active) {
+    html[data-theme="retro-2bit"] button,
+    html[data-theme="retro-2bit"] .btn,
+    html[data-theme="retro-2bit"] input,
+    html[data-theme="retro-2bit"] select,
+    html[data-theme="retro-2bit"] textarea,
+    html[data-theme="retro-2bit"] .card,
+    html[data-theme="retro-2bit"] dialog {
+      forced-color-adjust: auto;
+    }
+  }
+}

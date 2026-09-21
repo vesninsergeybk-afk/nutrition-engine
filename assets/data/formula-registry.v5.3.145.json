@@ -1,0 +1,240 @@
+{
+  "version": "v5.3.145",
+  "app_layer": "methodology_navigation_governance",
+  "energy": {
+    "method": "Mifflin–St Jeor × explicit PAL, with state-specific kcal/kg screening fallback",
+    "inputs": [
+      "sex",
+      "height_cm",
+      "weight_kg",
+      "age_years",
+      "activity",
+      "state_profile",
+      "goal",
+      "edema"
+    ],
+    "outputs": [
+      "energyLow_kcal",
+      "energyHigh_kcal"
+    ],
+    "core_formula": {
+      "male": "10*weight_kg + 6.25*height_cm - 5*age_years + 5",
+      "female": "10*weight_kg + 6.25*height_cm - 5*age_years - 161"
+    },
+    "modifiers": [
+      "explicit PAL 1.20–1.90",
+      "state-specific screening factor",
+      "goal factor with BMI and clinical guardrails",
+      "weight-selection rule"
+    ],
+    "fallback": "kcal/kg is used for ICU, CKD G3–G5, dialysis, edema, or when Mifflin–St Jeor is unsuitable",
+    "limitations": [
+      "planning estimate",
+      "not indirect calorimetry",
+      "automatic deficit is disabled at BMI below 18.5",
+      "clinical states require diagnosis-specific interpretation"
+    ]
+  },
+  "protein": {
+    "method": "g/kg/day by health state, activity, age and goal; healthy-adult base RDA 0.8 g/kg; manual override supported",
+    "inputs": [
+      "usedWeight_kg",
+      "state_profile",
+      "activity",
+      "age_years",
+      "goal",
+      "manualProtein_g"
+    ],
+    "outputs": [
+      "protein_g_day",
+      "protein_g_kg_day"
+    ],
+    "energy_conversion": "4 kcal per 1 g protein",
+    "limitations": [
+      "renal disease, dialysis, ICU, oncology and postoperative cases require specialist review",
+      "clinical profiles do not automatically apply weight-loss or weight-gain energy targets",
+      "the calculator does not replace renal, oncologic or intensive-care nutrition prescriptions"
+    ],
+    "reference_corridors": {
+      "healthy_adult_base": "0.8 g/kg/day",
+      "healthy_activity_practical": "0.9–1.4 g/kg/day according to activity",
+      "older_adult": "1.0–1.2 g/kg/day; up to 1.5 in illness/recovery when clinically appropriate",
+      "ckd_g3_g5_without_dialysis": "0.8 g/kg/day screening target",
+      "dialysis": "1.0–1.2 g/kg/day screening corridor",
+      "icu": "1.3 g/kg/day, introduced progressively",
+      "oncology": "more than 1.0 and, if possible, up to 1.5 g/kg/day"
+    }
+  },
+  "fat_and_carbohydrates": {
+    "fat_method": "percent of lower target energy boundary",
+    "carbohydrate_method": "energy remainder after protein and fat",
+    "energy_conversion": {
+      "protein": "4 kcal/g",
+      "fat": "9 kcal/g",
+      "carbohydrates": "4 kcal/g"
+    },
+    "outputs": [
+      "fat_g_day",
+      "carbohydrates_g_day"
+    ],
+    "limitations": [
+      "carbohydrate remainder can become low in high-protein or restrictive scenarios"
+    ]
+  },
+  "fluid": {
+    "method": "ml/kg/day by state profile",
+    "inputs": [
+      "usedWeight_kg",
+      "state_profile"
+    ],
+    "outputs": [
+      "fluid_ml_day"
+    ],
+    "note": "This is a needs-calculator fluid estimate. Harvard Plate water indicator separately counts water and unsweetened beverages entered in the ration."
+  },
+  "harvard_plate": {
+    "method": "gram-based proportional model",
+    "core_mass_formula": "vegetablesG + fruitsG + wholeGrainsG + proteinG",
+    "targets": {
+      "vegetables": 0.35,
+      "fruits": 0.15,
+      "wholeGrains": 0.25,
+      "protein": 0.25
+    },
+    "actual_share_formula": "groupG / coreMass",
+    "fill_ratio_formula": "actualShare / targetShare",
+    "add_grams_formula": "(targetShare * coreMass - currentG) / (1 - targetShare)",
+    "reduce_grams_formula": "(currentG - targetShare * coreMass) / (1 - targetShare)",
+    "extras": [
+      "healthy fat sources",
+      "water and unsweetened beverages",
+      "dairy products",
+      "juice and sweet drinks",
+      "refined grains"
+    ],
+    "ui_units": [
+      "grams",
+      "milliliters",
+      "percent of core plate"
+    ],
+    "limitations": [
+      "food-group classification depends on product metadata and fallback name heuristics",
+      "visual balance is a structural estimate, not HEI"
+    ]
+  },
+  "hei_2020": {
+    "method": "Healthy Eating Index style density scoring",
+    "internal_units": [
+      "cup-equivalents",
+      "ounce-equivalents",
+      "per 1000 kcal",
+      "percent of energy"
+    ],
+    "outputs": [
+      "component points",
+      "total score / 100"
+    ],
+    "note": "HEI remains an expert layer. Harvard Plate uses grams for user-facing plate proportions.",
+    "wave2_pass1_methodology_audit": {
+      "fruit_equivalents": "FPED Appendix 8 gram weights used for canned fruit, applesauce and named dried fruits; explicit proxies retained for products without an exact row.",
+      "meat_equivalents": "Cooked high-fat meat uses lean fraction (100-fat)/25.72; raw pork uses 75% cooking yield before lean-fraction conversion; lean cooked meat uses 100/28.35.",
+      "mixed_product": "Fruit-nut mix decomposed into 70 g dried fruit and 30 g nuts per 100 g."
+    }
+  },
+  "data_quality": {
+    "method": "coverage by product-card fields used in calculations",
+    "groups": [
+      "energy and macronutrients",
+      "core micronutrients",
+      "HEI fields",
+      "Harvard Plate classification"
+    ],
+    "energy_check": "compare product kcal with protein*4 + carbohydrates*4 + fat*9 when fields are present; respect explicit ethanol/polyol and other documented energy-validation exceptions",
+    "limitations": [
+      "coverage is database completeness, not diet quality",
+      "missing micronutrient fields can make totals appear lower than real intake",
+      "proxy, recipe and label-model records remain explicitly marked and should not be interpreted as laboratory-exact values"
+    ]
+  },
+  "performance": {
+    "runtime_bootstrap": "00-runtime-bootstrap-v5.js",
+    "data_loading": "11 canonical product chunks with JSON fallback; each active hosting file remains below 1 MB",
+    "pdf_export": "html2pdf is loaded on demand only",
+    "dev_tests": "diagnostic scripts load only with ?dev=1 or ?selftest=1"
+  },
+  "updated_at": "2026-07-12",
+  "report_engine": {
+    "method": "cached report model + native print/PDF window",
+    "outputs": [
+      "summary",
+      "needs",
+      "macros",
+      "micronutrients",
+      "harvard_plate",
+      "HEI",
+      "ration",
+      "data_quality"
+    ],
+    "performance_note": "report HTML is prebuilt after state changes and reused on print/PDF actions"
+  },
+  "ui_visual_model": "Harvard Plate diagram remaster: fixed targets, live fill, overfill rim, outside labels",
+  "app_version": "v5.3.145",
+  "updated_for": "1100-product database; 40 exact-SKU popular confectionery entries added",
+  "build_note": "Added 40 branded confectionery products. Label energy, protein, fat and carbohydrate values are preserved for each exact SKU. Reference piece mass is exact for individual packs and explicitly approximate when derived from an official product-specific piece-count reference. No calculation formulas or 118 composite models were changed.",
+  "portion_and_state_rules": {
+    "drained_weight_v5_3_125": {
+      "default": "For products stored in disposable free liquid, grams refer to drained edible solids.",
+      "excluded": "Free brine, packing water, free syrup, free oil and inedible pits/bones.",
+      "retained": "Sodium/sugar absorbed into the food and residual oil adhering after draining.",
+      "exception": "Edible tomato sauce and other declared recipe sauces remain included in the entered mass."
+    },
+    "drained_nutrition_source_basis_v5_3_126": {
+      "entered_grams": "Actually eaten edible portion after draining free liquid and excluding pits/bones.",
+      "nutrition_values": "Per 100 g of that same edible portion.",
+      "label_rule": "A package nutrition panel is used as an exact drained source only when that basis is explicit; otherwise it is a cross-check for a canonical drained model.",
+      "retained": "Salt, sugar and oil retained by the food after draining remain included.",
+      "exception": "Edible tomato sauce or another recipe sauce remains included when normally eaten."
+    }
+  },
+  "regional_micronutrients": {
+    "scope": "Adults 18 years and older. Children use embedded Russian age- and sex-specific tables; the US/EU switch does not alter child targets.",
+    "us": "US/Canada Dietary Reference Intakes: RDA or AI plus UL where established.",
+    "eu": "EFSA Dietary Reference Values: PRI or AI plus UL where established; safe levels are shown separately and are not relabelled as UL.",
+    "demographic_resolution": [
+      "sex",
+      "age",
+      "region"
+    ],
+    "examples": {
+      "vitamin_c_mg_adult": "US men/women 90/75; EU men/women 110/95",
+      "iron_mg_adult": "US men/women 8/18; EU men/women 11/16 for women through 50",
+      "magnesium_mg_adult": "US 400–420 men, 310–320 women; EU 350 men, 300 women",
+      "vitamin_b12_mcg_adult": "US 2.4; EU 4.0",
+      "potassium_mg_adult": "US men/women 3400/2600; EU 3500",
+      "vitamin_b6_ul_mg": "US 100; EU 12",
+      "vitamin_e_ul_mg": "US 1000 for supplemental synthetic forms; EU 300 total",
+      "vitamin_c_and_iron_eu_safety": "No EFSA UL used; iron safe level 40 mg/day is displayed separately."
+    },
+    "not_changed_by_switch": [
+      "calories",
+      "protein",
+      "fat",
+      "carbohydrates",
+      "fluid",
+      "HEI-2020",
+      "Harvard Plate",
+      "food composition data"
+    ]
+  },
+  "composite_foods_v5_3_143": {
+    "root_count": 118,
+    "newly_decomposed_roots": [
+      "squid_rings_breaded",
+      "mussels_cream_sauce",
+      "seafood_cocktail_cooked"
+    ],
+    "calculation_route": "root summary for display; editable child components for HEI, Harvard plate and nutrient recalculation",
+    "double_counting_guard": true
+  },
+  "product_database_version": "v5.3.145"
+}

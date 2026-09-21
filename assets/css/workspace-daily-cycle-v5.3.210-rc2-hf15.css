@@ -1,0 +1,35 @@
+/* Nutrition Calculator v5.3.210 RC2 HF15 — stage 4.6 daily-cycle polish. */
+.search-added-toast.show{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+}
+.search-added-toast__message{min-width:0;line-height:1.35;}
+.search-added-toast__action{
+  min-width:0!important;
+  min-height:44px!important;
+  padding:8px 12px!important;
+  border:1px solid currentColor!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:inherit!important;
+  box-shadow:none!important;
+  white-space:nowrap;
+}
+.search-added-toast__action:focus-visible{outline:3px solid currentColor;outline-offset:2px;}
+html[data-navigation-shell="workspace"]{
+  scroll-padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));
+}
+html[data-navigation-shell="workspace"] #globalSearchSection,
+html[data-navigation-shell="workspace"] #rationSection,
+html[data-navigation-shell="workspace"] #workspaceOverviewPanel,
+html[data-navigation-shell="workspace"] #workspaceCorrectionPanel,
+html[data-navigation-shell="workspace"] #workspaceReportPanel{
+  scroll-margin-bottom:calc(96px + env(safe-area-inset-bottom,0px));
+}
+@media(max-width:360px){
+  .search-added-toast.show{grid-template-columns:1fr;}
+  .search-added-toast__action{width:100%;white-space:normal;}
+}
+@media print{.search-added-toast{display:none!important;}}

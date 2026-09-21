@@ -1,0 +1,328 @@
+/* nutrition calculator v5.3.146 — 2-bit retro theme foundation, pass 1
+   Scope: screen-only shell, cards, controls and fields.
+   All selectors are isolated under html[data-theme="retro-2bit"].
+   Calculation, layout structure, charts and print/PDF logic are intentionally untouched. */
+
+@media screen {
+  html[data-theme="retro-2bit"] {
+    --retro-ink: #111111;
+    --retro-dark: #4a4a4a;
+    --retro-light: #b8b8b8;
+    --retro-paper: #f4f4ef;
+    --retro-unit: 4px;
+    color-scheme: light;
+  }
+
+  html[data-theme="retro-2bit"] body {
+    color: var(--retro-ink);
+    background-color: var(--retro-light);
+    background-image:
+      linear-gradient(90deg, var(--retro-dark) 1px, transparent 1px),
+      linear-gradient(var(--retro-dark) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+
+  html[data-theme="retro-2bit"] body,
+  html[data-theme="retro-2bit"] button,
+  html[data-theme="retro-2bit"] input,
+  html[data-theme="retro-2bit"] select,
+  html[data-theme="retro-2bit"] textarea {
+    font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent {
+    background: var(--retro-paper);
+    border-inline: 3px solid var(--retro-ink);
+    box-shadow: 8px 0 0 var(--retro-dark), -8px 0 0 var(--retro-paper);
+  }
+
+  html[data-theme="retro-2bit"] header {
+    position: relative;
+    padding: 14px;
+    border: 3px solid var(--retro-ink);
+    border-radius: 0;
+    background: var(--retro-paper);
+    box-shadow: 6px 6px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] header::before {
+    content: "SYS/UI 2-BIT";
+    position: absolute;
+    inset: -12px auto auto 12px;
+    padding: 1px 6px;
+    border: 2px solid var(--retro-ink);
+    background: var(--retro-paper);
+    color: var(--retro-ink);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .09em;
+    line-height: 1.4;
+  }
+
+  html[data-theme="retro-2bit"] .title,
+  html[data-theme="retro-2bit"] h1,
+  html[data-theme="retro-2bit"] h2,
+  html[data-theme="retro-2bit"] h3,
+  html[data-theme="retro-2bit"] strong {
+    color: var(--retro-ink);
+    text-shadow: none;
+  }
+
+  html[data-theme="retro-2bit"] .title {
+    letter-spacing: -.04em;
+    text-transform: uppercase;
+  }
+
+  html[data-theme="retro-2bit"] .card,
+  html[data-theme="retro-2bit"] .total-card,
+  html[data-theme="retro-2bit"] .kpi .tile,
+  html[data-theme="retro-2bit"] .accordion-item,
+  html[data-theme="retro-2bit"] details.fold,
+  html[data-theme="retro-2bit"] dialog {
+    border: 2px solid var(--retro-ink);
+    border-radius: 0;
+    background: var(--retro-paper);
+    box-shadow: 5px 5px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] .card + .card,
+  html[data-theme="retro-2bit"] section.card {
+    margin-top: 20px;
+  }
+
+  html[data-theme="retro-2bit"] .accordion-head,
+  html[data-theme="retro-2bit"] details.fold > summary {
+    border-radius: 0;
+    background: var(--retro-light);
+    color: var(--retro-ink);
+    box-shadow: inset 0 -2px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] .accordion-body,
+  html[data-theme="retro-2bit"] details.fold > div,
+  html[data-theme="retro-2bit"] .ration-details td,
+  html[data-theme="retro-2bit"] .mini-nutrients {
+    background: var(--retro-paper);
+  }
+
+  html[data-theme="retro-2bit"] button,
+  html[data-theme="retro-2bit"] .btn,
+  html[data-theme="retro-2bit"] [role="button"] {
+    min-height: 40px;
+    border: 2px solid var(--retro-ink);
+    border-radius: 0;
+    background: var(--retro-ink);
+    color: var(--retro-paper);
+    box-shadow: 3px 3px 0 var(--retro-dark);
+    text-shadow: none;
+    transition: transform 80ms linear, box-shadow 80ms linear, background-color 80ms linear;
+  }
+
+  html[data-theme="retro-2bit"] button:hover,
+  html[data-theme="retro-2bit"] .btn:hover,
+  html[data-theme="retro-2bit"] [role="button"]:hover {
+    background: var(--retro-dark);
+    border-color: var(--retro-ink);
+    color: var(--retro-paper);
+  }
+
+  html[data-theme="retro-2bit"] button:active,
+  html[data-theme="retro-2bit"] .btn:active,
+  html[data-theme="retro-2bit"] [role="button"]:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] button.secondary,
+  html[data-theme="retro-2bit"] button.ghost,
+  html[data-theme="retro-2bit"] .btn.secondary,
+  html[data-theme="retro-2bit"] .seg button,
+  html[data-theme="retro-2bit"] .theme-switcher__button {
+    background: var(--retro-paper);
+    color: var(--retro-ink);
+  }
+
+  html[data-theme="retro-2bit"] button.danger {
+    background: var(--retro-dark);
+    color: var(--retro-paper);
+  }
+
+  html[data-theme="retro-2bit"] button:disabled,
+  html[data-theme="retro-2bit"] .btn:disabled {
+    background: var(--retro-light);
+    color: var(--retro-dark);
+    box-shadow: 2px 2px 0 var(--retro-light);
+  }
+
+  html[data-theme="retro-2bit"] input[type="number"],
+  html[data-theme="retro-2bit"] input[type="text"],
+  html[data-theme="retro-2bit"] input[type="search"],
+  html[data-theme="retro-2bit"] input[type="email"],
+  html[data-theme="retro-2bit"] select,
+  html[data-theme="retro-2bit"] textarea,
+  html[data-theme="retro-2bit"] .norm-input {
+    border: 2px solid var(--retro-ink);
+    border-radius: 0;
+    background: var(--retro-paper);
+    color: var(--retro-ink);
+    box-shadow: inset 3px 3px 0 var(--retro-light);
+    caret-color: var(--retro-ink);
+  }
+
+  html[data-theme="retro-2bit"] input[readonly],
+  html[data-theme="retro-2bit"] input:disabled,
+  html[data-theme="retro-2bit"] select:disabled,
+  html[data-theme="retro-2bit"] textarea:disabled {
+    background: var(--retro-light);
+    color: var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] button:focus-visible,
+  html[data-theme="retro-2bit"] .btn:focus-visible,
+  html[data-theme="retro-2bit"] input:focus-visible,
+  html[data-theme="retro-2bit"] select:focus-visible,
+  html[data-theme="retro-2bit"] textarea:focus-visible,
+  html[data-theme="retro-2bit"] summary:focus-visible {
+    outline: 3px dashed var(--retro-ink);
+    outline-offset: 3px;
+    box-shadow: none;
+  }
+
+  html[data-theme="retro-2bit"] .seg {
+    padding: 3px;
+    border: 2px solid var(--retro-ink);
+    border-radius: 0;
+    background: var(--retro-light);
+  }
+
+  html[data-theme="retro-2bit"] .seg button.active,
+  html[data-theme="retro-2bit"] .theme-switcher__button[aria-pressed="true"] {
+    background: var(--retro-ink);
+    color: var(--retro-paper);
+    box-shadow: none;
+  }
+
+  html[data-theme="retro-2bit"] .pill,
+  html[data-theme="retro-2bit"] .chip,
+  html[data-theme="retro-2bit"] .badge,
+  html[data-theme="retro-2bit"] .step-badge {
+    border: 2px solid var(--retro-ink);
+    border-radius: 0;
+    background: var(--retro-light);
+    color: var(--retro-ink);
+    box-shadow: 2px 2px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] .muted,
+  html[data-theme="retro-2bit"] .small,
+  html[data-theme="retro-2bit"] .footer-note,
+  html[data-theme="retro-2bit"] label {
+    color: var(--retro-dark);
+    opacity: 1;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 6px 8px;
+    min-width: 212px;
+    padding: 6px;
+    border: 2px solid var(--retro-ink);
+    background: var(--retro-light);
+    box-shadow: 3px 3px 0 var(--retro-dark);
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__label {
+    grid-column: 1 / -1;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__controls {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  html[data-theme="retro-2bit"] .theme-switcher__button {
+    min-height: 34px;
+    padding: 7px 9px;
+    font-size: 11px;
+    box-shadow: none;
+  }
+
+  html:not([data-theme="retro-2bit"]) .theme-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 7px;
+    border: 1px solid var(--border, #d9e2ec);
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  html:not([data-theme="retro-2bit"]) .theme-switcher__label {
+    font-size: 11px;
+    color: #526174;
+  }
+
+  html:not([data-theme="retro-2bit"]) .theme-switcher__controls {
+    display: flex;
+    gap: 3px;
+  }
+
+  html:not([data-theme="retro-2bit"]) .theme-switcher__button {
+    min-height: 32px;
+    padding: 6px 9px;
+    border-radius: 9px;
+    box-shadow: none;
+    font-size: 11px;
+  }
+
+  html:not([data-theme="retro-2bit"]) .theme-switcher__button[aria-pressed="true"] {
+    background: var(--primary, #0b61d6);
+    color: #fff;
+  }
+
+  @media (max-width: 720px) {
+    html[data-theme="retro-2bit"] body { padding: 8px; }
+    html[data-theme="retro-2bit"] #mainContent {
+      padding-inline: 8px;
+      border-inline-width: 2px;
+      box-shadow: 4px 0 0 var(--retro-dark), -4px 0 0 var(--retro-paper);
+    }
+    html[data-theme="retro-2bit"] header {
+      align-items: stretch;
+      padding: 12px 10px;
+      box-shadow: 4px 4px 0 var(--retro-dark);
+    }
+    html[data-theme="retro-2bit"] header .toolbar { width: 100%; }
+    html[data-theme="retro-2bit"] .theme-switcher { width: 100%; min-width: 0; }
+    html[data-theme="retro-2bit"] .card,
+    html[data-theme="retro-2bit"] .total-card,
+    html[data-theme="retro-2bit"] .kpi .tile,
+    html[data-theme="retro-2bit"] .accordion-item,
+    html[data-theme="retro-2bit"] details.fold {
+      box-shadow: 3px 3px 0 var(--retro-dark);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html[data-theme="retro-2bit"] *,
+    html[data-theme="retro-2bit"] *::before,
+    html[data-theme="retro-2bit"] *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+@media print {
+  .theme-switcher { display: none !important; }
+}

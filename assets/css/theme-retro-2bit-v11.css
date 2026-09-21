@@ -1,0 +1,260 @@
+/* nutrition calculator v5.3.164 — retro clarity patch
+   Scope: only the 2-bit theme. Fixes three issues reported from live mobile use:
+   1) Gemini working-state stripes and missing motion cue;
+   2) unreadable dark backgrounds inside strict Harvard plate sector cards;
+   3) clipped / awkward mobile layout inside HEI first-step cards.
+   Logic is unchanged. */
+@media screen {
+  html[data-theme="retro-2bit"] {
+    --retro-gemini-motion-duration-v164: 1.45s;
+  }
+
+  @keyframes retroGeminiScanV164 {
+    0% { transform: translateX(-130%); }
+    100% { transform: translateX(340%); }
+  }
+  @keyframes retroGeminiSpinV164 {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ------------------------------------------------------------------
+     1) Gemini: remove reading-obstructing hatch background and add a
+        living motion indicator so the interface never looks frozen.
+     ------------------------------------------------------------------ */
+  html[data-theme="retro-2bit"] .gemini-ration-import__status[data-state="working"],
+  html[data-theme="retro-2bit"] .gemini-ai-status[data-state="working"],
+  html[data-theme="retro-2bit"] .gemini-ration-import__privacy,
+  html[data-theme="retro-2bit"] .gemini-ai-privacy,
+  html[data-theme="retro-2bit"] .gemini-ai-caution,
+  html[data-theme="retro-2bit"] .gemini-ai-strategy--caution {
+    color: var(--retro-ink) !important;
+    border: 1px solid var(--retro-dark) !important;
+    border-left: 4px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-import__status[data-state="working"],
+  html[data-theme="retro-2bit"] .gemini-ai-status[data-state="working"] {
+    position: relative;
+    min-height: 44px;
+    padding: 10px 40px 10px 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-import__status[data-state="working"]::after,
+  html[data-theme="retro-2bit"] .gemini-ai-status[data-state="working"]::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 11px;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--retro-ink);
+    border-right-color: transparent;
+    animation: retroGeminiSpinV164 1s linear infinite;
+    transform-origin: 50% 50%;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress,
+  html[data-theme="retro-2bit"] .gemini-ai-progress {
+    display: block !important;
+    position: relative;
+    height: 12px !important;
+    margin-top: 8px !important;
+    border: 1px solid var(--retro-ink) !important;
+    border-radius: 0 !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress[aria-hidden="true"],
+  html[data-theme="retro-2bit"] .gemini-ai-progress[aria-hidden="true"] {
+    display: none !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress::before,
+  html[data-theme="retro-2bit"] .gemini-ai-progress::before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: 0;
+    width: 32%;
+    background: var(--retro-ink);
+    animation: retroGeminiScanV164 var(--retro-gemini-motion-duration-v164) steps(18, end) infinite;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress span,
+  html[data-theme="retro-2bit"] .gemini-ai-progress span {
+    display: none !important;
+  }
+
+  /* ------------------------------------------------------------------
+     2) Strict Harvard plate: keep sector cards readable in retro mode.
+        The generic open-summary dark fill was too aggressive here.
+     ------------------------------------------------------------------ */
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-sector > summary[data-hp-sector-card],
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-item > summary {
+    color: var(--retro-ink) !important;
+    border: 1px solid var(--retro-dark) !important;
+    border-radius: 0 !important;
+    background: var(--retro-light) !important;
+    background-image: none !important;
+    box-shadow: inset 0 -1px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-sector[open] > summary[data-hp-sector-card],
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-sector[data-hpacc-selected="1"] > summary[data-hp-sector-card],
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-item[open] > summary {
+    color: var(--retro-ink) !important;
+    border-color: var(--retro-dark) !important;
+    border-bottom: 1px solid var(--retro-dark) !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: inset 0 -1px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-sector > summary[data-hp-sector-card] *,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-item > summary * {
+    color: inherit !important;
+    border-color: currentColor !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-toggle-text,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-value,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-target {
+    color: var(--retro-ink) !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    border: 1px solid var(--retro-dark) !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-main strong,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-main small,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-section-head h3,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-section-head p,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-sector-conclusion,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-sector-conclusion strong,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-extra-cluster > h4,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-extra-cluster > p,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .harvard-plate-caption {
+    color: var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-chevron {
+    color: var(--retro-ink) !important;
+    border: 1px solid var(--retro-dark) !important;
+    background: var(--retro-paper) !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-body,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-inline-feedback,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-sector-conclusion,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-extra-cluster {
+    color: var(--retro-ink) !important;
+    background: var(--retro-paper) !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  /* ------------------------------------------------------------------
+     3) HEI first-step cards: prevent narrow / clipped mobile composition.
+     ------------------------------------------------------------------ */
+  html[data-theme="retro-2bit"] #heiLevers .hei-p1-action {
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  html[data-theme="retro-2bit"] #heiLevers .hei-p1-step {
+    margin-top: 10px !important;
+  }
+
+  html[data-theme="retro-2bit"] #heiLevers .hei-p1-calculation > summary {
+    display: block !important;
+    padding: 8px 10px !important;
+    border: 1px solid var(--retro-dark) !important;
+    background: var(--retro-paper) !important;
+    color: var(--retro-ink) !important;
+  }
+
+  @media (max-width: 760px) {
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-action-head {
+      display: grid !important;
+      grid-template-columns: 40px minmax(0, 1fr) !important;
+      align-items: start !important;
+      gap: 9px 10px !important;
+    }
+
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-action-head > div {
+      min-width: 0 !important;
+    }
+
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-order {
+      width: 34px !important;
+      height: 34px !important;
+      align-self: start !important;
+    }
+
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-potential {
+      grid-column: 1 / -1 !important;
+      justify-self: start !important;
+      width: auto !important;
+      max-width: 100% !important;
+      margin-top: 1px !important;
+      white-space: normal !important;
+      text-align: left !important;
+      line-height: 1.35 !important;
+    }
+
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-action h4,
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-reason,
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-step strong,
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-calculation,
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-calculation dd {
+      max-width: none !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    html[data-theme="retro-2bit"] #heiLevers .hei-p1-calculation dl > div {
+      grid-template-columns: 1fr !important;
+      gap: 3px !important;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html[data-theme="retro-2bit"] .gemini-ration-import__status[data-state="working"]::after,
+    html[data-theme="retro-2bit"] .gemini-ai-status[data-state="working"]::after,
+    html[data-theme="retro-2bit"] .gemini-ration-import__progress::before,
+    html[data-theme="retro-2bit"] .gemini-ai-progress::before {
+      animation: none !important;
+    }
+  }
+}
+
+
+/* v5.3.183: the JSON export action is always a labelled action, never an icon-only control. */
+@media screen {
+  html[data-theme="retro-2bit"] #exportRationJsonBtn.retro-icon-only {
+    width:100% !important;
+    min-width:0 !important;
+    padding-inline:12px !important;
+    overflow:visible !important;
+    color:var(--retro-paper) !important;
+    text-shadow:none !important;
+  }
+  html[data-theme="retro-2bit"] #exportRationJsonBtn.retro-icon-only::before {
+    position:static !important;
+    inset:auto !important;
+    margin-inline-end:8px !important;
+    transform:none !important;
+  }
+}

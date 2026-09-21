@@ -1,0 +1,168 @@
+/* HF8 ration and concise overview: profile and needs live in their own route. */
+#workspaceRationInlineSummary,#workspaceOverviewPanel,#workspaceRationSecondary,#workspaceRationEmpty{display:none}
+
+html[data-navigation-shell="workspace"] #workspaceRationInlineSummary{
+  grid-column:1/-1;display:grid;gap:12px;padding-top:12px;border-top:1px solid #dbe6f2
+}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__head>div{display:grid;gap:2px;min-width:0}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__head span{color:#60738c;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__head strong{color:#17243a;font-size:17px;line-height:1.2}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__head small{color:#64748b;font-size:12px;line-height:1.35}
+html[data-navigation-shell="workspace"] #workspaceRationAttention{
+  min-height:38px!important;max-width:290px;padding:7px 11px!important;border:1px solid #c9dced!important;border-radius:10px!important;background:#fff!important;color:#31577f!important;box-shadow:none!important;font-size:12px!important;text-align:center
+}
+html[data-navigation-shell="workspace"] #workspaceRationAttention.has-attention{border-color:#edc16b!important;background:#fff8e8!important;color:#80520c!important}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics>div{
+  display:grid;gap:2px;min-width:0;padding:10px 11px;border:1px solid #dce7f2;border-radius:11px;background:#fff
+}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics span{color:#64748b;font-size:11px;font-weight:700}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics strong{overflow:hidden;color:#183654;font-size:16px;line-height:1.15;text-overflow:ellipsis;white-space:nowrap}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics small{color:#7b8da2;font-size:10.5px}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__actions{display:flex;gap:8px;flex-wrap:wrap}
+html[data-navigation-shell="workspace"] .workspace-ration-inline__actions button{min-height:39px!important;padding:8px 13px!important;font-size:13px!important}
+
+/* The context header becomes the true compact ration header. */
+html[data-navigation-route="ration"] #navigationShellContext{margin-bottom:12px}
+html[data-navigation-route="ration"] #navigationShellRationKpi{display:none!important}
+
+/* Ration route order: action first, working list second, secondary controls last. */
+html[data-navigation-route="ration"] #globalSearchSection{order:10}
+html[data-navigation-route="ration"] #rationSection{order:20}
+html[data-navigation-route="ration"] #workspaceRationSecondary{order:30}
+html[data-navigation-route="ration"] #geminiRationImportSection{order:50}
+html[data-navigation-route="ration"] #rc2AlternativeInput{order:51}
+html[data-navigation-route="ration"] #additionalToolsSection{order:52}
+
+html[data-navigation-route="ration"] #globalSearchSection,
+html[data-navigation-route="ration"] #rationSection{margin:0 0 12px!important}
+html[data-navigation-route="ration"] #globalSearchSection{padding:16px!important}
+html[data-navigation-route="ration"] #globalSearchSection .search-hero-head{margin-bottom:10px}
+html[data-navigation-route="ration"] #globalSearchSection .search-lead{max-width:760px;margin-top:4px;font-size:13px;line-height:1.4}
+html[data-navigation-route="ration"] #globalSearchSection .search-field-hint{font-size:11.5px}
+html[data-navigation-route="ration"] #globalSearchSection .search-db-count{align-self:start}
+html[data-navigation-route="ration"] #rationSection{padding:16px!important}
+html[data-navigation-route="ration"] #rationSection .ration-subtitle{font-size:13px;line-height:1.4}
+html[data-navigation-route="ration"] #rationSection #rationUiLegend{display:none!important}
+html[data-navigation-route="ration"] #rationSection>.toolbar{justify-content:flex-start!important;padding-top:10px;border-top:1px solid #e6edf5}
+html[data-navigation-route="ration"] #rationSection>.toolbar button:not(#clearRationBtn){display:none!important}
+html[data-navigation-route="ration"] #rationSection>.footer-note{display:none}
+html[data-navigation-route="ration"] #rationSection #clearRationBtn{min-height:38px!important;padding:7px 11px!important;background:#fff7f7!important;color:#a33a3a!important;border:1px solid #f0caca!important;box-shadow:none!important}
+
+html[data-navigation-route="ration"] #workspaceRationEmpty{display:grid;justify-items:start;gap:7px;margin:8px 0 12px;padding:18px;border:1px dashed #b9cce0;border-radius:14px;background:#f7fbff}
+html[data-navigation-route="ration"] #workspaceRationEmpty[hidden]{display:none!important}
+html[data-navigation-route="ration"] #workspaceRationEmpty strong{color:#1c334e;font-size:16px}
+html[data-navigation-route="ration"] #workspaceRationEmpty p{margin:0;color:#64748b;font-size:13px;line-height:1.45}
+html[data-navigation-route="ration"] #workspaceRationEmpty button{min-height:38px!important;padding:7px 12px!important;font-size:13px!important}
+html[data-navigation-route="ration"] #rationTable.workspace-ration-table-empty{display:none!important}
+
+html[data-navigation-route="ration"] #workspaceRationSecondary{display:block!important;margin:0 0 12px!important;padding:0!important;overflow:hidden}
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;cursor:pointer;list-style:none}
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary::-webkit-details-marker{display:none}
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary>span{display:grid;gap:2px}
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary strong{color:#203650;font-size:14px}
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary small{color:#596d84;font-size:11.5px;line-height:1.35}
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary b{color:#0b61d6;font-size:12px}
+html[data-navigation-route="ration"] #workspaceRationSecondary[open]>summary b{font-size:0}
+html[data-navigation-route="ration"] #workspaceRationSecondary[open]>summary b:after{content:"Свернуть";font-size:12px}
+html[data-navigation-route="ration"] .workspace-ration-secondary__note{padding:0 16px 14px;color:#64748b;font-size:12px;line-height:1.45}
+html[data-navigation-route="ration"][data-workspace-secondary-open="0"] #geminiRationImportSection,
+html[data-navigation-route="ration"][data-workspace-secondary-open="0"] #rc2AlternativeInput,
+html[data-navigation-route="ration"][data-workspace-secondary-open="0"] #additionalToolsSection,
+html[data-navigation-route="ration"]:not([data-workspace-secondary-open]) #geminiRationImportSection,
+html[data-navigation-route="ration"]:not([data-workspace-secondary-open]) #rc2AlternativeInput,
+html[data-navigation-route="ration"]:not([data-workspace-secondary-open]) #additionalToolsSection{display:none!important}
+
+
+/* A purpose-built overview replaces reuse of the long report blocks. */
+html[data-navigation-route="analysis/overview"] #workspaceOverviewPanel{display:grid!important;gap:16px;margin:0 0 14px;padding:18px!important}
+.workspace-overview__head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+.workspace-overview__head>div{min-width:0}
+.workspace-overview__head>div>span,.workspace-overview__section-head span{display:block;color:#60738c;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.workspace-overview__head h2{margin:2px 0 5px;color:#17243a;font-size:22px;line-height:1.18}
+.workspace-overview__head p{max-width:790px;margin:0;color:#52667e;font-size:14px;line-height:1.48}
+.workspace-overview__head>button{flex:0 0 auto;min-height:39px!important;padding:7px 12px!important;font-size:13px!important}
+.workspace-overview__metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.workspace-overview__metrics article{display:grid;gap:3px;padding:13px;border:1px solid #dbe6f1;border-radius:13px;background:#f9fbfe}
+.workspace-overview__metrics span{color:#64748b;font-size:11px;font-weight:750}
+.workspace-overview__metrics strong{color:#183654;font-size:21px;line-height:1.15}
+.workspace-overview__metrics small{color:#596d84;font-size:11px;line-height:1.3}
+.workspace-overview__issues{display:grid;gap:10px}
+.workspace-overview__section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;padding-top:2px}
+.workspace-overview__section-head h3{margin:2px 0 0;color:#17243a;font-size:18px}
+.workspace-overview__section-head>small{color:#596d84;font-size:12px}
+#workspaceOverviewIssueList{display:grid;gap:8px}
+.workspace-issue{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;padding:12px;border:1px solid #dde6f0;border-radius:12px;background:#fff}
+.workspace-issue>span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#eaf2fb;color:#31577f;font-size:12px;font-weight:800}
+.workspace-issue strong{display:block;color:#263a52;font-size:14px;line-height:1.35}
+.workspace-issue p{margin:3px 0 0;color:#5e7188;font-size:12.5px;line-height:1.42}
+.workspace-issue small{display:block;margin-top:4px;color:#7b5d1e;font-size:11.5px;line-height:1.35}
+.workspace-issue.is-critical{border-color:#efc1c1;background:#fff8f8}.workspace-issue.is-critical>span{background:#f8dada;color:#8c2424}
+.workspace-issue.is-high{border-color:#edcf91;background:#fffaf0}.workspace-issue.is-high>span{background:#f8e5b8;color:#80520c}
+.workspace-issue.is-low,.workspace-issue.is-structure{border-color:#cadbef;background:#f8fbff}
+.workspace-issue.is-ok{border-color:#c7dfcf;background:#f7fcf8}.workspace-issue.is-ok>span{background:#dcefe2;color:#2c6840}
+.workspace-overview__empty{display:grid;justify-items:start;gap:6px;padding:16px;border:1px dashed #b9cce0;border-radius:12px;background:#f7fbff}
+.workspace-overview__empty p{margin:0;color:#64748b;font-size:13px}.workspace-overview__empty button{min-height:38px!important;padding:7px 12px!important}
+.workspace-overview__quality{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:12px 14px;border:1px solid #dce6ef;border-radius:12px;background:#f7f9fc}
+.workspace-overview__quality strong{color:#30465f;font-size:13px}.workspace-overview__quality span{max-width:710px;color:#64748b;font-size:12px;line-height:1.42;text-align:right}
+.workspace-overview__actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:2px}.workspace-overview__actions button{min-height:40px!important;padding:8px 13px!important;font-size:13px!important}
+
+@media(max-width:860px){
+  html[data-navigation-shell="workspace"] #mainContent{display:flex!important;flex-direction:column!important}
+  html[data-navigation-shell="workspace"] #mainContent>header{order:-100}
+  html[data-navigation-shell="workspace"] #navigationShellContext{order:-90}
+  html[data-navigation-shell="workspace"] #navigationShell{order:1000}
+  html[data-navigation-shell="workspace"] #mainContent>.navshell-route-visible{width:100%;min-width:0}
+  html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-navigation-shell="workspace"] .workspace-ration-inline__head{display:grid;gap:8px}
+  html[data-navigation-shell="workspace"] #workspaceRationAttention{max-width:none;width:100%}
+  .workspace-overview__metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:560px){
+  html[data-navigation-shell="workspace"] #navigationShellContext{padding:12px!important}
+  html[data-navigation-shell="workspace"] #workspaceRationInlineSummary{gap:10px;padding-top:10px}
+  html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics{gap:6px}
+  html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics>div{padding:9px}
+  html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics strong{font-size:15px}
+  html[data-navigation-shell="workspace"] .workspace-ration-inline__actions{display:grid;grid-template-columns:1fr 1fr}
+  html[data-navigation-route="ration"] #globalSearchSection,html[data-navigation-route="ration"] #rationSection{padding:13px!important}
+  html[data-navigation-route="ration"] #globalSearchSection .search-hero-head{display:block}
+  html[data-navigation-route="ration"] #globalSearchSection .search-db-count{display:none}
+  html[data-navigation-route="ration"] #globalSearchSection .search-lead{font-size:12.5px}
+  html[data-navigation-route="ration"] #globalSearchSection .quick-searches{display:none}
+  .workspace-overview__head{display:grid;gap:10px}.workspace-overview__head>button{width:100%}
+  .workspace-overview__metrics{grid-template-columns:1fr 1fr;gap:7px}.workspace-overview__metrics article{padding:10px}.workspace-overview__metrics strong{font-size:18px}
+  .workspace-overview__quality{display:grid;gap:4px}.workspace-overview__quality span{text-align:left}
+  .workspace-overview__actions{display:grid;grid-template-columns:1fr}.workspace-overview__actions button{width:100%}
+}
+
+@media print{#workspaceRationInlineSummary,#workspaceOverviewPanel,#workspaceRationSecondary,#workspaceRationEmpty{display:none!important}}
+
+html[data-theme="retro-2bit"] #workspaceRationInlineSummary .workspace-ration-inline__metrics>div,
+html[data-theme="retro-2bit"] #workspaceOverviewPanel,
+html[data-theme="retro-2bit"] #workspaceRationSecondary,
+html[data-theme="retro-2bit"] #workspaceRationEmpty,
+html[data-theme="retro-2bit"] .workspace-overview__metrics article,
+html[data-theme="retro-2bit"] .workspace-issue{border-radius:0!important;box-shadow:3px 3px 0 rgba(10,31,56,.18)!important}
+
+/* HF8 review refinement: keep the ration summary in its own route, make settings
+   reserve real space on narrow screens, and keep legacy controls out of the
+   working surface until the user opens Settings. */
+html[data-navigation-shell="workspace"] #mainContent>header>.toolbar{display:none!important}
+html[data-navigation-shell="workspace"] #mainContent>header.navshell-settings-open>.toolbar{display:grid!important}
+html[data-navigation-shell="workspace"] #workspaceRationInlineSummary{display:none!important}
+html[data-navigation-shell="workspace"][data-navigation-route="ration"] #workspaceRationInlineSummary{display:grid!important}
+
+@media(max-width:430px){
+  html[data-navigation-shell="workspace"] .navigation-shell-context{grid-template-columns:minmax(0,1fr) auto!important}
+  html[data-navigation-shell="workspace"] .navigation-shell-context__copy{grid-column:1;grid-row:1;padding-right:0!important}
+  html[data-navigation-shell="workspace"] .navigation-shell-context__settings{position:static!important;grid-column:2;grid-row:1;align-self:start;justify-self:end;right:auto!important;margin:0!important}
+  html[data-navigation-shell="workspace"] .navigation-shell-context__views,
+  html[data-navigation-shell="workspace"] .navigation-shell-context__links,
+  html[data-navigation-shell="workspace"] #workspaceRationInlineSummary{grid-column:1/-1}
+}
+/* WCAG contrast refinement after automated review. */
+html[data-navigation-shell="workspace"] .workspace-ration-inline__metrics small,
+html[data-navigation-route="ration"] #workspaceRationSecondary>summary small{color:#566b83}

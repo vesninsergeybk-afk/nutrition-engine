@@ -1,0 +1,61 @@
+/* nutrition calculator v5.3.148 — optional 2-bit print/PDF theme, pass 3 */
+@page { size:A4; margin:13mm; }
+@media print {
+  html[data-theme="retro-2bit"],
+  html[data-theme="retro-2bit"] body {
+    color:#111111 !important;
+    background:#f4f4ef !important;
+    font-family:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace !important;
+    print-color-adjust:exact;
+    -webkit-print-color-adjust:exact;
+  }
+  html[data-theme="retro-2bit"] body { margin:0 !important; }
+  html[data-theme="retro-2bit"] #mainContent,
+  html[data-theme="retro-2bit"] .container { width:auto !important;max-width:none !important;border:0 !important;box-shadow:none !important;background:#f4f4ef !important; }
+  html[data-theme="retro-2bit"] header,
+  html[data-theme="retro-2bit"] .theme-switcher,
+  html[data-theme="retro-2bit"] .toolbar,
+  html[data-theme="retro-2bit"] button,
+  html[data-theme="retro-2bit"] .btn,
+  html[data-theme="retro-2bit"] .skip-link,
+  html[data-theme="retro-2bit"] nav.workflow-steps,
+  html[data-theme="retro-2bit"] #runtimeBootStatusOverlay { display:none !important; }
+  html[data-theme="retro-2bit"] h1,
+  html[data-theme="retro-2bit"] h2,
+  html[data-theme="retro-2bit"] h3 { color:#111111 !important;break-after:avoid; }
+  html[data-theme="retro-2bit"] h1 { border:4px solid #111111;padding:8px 10px;background:#b8b8b8 !important; }
+  html[data-theme="retro-2bit"] h2 { border-bottom:3px double #111111;padding-bottom:5px; }
+  html[data-theme="retro-2bit"] .card,
+  html[data-theme="retro-2bit"] .pdf-section,
+  html[data-theme="retro-2bit"] .nr-section,
+  html[data-theme="retro-2bit"] .total-card,
+  html[data-theme="retro-2bit"] details,
+  html[data-theme="retro-2bit"] .alert,
+  html[data-theme="retro-2bit"] .tile {
+    color:#111111 !important;
+    border:2px solid #111111 !important;
+    border-radius:0 !important;
+    background:#f4f4ef !important;
+    box-shadow:none !important;
+    break-inside:avoid;
+  }
+  html[data-theme="retro-2bit"] details { display:block !important; }
+  html[data-theme="retro-2bit"] details > summary { list-style:none !important;border-bottom:1px solid #4a4a4a;padding-bottom:4px; }
+  html[data-theme="retro-2bit"] table { width:100% !important;border-collapse:collapse !important; }
+  html[data-theme="retro-2bit"] th { color:#f4f4ef !important;background:#111111 !important;border:1px solid #111111 !important; }
+  html[data-theme="retro-2bit"] td { color:#111111 !important;background:#f4f4ef !important;border:1px solid #4a4a4a !important; }
+  html[data-theme="retro-2bit"] tbody tr:nth-child(even) td { background:#b8b8b8 !important; }
+  html[data-theme="retro-2bit"] .progress,
+  html[data-theme="retro-2bit"] [class*="track"],
+  html[data-theme="retro-2bit"] [class*="meter"] { border:1px solid #111111 !important;border-radius:0 !important;background:#f4f4ef !important; }
+  html[data-theme="retro-2bit"] .bar,
+  html[data-theme="retro-2bit"] [class*="fill"] { background:#4a4a4a !important; }
+  html[data-theme="retro-2bit"] svg,
+  html[data-theme="retro-2bit"] canvas,
+  html[data-theme="retro-2bit"] img { filter:grayscale(1) contrast(1.12); }
+  html[data-theme="retro-2bit"] [data-retro-icon]::before,
+  html[data-theme="retro-2bit"] [data-retro-section-icon]::before { display:none !important; }
+  html[data-theme="retro-2bit"] a { color:#111111 !important;text-decoration:underline !important; }
+  html[data-theme="retro-2bit"] .muted,
+  html[data-theme="retro-2bit"] small { color:#4a4a4a !important; }
+}

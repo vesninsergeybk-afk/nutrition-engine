@@ -1,0 +1,269 @@
+/* nutrition calculator v5.3.148 — 2-bit retro graphics, loader and indicators, pass 3
+   Screen-only visual layer. The DOM decorator adds data-retro-icon attributes only.
+   No calculation, product, HEI, profile or ration state is read or changed. */
+@media screen {
+  html[data-theme="retro-2bit"] {
+    --retro-icon-sprite: url("../icons/retro-2bit-icons-v1.png");
+    --retro-loader-sprite: url("../loader/loader-sprite-sheet-retro-2bit-v5.3.148.png");
+    --retro-checker: repeating-conic-gradient(var(--retro-paper) 0 25%, var(--retro-light) 0 50%) 0 0 / 8px 8px;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-icon]::before,
+  html[data-theme="retro-2bit"] [data-retro-section-icon]::before {
+    content:"";
+    display:inline-block;
+    width:16px;
+    height:16px;
+    flex:0 0 16px;
+    margin-inline-end:7px;
+    vertical-align:-3px;
+    background-image:var(--retro-icon-sprite);
+    background-repeat:no-repeat;
+    background-size:80px 64px;
+    background-position:var(--retro-icon-position,0 0);
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-icon="info"],
+  html[data-theme="retro-2bit"] [data-retro-icon="close"] { --retro-icon-position:0 0; }
+  html[data-theme="retro-2bit"] [data-retro-icon="close"] { --retro-icon-position:-16px 0; }
+  html[data-theme="retro-2bit"] [data-retro-icon="search"] { --retro-icon-position:-32px 0; }
+  html[data-theme="retro-2bit"] [data-retro-icon="add"] { --retro-icon-position:-48px 0; }
+  html[data-theme="retro-2bit"] [data-retro-icon="remove"] { --retro-icon-position:-64px 0; }
+  html[data-theme="retro-2bit"] [data-retro-icon="edit"] { --retro-icon-position:0 -16px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="print"] { --retro-icon-position:-16px -16px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="pdf"] { --retro-icon-position:-32px -16px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="calculate"] { --retro-icon-position:-48px -16px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="ration"] { --retro-icon-position:-64px -16px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="hei"] { --retro-icon-position:0 -32px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="norms"] { --retro-icon-position:-16px -32px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="matrix"] { --retro-icon-position:-32px -32px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="plate"] { --retro-icon-position:-48px -32px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="ai"] { --retro-icon-position:-64px -32px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="upload"] { --retro-icon-position:0 -48px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="camera"] { --retro-icon-position:-16px -48px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="audio"] { --retro-icon-position:-32px -48px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="reset"] { --retro-icon-position:-48px -48px; }
+  html[data-theme="retro-2bit"] [data-retro-icon="check"] { --retro-icon-position:-64px -48px; }
+
+  html[data-theme="retro-2bit"] button[data-retro-icon],
+  html[data-theme="retro-2bit"] .btn[data-retro-icon],
+  html[data-theme="retro-2bit"] [role="button"][data-retro-icon] {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:0;
+  }
+  html[data-theme="retro-2bit"] button[data-retro-icon]:not(.secondary):not(.ghost)::before,
+  html[data-theme="retro-2bit"] .btn[data-retro-icon]:not(.secondary):not(.ghost)::before {
+    filter:invert(1);
+  }
+  html[data-theme="retro-2bit"] button[data-retro-icon].secondary::before,
+  html[data-theme="retro-2bit"] button[data-retro-icon].ghost::before,
+  html[data-theme="retro-2bit"] .btn[data-retro-icon].secondary::before,
+  html[data-theme="retro-2bit"] .btn[data-retro-icon].ghost::before { filter:none; }
+
+  html[data-theme="retro-2bit"] .retro-icon-only {
+    position:relative;
+    width:40px !important;
+    min-width:40px !important;
+    padding:0 !important;
+    overflow:hidden;
+    color:transparent !important;
+    text-shadow:none !important;
+  }
+  html[data-theme="retro-2bit"] .retro-icon-only > * { visibility:hidden !important; }
+  html[data-theme="retro-2bit"] .retro-icon-only::before {
+    position:absolute;
+    inset:50% auto auto 50%;
+    margin:0;
+    transform:translate(-50%,-50%);
+    visibility:visible;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-section-icon] {
+    display:flex;
+    align-items:center;
+    gap:0;
+  }
+  html[data-theme="retro-2bit"] [data-retro-section-icon]::before {
+    width:20px;
+    height:20px;
+    flex-basis:20px;
+    background-size:100px 80px;
+    background-position:var(--retro-section-icon-position,0 0);
+  }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="calculate"] { --retro-section-icon-position:-60px -20px; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="search"] { --retro-section-icon-position:-40px 0; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="ration"] { --retro-section-icon-position:-80px -20px; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="hei"] { --retro-section-icon-position:0 -40px; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="norms"] { --retro-section-icon-position:-20px -40px; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="matrix"] { --retro-section-icon-position:-40px -40px; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="plate"] { --retro-section-icon-position:-60px -40px; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="ai"] { --retro-section-icon-position:-80px -40px; }
+  html[data-theme="retro-2bit"] [data-retro-section-icon="print"] { --retro-section-icon-position:-20px -20px; }
+
+  html[data-theme="retro-2bit"] input[type="checkbox"],
+  html[data-theme="retro-2bit"] input[type="radio"] {
+    appearance:none;
+    -webkit-appearance:none;
+    width:18px;
+    height:18px;
+    min-width:18px;
+    margin:0 7px 0 0;
+    border:2px solid var(--retro-ink);
+    border-radius:0;
+    background:var(--retro-paper);
+    box-shadow:2px 2px 0 var(--retro-dark);
+    vertical-align:-4px;
+  }
+  html[data-theme="retro-2bit"] input[type="radio"] { border-radius:50%; }
+  html[data-theme="retro-2bit"] input[type="checkbox"]:checked,
+  html[data-theme="retro-2bit"] input[type="radio"]:checked {
+    background:
+      linear-gradient(var(--retro-paper),var(--retro-paper)) center / 6px 6px no-repeat,
+      var(--retro-ink);
+  }
+  html[data-theme="retro-2bit"] input[type="checkbox"]:focus-visible,
+  html[data-theme="retro-2bit"] input[type="radio"]:focus-visible { outline:3px double var(--retro-ink); outline-offset:3px; }
+
+  html[data-theme="retro-2bit"] .progress,
+  html[data-theme="retro-2bit"] .hei-mobile-total-bar,
+  html[data-theme="retro-2bit"] .diet-domain-track,
+  html[data-theme="retro-2bit"] .gemini-ai-progress,
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress {
+    background-image:repeating-linear-gradient(90deg,transparent 0 7px,var(--retro-light) 7px 9px) !important;
+    image-rendering:pixelated;
+  }
+  html[data-theme="retro-2bit"] .progress .bar,
+  html[data-theme="retro-2bit"] .hei-mobile-total-bar i,
+  html[data-theme="retro-2bit"] .diet-domain-fill {
+    background-image:repeating-linear-gradient(90deg,var(--retro-ink) 0 6px,var(--retro-dark) 6px 8px) !important;
+  }
+  html[data-theme="retro-2bit"] .gemini-ai-progress span,
+  html[data-theme="retro-2bit"] .gemini-ration-import__progress span,
+  html[data-theme="retro-2bit"] .needs-age-profile-progress-track i {
+    clip-path:polygon(0 0,100% 0,100% 75%,75% 75%,75% 100%,0 100%);
+  }
+
+  html[data-theme="retro-2bit"] .diet-matrix-point-v5337,
+  html[data-theme="retro-2bit"] .diet-matrix-point,
+  html[data-theme="retro-2bit"] [class*="matrix-point"] {
+    border:3px solid var(--retro-ink) !important;
+    background:var(--retro-paper) !important;
+    box-shadow:0 0 0 3px var(--retro-light),5px 5px 0 var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] .diet-matrix-point-v5337::before,
+  html[data-theme="retro-2bit"] .diet-matrix-point-v5337::after {
+    content:"";
+    position:absolute;
+    background:var(--retro-ink);
+    pointer-events:none;
+  }
+  html[data-theme="retro-2bit"] .diet-matrix-point-v5337::before { width:2px;height:18px;left:50%;top:50%;transform:translate(-50%,-50%); }
+  html[data-theme="retro-2bit"] .diet-matrix-point-v5337::after { width:18px;height:2px;left:50%;top:50%;transform:translate(-50%,-50%); }
+
+  html[data-theme="retro-2bit"] .harvard-plate-score-ring,
+  html[data-theme="retro-2bit"] [class*="score-ring"] {
+    background:var(--retro-checker) !important;
+    border:4px solid var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .alert::before,
+  html[data-theme="retro-2bit"] [data-retro-state-glyph]::before {
+    content:attr(data-retro-state-glyph);
+    display:inline-grid;
+    place-items:center;
+    width:18px;
+    height:18px;
+    margin-inline-end:7px;
+    border:2px solid currentColor;
+    font:900 12px/1 ui-monospace,monospace;
+    vertical-align:middle;
+  }
+
+  /* Theme-specific loader: the runtime stages and real progress remain unchanged. */
+  html[data-theme="retro-2bit"] #runtimeBootStatusOverlay {
+    background:var(--retro-checker) !important;
+    backdrop-filter:none !important;
+    transition:opacity 120ms steps(2,end),visibility 120ms steps(2,end) !important;
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus {
+    color:var(--retro-ink) !important;
+    border:4px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    box-shadow:10px 10px 0 var(--retro-dark) !important;
+    font-family:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace !important;
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-figure {
+    border:3px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-light) !important;
+    box-shadow:inset 0 0 0 4px var(--retro-paper),4px 4px 0 var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-sprite {
+    background-image:var(--retro-loader-sprite) !important;
+    image-rendering:pixelated !important;
+    filter:contrast(1.08);
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-title,
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-primary,
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-percent { color:var(--retro-ink) !important; }
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-secondary,
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-foot,
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-step { color:var(--retro-dark) !important; }
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-stage {
+    color:var(--retro-paper) !important;
+    border:2px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-ink) !important;
+    box-shadow:3px 3px 0 var(--retro-dark);
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-cell {
+    height:16px !important;
+    border:2px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus .rbs-cell.on {
+    background:var(--retro-ink) !important;
+    box-shadow:inset -3px -3px 0 var(--retro-dark);
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus[data-kind="error"] {
+    color:var(--retro-paper) !important;
+    background:var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] #runtimeBootStatus[data-kind="error"] .rbs-title,
+  html[data-theme="retro-2bit"] #runtimeBootStatus[data-kind="error"] .rbs-primary,
+  html[data-theme="retro-2bit"] #runtimeBootStatus[data-kind="error"] .rbs-secondary,
+  html[data-theme="retro-2bit"] #runtimeBootStatus[data-kind="error"] .rbs-foot,
+  html[data-theme="retro-2bit"] #runtimeBootStatus[data-kind="error"] .rbs-percent,
+  html[data-theme="retro-2bit"] #runtimeBootStatus[data-kind="error"] .rbs-step { color:var(--retro-paper) !important; }
+
+  html[data-theme="retro-2bit"] .needs-first-toast.is-loader-handoff .needs-first-toast-card {
+    border-radius:0 !important;
+    border:3px solid var(--retro-ink) !important;
+    background:var(--retro-paper) !important;
+    box-shadow:6px 6px 0 var(--retro-dark) !important;
+  }
+  html[data-theme="retro-2bit"] .needs-first-step-icon {
+    border-radius:0 !important;
+    border:2px solid var(--retro-ink) !important;
+    background:var(--retro-light) !important;
+    box-shadow:3px 3px 0 var(--retro-dark) !important;
+  }
+
+  @media (prefers-reduced-motion:reduce) {
+    html[data-theme="retro-2bit"] #runtimeBootStatusOverlay,
+    html[data-theme="retro-2bit"] button,
+    html[data-theme="retro-2bit"] .btn { transition:none !important; animation:none !important; }
+  }
+
+  @media (max-width:760px) {
+    html[data-theme="retro-2bit"] [data-retro-section-icon]::before { width:18px;height:18px;flex-basis:18px;background-size:90px 72px; }
+    html[data-theme="retro-2bit"] .retro-icon-only { width:44px !important;min-width:44px !important; }
+    html[data-theme="retro-2bit"] #runtimeBootStatus { box-shadow:6px 6px 0 var(--retro-dark) !important; }
+  }
+}

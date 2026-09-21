@@ -1,0 +1,321 @@
+/* nutrition calculator v5.3.152 — 2-bit mobile hierarchy and explicit selection pass
+   Visual-only screen layer. */
+
+@media screen {
+  html[data-theme="retro-2bit"] .gemini-ration-draft__head #geminiRationDraftSummary {
+    border:2px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-light) !important;
+    color:var(--retro-ink) !important;
+    box-shadow:2px 2px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-included {
+    border:3px solid var(--retro-ink) !important;
+    background:var(--retro-paper) !important;
+    box-shadow:6px 6px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-excluded {
+    border:3px dashed var(--retro-dark) !important;
+    background:var(--retro-light) !important;
+    box-shadow:3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__include {
+    border:3px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-ink) !important;
+    color:var(--retro-paper) !important;
+    box-shadow:3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__include-box {
+    border:3px solid var(--retro-paper) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    box-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__include input:checked + .gemini-ration-draft-row__include-box {
+    border-color:var(--retro-paper) !important;
+    background:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__include input:checked + .gemini-ration-draft-row__include-box::after {
+    content:"✓";
+    color:var(--retro-ink) !important;
+    font-family:ui-monospace,"SFMono-Regular",Consolas,monospace !important;
+    font-size:24px !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__include-text,
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__include-state {
+    color:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-excluded .gemini-ration-draft-row__include {
+    border-color:var(--retro-dark) !important;
+    background:var(--retro-paper) !important;
+    color:var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-excluded .gemini-ration-draft-row__include-box {
+    border-color:var(--retro-ink) !important;
+    background:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-excluded .gemini-ration-draft-row__include-text,
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row.is-excluded .gemini-ration-draft-row__include-state {
+    color:var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] .gemini-ration-draft-row__include:focus-within {
+    outline:3px dashed var(--retro-ink) !important;
+    outline-offset:4px !important;
+  }
+
+  /* Strong, consistent hierarchy between major windows. */
+  html[data-theme="retro-2bit"] section.card,
+  html[data-theme="retro-2bit"] #needsCompact,
+  html[data-theme="retro-2bit"] #geminiRationImportSection,
+  html[data-theme="retro-2bit"] #globalSearchSection,
+  html[data-theme="retro-2bit"] #rationSection,
+  html[data-theme="retro-2bit"] #heiPanel,
+  html[data-theme="retro-2bit"] #totalsSection,
+  html[data-theme="retro-2bit"] #dietAnalysisProfilePanel,
+  html[data-theme="retro-2bit"] #harvardPlatePanel,
+  html[data-theme="retro-2bit"] #dataQualityPanel,
+  html[data-theme="retro-2bit"] #presetsPanel,
+  html[data-theme="retro-2bit"] #geminiAiSection,
+  html[data-theme="retro-2bit"] #globalActions,
+  html[data-theme="retro-2bit"] .legal-note {
+    position:relative;
+    isolation:isolate;
+    border:3px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    box-shadow:7px 7px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] .card .card,
+  html[data-theme="retro-2bit"] .accordion-item,
+  html[data-theme="retro-2bit"] details.fold,
+  html[data-theme="retro-2bit"] .search-field-card,
+  html[data-theme="retro-2bit"] .search-grams-card,
+  html[data-theme="retro-2bit"] .total-card,
+  html[data-theme="retro-2bit"] .micro,
+  html[data-theme="retro-2bit"] .diet-domain-detail,
+  html[data-theme="retro-2bit"] .hp-sector-card {
+    border:2px solid var(--retro-dark) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    box-shadow:3px 3px 0 var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] .accordion-head,
+  html[data-theme="retro-2bit"] details.fold > summary,
+  html[data-theme="retro-2bit"] .diet-matrix-inspect-accordion > summary,
+  html[data-theme="retro-2bit"] .harvard-plate-explain > summary,
+  html[data-theme="retro-2bit"] .harvard-plate-diagnostics > summary {
+    border-bottom:2px solid var(--retro-ink) !important;
+    background:var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] input,
+  html[data-theme="retro-2bit"] select,
+  html[data-theme="retro-2bit"] textarea,
+  html[data-theme="retro-2bit"] button {
+    max-width:100%;
+  }
+
+  html[data-theme="retro-2bit"] .table-wrap,
+  html[data-theme="retro-2bit"] .ration-table-wrap,
+  html[data-theme="retro-2bit"] .norm-region-help-table-wrap,
+  html[data-theme="retro-2bit"] .composite-search-table-wrap {
+    overflow-x:auto !important;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-section-icon] {
+    padding-inline:0 !important;
+    overflow:visible !important;
+  }
+
+  html[data-theme="retro-2bit"] [data-retro-section-icon]::before {
+    margin-inline-start:0 !important;
+    transform:none !important;
+  }
+
+  @media (max-width:760px) {
+    html[data-theme="retro-2bit"] body {
+      overflow-x:hidden;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent {
+      width:100%;
+      max-width:100%;
+      padding-inline:10px !important;
+      border-inline:0 !important;
+      box-shadow:none !important;
+    }
+
+    html[data-theme="retro-2bit"] section.card,
+    html[data-theme="retro-2bit"] #needsCompact,
+    html[data-theme="retro-2bit"] #geminiRationImportSection,
+    html[data-theme="retro-2bit"] #globalSearchSection,
+    html[data-theme="retro-2bit"] #rationSection,
+    html[data-theme="retro-2bit"] #heiPanel,
+    html[data-theme="retro-2bit"] #totalsSection,
+    html[data-theme="retro-2bit"] #dietAnalysisProfilePanel,
+    html[data-theme="retro-2bit"] #harvardPlatePanel,
+    html[data-theme="retro-2bit"] #dataQualityPanel,
+    html[data-theme="retro-2bit"] #presetsPanel,
+    html[data-theme="retro-2bit"] #geminiAiSection,
+    html[data-theme="retro-2bit"] #globalActions,
+    html[data-theme="retro-2bit"] .legal-note {
+      width:100%;
+      min-width:0;
+      margin:22px 0 !important;
+      padding:16px 13px !important;
+      box-shadow:5px 5px 0 var(--retro-dark) !important;
+      overflow:visible !important;
+    }
+
+    html[data-theme="retro-2bit"] section.card + section.card {
+      margin-top:28px !important;
+    }
+
+    html[data-theme="retro-2bit"] h1,
+    html[data-theme="retro-2bit"] h2,
+    html[data-theme="retro-2bit"] h3,
+    html[data-theme="retro-2bit"] .title {
+      max-width:100%;
+      overflow-wrap:anywhere;
+      line-height:1.12;
+    }
+
+    html[data-theme="retro-2bit"] h2 {
+      font-size:clamp(24px,8vw,36px) !important;
+    }
+
+    html[data-theme="retro-2bit"] .step-badge {
+      display:inline-flex;
+      margin-bottom:10px;
+      padding:7px 10px !important;
+    }
+
+    html[data-theme="retro-2bit"] .gemini-ration-import__head,
+    html[data-theme="retro-2bit"] .search-hero-head,
+    html[data-theme="retro-2bit"] .diet-analysis-head,
+    html[data-theme="retro-2bit"] .harvard-plate-head {
+      display:grid !important;
+      grid-template-columns:minmax(0,1fr) !important;
+      gap:10px !important;
+      align-items:start !important;
+    }
+
+    html[data-theme="retro-2bit"] .gemini-ration-import__badge,
+    html[data-theme="retro-2bit"] .search-db-count {
+      justify-self:start;
+      max-width:100%;
+    }
+
+    html[data-theme="retro-2bit"] .gemini-ration-import__upload-row,
+    html[data-theme="retro-2bit"] .gemini-ration-import__actions,
+    html[data-theme="retro-2bit"] .gemini-ration-draft__actions,
+    html[data-theme="retro-2bit"] .search-main-grid,
+    html[data-theme="retro-2bit"] .search-line,
+    html[data-theme="retro-2bit"] .diet-matrix-actions,
+    html[data-theme="retro-2bit"] .diet-matrix-control-chips,
+    html[data-theme="retro-2bit"] .hpapply-actions {
+      display:grid !important;
+      grid-template-columns:minmax(0,1fr) !important;
+      gap:9px !important;
+    }
+
+    html[data-theme="retro-2bit"] .gemini-ration-import__upload-row > button,
+    html[data-theme="retro-2bit"] .gemini-ration-import__actions > button,
+    html[data-theme="retro-2bit"] .gemini-ration-draft__actions > button,
+    html[data-theme="retro-2bit"] .diet-matrix-actions > button,
+    html[data-theme="retro-2bit"] .diet-matrix-control-chips > button,
+    html[data-theme="retro-2bit"] .hpapply-actions > button {
+      width:100% !important;
+      min-height:48px !important;
+      white-space:normal !important;
+    }
+
+    html[data-theme="retro-2bit"] .gemini-ration-media-card,
+    html[data-theme="retro-2bit"] .gemini-ration-draft-row,
+    html[data-theme="retro-2bit"] .search-result-card,
+    html[data-theme="retro-2bit"] .ration-row,
+    html[data-theme="retro-2bit"] .total-card,
+    html[data-theme="retro-2bit"] .micro,
+    html[data-theme="retro-2bit"] .diet-overview-card,
+    html[data-theme="retro-2bit"] .diet-matrix-card,
+    html[data-theme="retro-2bit"] .harvard-plate-visual-wrap,
+    html[data-theme="retro-2bit"] .harvard-plate-status {
+      min-width:0 !important;
+      max-width:100% !important;
+      overflow:visible !important;
+    }
+
+    html[data-theme="retro-2bit"] .diet-analysis-redesigned .diet-matrix,
+    html[data-theme="retro-2bit"] .diet-matrix-grid-v5337,
+    html[data-theme="retro-2bit"] .diet-matrix-grid-v5338,
+    html[data-theme="retro-2bit"] .diet-matrix-grid-v540 {
+      width:100% !important;
+      min-height:0 !important;
+      aspect-ratio:1/1;
+      overflow:hidden !important;
+    }
+
+    html[data-theme="retro-2bit"] .diet-matrix-score-badge,
+    html[data-theme="retro-2bit"] .diet-matrix-threshold-button {
+      max-width:42%;
+      padding:4px 5px !important;
+      font-size:9px !important;
+      line-height:1.15 !important;
+      white-space:normal !important;
+    }
+
+    html[data-theme="retro-2bit"] .diet-matrix-point-caption,
+    html[data-theme="retro-2bit"] .diet-matrix-point-caption-v5337 {
+      max-width:112px !important;
+      padding:5px 6px !important;
+      font-size:9.5px !important;
+      line-height:1.2 !important;
+    }
+
+    html[data-theme="retro-2bit"] [data-retro-section-icon]::before {
+      width:18px !important;
+      height:18px !important;
+      flex-basis:18px !important;
+      margin-inline-end:7px !important;
+      background-size:90px 72px !important;
+    }
+
+    html[data-theme="retro-2bit"] .v40-mini-cart {
+      left:10px !important;
+      right:10px !important;
+      bottom:10px !important;
+      width:auto !important;
+      max-width:calc(100vw - 20px) !important;
+      padding:9px !important;
+      gap:8px !important;
+      overflow:hidden !important;
+    }
+
+    html[data-theme="retro-2bit"] .v40-mini-cart-text {
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    html[data-theme="retro-2bit"] body:has(.v40-mini-cart.is-visible) #mainContent {
+      padding-bottom:106px !important;
+    }
+  }
+}

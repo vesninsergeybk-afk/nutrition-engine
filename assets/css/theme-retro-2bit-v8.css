@@ -1,0 +1,430 @@
+/* nutrition calculator v5.3.159 — complete 2-bit accordion interior pass
+   Screen-only. Restyles every expandable surface and all controls/cards rendered inside it.
+   No calculation, state, report or print selectors are touched. */
+@media screen {
+  html[data-theme="retro-2bit"] {
+    --retro-acc-stripes: repeating-linear-gradient(135deg,var(--retro-paper) 0 6px,var(--retro-light) 6px 7px);
+    --retro-acc-dots: radial-gradient(circle at 1px 1px,var(--retro-dark) 1px,transparent 1.2px);
+  }
+
+  /* One visual grammar for native details and scripted category accordions. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item {
+    color:var(--retro-ink) !important;
+    border:2px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    box-shadow:3px 3px 0 var(--retro-dark) !important;
+    overflow:visible !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details details {
+    border-color:var(--retro-dark) !important;
+    box-shadow:2px 2px 0 var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head {
+    color:var(--retro-ink) !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:var(--retro-light) !important;
+    background-image:none !important;
+    box-shadow:inset 0 -2px 0 var(--retro-dark) !important;
+    text-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head {
+    border-bottom:2px solid var(--retro-ink) !important;
+    background:var(--retro-dark) !important;
+    color:var(--retro-paper) !important;
+    box-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > summary *,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head * {
+    color:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details > summary::before,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details > summary::after,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head::before,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head::after {
+    border-radius:0 !important;
+    color:currentColor !important;
+    text-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .ui-analysis-fold > summary::before,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .diet-domain-chevron,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .hpacc-chevron,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .catalog-drawer-indicator {
+    border:1px solid currentColor !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    color:inherit !important;
+    box-shadow:none !important;
+  }
+
+  /* Expanded area itself must never fall back to a white/blue modern canvas. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > :not(summary),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .catalog-drawer-body {
+    color:var(--retro-ink) !important;
+    border-radius:0 !important;
+    background-color:var(--retro-paper) !important;
+    background-image:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(h2,h3,h4,h5,h6,p,li,dt,dd,label,output,code,b,strong,span),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(h2,h3,h4,h5,h6,p,li,dt,dd,label,output,code,b,strong,span) {
+    text-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(h2,h3,h4,h5,h6,b,strong,code),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(h2,h3,h4,h5,h6,b,strong,code) {
+    color:var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(p,li,dt,dd,label,output),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(p,li,dt,dd,label,output) {
+    color:var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(small,em,.muted,.small,.footer-note,[class*="subtitle"],[class*="note"],[class*="meta"],[class*="hint"]),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(small,em,.muted,.small,.footer-note,[class*="subtitle"],[class*="note"],[class*="meta"],[class*="hint"]) {
+    color:var(--retro-dark) !important;
+    opacity:1 !important;
+  }
+
+  /* Inner cards, advice blocks and analytical panels. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .rec,.alert,.hei-p1-strengths,.hei-p1-all,.hei-p2-component-context,
+    .diet-personal-narrative,.diet-reliability-mini,.diet-limiter-item,.diet-personal-action,
+    .diet-domain-intro,.diet-domain-detail-body,.diet-analysis-help-body,.diet-analysis-extra-harvard-body,
+    .diet-gram-action,.diet-context-help-current,.diet-context-help-action,
+    .hpacc-section,.hpacc-item,.hpacc-body,.hpacc-note,.hpacc-empty,.hpacc-flags,
+    .hpsr-card,.hpsr-method,.hpwi-row,.hpwi-preview,.hpwi-intro,.hpwi-steps,
+    .hpapply-cols section,.hpapply-status,.hpapply-lead,.data-quality-warning,
+    .serving-unit-hint,.unit-quick-input,.catalog-mode-help,.meal-planner-intro
+  ) {
+    color:var(--retro-ink) !important;
+    border:1px solid var(--retro-dark) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    background-image:none !important;
+    box-shadow:2px 2px 0 var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .rec.warn,.rec.bad,.hei-p1-component.attention,.hei-p1-component.near,
+    [data-tone="warn"],[data-tone="bad"],[data-severity="warn"],[data-severity="bad"],
+    .hpacc-extra-cluster[data-cluster="attention"],.data-quality-warning,.hpapply-status[data-good="0"]
+  ) {
+    color:var(--retro-ink) !important;
+    border-color:var(--retro-ink) !important;
+    background:var(--retro-acc-stripes) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .rec.ok,.hei-p1-component.achieved,[data-tone="ok"],.hpapply-status[data-good="1"]
+  ) {
+    color:var(--retro-ink) !important;
+    background-color:var(--retro-paper) !important;
+    background-image:var(--retro-acc-dots) !important;
+    background-size:8px 8px !important;
+  }
+
+  /* Tables and rows opened inside diagnostic sections. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details table,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body table {
+    color:var(--retro-ink) !important;
+    border-collapse:collapse !important;
+    background:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(th,td),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(th,td) {
+    color:var(--retro-ink) !important;
+    border-color:var(--retro-dark) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details th,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body th {
+    background:var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details tr.ok,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details tr.warn,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details tr.bad {
+    background:transparent !important;
+  }
+
+  /* Inputs and actions rendered after an accordion is opened. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(input,select,textarea),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(input,select,textarea) {
+    color:var(--retro-ink) !important;
+    border:2px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    box-shadow:inset 2px 2px 0 var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(button,.btn,[role="button"]),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(button,.btn,[role="button"]) {
+    color:var(--retro-paper) !important;
+    border:2px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-ink) !important;
+    background-image:none !important;
+    box-shadow:3px 3px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(button.secondary,button.ghost,.btn.secondary),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(button.secondary,button.ghost,.btn.secondary) {
+    color:var(--retro-ink) !important;
+    background:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details button.danger,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body button.danger {
+    color:var(--retro-paper) !important;
+    background:var(--retro-dark) !important;
+  }
+
+  /* Pills, category counts and status chips become square 2-bit labels. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .pill,.chip,.badge,.cat-count,.diet-acc-chip,.diet-domain-status,.diet-domain-value,
+    .hpacc-value,.hpacc-target,.hpsr-badge,.hpwi-status span,.data-quality-version,
+    .unit-quick-input-btn,.catalog-drawer-indicator
+  ),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head .cat-count {
+    color:var(--retro-ink) !important;
+    border:1px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    background-image:none !important;
+    box-shadow:1px 1px 0 var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head .cat-count {
+    color:var(--retro-paper) !important;
+    border-color:var(--retro-paper) !important;
+    background:var(--retro-dark) !important;
+    box-shadow:1px 1px 0 var(--retro-paper) !important;
+  }
+
+  /* Progress bars and micro-scales retain meaning without modern colour. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .progress,.bar,.diet-acc-microbar,.diet-domain-track,.diet-limiter-meter,
+    .hhb-track,.hpacc-bar,.hpsr-progress,.hpwi-bar,.data-quality-meter
+  ) {
+    border:1px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    background-image:none !important;
+    box-shadow:none !important;
+    overflow:hidden !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .progress,.bar,.diet-acc-microbar,.diet-domain-track,.diet-limiter-meter,
+    .hhb-track,.hpacc-bar,.hpsr-progress,.hpwi-bar,.data-quality-meter
+  ) :is(i,b,span) {
+    border-radius:0 !important;
+    background:var(--retro-dark) !important;
+    background-image:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(.tick,.tick-label,.hei-p1-table-achieved,[class*="status"],[class*="tone"]) {
+    color:var(--retro-ink) !important;
+  }
+
+  /* The large catalogue is a scripted accordion, not native details. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item {
+    margin-block:8px !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head {
+    border:0 !important;
+    padding:10px 12px !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body {
+    padding:12px !important;
+    border-top:0 !important;
+  }
+
+  /* Keep semantic inner separators crisp instead of rounded modern tiles. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(hr,.hpacc-items li,.hpapply-list li,.hpwi-deltas li) {
+    border-color:var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details svg,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details canvas {
+    filter:grayscale(1) contrast(1.15);
+  }
+
+  @media (max-width:760px) {
+    html[data-theme="retro-2bit"] #mainContent#mainContent details,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item {
+      max-width:100% !important;
+      min-width:0 !important;
+      box-shadow:3px 3px 0 var(--retro-dark) !important;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details > summary,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-head {
+      min-height:48px !important;
+      padding:11px 10px !important;
+      gap:8px !important;
+      overflow-wrap:anywhere;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > :not(summary),
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .catalog-drawer-body {
+      min-width:0 !important;
+      max-width:100% !important;
+      overflow-wrap:anywhere;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details table,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body table {
+      min-width:640px;
+    }
+
+    html[data-theme="retro-2bit"] #mainContent#mainContent details .table-wrap,
+    html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body .table-wrap {
+      overflow-x:auto !important;
+      max-width:100% !important;
+    }
+  }
+}
+
+@media screen {
+  /* Final specificity shield against late runtime styles injected by analytical modules. */
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :where(*) {
+    border-color:var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > :not(summary) :where(*) {
+    color:var(--retro-ink) !important;
+    text-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(div,section,article,aside,fieldset,dl,ul,ol,li,p,span,i,b,em,u,strong,small),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(div,section,article,aside,fieldset,dl,ul,ol,li,p,span,i,b,em,u,strong,small) {
+    border-radius:0 !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > summary,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > summary :where(*) {
+    color:var(--retro-paper) !important;
+    border-color:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > summary :is(i,b,em,u,strong,span),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head :is(i,b,em,u,strong,span) {
+    border-radius:0 !important;
+    background:transparent !important;
+    background-image:none !important;
+    box-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details[open] > :not(summary) :is(small,em,.muted,.small,.footer-note,[class*="subtitle"],[class*="note"],[class*="meta"],[class*="hint"]) {
+    color:var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(button,.btn,[role="button"]),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(button,.btn,[role="button"]) {
+    color:var(--retro-paper) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(button.secondary,button.ghost,.btn.secondary),
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-body :is(button.secondary,button.ghost,.btn.secondary) {
+    color:var(--retro-ink) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .diet-zone-explain-grid > div,.diet-point-passport > div,.diet-method-facts > div,
+    .hp-explain-group,.hpacc-extra-cluster,.hpacc-inline-feedback,.hhb-compact-weak,
+    .diet-limiter-action,.diet-domain-profile,.additional-body > section.card
+  ) {
+    color:var(--retro-ink) !important;
+    border:1px solid var(--retro-dark) !important;
+    border-radius:0 !important;
+    background:var(--retro-paper) !important;
+    background-image:none !important;
+    box-shadow:2px 2px 0 var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(
+    .diet-gram-action > span,.diet-limiter-action > span,.hpacc-toggle-text,
+    .hpacc-sector-conclusion,.diet-domain-profile span,.hpacc-inline-feedback span
+  ) {
+    color:var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(.progress,.bar,.diet-acc-microbar,.diet-domain-track,.diet-limiter-meter,.hhb-track,.hpacc-bar,.hpwi-bar,.data-quality-meter) :is(i,b,span) {
+    color:var(--retro-paper) !important;
+    background:var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head,
+  html[data-theme="retro-2bit"] #mainContent#mainContent .accordion-item.open > .accordion-head :where(*) {
+    color:var(--retro-paper) !important;
+    border-color:var(--retro-paper) !important;
+  }
+}
+
+@media screen {
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .tick {
+    background:var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details :is(.diet-acc-microbar,.hpacc-bar,.hhb-track,.hpwi-bar) > em,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .hpwi-bar em {
+    color:var(--retro-paper) !important;
+    border-radius:0 !important;
+    background:var(--retro-dark) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .diet-limiter-item > span {
+    color:var(--retro-ink) !important;
+    border:1px solid var(--retro-dark) !important;
+    border-radius:0 !important;
+    background:var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .hpacc-dot {
+    border:1px solid var(--retro-ink) !important;
+    border-radius:0 !important;
+    background:var(--retro-dark) !important;
+    box-shadow:none !important;
+  }
+}
+
+@media screen {
+  html[data-theme="retro-2bit"] #mainContent#mainContent details .diet-limiter-item span {
+    color:var(--retro-ink) !important;
+    border-color:var(--retro-dark) !important;
+    border-radius:0 !important;
+    background:var(--retro-light) !important;
+  }
+
+  html[data-theme="retro-2bit"] #mainContent#mainContent details.diet-context-help[open] > summary span,
+  html[data-theme="retro-2bit"] #mainContent#mainContent details.diet-plant-balance-help[open] > summary span {
+    color:var(--retro-paper) !important;
+    border-color:var(--retro-paper) !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+  }
+}
