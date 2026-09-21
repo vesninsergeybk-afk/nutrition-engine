@@ -1,0 +1,71 @@
+{
+  "version": "v5.3.190",
+  "build_date": "2026-07-14",
+  "scope": "end_to_end_preparation_chain",
+  "chain": [
+    "database",
+    "ordinary_search",
+    "gemini_matching",
+    "manual_confirmation",
+    "state_add",
+    "HEI_and_daily_nutrients",
+    "local_storage_save",
+    "reload_migration"
+  ],
+  "counts": {
+    "products": 1105,
+    "families": 184,
+    "members": 280,
+    "selectable_members": 257,
+    "disabled_members": 23,
+    "safe_redirects": 20,
+    "unsupported_blocks": 3,
+    "product_metadata_records_corrected": 8,
+    "active_canonical_profiles_restored_to_search": 4
+  },
+  "fixed_defects": [
+    {
+      "id": "P5-01",
+      "area": "saved_ration_reload",
+      "summary": "Disabled legacy aliases could survive local-storage reload and calculate from their own obsolete profile.",
+      "resolution": "Redirected to the canonical concrete product key before the ration becomes available."
+    },
+    {
+      "id": "P5-02",
+      "area": "direct_state_add",
+      "summary": "A hidden or disabled product key could still be added programmatically.",
+      "resolution": "State.add and composite child add/replace now apply the same redirect/block contract."
+    },
+    {
+      "id": "P5-03",
+      "area": "unsupported_profiles",
+      "summary": "Three unsupported profiles had no safe canonical replacement and could remain in old saved rations.",
+      "resolution": "They are removed from the active ration before HEI or nutrient calculation and recorded in the migration report."
+    },
+    {
+      "id": "P5-04",
+      "area": "ordinary_search_confirmation",
+      "summary": "A family with one selectable manual-confirmation profile could render a disabled Add button without a reachable confirmation action.",
+      "resolution": "The confirmation control is now shown for single-profile families and remains mandatory after changing to any manual profile."
+    },
+    {
+      "id": "P5-05",
+      "area": "ordinary_search_visibility",
+      "summary": "Four active canonical profiles remained marked as hidden aliases by an older duplicate-resolution layer, while the family registry already treated them as the canonical selectable variants.",
+      "resolution": "The four canonical profiles are restored to ordinary search and the three stale legacy alias records are reconciled to point to the canonical keys; numeric nutrient and HEI fields remain unchanged."
+    }
+  ],
+  "invariants": {
+    "state_add_redirects_disabled_aliases": true,
+    "state_add_blocks_unsupported_profiles": true,
+    "saved_ration_redirects_disabled_aliases": true,
+    "saved_ration_removes_unsupported_profiles": true,
+    "composite_children_follow_same_guard": true,
+    "duplicate_entries_after_migration_are_consolidated": true,
+    "concrete_product_key_remains_calculation_source": true,
+    "numeric_fields_unchanged": true,
+    "hei_fields_unchanged": true,
+    "all_passes_jointly_revalidated": true,
+    "selectable_canonical_members_visible_in_ordinary_search": true
+  }
+}
