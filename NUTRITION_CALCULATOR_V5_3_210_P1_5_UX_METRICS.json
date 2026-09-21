@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-p1.5",
+  "measurement_context": "Local Chromium, deterministic fixture runtime",
+  "viewports": {
+    "desktop": {"width": 1440, "height": 1000},
+    "mobile": {"width": 390, "height": 844}
+  },
+  "metrics": [
+    {"scenario": "empty_desktop", "before_px": 7030, "after_px": 3214, "reduction_percent": 54.3},
+    {"scenario": "empty_mobile", "before_px": 8235, "after_px": 3194, "reduction_percent": 61.2},
+    {"scenario": "first_product_compact_result", "before_px": 11236, "after_px": 4578, "reduction_percent": 59.3}
+  ],
+  "interpretation_note": "Scroll height is a proxy for simultaneously exposed information, not a standalone usability score."
+}

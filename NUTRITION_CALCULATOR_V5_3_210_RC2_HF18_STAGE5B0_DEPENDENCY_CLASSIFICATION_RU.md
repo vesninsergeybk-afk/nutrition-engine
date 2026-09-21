@@ -1,0 +1,215 @@
+# Этап 5Б.0 — доказательная классификация старых зависимостей
+
+Активный runtime: **277 файлов**.
+Файлы вне runtime: **489**.
+
+## Классификация
+
+| Категория | Файлов | Объём | Решение |
+|---|---:|---:|---|
+| Исходники действующей сборки | 38 | 0.75 МБ | Сохранить в активном дереве. |
+| Лицензии и безопасные примеры | 2 | 0.00 МБ | Сохранить. |
+| Зависимости исходников, тестов и инструментов | 235 | 78.76 МБ | Не удалять до миграции потребителя. |
+| Кандидаты на карантин высокой уверенности | 194 | 38.69 МБ | Перенести в отдельный архив и проверить очищенную копию. |
+| Неверсионированные файлы для ручной проверки | 20 | 1.11 МБ | Не трогать автоматически. |
+
+## Принцип безопасности
+
+Файл не признаётся устаревшим только потому, что браузер не загружает его напрямую. Сначала исключаются исходники CSS-bundle, тестовые и генераторные зависимости, лицензии и примеры конфигурации. В карантин попадают только версионированные файлы без runtime-достижимости, без участия в сборке и без точных ссылок в рабочем дереве.
+
+## Кандидаты на карантин
+
+- `assets/css/ai-nutrition-planner-v5.3.203.css`
+- `assets/css/ai-nutrition-planner-v5.3.206.css`
+- `assets/css/gemini-audio-recorder-v5.3.162.css`
+- `assets/css/gemini-audio-recorder-v5.3.176.css`
+- `assets/css/gemini-decision-support-v5.3.199.css`
+- `assets/css/gemini-decision-support-v5.3.200.css`
+- `assets/css/gemini-integrative-analysis-v5.3.197.css`
+- `assets/css/gemini-integrative-analysis-v5.3.198.css`
+- `assets/css/gemini-preparation-matching-v5.3.169.css`
+- `assets/css/navigation-shell-v5.3.210-rc2-hf10.css`
+- `assets/css/navigation-shell-v5.3.210-rc2-hf5.css`
+- `assets/css/navigation-shell-v5.3.210-rc2-hf6.css`
+- `assets/css/navigation-shell-v5.3.210-rc2-hf7.css`
+- `assets/css/navigation-shell-v5.3.210-rc2-hf8.css`
+- `assets/css/navigation-shell-v5.3.210-rc2-hf9.css`
+- `assets/css/norm-region-clarity-v5.3.127.css`
+- `assets/css/preparation-family-ui-v5.3.171.css`
+- `assets/css/preparation-family-ui-v5.3.172.css`
+- `assets/css/preparation-family-ui-v5.3.173.css`
+- `assets/css/preparation-family-ui-v5.3.174.css`
+- `assets/css/preparation-family-ui-v5.3.175.css`
+- `assets/css/workspace-correction-v5.3.210-rc2-hf10.css`
+- `assets/css/workspace-correction-v5.3.210-rc2-hf9.css`
+- `assets/css/workspace-ration-overview-v5.3.210-rc2-hf6.css`
+- `assets/css/workspace-ration-overview-v5.3.210-rc2-hf7.css`
+- `assets/data/composite-food-models.v5.3.93.js`
+- `assets/data/preparation-database-map.v5.3.180.js`
+- `assets/data/preparation-database-map.v5.3.182.js`
+- `assets/data/preparation-database-map.v5.3.184.js`
+- `assets/data/preparation-database-map.v5.3.189.js`
+- `assets/data/preparation-database-map.v5.3.190.js`
+- `assets/data/preparation-family-registry.v5.3.168.js`
+- `assets/data/preparation-family-registry.v5.3.178.js`
+- `assets/data/preparation-family-registry.v5.3.179.js`
+- `assets/data/preparation-family-registry.v5.3.181.js`
+- `assets/data/preparation-family-registry.v5.3.182.js`
+- `assets/data/preparation-family-registry.v5.3.184.js`
+- `assets/data/preparation-family-registry.v5.3.189.js`
+- `assets/data/products.v5.3.145.part-01.js`
+- `assets/data/products.v5.3.145.part-02.js`
+- `assets/data/products.v5.3.145.part-03.js`
+- `assets/data/products.v5.3.145.part-04.js`
+- `assets/data/products.v5.3.145.part-05.js`
+- `assets/data/products.v5.3.145.part-06.js`
+- `assets/data/products.v5.3.145.part-07.js`
+- `assets/data/products.v5.3.145.part-08.js`
+- `assets/data/products.v5.3.145.part-09.js`
+- `assets/data/products.v5.3.145.part-10.js`
+- `assets/data/products.v5.3.145.part-11.js`
+- `assets/data/products.v5.3.178.part-12.js`
+- `assets/data/products.v5.3.181.part-12.js`
+- `assets/data/products.v5.3.182.part-01.js`
+- `assets/data/products.v5.3.182.part-02.js`
+- `assets/data/products.v5.3.182.part-03.js`
+- `assets/data/products.v5.3.182.part-04.js`
+- `assets/data/products.v5.3.182.part-05.js`
+- `assets/data/products.v5.3.182.part-06.js`
+- `assets/data/products.v5.3.182.part-07.js`
+- `assets/data/products.v5.3.182.part-08.js`
+- `assets/data/products.v5.3.182.part-09.js`
+- `assets/data/products.v5.3.182.part-10.js`
+- `assets/data/products.v5.3.182.part-11.js`
+- `assets/data/products.v5.3.182.part-12.js`
+- `assets/data/products.v5.3.184.part-01.js`
+- `assets/data/products.v5.3.184.part-02.js`
+- `assets/data/products.v5.3.184.part-03.js`
+- `assets/data/products.v5.3.184.part-04.js`
+- `assets/data/products.v5.3.184.part-05.js`
+- `assets/data/products.v5.3.184.part-06.js`
+- `assets/data/products.v5.3.184.part-07.js`
+- `assets/data/products.v5.3.184.part-08.js`
+- `assets/data/products.v5.3.184.part-09.js`
+- `assets/data/products.v5.3.184.part-10.js`
+- `assets/data/products.v5.3.184.part-11.js`
+- `assets/data/products.v5.3.184.part-12.js`
+- `assets/data/products.v5.3.189.part-01.js`
+- `assets/data/products.v5.3.189.part-02.js`
+- `assets/data/products.v5.3.189.part-03.js`
+- `assets/data/products.v5.3.189.part-04.js`
+- `assets/data/products.v5.3.189.part-05.js`
+- `assets/data/products.v5.3.189.part-06.js`
+- `assets/data/products.v5.3.189.part-07.js`
+- `assets/data/products.v5.3.189.part-08.js`
+- `assets/data/products.v5.3.189.part-09.js`
+- `assets/data/products.v5.3.189.part-10.js`
+- `assets/data/products.v5.3.189.part-11.js`
+- `assets/data/products.v5.3.189.part-12.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.192.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.193.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.194.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.195.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.196.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.197.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.198.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.199.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.200.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.203.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.206.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.207.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.208.js`
+- `assets/js/00-browser-compatibility-gate-v5.3.209.js`
+- `assets/js/00-runtime-selector-v5.3.192.js`
+- `assets/js/00-runtime-selector-v5.3.194.js`
+- `assets/js/00-runtime-selector-v5.3.195.js`
+- `assets/js/00-runtime-selector-v5.3.196.js`
+- `assets/js/00-runtime-selector-v5.3.197.js`
+- `assets/js/00-runtime-selector-v5.3.198.js`
+- `assets/js/00-runtime-selector-v5.3.199.js`
+- `assets/js/00-runtime-selector-v5.3.200.js`
+- `assets/js/00-runtime-selector-v5.3.203.js`
+- `assets/js/00-runtime-selector-v5.3.206.js`
+- `assets/js/00-runtime-selector-v5.3.207.js`
+- `assets/js/00-runtime-selector-v5.3.208.js`
+- `assets/js/00-runtime-selector-v5.3.209.js`
+- `assets/js/37-mobile-final-pass1-v5.js`
+- `assets/legacy/data/normative-registry.v5.3.210-p1.2.json`
+- `assets/legacy/js/03-app-core-v5.3.207.js`
+- `assets/legacy/js/10-ui-polish-v5.3.207.js`
+- `assets/legacy/js/37-mobile-final-pass1-v5.js`
+- `assets/legacy/js/61-ai-nutrition-planner-v5.3.203.js`
+- `assets/legacy/js/61-ai-nutrition-planner-v5.3.206.js`
+- `assets/legacy/js/61-gemini-ai-decision-support-v5.3.200.js`
+- `assets/legacy/js/67-ux-decision-hierarchy-v5.3.210-p1.5.js`
+- `assets/legacy/js/68-validation-readiness-v5.3.210-p2.0.js`
+- `assets/legacy/js/74-hei2020-regression-selftest-v5.3.210-rc2-hf3.js`
+- `assets/legacy/js/75-navigation-shell-v5.3.210-rc2-hf5.js`
+- `assets/legacy/js/75-navigation-shell-v5.3.210-rc2-hf6.js`
+- `assets/legacy/js/75-navigation-shell-v5.3.210-rc2-hf7.js`
+- `assets/loader/loader-retro-2bit-v5.3.148.json`
+- `assets/runtime/runtime-manifest-v5.3.210-p1.1.js`
+- `assets/runtime/runtime-manifest-v5.3.210-p1.2.js`
+- `assets/runtime/runtime-manifest-v5.3.210-p1.4.js`
+- `assets/runtime/runtime-manifest-v5.3.210-p1.5.js`
+- `assets/runtime/runtime-manifest-v5.3.210-p2.0.js`
+- `assets/runtime/runtime-manifest-v5.3.210-pc1.js`
+- `assets/runtime/runtime-manifest-v5.3.210-pc2.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc1.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf10.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf11.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf12.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf13.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf15.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf16.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf17.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf5.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf6.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf7.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf8.js`
+- `assets/runtime/runtime-manifest-v5.3.210-rc2-hf9.js`
+- `data/browser-compatibility-contract.v5.3.192.json`
+- `data/gemini-attribution-integrity-contract.v5.3.170.json`
+- `data/gemini-retry-contract.v5.3.177.json`
+- `data/preparation-aware-gemini-matching-contract.v5.3.169.json`
+- `data/preparation-database-map.v5.3.180.json`
+- `data/preparation-database-map.v5.3.182.json`
+- `data/preparation-database-map.v5.3.184.json`
+- `data/preparation-database-map.v5.3.189.json`
+- `data/preparation-family-contract.v5.3.166.json`
+- `data/preparation-family-contract.v5.3.167.json`
+- `data/preparation-family-contract.v5.3.168.json`
+- `data/preparation-family-contract.v5.3.178.json`
+- `data/preparation-family-contract.v5.3.179.json`
+- `data/preparation-family-contract.v5.3.181.json`
+- `data/preparation-family-contract.v5.3.182.json`
+- `data/preparation-family-contract.v5.3.184.json`
+- `data/preparation-family-contract.v5.3.189.json`
+- `data/preparation-family-migration-manifest.v5.3.178.json`
+- `data/preparation-family-migration-manifest.v5.3.179.json`
+- `data/preparation-family-migration-manifest.v5.3.181.json`
+- `data/preparation-family-migration-manifest.v5.3.182.json`
+- `data/preparation-family-migration-manifest.v5.3.184.json`
+- `data/preparation-family-migration-manifest.v5.3.189.json`
+- `data/preparation-family-registry.v5.3.178.json`
+- `data/preparation-family-ui-contract.v5.3.171.json`
+- `data/preparation-final-regression-contract.v5.3.172.json`
+- `data/preparation-grains-pasta-legumes-pass4.v5.3.189.json`
+- `data/preparation-meat-fish-pass2.v5.3.181.json`
+- `data/preparation-meat-fish-pass2.v5.3.182.json`
+- `data/preparation-nutritional-impact-contract.v5.3.179.json`
+- `data/preparation-nutritional-impact-contract.v5.3.181.json`
+- `data/preparation-nutritional-impact-contract.v5.3.182.json`
+- `data/preparation-nutritional-impact-contract.v5.3.184.json`
+- `data/preparation-nutritional-impact-contract.v5.3.189.json`
+- `data/preparation-nutritional-impact-contract.v5.3.190.json`
+- `data/preparation-vegetables-mushrooms-pass3.v5.3.184.json`
+- `data/products.v5.3.145.manifest.json`
+- `data/products.v5.3.178.manifest.json`
+- `data/products.v5.3.179.manifest.json`
+- `data/products.v5.3.179.part-12.json`
+- `data/products.v5.3.181.manifest.json`
+- `data/products.v5.3.182.manifest.json`
+- `data/products.v5.3.184.manifest.json`
+- `data/products.v5.3.189.manifest.json`
+- `data/products.v5.3.190.manifest.json`

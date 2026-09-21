@@ -1,0 +1,273 @@
+﻿scope,region,profile,nutrient,status,category,value_or_formula,unit,rule_id,source_ids,basis,registry_version,review_due_at
+adult,us,adult,vitamin_c_mg,verified,minimum,75,мг,adult.us.vitamin_c_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_c_mg,verified,minimum,90,мг,adult.us.vitamin_c_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_c_mg,verified,upper_limit,2000,мг,adult.us.vitamin_c_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_c_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_a_mcg,verified,minimum,700,мкг РЭ,adult.us.vitamin_a_mcg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_a_mcg,verified,minimum,900,мкг РЭ,adult.us.vitamin_a_mcg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_a_mcg,verified,upper_limit,3000,мкг РЭ,adult.us.vitamin_a_mcg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_a_mcg,not_defined,safe_limit,,мкг РЭ,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_d_mcg,verified,minimum,20,мкг,adult.us.vitamin_d_mcg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_d_mcg,verified,minimum,15,мкг,adult.us.vitamin_d_mcg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_d_mcg,verified,upper_limit,100,мкг,adult.us.vitamin_d_mcg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_d_mcg,not_defined,safe_limit,,мкг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_e_mg,verified,minimum,15,мг,adult.us.vitamin_e_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_e_mg,verified,upper_limit,1000,мг,adult.us.vitamin_e_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_e_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_k_mcg,verified,minimum,90,мкг,adult.us.vitamin_k_mcg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_k_mcg,verified,minimum,120,мкг,adult.us.vitamin_k_mcg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_k_mcg,not_defined,upper_limit,,мкг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_k_mcg,not_defined,safe_limit,,мкг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b1_mg,verified,minimum,1.1,мг,adult.us.vitamin_b1_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b1_mg,verified,minimum,1.2,мг,adult.us.vitamin_b1_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b1_mg,not_defined,upper_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b1_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b2_mg,verified,minimum,1.1,мг,adult.us.vitamin_b2_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b2_mg,verified,minimum,1.3,мг,adult.us.vitamin_b2_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b2_mg,not_defined,upper_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b2_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b3_mg,verified,minimum,14,мг,adult.us.vitamin_b3_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b3_mg,verified,minimum,16,мг,adult.us.vitamin_b3_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b3_mg,verified,upper_limit,35,мг,adult.us.vitamin_b3_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b3_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b5_mg,verified,minimum,5,мг,adult.us.vitamin_b5_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b5_mg,not_defined,upper_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b5_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b6_mg,verified,minimum,1.5,мг,adult.us.vitamin_b6_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b6_mg,verified,minimum,1.7,мг,adult.us.vitamin_b6_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b6_mg,verified,minimum,1.3,мг,adult.us.vitamin_b6_mg.minimum.3,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b6_mg,verified,upper_limit,100,мг,adult.us.vitamin_b6_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b6_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b9_mcg,verified,minimum,400,мкг DFE,adult.us.vitamin_b9_mcg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b9_mcg,verified,upper_limit,1000,мкг DFE,adult.us.vitamin_b9_mcg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b9_mcg,not_defined,safe_limit,,мкг DFE,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b12_mcg,verified,minimum,2.4,мкг,adult.us.vitamin_b12_mcg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b12_mcg,not_defined,upper_limit,,мкг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,vitamin_b12_mcg,not_defined,safe_limit,,мкг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,calcium_mg,verified,minimum,1200,мг,adult.us.calcium_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,calcium_mg,verified,minimum,1200,мг,adult.us.calcium_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,calcium_mg,verified,minimum,1000,мг,adult.us.calcium_mg.minimum.3,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,calcium_mg,verified,upper_limit,2000,мг,adult.us.calcium_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,calcium_mg,verified,upper_limit,2500,мг,adult.us.calcium_mg.upper_limit.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,calcium_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,iron_mg,verified,minimum,18,мг,adult.us.iron_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,iron_mg,verified,minimum,8,мг,adult.us.iron_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,iron_mg,verified,upper_limit,45,мг,adult.us.iron_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,iron_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,magnesium_mg,verified,minimum,310,мг,adult.us.magnesium_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,magnesium_mg,verified,minimum,320,мг,adult.us.magnesium_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,magnesium_mg,verified,minimum,400,мг,adult.us.magnesium_mg.minimum.3,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,magnesium_mg,verified,minimum,420,мг,adult.us.magnesium_mg.minimum.4,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,magnesium_mg,verified,upper_limit,350,мг,adult.us.magnesium_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,magnesium_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,zinc_mg,verified,minimum,8,мг,adult.us.zinc_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,zinc_mg,verified,minimum,11,мг,adult.us.zinc_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,zinc_mg,verified,upper_limit,40,мг,adult.us.zinc_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,zinc_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,potassium_mg,verified,minimum,2600,мг,adult.us.potassium_mg.minimum.1,nasem_sodium_potassium_2019,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,potassium_mg,verified,minimum,3400,мг,adult.us.potassium_mg.minimum.2,nasem_sodium_potassium_2019,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,potassium_mg,not_defined,upper_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,potassium_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,phosphorus_mg,verified,minimum,700,мг,adult.us.phosphorus_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,phosphorus_mg,verified,upper_limit,3000,мг,adult.us.phosphorus_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,phosphorus_mg,verified,upper_limit,4000,мг,adult.us.phosphorus_mg.upper_limit.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,phosphorus_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,iodine_mcg,verified,minimum,150,мкг,adult.us.iodine_mcg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,iodine_mcg,verified,upper_limit,1100,мкг,adult.us.iodine_mcg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,iodine_mcg,not_defined,safe_limit,,мкг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,selenium_mcg,verified,minimum,55,мкг,adult.us.selenium_mcg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,selenium_mcg,verified,upper_limit,400,мкг,adult.us.selenium_mcg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,selenium_mcg,not_defined,safe_limit,,мкг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,copper_mg,verified,minimum,0.9,мг,adult.us.copper_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,copper_mg,verified,upper_limit,10,мг,adult.us.copper_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,copper_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,manganese_mg,verified,minimum,1.8,мг,adult.us.manganese_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,manganese_mg,verified,minimum,2.3,мг,adult.us.manganese_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,manganese_mg,verified,upper_limit,11,мг,adult.us.manganese_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,manganese_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,choline_mg,verified,minimum,425,мг,adult.us.choline_mg.minimum.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,choline_mg,verified,minimum,550,мг,adult.us.choline_mg.minimum.2,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,choline_mg,verified,upper_limit,3500,мг,adult.us.choline_mg.upper_limit.1,nasem_dri_tables,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,us,adult,choline_mg,not_defined,safe_limit,,мг,,,US/Canada DRI,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_c_mg,verified,minimum,95,мг,adult.eu.vitamin_c_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_c_mg,verified,minimum,110,мг,adult.eu.vitamin_c_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_c_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_c_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_a_mcg,verified,minimum,650,мкг РЭ,adult.eu.vitamin_a_mcg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_a_mcg,verified,minimum,750,мкг РЭ,adult.eu.vitamin_a_mcg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_a_mcg,verified,upper_limit,3000,мкг РЭ,adult.eu.vitamin_a_mcg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_a_mcg,not_defined,safe_limit,,мкг РЭ,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_d_mcg,verified,minimum,15,мкг,adult.eu.vitamin_d_mcg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_d_mcg,verified,upper_limit,100,мкг,adult.eu.vitamin_d_mcg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_d_mcg,not_defined,safe_limit,,мкг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_e_mg,verified,minimum,11,мг,adult.eu.vitamin_e_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_e_mg,verified,minimum,13,мг,adult.eu.vitamin_e_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_e_mg,verified,upper_limit,300,мг,adult.eu.vitamin_e_mg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_e_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_k_mcg,verified,minimum,70,мкг,adult.eu.vitamin_k_mcg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_k_mcg,not_defined,upper_limit,,мкг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_k_mcg,not_defined,safe_limit,,мкг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b1_mg,verified,minimum,"{""factor"": 0.1, ""kind"": ""per_mj_energy""}",мг,adult.eu.vitamin_b1_mg.minimum.1,efsa_thiamin,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b1_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b1_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b2_mg,verified,minimum,1.6,мг,adult.eu.vitamin_b2_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b2_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b2_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b3_mg,verified,minimum,"{""factor"": 1.6, ""kind"": ""per_mj_energy""}",мг,adult.eu.vitamin_b3_mg.minimum.1,efsa_niacin,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b3_mg,verified,upper_limit,10,мг,adult.eu.vitamin_b3_mg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b3_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b5_mg,verified,minimum,5,мг,adult.eu.vitamin_b5_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b5_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b5_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b6_mg,verified,minimum,1.6,мг,adult.eu.vitamin_b6_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b6_mg,verified,minimum,1.7,мг,adult.eu.vitamin_b6_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b6_mg,verified,upper_limit,12.5,мг,adult.eu.vitamin_b6_mg.upper_limit.1,efsa_b6_ul_2023,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b6_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b9_mcg,verified,minimum,330,мкг DFE,adult.eu.vitamin_b9_mcg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b9_mcg,verified,upper_limit,1000,мкг DFE,adult.eu.vitamin_b9_mcg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b9_mcg,not_defined,safe_limit,,мкг DFE,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b12_mcg,verified,minimum,4,мкг,adult.eu.vitamin_b12_mcg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b12_mcg,not_defined,upper_limit,,мкг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,vitamin_b12_mcg,not_defined,safe_limit,,мкг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,calcium_mg,verified,minimum,1000,мг,adult.eu.calcium_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,calcium_mg,verified,minimum,950,мг,adult.eu.calcium_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,calcium_mg,verified,upper_limit,2500,мг,adult.eu.calcium_mg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,calcium_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,iron_mg,verified,minimum,16,мг,adult.eu.iron_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,iron_mg,verified,minimum,11,мг,adult.eu.iron_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,iron_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,iron_mg,verified,safe_limit,40,мг,adult.eu.iron_mg.safe_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,magnesium_mg,verified,minimum,300,мг,adult.eu.magnesium_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,magnesium_mg,verified,minimum,350,мг,adult.eu.magnesium_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,magnesium_mg,verified,upper_limit,250,мг,adult.eu.magnesium_mg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,magnesium_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,zinc_mg,verified,minimum,7.5,мг,adult.eu.zinc_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,zinc_mg,verified,minimum,9.4,мг,adult.eu.zinc_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,zinc_mg,verified,upper_limit,25,мг,adult.eu.zinc_mg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,zinc_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,potassium_mg,verified,minimum,3500,мг,adult.eu.potassium_mg.minimum.1,efsa_potassium,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,potassium_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,potassium_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,phosphorus_mg,verified,minimum,550,мг,adult.eu.phosphorus_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,phosphorus_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,phosphorus_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,iodine_mcg,verified,minimum,150,мкг,adult.eu.iodine_mcg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,iodine_mcg,verified,upper_limit,600,мкг,adult.eu.iodine_mcg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,iodine_mcg,not_defined,safe_limit,,мкг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,selenium_mcg,verified,minimum,70,мкг,adult.eu.selenium_mcg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,selenium_mcg,verified,upper_limit,255,мкг,adult.eu.selenium_mcg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,selenium_mcg,not_defined,safe_limit,,мкг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,copper_mg,verified,minimum,1.3,мг,adult.eu.copper_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,copper_mg,verified,minimum,1.6,мг,adult.eu.copper_mg.minimum.2,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,copper_mg,verified,upper_limit,5,мг,adult.eu.copper_mg.upper_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,copper_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,manganese_mg,verified,minimum,3,мг,adult.eu.manganese_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,manganese_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,manganese_mg,verified,safe_limit,8,мг,adult.eu.manganese_mg.safe_limit.1,efsa_ul_summary,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,choline_mg,verified,minimum,400,мг,adult.eu.choline_mg.minimum.1,efsa_drv_finder,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,choline_mg,not_defined,upper_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+adult,eu,adult,choline_mg,not_defined,safe_limit,,мг,,,EFSA DRV,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,protein_g,verified,RDA,71,г,life_stage.us.pregnancy_19_50.protein_g,nasem_dri_tables,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,fiber_g,verified,AI,28,г,life_stage.us.pregnancy_19_50.fiber_g,nasem_dri_tables,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,calcium_mg,verified,RDA,1000,мг,life_stage.us.pregnancy_19_50.calcium_mg,nasem_dri_tables,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,choline_mg,verified,AI,450,мг,life_stage.us.pregnancy_19_50.choline_mg,nasem_dri_tables,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_b9_mcg,verified,RDA,600,мкг DFE,life_stage.us.pregnancy_19_50.vitamin_b9_mcg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,iodine_mcg,verified,RDA,220,мкг,life_stage.us.pregnancy_19_50.iodine_mcg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,iron_mg,verified,RDA,27,мг,life_stage.us.pregnancy_19_50.iron_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,magnesium_mg,verified,RDA,"{""above"": 360, ""at_or_below"": 350, ""kind"": ""age_threshold"", ""threshold"": 30}",мг,life_stage.us.pregnancy_19_50.magnesium_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,potassium_mg,verified,AI,2900,мг,life_stage.us.pregnancy_19_50.potassium_mg,nasem_sodium_potassium_2019,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,sodium_mg,verified,AI,1500,мг,life_stage.us.pregnancy_19_50.sodium_mg,nasem_sodium_potassium_2019,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,phosphorus_mg,verified,RDA,700,мг,life_stage.us.pregnancy_19_50.phosphorus_mg,nasem_dri_tables,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_a_mcg,verified,RDA,770,мкг RAE,life_stage.us.pregnancy_19_50.vitamin_a_mcg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_b1_mg,verified,RDA,1.4,мг,life_stage.us.pregnancy_19_50.vitamin_b1_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_b2_mg,verified,RDA,1.4,мг,life_stage.us.pregnancy_19_50.vitamin_b2_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_b3_mg,verified,RDA,18,мг NE,life_stage.us.pregnancy_19_50.vitamin_b3_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_b5_mg,verified,AI,6,мг,life_stage.us.pregnancy_19_50.vitamin_b5_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_b6_mg,verified,RDA,1.9,мг,life_stage.us.pregnancy_19_50.vitamin_b6_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_b12_mcg,verified,RDA,2.6,мкг,life_stage.us.pregnancy_19_50.vitamin_b12_mcg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_c_mg,verified,RDA,85,мг,life_stage.us.pregnancy_19_50.vitamin_c_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_d_mcg,verified,RDA,15,мкг,life_stage.us.pregnancy_19_50.vitamin_d_mcg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_e_mg,verified,RDA,15,мг,life_stage.us.pregnancy_19_50.vitamin_e_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,vitamin_k_mcg,verified,AI,90,мкг,life_stage.us.pregnancy_19_50.vitamin_k_mcg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,zinc_mg,verified,RDA,11,мг,life_stage.us.pregnancy_19_50.zinc_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,selenium_mcg,verified,RDA,60,мкг,life_stage.us.pregnancy_19_50.selenium_mcg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,copper_mg,verified,RDA,1,мг,life_stage.us.pregnancy_19_50.copper_mg,nih_ods_pregnancy,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,pregnancy_19_50,manganese_mg,verified,AI,2,мг,life_stage.us.pregnancy_19_50.manganese_mg,nasem_dri_tables,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,protein_g,verified,RDA,71,г,life_stage.us.lactation_19_50.protein_g,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,fiber_g,verified,AI,29,г,life_stage.us.lactation_19_50.fiber_g,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,calcium_mg,verified,RDA,1000,мг,life_stage.us.lactation_19_50.calcium_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,choline_mg,verified,AI,550,мг,life_stage.us.lactation_19_50.choline_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_b9_mcg,verified,RDA,500,мкг DFE,life_stage.us.lactation_19_50.vitamin_b9_mcg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,iodine_mcg,verified,RDA,290,мкг,life_stage.us.lactation_19_50.iodine_mcg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,iron_mg,verified,RDA,9,мг,life_stage.us.lactation_19_50.iron_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,magnesium_mg,verified,RDA,"{""above"": 320, ""at_or_below"": 310, ""kind"": ""age_threshold"", ""threshold"": 30}",мг,life_stage.us.lactation_19_50.magnesium_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,potassium_mg,verified,AI,2800,мг,life_stage.us.lactation_19_50.potassium_mg,nasem_sodium_potassium_2019,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,sodium_mg,verified,AI,1500,мг,life_stage.us.lactation_19_50.sodium_mg,nasem_sodium_potassium_2019,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,phosphorus_mg,verified,RDA,700,мг,life_stage.us.lactation_19_50.phosphorus_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_a_mcg,verified,RDA,1300,мкг RAE,life_stage.us.lactation_19_50.vitamin_a_mcg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_b1_mg,verified,RDA,1.4,мг,life_stage.us.lactation_19_50.vitamin_b1_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_b2_mg,verified,RDA,1.6,мг,life_stage.us.lactation_19_50.vitamin_b2_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_b3_mg,verified,RDA,17,мг NE,life_stage.us.lactation_19_50.vitamin_b3_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_b5_mg,verified,AI,7,мг,life_stage.us.lactation_19_50.vitamin_b5_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_b6_mg,verified,RDA,2,мг,life_stage.us.lactation_19_50.vitamin_b6_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_b12_mcg,verified,RDA,2.8,мкг,life_stage.us.lactation_19_50.vitamin_b12_mcg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_c_mg,verified,RDA,120,мг,life_stage.us.lactation_19_50.vitamin_c_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_d_mcg,verified,RDA,15,мкг,life_stage.us.lactation_19_50.vitamin_d_mcg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_e_mg,verified,RDA,19,мг,life_stage.us.lactation_19_50.vitamin_e_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,vitamin_k_mcg,verified,AI,90,мкг,life_stage.us.lactation_19_50.vitamin_k_mcg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,zinc_mg,verified,RDA,12,мг,life_stage.us.lactation_19_50.zinc_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,selenium_mcg,verified,RDA,70,мкг,life_stage.us.lactation_19_50.selenium_mcg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,copper_mg,verified,RDA,1.3,мг,life_stage.us.lactation_19_50.copper_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,us,lactation_19_50,manganese_mg,verified,AI,2.6,мг,life_stage.us.lactation_19_50.manganese_mg,nasem_dri_tables,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,protein_g,verified,PRI,"{""base_g_per_kg"": 0.83, ""kind"": ""pregnancy_protein_efsa"", ""trimester_additions_g"": {""1"": 1, ""2"": 9, ""3"": 28}}",г,life_stage.eu.pregnancy.protein_g,efsa_protein,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,fiber_g,unavailable,,,,life_stage.eu.pregnancy.fiber_g,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,calcium_mg,unavailable,,,,life_stage.eu.pregnancy.calcium_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,choline_mg,verified,AI,480,мг,life_stage.eu.pregnancy.choline_mg,efsa_life_stage_subset,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_b9_mcg,unavailable,,,,life_stage.eu.pregnancy.vitamin_b9_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,iodine_mcg,unavailable,,,,life_stage.eu.pregnancy.iodine_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,iron_mg,unavailable,,,,life_stage.eu.pregnancy.iron_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,magnesium_mg,unavailable,,,,life_stage.eu.pregnancy.magnesium_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,potassium_mg,unavailable,,,,life_stage.eu.pregnancy.potassium_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,sodium_mg,unavailable,,,,life_stage.eu.pregnancy.sodium_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,phosphorus_mg,unavailable,,,,life_stage.eu.pregnancy.phosphorus_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_a_mcg,unavailable,,,,life_stage.eu.pregnancy.vitamin_a_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_b1_mg,unavailable,,,,life_stage.eu.pregnancy.vitamin_b1_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_b2_mg,unavailable,,,,life_stage.eu.pregnancy.vitamin_b2_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_b3_mg,unavailable,,,,life_stage.eu.pregnancy.vitamin_b3_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_b5_mg,verified,AI,5,мг,life_stage.eu.pregnancy.vitamin_b5_mg,efsa_life_stage_subset,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_b6_mg,verified,PRI,1.8,мг,life_stage.eu.pregnancy.vitamin_b6_mg,efsa_life_stage_subset,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_b12_mcg,unavailable,,,,life_stage.eu.pregnancy.vitamin_b12_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_c_mg,unavailable,,,,life_stage.eu.pregnancy.vitamin_c_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_d_mcg,verified,AI,15,мкг,life_stage.eu.pregnancy.vitamin_d_mcg,efsa_life_stage_subset,pregnancy,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_e_mg,unavailable,,,,life_stage.eu.pregnancy.vitamin_e_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,vitamin_k_mcg,unavailable,,,,life_stage.eu.pregnancy.vitamin_k_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,zinc_mg,unavailable,,,,life_stage.eu.pregnancy.zinc_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,selenium_mcg,unavailable,,,,life_stage.eu.pregnancy.selenium_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,copper_mg,unavailable,,,,life_stage.eu.pregnancy.copper_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,pregnancy,manganese_mg,unavailable,,,,life_stage.eu.pregnancy.manganese_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,protein_g,verified,PRI,"{""base_g_per_kg"": 0.83, ""first_6_months_addition_g"": 19, ""kind"": ""lactation_protein_efsa"", ""later_addition_g"": 13}",г,life_stage.eu.lactation.protein_g,efsa_protein,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,fiber_g,unavailable,,,,life_stage.eu.lactation.fiber_g,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,calcium_mg,unavailable,,,,life_stage.eu.lactation.calcium_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,choline_mg,verified,AI,520,мг,life_stage.eu.lactation.choline_mg,efsa_life_stage_subset,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_b9_mcg,unavailable,,,,life_stage.eu.lactation.vitamin_b9_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,iodine_mcg,unavailable,,,,life_stage.eu.lactation.iodine_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,iron_mg,unavailable,,,,life_stage.eu.lactation.iron_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,magnesium_mg,unavailable,,,,life_stage.eu.lactation.magnesium_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,potassium_mg,verified,AI,4000,мг,life_stage.eu.lactation.potassium_mg,efsa_potassium,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,sodium_mg,unavailable,,,,life_stage.eu.lactation.sodium_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,phosphorus_mg,unavailable,,,,life_stage.eu.lactation.phosphorus_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_a_mcg,unavailable,,,,life_stage.eu.lactation.vitamin_a_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_b1_mg,unavailable,,,,life_stage.eu.lactation.vitamin_b1_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_b2_mg,unavailable,,,,life_stage.eu.lactation.vitamin_b2_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_b3_mg,unavailable,,,,life_stage.eu.lactation.vitamin_b3_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_b5_mg,verified,AI,7,мг,life_stage.eu.lactation.vitamin_b5_mg,efsa_life_stage_subset,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_b6_mg,verified,PRI,1.7,мг,life_stage.eu.lactation.vitamin_b6_mg,efsa_life_stage_subset,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_b12_mcg,unavailable,,,,life_stage.eu.lactation.vitamin_b12_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_c_mg,unavailable,,,,life_stage.eu.lactation.vitamin_c_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_d_mcg,verified,AI,15,мкг,life_stage.eu.lactation.vitamin_d_mcg,efsa_life_stage_subset,lactation,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_e_mg,unavailable,,,,life_stage.eu.lactation.vitamin_e_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,vitamin_k_mcg,unavailable,,,,life_stage.eu.lactation.vitamin_k_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,zinc_mg,unavailable,,,,life_stage.eu.lactation.zinc_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,selenium_mcg,unavailable,,,,life_stage.eu.lactation.selenium_mcg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,copper_mg,unavailable,,,,life_stage.eu.lactation.copper_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18
+life_stage,eu,lactation,manganese_mg,unavailable,,,,life_stage.eu.lactation.manganese_mg,,not verified for this profile in current registry,v5.3.210-p1.2,2027-07-18

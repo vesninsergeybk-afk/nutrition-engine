@@ -1,0 +1,1904 @@
+{
+  "schema_version": 8,
+  "release_version": "v6.0.0-beta6-hotfix4-theme-parity-typography",
+  "base_release": "v6.0.0-beta6-hotfix3-quality-completion",
+  "artifact_kind": "hosting-private",
+  "created_at": "2026-08-06T19:51:21Z",
+  "file_count": 369,
+  "hashed_file_count": 368,
+  "uncompressed_bytes_excluding_manifest": 53848367,
+  "manifest_self_excluded": true,
+  "change_scope": "Theme parity and typography completion: equal analytical detail across Modern, 2-bit and Ivory & Brass; six-metric overview; HEI executive dashboard; stable matrix and Harvard Plate ordering.",
+  "architecture": {
+    "themes": [
+      "modern",
+      "retro-2bit",
+      "ivory-brass"
+    ],
+    "presentation_modes": [
+      "sections",
+      "canvas"
+    ],
+    "calculation_engine_changed": false,
+    "product_data_changed": false,
+    "server_gemini_runtime_changed": false,
+    "protected_files_byte_identical": 135,
+    "entry_files_identical": true
+  },
+  "acceptance": {
+    "functional_browser_evidence": {
+      "ok": true,
+      "summary_metrics": 6,
+      "hei_components": 13
+    },
+    "responsive_matrix": {
+      "ok": true,
+      "combinations": 24,
+      "widths": [
+        320,
+        360,
+        390,
+        768,
+        1024,
+        1180,
+        1440,
+        1920
+      ],
+      "themes": 3
+    },
+    "static_audit": {
+      "ok": true,
+      "javascript_files": 218,
+      "json_files": 41,
+      "php_files": 4,
+      "local_references": 36
+    },
+    "physical_device_visual_acceptance_required": true
+  },
+  "new_runtime_assets": [
+    "assets/css/theme-parity-typography-v6.0.0-beta6-hf4.css",
+    "assets/js/94-theme-parity-typography-v6.0.0-beta6-hf4.js"
+  ],
+  "files": [
+    {
+      "path": ".htaccess",
+      "bytes": 2168,
+      "sha256": "889a1018f519fe78175fe01bf52d0a26f29a1728632ef706046df2bad6d49eb0"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_DESIGN_REFINEMENT_AUDIT_RU.md",
+      "bytes": 2659,
+      "sha256": "12932447404c195ee0a47ce4bc372613ae1c56c6039ad011c4004a2b0eb79d7b"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_DESIGN_REFINEMENT_CHANGELOG_RU.md",
+      "bytes": 2815,
+      "sha256": "ee917cb08e13c356801a5806045eb598d456c564b62790e703b4fb1a7810696a"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_DESIGN_REFINEMENT_FINAL_ACCEPTANCE_RU.md",
+      "bytes": 1321,
+      "sha256": "a06b06c237c8f9a3fd13e22fa3ce184058db8170d540a187a7aaeab1826826af"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_DESIGN_REFINEMENT_RELEASE_NOTES_RU.md",
+      "bytes": 1687,
+      "sha256": "4454ebe6462a240f779b9d192708451e4556fa35e5190564a6b0e4cdff649c16"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_DESIGN_REFINEMENT_TEST_REPORT_RU.md",
+      "bytes": 1444,
+      "sha256": "2c6755f699f16fe83090cf568266cc9318a721a42eb3f659c1668c4a1f4af406"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX1_NAVIGATION_RECOVERY_AUDIT_RU.md",
+      "bytes": 1592,
+      "sha256": "2cf1beaf792202a37616224e509d730c82617bb321fb91a4b9ebed69140eb799"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX1_NAVIGATION_RECOVERY_CHANGELOG_RU.md",
+      "bytes": 1563,
+      "sha256": "9a8ccd5e880e9c79c65a8260b57ef645cdca92d50163565895872e804bba8d0d"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX1_NAVIGATION_RECOVERY_TEST_REPORT_RU.md",
+      "bytes": 1876,
+      "sha256": "cf5c7746cd9227c07e9cdc3ec36463c87a4402360289cbcba958b920aa8e6180"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX2_USABILITY_ANALYSIS_RECOVERY_AUDIT_RU.md",
+      "bytes": 5379,
+      "sha256": "a6e5341aa023e15b07e2cb669e97bb150b5ed4677bf01b37dd322b6d0ad043f4"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX2_USABILITY_ANALYSIS_RECOVERY_CHANGELOG_RU.md",
+      "bytes": 3260,
+      "sha256": "dbd5f9d6c828e17ebe347a0e69be9f7a060ede91b5ab9153a759a7fb926a32b1"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX2_USABILITY_ANALYSIS_RECOVERY_RELEASE_NOTES_RU.md",
+      "bytes": 1656,
+      "sha256": "a69062750a4d05e5ef08367ad985551db68cb677feb67ebb2b756088cc994936"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX2_USABILITY_ANALYSIS_RECOVERY_TEST_REPORT_RU.md",
+      "bytes": 4990,
+      "sha256": "f13d028139dd68293068ad87a195ff0d9bc4eaac04dad7e0519daa3d76bb1c4d"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX3_QUALITY_COMPLETION_AUDIT_RU.md",
+      "bytes": 4283,
+      "sha256": "b61cf810ea4d9c93dc35ae70e87b64da313a755722ed376838468fbfe3665442"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX3_QUALITY_COMPLETION_CHANGELOG_RU.md",
+      "bytes": 3216,
+      "sha256": "2f06d103f47686065ba40e16103a63b3bf38c2c5be8916f52ce33a2103df4637"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX3_QUALITY_COMPLETION_RELEASE_NOTES_RU.md",
+      "bytes": 1173,
+      "sha256": "bfe5e7bab7d1031dff32fbb00df934872e776ffc25aeb62826b729abf03ceb5a"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX3_QUALITY_COMPLETION_TEST_REPORT_RU.md",
+      "bytes": 3512,
+      "sha256": "a3229e1d236fd7edad8dd4fb57b4ea5befcb7bfb75ca2ec06d76d6bb711317df"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX4_THEME_PARITY_TYPOGRAPHY_AUDIT_RU.md",
+      "bytes": 6563,
+      "sha256": "4fe5543ee96f3cbb88868e567f30dca61a1defdb0e2cffb931ef1db12878d94d"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX4_THEME_PARITY_TYPOGRAPHY_CHANGELOG_RU.md",
+      "bytes": 3160,
+      "sha256": "6bf7e28dfbf0baba050a3c659bb9452ff2f2978eda16861fc7b37c89b2dfcb62"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX4_THEME_PARITY_TYPOGRAPHY_RELEASE_NOTES_RU.md",
+      "bytes": 1251,
+      "sha256": "f27a9996a5dd42510d7f420a7a514de77d5dfbc551812bf5eff7a432a79ef022"
+    },
+    {
+      "path": "NUTRITION_CALCULATOR_V6_0_0_BETA6_HOTFIX4_THEME_PARITY_TYPOGRAPHY_TEST_REPORT_RU.md",
+      "bytes": 3589,
+      "sha256": "f2ce5b912070c99f1a7e7f8e913b6c7ed1b906212b0dc8b997a622af6380bb61"
+    },
+    {
+      "path": "README_DEPLOY_V6_BETA6_HOTFIX2_RU.md",
+      "bytes": 1983,
+      "sha256": "78f0904a2540582bbaab59f73f16b206fb9e93595c5fbbd19b280e670efb7f9d"
+    },
+    {
+      "path": "README_DEPLOY_V6_BETA6_HOTFIX3_RU.md",
+      "bytes": 1485,
+      "sha256": "7a5addb8c0438487e8383d37f48944b4bfe09f7d2d94db1a484675b866482e93"
+    },
+    {
+      "path": "README_DEPLOY_V6_BETA6_HOTFIX4_RU.md",
+      "bytes": 2168,
+      "sha256": "0b9665a700f8cbf62b703ba11baaafd12a07de5514e04c706b02329b8e102ecc"
+    },
+    {
+      "path": "README_DEPLOY_V6_BETA6_RU.md",
+      "bytes": 802,
+      "sha256": "90b6daf3bd3551e4fe40ed8bcfa63193ba21ed282e53c0e54693321be8a7e227"
+    },
+    {
+      "path": "_headers",
+      "bytes": 1166,
+      "sha256": "8c745ac8859823be6829c389d44405d1e2454c3bd50aa20af7dc47626a19cfcd"
+    },
+    {
+      "path": "api/.htaccess",
+      "bytes": 424,
+      "sha256": "399bca3130fde6b89da946c415241c6137e6b106c1f6cc36f5e210d555549d09"
+    },
+    {
+      "path": "api/gemini-guard.php",
+      "bytes": 65528,
+      "sha256": "dc218f523d06ea93202b9fd8f08dea06ffdb8ba79260d3567bd882ecf7d69dc0"
+    },
+    {
+      "path": "api/gemini-secret.php",
+      "bytes": 719,
+      "sha256": "68943988c85cf17b40f9474eb5d699b6d9accc02113ba2e9a8669a4b3540c956"
+    },
+    {
+      "path": "api/gemini.php",
+      "bytes": 203692,
+      "sha256": "2a110516ee9ddb65c91423655c95f44b95b0f7d5d5793b6f3850df153108324e"
+    },
+    {
+      "path": "api/utf8-safe.php",
+      "bytes": 3189,
+      "sha256": "9ab2bcca4bd3af99899546ddfe1c1406229e8bb826973adb63480db0c32dc800"
+    },
+    {
+      "path": "assets/css/browser-compatibility-v5.3.192.css",
+      "bytes": 4375,
+      "sha256": "0c1d26105edbcfc1bda21baf035e8c60dc83c1d7c6b04866d724320e296977fd"
+    },
+    {
+      "path": "assets/css/design-refinement-v6.0.0-beta6.css",
+      "bytes": 14879,
+      "sha256": "b4d294067be74b81a2ca6548d4a20956b32450f20d3f28a8cbff2c57d3af1450"
+    },
+    {
+      "path": "assets/css/gemini-reliability-v5.3.210-rc2-hf28.css",
+      "bytes": 1381,
+      "sha256": "9829f5881b9d7e436527d7c88d0af943022daddbe71f6f13772003a51eb2e458"
+    },
+    {
+      "path": "assets/css/interaction-states-v6.0.0-beta3.css",
+      "bytes": 13377,
+      "sha256": "4c3508964ed6aefa19d3ea0e55c3c8cdef5c3e1d56ae81c72dc3137ab094c6a2"
+    },
+    {
+      "path": "assets/css/ivory-brass-print-v6.css",
+      "bytes": 547,
+      "sha256": "a8c0a7db1502a4178b20707ed96c7d3ba90604ed3cb15a58d6065a66c35c68b0"
+    },
+    {
+      "path": "assets/css/ivory-brass-responsive-v6.css",
+      "bytes": 9147,
+      "sha256": "80133dd09ab6e3de788ce9ea5d910cf811b4b258c85481640e9009fe1311d1c2"
+    },
+    {
+      "path": "assets/css/navigation-access-hotfix-v6.0.0-beta6-hf1.css",
+      "bytes": 2934,
+      "sha256": "99b6adb1aa6ac902816f6b0543cbe65996b4c9dcdf35abfbf24fbf61d63c792c"
+    },
+    {
+      "path": "assets/css/profile-continuity-v6.css",
+      "bytes": 5164,
+      "sha256": "95cde6910527155fbcad31f75f0739aab4c56dfbd858e89610d24c67bf966b94"
+    },
+    {
+      "path": "assets/css/profile-hierarchy-v6.0.0-beta5.css",
+      "bytes": 9717,
+      "sha256": "f6dbd0e556ae67c59d3f7ca52f23b985b0c08e3e85668950946c9a602b7fc240"
+    },
+    {
+      "path": "assets/css/quality-completion-v6.0.0-beta6-hf3.css",
+      "bytes": 15560,
+      "sha256": "9d5f28b6d6d4b0b687fe1bd35d9de274fe3fc4ded2ad0b0393ae68c0214dc506"
+    },
+    {
+      "path": "assets/css/runtime-bundle-v5.3.210-rc2-hf21.css",
+      "bytes": 801511,
+      "sha256": "968feb377b8f422241d67ea02a2aeed17ce4c84e3f694029391dbb993e71eb0b"
+    },
+    {
+      "path": "assets/css/theme-ivory-brass-v6.css",
+      "bytes": 33534,
+      "sha256": "db2109d775905b38a98633d3040aa9d1c3b3c57192293accdcbe1449f245ebc8"
+    },
+    {
+      "path": "assets/css/theme-parity-typography-v6.0.0-beta6-hf4.css",
+      "bytes": 21797,
+      "sha256": "c6800377a3a91982cf12a81fbabdf8225fd887ca1d51a19a0403184db1a2f3c8"
+    },
+    {
+      "path": "assets/css/theme-switcher-v4.css",
+      "bytes": 2658,
+      "sha256": "5018a862ca307a57ff6ce07f6edad9b18d4fad722f9da2d0e467ff92a1c3cf0b"
+    },
+    {
+      "path": "assets/css/theme-system-v2.css",
+      "bytes": 1692,
+      "sha256": "f1bfc58604b68667c6c4c606f45dabccd9946e4af5e8dbc8f824f3fc5c248956"
+    },
+    {
+      "path": "assets/css/usability-recovery-v6.0.0-beta6-hf2.css",
+      "bytes": 13710,
+      "sha256": "3ecadc1cc6dab6050118812ad65a8e4081f66e234969e8da9e004e07c7b02481"
+    },
+    {
+      "path": "assets/data/composite-food-models.v5.3.145.js",
+      "bytes": 83248,
+      "sha256": "8b0a777d15594de68d40518ba1fb02d02920fb6fe9767e959eac0087330d2960"
+    },
+    {
+      "path": "assets/data/formula-registry.v5.3.145.json",
+      "bytes": 9866,
+      "sha256": "05b9427f0ba494b0df4e7f9c3047a44644f6768f2523b0d35e49ac48393e02eb"
+    },
+    {
+      "path": "assets/data/formula-registry.v5.3.210-p1.4.js",
+      "bytes": 38648,
+      "sha256": "5908d66a0269833a14c3443ea13e95b40f0c0cfaee4b85331f5c33467a284eef"
+    },
+    {
+      "path": "assets/data/normative-registry.v5.3.210-p1.2.js",
+      "bytes": 42001,
+      "sha256": "dac740aeeb55b153d8984c2c2b1595e5cbd215bca25dd5c7c0b76c32c5f7ab40"
+    },
+    {
+      "path": "assets/data/normative-registry.v5.3.210-p1.2.json",
+      "bytes": 63153,
+      "sha256": "49d41874155382ae6d1d97c226076a9b701815c0a51dd08d6bb6f780cd892264"
+    },
+    {
+      "path": "assets/data/preparation-calculation-guard.v5.3.190.js",
+      "bytes": 1683,
+      "sha256": "0596b3b1ba65d4b742afd085d76852de29ac3629a23a0ce7b9e733e1ac95df8f"
+    },
+    {
+      "path": "assets/data/preparation-family-registry.v5.3.190.js",
+      "bytes": 783846,
+      "sha256": "45b319a1977d69bec4e336e5861e572efccfcd7b8de0d903c2cf0c728c8b752a"
+    },
+    {
+      "path": "assets/data/product-provenance-registry.v5.3.210-p1.3.js",
+      "bytes": 9261,
+      "sha256": "17ef9663d37138312b298de94a5052ffa6532a73705c9042d8d291dc53de0004"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.bundle.js",
+      "bytes": 8724464,
+      "sha256": "ecd2e59f908eaa179b8aaef5fd075e891843f3fe6b2bd10bb2aff8b665698109"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.compact.json.gz",
+      "bytes": 600495,
+      "sha256": "604504171763ce2b2d5f44ac88c872b4861eeab0afe4c0c794768d2f8e2c079d"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-01.js",
+      "bytes": 863617,
+      "sha256": "ade3b3b1498a8b4a0edc0281b353632055c970fcc6f329dfebe35d15901eca41"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-02.js",
+      "bytes": 797459,
+      "sha256": "2df07070f2ea2fd52883f08c7f0c5b664f48368530eba6ab4b0d9c9016cc983f"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-03.js",
+      "bytes": 867372,
+      "sha256": "748461bae95f29a59c2228ee5697656dab2e629b894e15e343e7a4c59ecab0f7"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-04.js",
+      "bytes": 831163,
+      "sha256": "fd7ab84b46b6d0b7581cf4930f41953a84e9756baac4e6786c663dfd4cc33060"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-05.js",
+      "bytes": 745758,
+      "sha256": "b3b95cfb5054ce170e929613aa3946be26c7dffc8c6996ffbd91d66807c6e92a"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-06.js",
+      "bytes": 746407,
+      "sha256": "8370d545eb46f960cda9853428b8c51803439b8dd13c99fdac6e23879d280463"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-07.js",
+      "bytes": 707140,
+      "sha256": "7f3619751906ed6aa619839b836c8e6ca933af03289f0be9c248371776a96c39"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-08.js",
+      "bytes": 882957,
+      "sha256": "852fb50458994fb305c52480f2d16cca195a509986995d7dd908fa2fc327be7b"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-09.js",
+      "bytes": 763211,
+      "sha256": "a661df129938b83bcdb1b9b5735f2ff79d4badcf2910a25dfc18f81a627233bc"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-10.js",
+      "bytes": 860229,
+      "sha256": "651288aa33fe8c2dc2b0e9f0e7f527b480e46cfb9dcd23dadf37e646777d5d2c"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-11.js",
+      "bytes": 627548,
+      "sha256": "f6eab8396a30d5bd46c379f6fe10e074df13f7d2d5d7b7606cb1ef6865c22207"
+    },
+    {
+      "path": "assets/data/products.v5.3.210-p1.3.part-12.js",
+      "bytes": 33623,
+      "sha256": "3c68ebbea4029a4eb328230546b28f5beb54d733af4bf8533c05465ef055035b"
+    },
+    {
+      "path": "assets/data/ux-decision-hierarchy.v5.3.210-p1.5.js",
+      "bytes": 3297,
+      "sha256": "f9969029af3e0eaad5c36b344b2da8bb3a46a090681740d37ef97620a9e3a6c3"
+    },
+    {
+      "path": "assets/data/validation-evidence-policy.v5.3.210-pc2.js",
+      "bytes": 7363,
+      "sha256": "fe5bfa0e6509666013fc5bd0c58e399d40c59e1ff18a72f54e3c1615d36e0959"
+    },
+    {
+      "path": "assets/icons/retro-2bit-icons-v1.png",
+      "bytes": 622,
+      "sha256": "fc5e8efc4ee98d5f777033e258cbc40cf158e3b1cc1f53f379a62bca3e5156c8"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/add.svg",
+      "bytes": 3171,
+      "sha256": "eb4b186d055b991bb35fe4788ce1e491d05c1c5af663b1c0e4eaca2053a40251"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/ai.svg",
+      "bytes": 2448,
+      "sha256": "1f6f6d82db425aea47f1452b69455fe5b16682e21be4689a7b5b395ae1041d9d"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/audio.svg",
+      "bytes": 1986,
+      "sha256": "0c7864ab6e0a3b91e428302566fadc3ca78ede3ea3625ec5e767b1032bbd238e"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/calculate.svg",
+      "bytes": 3069,
+      "sha256": "33d5693346245e19fa1f4e260c540a6a2aef7230d81db04d0362763bbe6328dd"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/camera.svg",
+      "bytes": 1718,
+      "sha256": "66f2dc9b1df153317531756541aff7dcde63ec7686d250ab3ea004114297c9a7"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/check.svg",
+      "bytes": 2114,
+      "sha256": "35a452bb672f4c9ec1c2cd9f82a817c15de06f121ffa66b8acf03be41563549b"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/close.svg",
+      "bytes": 2950,
+      "sha256": "f643b13b00574fe2764d230a3b45474049090dccc39b6bbfd46c7fef782886e1"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/edit.svg",
+      "bytes": 1212,
+      "sha256": "05ce84d19cb2d2ab64670408e989868f541b5bd442ef604a69998e9d53b07a14"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/hei.svg",
+      "bytes": 1889,
+      "sha256": "bc077ed1771d3a5e474fba0b7fc6a16203ec05a97531be59909c2c1471d64c77"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/info.svg",
+      "bytes": 2276,
+      "sha256": "fa303daa7a0bf04a245b3ba4f28f4a09c77084ce2d4bf3a86dbc3848f34868b0"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/matrix.svg",
+      "bytes": 3066,
+      "sha256": "ec1f8d0dd9c7f9c33a53cf448d4a31955d0b669af4c8cf2513b540e7eb2db671"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/norms.svg",
+      "bytes": 2447,
+      "sha256": "08fc3b7d0eda0e6ccad7fc80122abbbae35069d9318904a03647de2df9e8ee04"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/pdf.svg",
+      "bytes": 2165,
+      "sha256": "49c97f523169d1af289631b05d50ab4bffc66833d126c3165f0d2091469e3c1e"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/plate.svg",
+      "bytes": 2109,
+      "sha256": "017b016bad084e3d82acf4185fc7ff8f7f6bf178fb36ff7ba067af8b3613adc7"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/print.svg",
+      "bytes": 1887,
+      "sha256": "a309d433eb89d3f7cb19fcacdade72c95e995c167f1df279f6ac02abc6b5059f"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/ration.svg",
+      "bytes": 1940,
+      "sha256": "29e0b601af5a75281dc058c2c12b18b71bbe91e2d1d9c3cacee0ab99fafa9acf"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/remove.svg",
+      "bytes": 2505,
+      "sha256": "915084bec6d1c2246c1896506938fe6cfd48179aeacdcc469d9e79fa52be1ff0"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/reset.svg",
+      "bytes": 1041,
+      "sha256": "4d8f3690f2d7169ddcf5794b1af2063036332a7983231cb415978ac32ecf0ffd"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/search.svg",
+      "bytes": 1883,
+      "sha256": "d5c75eb4de2a6441f94aca82f6082ebe76e45401f3774095e22792c46e52cc2b"
+    },
+    {
+      "path": "assets/icons/retro-2bit-v2/upload.svg",
+      "bytes": 821,
+      "sha256": "c86910819f6a15870a16eeed4d222aa62d6d376ac58258ed0cdc7dab8ad797dc"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/badges/check-v5.svg",
+      "bytes": 297,
+      "sha256": "57aa6724999e1031b656730c0409677efc51d2ca6d3a4313afcfbfd4cf524111"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/badges/empty-v5.svg",
+      "bytes": 254,
+      "sha256": "7c84c4b2e945ca646877a87066846787c4068ed0660220168e1e926f96122fa0"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/badges/info-v5.svg",
+      "bytes": 305,
+      "sha256": "f1b34a3d891ff3a062963562f1295af61c652340610e30bbf545b2f3d3b53c01"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/badges/minus-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/badges/plus-v5.svg",
+      "bytes": 275,
+      "sha256": "87f23bb7dd81ab47352488070bd3740e04b7359a6362b42173801300c9dab9cd"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/healthy-fats-v5.png",
+      "bytes": 2022,
+      "sha256": "90bce55ad294aa5d6f35163bee509e37e7719ebb174a2b96620486dd57bccde7"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/states/dairy-separate-v5.svg",
+      "bytes": 305,
+      "sha256": "f1b34a3d891ff3a062963562f1295af61c652340610e30bbf545b2f3d3b53c01"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/states/healthy-fats-low-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/states/healthy-fats-over-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/states/healthy-fats-target-v5.svg",
+      "bytes": 297,
+      "sha256": "57aa6724999e1031b656730c0409677efc51d2ca6d3a4313afcfbfd4cf524111"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/states/water-low-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/states/water-mid-v5.svg",
+      "bytes": 290,
+      "sha256": "3b5b0e58b70981601a48c2febdcc51c71cb1c968c79c5e8dd1ba4628d5dcf36a"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/states/water-target-v5.svg",
+      "bytes": 297,
+      "sha256": "57aa6724999e1031b656730c0409677efc51d2ca6d3a4313afcfbfd4cf524111"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/companions/water-v5.png",
+      "bytes": 1575,
+      "sha256": "74a9b13fb2469d70c445dbe041a1658101c74591682d06e3d9ec845caddfe82c"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/deficit/fruits-deficit-hatch-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/deficit/protein-deficit-hatch-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/deficit/vegetables-deficit-hatch-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/deficit/wholeGrains-deficit-hatch-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/global/balance-glow-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/overfill/fruits-overfill-rim-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/overfill/protein-overfill-rim-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/overfill/vegetables-overfill-rim-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/overfill/wholeGrains-overfill-rim-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/quality/dairy-separate-info-v5.svg",
+      "bytes": 305,
+      "sha256": "f1b34a3d891ff3a062963562f1295af61c652340610e30bbf545b2f3d3b53c01"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/quality/fruit-heavy-warning-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/quality/processed-protein-warning-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/quality/refined-grains-warning-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/quality/saturated-fat-warning-v5.svg",
+      "bytes": 386,
+      "sha256": "5e4f5cb86689c30e1ccf040cd7e6154dbec8aa593114653125439896747788b1"
+    },
+    {
+      "path": "assets/images/harvard-plate/v5/overlays/quality/vegetables-low-warning-v5.svg",
+      "bytes": 266,
+      "sha256": "5566882a7030becb3ac20abf7527de40ea1dd5755ba3676b11edf81a8edb7b6e"
+    },
+    {
+      "path": "assets/js/00-browser-compatibility-gate-v5.3.210.js",
+      "bytes": 7623,
+      "sha256": "6b6946991b970064e6fcbe6c81d50e07596621e5f40c47ff43a93468fe5d2fef"
+    },
+    {
+      "path": "assets/js/00-runtime-bootstrap-v6.0.0-beta6.js",
+      "bytes": 78361,
+      "sha256": "a1fd5ed1fd76a933fba877e4b6ed7ad9c70b0d4a214f11dae2eed05108db12c3"
+    },
+    {
+      "path": "assets/js/00-runtime-selector-v6.0.0-beta6.js",
+      "bytes": 1069,
+      "sha256": "be0fedcd8ce90e4e4915c60e8e07e761e0070cf715d167b5ea5959891c44a6e9"
+    },
+    {
+      "path": "assets/js/01-hei-module.js",
+      "bytes": 70161,
+      "sha256": "46ad33ff2fa33210301ed21de21cc122e52a2f9521872087592493c2afd4eb9d"
+    },
+    {
+      "path": "assets/js/02-product-data-quality-v5.3.210-p1.3.js",
+      "bytes": 6705,
+      "sha256": "30e1283b2cc2ebbedba300bb380d9851da528076b6844b1b7e3ed5ebc82144ce"
+    },
+    {
+      "path": "assets/js/03-app-core-v5.3.208.js",
+      "bytes": 234625,
+      "sha256": "46eae589fd4f75a31ab9bd9e5e0ce0b0ed454c1732585f97713eb9dd2e5b9e58"
+    },
+    {
+      "path": "assets/js/04-needs-norms.js",
+      "bytes": 200837,
+      "sha256": "f2cfe6a100aa53199f8d61026f0832b9d3f76fba8c7193a64454b3cbcbeca394"
+    },
+    {
+      "path": "assets/js/05-hei-bridges.js",
+      "bytes": 10716,
+      "sha256": "b8d941160239ebca90467446738548f3e59cf53584ad4a61bb307345dc5fadd1"
+    },
+    {
+      "path": "assets/js/05-protected-modes-v5.3.210.js",
+      "bytes": 32480,
+      "sha256": "a48f2a758e82588101ac87a1065f23f0e96ef1b1fd41f0a3f7a04a4cedd90a50"
+    },
+    {
+      "path": "assets/js/06-dialogs-export-print-v5.3.207.js",
+      "bytes": 382744,
+      "sha256": "d9984ff4df0227a1790104ef766a7316654f446ba5cf4db0f55477d351692ec5"
+    },
+    {
+      "path": "assets/js/07-diagnostics-tests-legacy.js",
+      "bytes": 278735,
+      "sha256": "2d76fa4e517c38083555db071589eecb02ea94ac5a6551786d8ed3a738ca67c1"
+    },
+    {
+      "path": "assets/js/08-ux-search-mobile-v5.3.210-rc2-hf15.js",
+      "bytes": 40663,
+      "sha256": "bc8ad0f690041485cfae76e17c843d3d53b02a003385cdf1ccf702d6f0b80438"
+    },
+    {
+      "path": "assets/js/09-domain-tests.js",
+      "bytes": 14195,
+      "sha256": "70c65339679fda2844ee9ac7fa88657ab5412cfef542cf9ea80425485df8e7ad"
+    },
+    {
+      "path": "assets/js/10-ui-polish-v5.3.210-rc2-hf8.js",
+      "bytes": 12121,
+      "sha256": "0c8c23f43604f72b12adcb6ad639bbb08e8af36fccd2fdc779cc87af3794b9b6"
+    },
+    {
+      "path": "assets/js/11-hosting-selftest.js",
+      "bytes": 20141,
+      "sha256": "cf0ad71603ef05fab34fffe08df9ebf858263b7c19ff1a07bad57257f694d3f1"
+    },
+    {
+      "path": "assets/js/12-accessibility-readability.js",
+      "bytes": 11712,
+      "sha256": "daa7b4694fead9c4bb15ec736f9c48e180f1229342ae271e01e6c6a8239465e1"
+    },
+    {
+      "path": "assets/js/13-needs-first-step.js",
+      "bytes": 1648,
+      "sha256": "55bcde807d32c93e8219cac48b2a44427aa075a8db81efa244a516c63c1d8a67"
+    },
+    {
+      "path": "assets/js/14-protein-formula-tests.js",
+      "bytes": 1094,
+      "sha256": "7d64a82af6a747fd8b99ec647dc79d8cc255b11d540b65e404ebee15cce8c8c0"
+    },
+    {
+      "path": "assets/js/15-search-usability-tuning.js",
+      "bytes": 9349,
+      "sha256": "087ecae45d34d067e4f968260356f7e0815c60a39d2edb3a590501e1a9644c1a"
+    },
+    {
+      "path": "assets/js/16-visual-cleanup.js",
+      "bytes": 1996,
+      "sha256": "79ee9012492631aa7f06a8ce6f30c4e49dd2c1e196af49808b6948a37101f610"
+    },
+    {
+      "path": "assets/js/17-readability-catalog-fix.js",
+      "bytes": 3970,
+      "sha256": "8fa0adbc3ddd4bcca0fd9a487da2a0f709ac96527d2160094cd04a1106a283b3"
+    },
+    {
+      "path": "assets/js/18-catalog-group-labels-final.js",
+      "bytes": 8223,
+      "sha256": "9806b013007289764e990501f556215c246be61e917a916b2f365583e673f6f9"
+    },
+    {
+      "path": "assets/js/19-serving-units.js",
+      "bytes": 10270,
+      "sha256": "10f74e2599158cacf49d3895f131c71cb161d224014550cd190e90cf35921cb9"
+    },
+    {
+      "path": "assets/js/20-search-relevance-tests.js",
+      "bytes": 2105,
+      "sha256": "b91d4237f410e7be727fb1a7c17ba188ae756a019c5fc95c772f9337fd5aa437"
+    },
+    {
+      "path": "assets/js/21-category-taxonomy-tests.js",
+      "bytes": 4072,
+      "sha256": "fa650f5e354f257b75264797fd5f3054f7e86fcbb777b76e264ab6666a9a4f0d"
+    },
+    {
+      "path": "assets/js/22-category-taxonomy-second-pass-tests.js",
+      "bytes": 3867,
+      "sha256": "558d2f200ad306cdfa40f11db971adb808480769aaaf99077663f4eec76c507d"
+    },
+    {
+      "path": "assets/js/23-mobile-ration-cards.js",
+      "bytes": 6053,
+      "sha256": "082a76e103bdc31f4f8d0e8eae4792b4c6bc18fbcaeb4b31cf8c0eefb91af53f"
+    },
+    {
+      "path": "assets/js/24-unit-quick-input.js",
+      "bytes": 25915,
+      "sha256": "51f224ad12512427551c373d52dd72243c9e97568e29c80334f0ff435f883b06"
+    },
+    {
+      "path": "assets/js/26-harvard-plate-v5-masks.js",
+      "bytes": 2547,
+      "sha256": "12915785a0276bf3d64f6efe47db6f335bb30a4640d17d4ed20ba63993681b49"
+    },
+    {
+      "path": "assets/js/26-harvard-plate-v5-stage-engine.js",
+      "bytes": 13534,
+      "sha256": "a7fe844ad6b3908f347f4254d029ba1aac370fab2899a8263f0065070384affd"
+    },
+    {
+      "path": "assets/js/29-report-builder-v5.js",
+      "bytes": 141359,
+      "sha256": "71f38e0eb2836df76915e50587e8c297fb720d62ad4ad3d427ee84309f7ca388"
+    },
+    {
+      "path": "assets/js/30-methodology-governance-v5.js",
+      "bytes": 11572,
+      "sha256": "076b6601c77b1409d18c29f4823ade9dc8f5235705e7996a9e5ff3f3af9bf62d"
+    },
+    {
+      "path": "assets/js/32-performance-selftest-v5.js",
+      "bytes": 4322,
+      "sha256": "e0d77d2274183a3de144100140587cd721af7fcd8963b51384950c4cdd9ac732"
+    },
+    {
+      "path": "assets/js/34-harvard-plate-v5-diagram-remaster.js",
+      "bytes": 103931,
+      "sha256": "de543d9bf12b3b55303ec63defaf7ba56951def1a65a60eec5670ddfad193762"
+    },
+    {
+      "path": "assets/js/35-mobile-ergonomics-v5.js",
+      "bytes": 6542,
+      "sha256": "b196f66fc4fe8c59237c3913597da9228e2238dbafca2e058f1bd1059004fb1d"
+    },
+    {
+      "path": "assets/js/36-mobile-critical-fix-v5.js",
+      "bytes": 3042,
+      "sha256": "714eda5c8e8943686ebd32a5b794d2477410acd565738e1c1949d8f0db34c309"
+    },
+    {
+      "path": "assets/js/38-mobile-hei-dashboard-v5.js",
+      "bytes": 8557,
+      "sha256": "9c92710993bc466231092c2f411f2c58685b88e8860dc21806daa079e8d997bc"
+    },
+    {
+      "path": "assets/js/39-hei-recompute-watchdog-v5.js",
+      "bytes": 3282,
+      "sha256": "91e92a24427d55b58bdd8c503cbd5fefc0dec9bd6528374ee5e15f8728305177"
+    },
+    {
+      "path": "assets/js/40-harvard-hei-bridge-v5.js",
+      "bytes": 19125,
+      "sha256": "fce4b5ee2dfc5c0a29227af5bfbb5495a3692f152b687f77e1aaee9167453653"
+    },
+    {
+      "path": "assets/js/41-harvard-plate-accordion-cleanup-v5.js",
+      "bytes": 29636,
+      "sha256": "aabd8a143f77508a11d5007f5ff9c149735faaac48d6e197fe9ac554c8ec61be"
+    },
+    {
+      "path": "assets/js/42-harvard-smart-rebalance-v5.js",
+      "bytes": 21616,
+      "sha256": "2e5dc06412c0f69ffa8b8e89d3cbd5ce875d65c453a311ebf136913894060fe0"
+    },
+    {
+      "path": "assets/js/43-harvard-whatif-simulator-v5.js",
+      "bytes": 30255,
+      "sha256": "8d8f4c2f800c02d03a3df500ee1ce1b3155cf5a47fdaa0708b6249d5aa534d22"
+    },
+    {
+      "path": "assets/js/44-harvard-apply-plan-v5.js",
+      "bytes": 16687,
+      "sha256": "8120f03557c572fca0778debfd9a4b2340898537850c954378d2d81d72c7a2ea"
+    },
+    {
+      "path": "assets/js/45-interaction-state-guard-v5.js",
+      "bytes": 1136,
+      "sha256": "26caddcfb8b32dcc2c75fc473dbc71b6c0ff746dc689db8b55c29d4c30e51a59"
+    },
+    {
+      "path": "assets/js/46-harvard-event-scroll-hardlock-v5.js",
+      "bytes": 4396,
+      "sha256": "5ad01bbe6b3187849754308666b5540aac09cac2bf91b70d3cff12b5107b95a5"
+    },
+    {
+      "path": "assets/js/47-resource-error-diagnostics-v5.js",
+      "bytes": 1174,
+      "sha256": "0894b00ef691277bf67b5f6ebc15c055f8fa1d200392d5f4c3eec2cbe82a0857"
+    },
+    {
+      "path": "assets/js/48-pdf-export-safe-v5.js",
+      "bytes": 9143,
+      "sha256": "3741da7458610d31809ba2f29646ca09706778841197481b868edcf5c16092ee"
+    },
+    {
+      "path": "assets/js/49-harvard-ux-regression-selftest-v5.js",
+      "bytes": 8027,
+      "sha256": "097383e65617db216cb2e94c42ae6e991317bde9bf30a29507843164836382f4"
+    },
+    {
+      "path": "assets/js/50-integrated-diet-analysis-profile-v5.js",
+      "bytes": 177413,
+      "sha256": "d2d10c60e432b4d9a1c568198b829f7f5a551dc542db55b6c855be5e4d073628"
+    },
+    {
+      "path": "assets/js/51-composite-food-decomposer-v5.js",
+      "bytes": 7103,
+      "sha256": "a1f486d03f71ed4aa21f98c70ec16a3e3b1b7213fa130c841d5aaf06f352bf8a"
+    },
+    {
+      "path": "assets/js/52-composite-food-folder-ui-v5.js",
+      "bytes": 101708,
+      "sha256": "a082d5aa6f7ab5b77c0cb8f681e24340d45b37ba3c5e529ac13848b508b3d287"
+    },
+    {
+      "path": "assets/js/53-personal-profile-mobile-polish-v5.js",
+      "bytes": 1829,
+      "sha256": "a31692400cd04297e637bc32122d6ec66f96ab9434a40ffce88802e293f50a25"
+    },
+    {
+      "path": "assets/js/53-ration-clarity-analytics-v5.js",
+      "bytes": 1175,
+      "sha256": "89f9a29af551b6bb6ff417ab45704cc240578e9aa8238a1a08d6bd0d87b6eae8"
+    },
+    {
+      "path": "assets/js/54-ui-design-audit-v5.js",
+      "bytes": 6780,
+      "sha256": "11793445bea1caa835972c46293b77100c6af84583d0d092bb15bc15dd2b2d98"
+    },
+    {
+      "path": "assets/js/55-design-system-audit-v5.js",
+      "bytes": 2569,
+      "sha256": "a8be4ed5ace963dbed6aa72d2787b8d5b8737c08a0e97ad031d8b1b99d83a751"
+    },
+    {
+      "path": "assets/js/56-hei-recommendations-critical-pass-v5.js",
+      "bytes": 36614,
+      "sha256": "4c64ee5746e39d65cd829478f2d03a76979d3f5314c0fb92cd4debf9906f5a0a"
+    },
+    {
+      "path": "assets/js/57-hei-recommendations-personalization-pass-v5.js",
+      "bytes": 35346,
+      "sha256": "1bb4ba5dbe3061364ff8e1374e0a331431351b1fbdba154e5efa1a9818465fed"
+    },
+    {
+      "path": "assets/js/58-hei-recommendations-language-polish-v5.js",
+      "bytes": 7171,
+      "sha256": "cbd061be3098d9fbb71c92b02448097e4b58a6f7b05f2a1f75f9e95997094994"
+    },
+    {
+      "path": "assets/js/59-ui-ux-consolidation-v5.js",
+      "bytes": 8233,
+      "sha256": "b28bbd3b3f610f6d1837968597c7b85a3fb279727079b2341bc67718093870c7"
+    },
+    {
+      "path": "assets/js/60-norm-region-clarity-v5.3.210-rc2-hf18.js",
+      "bytes": 12966,
+      "sha256": "bdf0d43048414109841be2faa097a0e3e890a1588b0d550374d19e9f597b5085"
+    },
+    {
+      "path": "assets/js/61-ai-nutrition-planner-v5.3.210.js",
+      "bytes": 111415,
+      "sha256": "3ff00a7f74346c9ab6af7eaf03a48bce912085dd8a317bb7f2e4e41e70eb98ec"
+    },
+    {
+      "path": "assets/js/62-gemini-ration-import-v5.js",
+      "bytes": 162947,
+      "sha256": "ce8b90335a9d61e3d78f8e956bdec9225833bffdf43d4266efca5a6701157a0a"
+    },
+    {
+      "path": "assets/js/63-preparation-family-foundation-v5.js",
+      "bytes": 16283,
+      "sha256": "038cf6c969d221b64e914de0b3dcf31a91b1fd1d48dccf02a2156a05e2d2617b"
+    },
+    {
+      "path": "assets/js/64-preparation-aware-gemini-matching-v5.js",
+      "bytes": 19098,
+      "sha256": "280df6860a0d78d68d6d225d4cd4d286c8f104981ee7aac3264567b130b355ba"
+    },
+    {
+      "path": "assets/js/65-preparation-family-ui-v5.js",
+      "bytes": 35146,
+      "sha256": "01b319993284a2d2789c92c9983c43a44d5823f0f3dcac265e6e0b1d1d246b91"
+    },
+    {
+      "path": "assets/js/66-ration-state-recovery-v5.3.207.js",
+      "bytes": 3556,
+      "sha256": "d3d77b7aeac5eb55ff6019cf55387063b843e45864abe68d0a00b3b7e32a1fcf"
+    },
+    {
+      "path": "assets/js/67-professional-workflow-restoration-v5.3.210-rc2.js",
+      "bytes": 10466,
+      "sha256": "7104415d3083983aad2c2c2803188579fdab1a3c223b20dbeb49aab79b5e63d0"
+    },
+    {
+      "path": "assets/js/69-release-support-v5.3.210-rc2.js",
+      "bytes": 14015,
+      "sha256": "929541f716a480d07b65f0c9e13d28419cdc37311b97f5a6f4435895434bad61"
+    },
+    {
+      "path": "assets/js/70-hei2020-core-v5.3.210-rc2-hf3.js",
+      "bytes": 6506,
+      "sha256": "b2d7ba39187d2ed688206581ea4213ec9cc4d2c777ae34edcd168c06b724de73"
+    },
+    {
+      "path": "assets/js/71-hei2020-input-adapter-v5.3.210-rc2-hf3.js",
+      "bytes": 7178,
+      "sha256": "0d2775f719d52963141a3c6ceb1ae19b82accdd2cb898613f0dd54ed0fd2ef9c"
+    },
+    {
+      "path": "assets/js/72-diet-interpretation-engine-v5.3.210-rc2-hf3.js",
+      "bytes": 13440,
+      "sha256": "3dc9c6ee6369b8c7a1bf89be2afcff355e30f2a55517ba6ecdea6027b8ba59da"
+    },
+    {
+      "path": "assets/js/73-hei2020-runtime-bridge-v5.3.210-rc2-hf3.js",
+      "bytes": 2078,
+      "sha256": "fe7999e4124f81b6cdf9645f9b512eda11f1d726e3afc9968e0a1dd00f7164a6"
+    },
+    {
+      "path": "assets/js/74-hei2020-regression-selftest-v5.3.210-rc2-hf3.js",
+      "bytes": 2130,
+      "sha256": "aaded9dbb22ea1085c39ff6106c0452666bbba89555cd96ed431d7054bb6f7a8"
+    },
+    {
+      "path": "assets/js/75-navigation-shell-v5.3.210-rc2-hf17.js",
+      "bytes": 29875,
+      "sha256": "afd01610d22bf885e21db4c0375e160efcb1fba32e064046720e1bd4305c7764"
+    },
+    {
+      "path": "assets/js/76-navigation-shell-selftest-v5.3.210-rc2-hf17.js",
+      "bytes": 1723,
+      "sha256": "21c4a7ce25f964e8f36eeb19b69160fc8ecf68863b8e698b92054a57bbf0732e"
+    },
+    {
+      "path": "assets/js/77-workspace-ration-overview-v5.3.210-rc2-hf15.js",
+      "bytes": 31596,
+      "sha256": "dd23d4cead552199bf59e6f70a6de87d4afa9e09a0b27bd07d75d35f5fbf4002"
+    },
+    {
+      "path": "assets/js/78-workspace-ration-overview-selftest-v5.3.210-rc2-hf8.js",
+      "bytes": 1375,
+      "sha256": "bf0ed14bb582a15c41c8675cbeb2d83be1733f66aed9c374376657633e34660d"
+    },
+    {
+      "path": "assets/js/79-workspace-analysis-detail-v5.3.210-rc2-hf7.js",
+      "bytes": 51995,
+      "sha256": "a870dfc79b14f5648e24eceb33bcac0395f9b0a67f46bf3af2c433f0861c2b69"
+    },
+    {
+      "path": "assets/js/80-workspace-analysis-detail-selftest-v5.3.210-rc2-hf8.js",
+      "bytes": 1816,
+      "sha256": "1577619418780e2e0e345b701c85e8b8848abf6f81819557ab6e13b57dbcd01b"
+    },
+    {
+      "path": "assets/js/81-workspace-profile-needs-v5.3.210-rc2-hf18.js",
+      "bytes": 13285,
+      "sha256": "83bed548781a6fee0471e9d21d7b28f49a060074a5fcf9f64acb9edf15125259"
+    },
+    {
+      "path": "assets/js/82-workspace-profile-needs-selftest-v5.3.210-rc2-hf18.js",
+      "bytes": 1285,
+      "sha256": "1d4f88f4d911fba3ef6cde6726a33140799fc157aff65d8af7a2f5cd2241c4de"
+    },
+    {
+      "path": "assets/js/83-workspace-correction-v5.3.210-rc2-hf11.js",
+      "bytes": 50788,
+      "sha256": "4cab95e54aca88a8da30ebc4fb01978670b4687a32ab9ab3a30e1890f396685c"
+    },
+    {
+      "path": "assets/js/84-workspace-correction-selftest-v5.3.210-rc2-hf11.js",
+      "bytes": 1863,
+      "sha256": "c7f10c1d77b0b81b5316940bbab09d2a9e32ce555842a5b7f35cb1848c92a4df"
+    },
+    {
+      "path": "assets/js/85-workspace-correction-stage3b-v5.3.210-rc2-hf12.js",
+      "bytes": 24521,
+      "sha256": "36278a0a5b49ace0dbecdf234f5a0fd99441bbd791cb3c93f23809732978ce7d"
+    },
+    {
+      "path": "assets/js/86-workspace-correction-stage3b-selftest-v5.3.210-rc2-hf12.js",
+      "bytes": 903,
+      "sha256": "618beccadb8fcb70a1b3bc71634ba8e26aa3d5971b3b79a7493ae1e81a3313e4"
+    },
+    {
+      "path": "assets/js/87-workspace-report-v5.3.210-rc2-hf14.js",
+      "bytes": 37140,
+      "sha256": "352bb2258463de1a746c8c7ee5dabccc9ebd632769bd483017a54b5e011e188d"
+    },
+    {
+      "path": "assets/js/88-workspace-report-selftest-v5.3.210-rc2-hf13.js",
+      "bytes": 1486,
+      "sha256": "cebf16002d5940d7b5a7617396a4539cd84af7b3c95dc3fef12fc6372a44d0af"
+    },
+    {
+      "path": "assets/js/89-workspace-entry-ux-v5.3.210-rc2-hf21.js",
+      "bytes": 9840,
+      "sha256": "f41d84486a5aa3f536add7485ba15f427f54f7bd27f400a5a414058aae07c938"
+    },
+    {
+      "path": "assets/js/89-workspace-entry-ux-v6.0.0-alpha1.js",
+      "bytes": 14323,
+      "sha256": "94b77ca72432fa71695c364d905c7d1aa83cb4513b6bf0d41f93a7b966d46be2"
+    },
+    {
+      "path": "assets/js/90-media-entry-resilient-bridge-v5.3.210-rc2-hf28.js",
+      "bytes": 18385,
+      "sha256": "e35cc7457b7d5f13fe0b51be9fbd1561ff084ff5ab048d8aaeb8a886e8d7bc58"
+    },
+    {
+      "path": "assets/js/91-navigation-access-hotfix-v6.0.0-beta6-hf1.js",
+      "bytes": 7020,
+      "sha256": "9afb193985acd30141a5ea47fdeddd31d133e365bac44510f6c2c1425f044803"
+    },
+    {
+      "path": "assets/js/92-usability-recovery-v6.0.0-beta6-hf2.js",
+      "bytes": 19134,
+      "sha256": "8044aa1953e1cfae753a55d86f64a444159f89b1da6d8e6a46e9a25a479f5c4b"
+    },
+    {
+      "path": "assets/js/93-quality-completion-v6.0.0-beta6-hf3.js",
+      "bytes": 15701,
+      "sha256": "1e979cd0931ee421093162bc10c90a6606e381ee72beb1cd0a21bfed2f89716f"
+    },
+    {
+      "path": "assets/js/94-theme-parity-typography-v6.0.0-beta6-hf4.js",
+      "bytes": 21909,
+      "sha256": "1ba86c17f6784cdc8ae76092719902ef7af00694ff7998c3161ba9c006f6b2ae"
+    },
+    {
+      "path": "assets/js/analysis-feature-continuity-v6.0.0-beta1.js",
+      "bytes": 1452,
+      "sha256": "a9bab46e28e2f34049ddabe87716adfaf2a08111b9d62a4fd6b469f61ed80a01"
+    },
+    {
+      "path": "assets/js/interaction-state-controller-v6.0.0-beta3.js",
+      "bytes": 10421,
+      "sha256": "6acba9743be16ce045132f5515de855abf2672f1cf22a61937b7dc4c137634e1"
+    },
+    {
+      "path": "assets/js/ivory-brass-charts-v6.js",
+      "bytes": 4722,
+      "sha256": "bf7c0a4030f59ac192def85143ec647f85a136058ac6066d260a4dae6bcf2203"
+    },
+    {
+      "path": "assets/js/ivory-brass-search-compact-v6.js",
+      "bytes": 3633,
+      "sha256": "3d1ec30000199d44de4e915247ec1719d7c8987faccb58db589d7f34f6abf3d5"
+    },
+    {
+      "path": "assets/js/ivory-brass-shell-v6.js",
+      "bytes": 21118,
+      "sha256": "13bdfdab00021b87a45ee05b262ec11df0a49632d619ceea441e6915fbc17eab"
+    },
+    {
+      "path": "assets/js/ivory-brass-view-model-v6.js",
+      "bytes": 9156,
+      "sha256": "557a91eefc6aa88434153a2bba962790b3d348b9899c2a7e2cc4cb5545e2910b"
+    },
+    {
+      "path": "assets/js/profile-hierarchy-v6.0.0-beta5.js",
+      "bytes": 12555,
+      "sha256": "3b3b2264ccf1c4a95eca47557da86188c75f24a9739ad2718ae2931a5d3b23c0"
+    },
+    {
+      "path": "assets/js/profile-persistence-v6.0.0-beta5.js",
+      "bytes": 21374,
+      "sha256": "ac63c2c43efd97f91b5ad30da1224f1d4465725651698f826393b220fc559e7a"
+    },
+    {
+      "path": "assets/js/theme-controller-v2.js",
+      "bytes": 4327,
+      "sha256": "246bfd835dc40a524bae64bdae84a3c811264e99df1be0f85365905f83adbb99"
+    },
+    {
+      "path": "assets/js/theme-retro-2bit-export-v1.js",
+      "bytes": 8084,
+      "sha256": "49f934c300323675110ee69f53a84d267d1d799c4acd1dab1a57692a5480396e"
+    },
+    {
+      "path": "assets/js/theme-retro-2bit-graphics-v1.js",
+      "bytes": 6962,
+      "sha256": "7b376650b2af32e3fa82e750925fc1c46d6550ea228ad30a690d78b6bcb9567f"
+    },
+    {
+      "path": "assets/legacy/compat-polyfills-v5.3.192.js",
+      "bytes": 6893,
+      "sha256": "3e2ede163825d0dd2456dad75142695f9ba0c5cfffc98721546464f660428526"
+    },
+    {
+      "path": "assets/legacy/compat-runtime-bridge-v5.3.192.js",
+      "bytes": 4979,
+      "sha256": "b086577a8f43afae59caf3def1827e93d00bf1277f662b6eaeafb6c91bbeb7f4"
+    },
+    {
+      "path": "assets/legacy/data/composite-food-models.v5.3.145.js",
+      "bytes": 83248,
+      "sha256": "8b0a777d15594de68d40518ba1fb02d02920fb6fe9767e959eac0087330d2960"
+    },
+    {
+      "path": "assets/legacy/data/formula-registry.v5.3.210-p1.4.js",
+      "bytes": 38648,
+      "sha256": "5908d66a0269833a14c3443ea13e95b40f0c0cfaee4b85331f5c33467a284eef"
+    },
+    {
+      "path": "assets/legacy/data/normative-registry.v5.3.210-p1.2.js",
+      "bytes": 42001,
+      "sha256": "dac740aeeb55b153d8984c2c2b1595e5cbd215bca25dd5c7c0b76c32c5f7ab40"
+    },
+    {
+      "path": "assets/legacy/data/preparation-calculation-guard.v5.3.190.js",
+      "bytes": 1683,
+      "sha256": "0596b3b1ba65d4b742afd085d76852de29ac3629a23a0ce7b9e733e1ac95df8f"
+    },
+    {
+      "path": "assets/legacy/data/preparation-family-registry.v5.3.190.js",
+      "bytes": 783846,
+      "sha256": "45b319a1977d69bec4e336e5861e572efccfcd7b8de0d903c2cf0c728c8b752a"
+    },
+    {
+      "path": "assets/legacy/data/product-provenance-registry.v5.3.210-p1.3.js",
+      "bytes": 9261,
+      "sha256": "17ef9663d37138312b298de94a5052ffa6532a73705c9042d8d291dc53de0004"
+    },
+    {
+      "path": "assets/legacy/data/ux-decision-hierarchy.v5.3.210-p1.5.js",
+      "bytes": 3297,
+      "sha256": "f9969029af3e0eaad5c36b344b2da8bb3a46a090681740d37ef97620a9e3a6c3"
+    },
+    {
+      "path": "assets/legacy/data/validation-evidence-policy.v5.3.210-pc2.js",
+      "bytes": 7363,
+      "sha256": "fe5bfa0e6509666013fc5bd0c58e399d40c59e1ff18a72f54e3c1615d36e0959"
+    },
+    {
+      "path": "assets/legacy/js/00-runtime-bootstrap-v6.0.0-beta6.legacy.js",
+      "bytes": 78367,
+      "sha256": "26a13ba75e67e6492dc802e11edc011be1100341ce43d29964b325f2d8c0294e"
+    },
+    {
+      "path": "assets/legacy/js/01-hei-module.js",
+      "bytes": 76968,
+      "sha256": "ba45a4bb6b6a3bd1ae068edc2233c68b5cee8441a365bb1dedc1a0ab6eec5fdd"
+    },
+    {
+      "path": "assets/legacy/js/02-product-data-quality-v5.3.210-p1.3.js",
+      "bytes": 6705,
+      "sha256": "30e1283b2cc2ebbedba300bb380d9851da528076b6844b1b7e3ed5ebc82144ce"
+    },
+    {
+      "path": "assets/legacy/js/03-app-core-v5.3.208.js",
+      "bytes": 255111,
+      "sha256": "0a3727626e6d7f0560c306fc823b74e69d273c4abeea3930521658d76864230d"
+    },
+    {
+      "path": "assets/legacy/js/04-needs-norms.js",
+      "bytes": 167100,
+      "sha256": "6156a706b9642be92e1c675a1585d7d45ec30fc43bcba4ac3c5edb27481d0c98"
+    },
+    {
+      "path": "assets/legacy/js/05-hei-bridges.js",
+      "bytes": 14307,
+      "sha256": "ac549f8e2da2fc72dbf9add0993b476b18d891a1fe49151786ce6dd75cd086f8"
+    },
+    {
+      "path": "assets/legacy/js/05-protected-modes-v5.3.210.js",
+      "bytes": 4280,
+      "sha256": "e0d2d41fd4e84a38dc863e371facab288b47d72ea962aa63d0dbf84468d081ea"
+    },
+    {
+      "path": "assets/legacy/js/06-dialogs-export-print-v5.3.207.js",
+      "bytes": 388563,
+      "sha256": "4123ec5f3619a8b9f6d53259e364c1b2b85ba5d3b40ad012d2fd37385eaecd48"
+    },
+    {
+      "path": "assets/legacy/js/08-ux-search-mobile-v5.3.210-rc2-hf15.js",
+      "bytes": 40663,
+      "sha256": "bc8ad0f690041485cfae76e17c843d3d53b02a003385cdf1ccf702d6f0b80438"
+    },
+    {
+      "path": "assets/legacy/js/10-ui-polish-v5.3.210-rc2-hf8.js",
+      "bytes": 12121,
+      "sha256": "0c8c23f43604f72b12adcb6ad639bbb08e8af36fccd2fdc779cc87af3794b9b6"
+    },
+    {
+      "path": "assets/legacy/js/12-accessibility-readability.js",
+      "bytes": 13121,
+      "sha256": "156c00e9a69d8f3cf3c0a95ee25d09826ba4edaf83bfd6067296324b1541d680"
+    },
+    {
+      "path": "assets/legacy/js/13-needs-first-step.js",
+      "bytes": 1954,
+      "sha256": "a04a6f3b546a344f5bf637901b0186002a38a8b0e647318fe014dd65bd046305"
+    },
+    {
+      "path": "assets/legacy/js/15-search-usability-tuning.js",
+      "bytes": 10732,
+      "sha256": "9d73b417b056acf638457aecf2ee5974aa155baa344c055ed6f7170a22934175"
+    },
+    {
+      "path": "assets/legacy/js/16-visual-cleanup.js",
+      "bytes": 2210,
+      "sha256": "b4179e7a24dfa4ef27215a6a1df145c9bd6a4de4650b6c35981d4412808bba4d"
+    },
+    {
+      "path": "assets/legacy/js/17-readability-catalog-fix.js",
+      "bytes": 4372,
+      "sha256": "c99e33a400cb18abdc90842c83ff6f9846479240efc8636bbb8c63b98219fdb4"
+    },
+    {
+      "path": "assets/legacy/js/18-catalog-group-labels-final.js",
+      "bytes": 9160,
+      "sha256": "6839b9b6462b26a7ff264c973b80e1723a3114cad756d2f8be14fcda7507032d"
+    },
+    {
+      "path": "assets/legacy/js/19-serving-units.js",
+      "bytes": 11966,
+      "sha256": "1f0090d13e17932a8b43d4b00cb3d4c2d9db587182ef54e0c8e49564a15d4cd6"
+    },
+    {
+      "path": "assets/legacy/js/23-mobile-ration-cards.js",
+      "bytes": 6820,
+      "sha256": "b66e099db9d13158ed68266b51b9ff0e16df448f3c49d1759bf3b9d18eb8f873"
+    },
+    {
+      "path": "assets/legacy/js/24-unit-quick-input.js",
+      "bytes": 29457,
+      "sha256": "6569d8f113aca6caa253a604417e7925890c6373ce0803dac4f7b72c770be095"
+    },
+    {
+      "path": "assets/legacy/js/26-harvard-plate-v5-masks.js",
+      "bytes": 2896,
+      "sha256": "24a46c49437f67cdf3be1835eeac600849cfcb3e10431403d79fed3cb89d25fd"
+    },
+    {
+      "path": "assets/legacy/js/26-harvard-plate-v5-stage-engine.js",
+      "bytes": 14873,
+      "sha256": "cec53bcabfd2352bc1e6529c949209da4cfa142a7b23af19af41836eca0d16e5"
+    },
+    {
+      "path": "assets/legacy/js/29-report-builder-v5.js",
+      "bytes": 141359,
+      "sha256": "71f38e0eb2836df76915e50587e8c297fb720d62ad4ad3d427ee84309f7ca388"
+    },
+    {
+      "path": "assets/legacy/js/30-methodology-governance-v5.js",
+      "bytes": 11572,
+      "sha256": "076b6601c77b1409d18c29f4823ade9dc8f5235705e7996a9e5ff3f3af9bf62d"
+    },
+    {
+      "path": "assets/legacy/js/34-harvard-plate-v5-diagram-remaster.js",
+      "bytes": 115877,
+      "sha256": "f2eccf0158e9da74c9f060226b55c9dd86468f6c380cf9c86d091289dd32f316"
+    },
+    {
+      "path": "assets/legacy/js/35-mobile-ergonomics-v5.js",
+      "bytes": 7348,
+      "sha256": "37be7d072e789f90795bfacc2c3fd5f56ea32c17cc5bdb8309c96c55fa76ab95"
+    },
+    {
+      "path": "assets/legacy/js/36-mobile-critical-fix-v5.js",
+      "bytes": 3410,
+      "sha256": "f1ad386c69b8d5b19dc5dd00997c6009f1c7adde13150baaeeceeada5d5a0653"
+    },
+    {
+      "path": "assets/legacy/js/38-mobile-hei-dashboard-v5.js",
+      "bytes": 9728,
+      "sha256": "0f716ea1def4a85cccb05a31f2a2de1c2182b3a016e0f626f07e4394ebe1f3f7"
+    },
+    {
+      "path": "assets/legacy/js/39-hei-recompute-watchdog-v5.js",
+      "bytes": 3853,
+      "sha256": "5729f256a78e141968ff5bdc7b3686e80f30cb90393a95adb24dd4c89a707510"
+    },
+    {
+      "path": "assets/legacy/js/40-harvard-hei-bridge-v5.js",
+      "bytes": 21418,
+      "sha256": "a45ec4bdde75de679bc808919a09ef2a44347b4f77d7d52477bcbcadb96b0783"
+    },
+    {
+      "path": "assets/legacy/js/41-harvard-plate-accordion-cleanup-v5.js",
+      "bytes": 33002,
+      "sha256": "2183fe4d7cc94ac4af3140eb506b3e23e65c58888414486e21b6140ff97805fa"
+    },
+    {
+      "path": "assets/legacy/js/42-harvard-smart-rebalance-v5.js",
+      "bytes": 24610,
+      "sha256": "e2b1f08b3023cee36619cdc5595ba028e428e762adfc5af5c79d2ab63b5b25eb"
+    },
+    {
+      "path": "assets/legacy/js/43-harvard-whatif-simulator-v5.js",
+      "bytes": 28239,
+      "sha256": "600a04e69ffb7dc3cbff26d44232e1ae977eaba7a41b9fb7f769ab07eb835b40"
+    },
+    {
+      "path": "assets/legacy/js/44-harvard-apply-plan-v5.js",
+      "bytes": 19454,
+      "sha256": "0039de997385c61eee0e6a6b266c38b024d6174dbc02c021e8914ce6c9473fbb"
+    },
+    {
+      "path": "assets/legacy/js/45-interaction-state-guard-v5.js",
+      "bytes": 1253,
+      "sha256": "d3bb6e4437d6868ebf528c19e3692d93e45f4bb697596cf065fe04c764d1141d"
+    },
+    {
+      "path": "assets/legacy/js/46-harvard-event-scroll-hardlock-v5.js",
+      "bytes": 5068,
+      "sha256": "d704818794dad324e14639da29340ebaebb8d5218bb509038687e766df9f5c70"
+    },
+    {
+      "path": "assets/legacy/js/47-resource-error-diagnostics-v5.js",
+      "bytes": 1472,
+      "sha256": "3a61b732f36c39b24d3a7d4dda93df596a083ff676d0464214ed0c5900a65122"
+    },
+    {
+      "path": "assets/legacy/js/48-pdf-export-safe-v5.js",
+      "bytes": 10540,
+      "sha256": "bb8f07eb2d6a462da8123277a30978db3f7894353a571bc4c5d3975bb6a27a72"
+    },
+    {
+      "path": "assets/legacy/js/49-harvard-ux-regression-selftest-v5.js",
+      "bytes": 8617,
+      "sha256": "e7400a20dac522104dba9548f834a2341bc0cbd8ef65b502cb13cc33a546e989"
+    },
+    {
+      "path": "assets/legacy/js/50-integrated-diet-analysis-profile-v5.js",
+      "bytes": 177413,
+      "sha256": "d2d10c60e432b4d9a1c568198b829f7f5a551dc542db55b6c855be5e4d073628"
+    },
+    {
+      "path": "assets/legacy/js/51-composite-food-decomposer-v5.js",
+      "bytes": 7901,
+      "sha256": "f3941556af3d87a244dc62462d1ba5a519588c9ef53482170b03415a3d6aa515"
+    },
+    {
+      "path": "assets/legacy/js/52-composite-food-folder-ui-v5.js",
+      "bytes": 109199,
+      "sha256": "b8ed75fee43a422d30ea9dea4fc9a64bd64c1643707ec809385380350f83f1db"
+    },
+    {
+      "path": "assets/legacy/js/53-personal-profile-mobile-polish-v5.js",
+      "bytes": 2120,
+      "sha256": "e3862fd04e4c4f7f267b9cbf07886d41638759f45a6a3181159bcf9f05ccf96e"
+    },
+    {
+      "path": "assets/legacy/js/53-ration-clarity-analytics-v5.js",
+      "bytes": 1394,
+      "sha256": "7eed6bbd62a65e2b3af10e6ec82480b18a3e36014b52037596a9f3266e2ad81a"
+    },
+    {
+      "path": "assets/legacy/js/54-ui-design-audit-v5.js",
+      "bytes": 8365,
+      "sha256": "a32c382ca0a26a0452a3846cdd8350268f69e6238cee5065a8400f57fab65251"
+    },
+    {
+      "path": "assets/legacy/js/55-design-system-audit-v5.js",
+      "bytes": 3177,
+      "sha256": "4b0294bc61cf556ff9c6167cbfa71ebe0442ad7cd951861fa0b1ea6f91c0cec6"
+    },
+    {
+      "path": "assets/legacy/js/56-hei-recommendations-critical-pass-v5.js",
+      "bytes": 40579,
+      "sha256": "63d08d2124e74d4cdcc4f09a71c9f0e55dbaf019bd47c891b829e20074dc200e"
+    },
+    {
+      "path": "assets/legacy/js/57-hei-recommendations-personalization-pass-v5.js",
+      "bytes": 42208,
+      "sha256": "ababfda362bd9ef04e9d314f72ebb5463bb12922b02a8430df03a40ce4b80fc6"
+    },
+    {
+      "path": "assets/legacy/js/58-hei-recommendations-language-polish-v5.js",
+      "bytes": 8030,
+      "sha256": "28dbe8d3f4f5e2ca9825cb7ff6ef82fce030d8289c1cbb3511b23cb0cc2d4774"
+    },
+    {
+      "path": "assets/legacy/js/59-ui-ux-consolidation-v5.js",
+      "bytes": 9921,
+      "sha256": "12823e2011509dac4b0520b951eb0eafce40a481a45d553aaf40b162b447770f"
+    },
+    {
+      "path": "assets/legacy/js/60-norm-region-clarity-v5.3.210-rc2-hf18.js",
+      "bytes": 12966,
+      "sha256": "bdf0d43048414109841be2faa097a0e3e890a1588b0d550374d19e9f597b5085"
+    },
+    {
+      "path": "assets/legacy/js/61-ai-nutrition-planner-v5.3.210.js",
+      "bytes": 110257,
+      "sha256": "aec90e37d40f30440a186ae963f9970102fd9ed95c27f9c8699bd9b3fd6c26e5"
+    },
+    {
+      "path": "assets/legacy/js/62-gemini-ration-import-v5.js",
+      "bytes": 232379,
+      "sha256": "41fb852e098029fb727353d7b16119672ebe1ce90e1210a05d73a9ff07cad52a"
+    },
+    {
+      "path": "assets/legacy/js/63-preparation-family-foundation-v5.js",
+      "bytes": 19253,
+      "sha256": "78d82077293508d0763ec27064273c64d22bd605a641d34680a0b4f3fa241b0d"
+    },
+    {
+      "path": "assets/legacy/js/64-preparation-aware-gemini-matching-v5.js",
+      "bytes": 21488,
+      "sha256": "bad0b7ae491314999721ef685acbe92d53d985a4d8ce5bb38c7929ec8d69639b"
+    },
+    {
+      "path": "assets/legacy/js/65-preparation-family-ui-v5.js",
+      "bytes": 41134,
+      "sha256": "92de35698d14b403a7f99f7f59d128c927faea34cb9e9022a5034dd82af5c4fe"
+    },
+    {
+      "path": "assets/legacy/js/66-ration-state-recovery-v5.3.207.js",
+      "bytes": 3556,
+      "sha256": "d3d77b7aeac5eb55ff6019cf55387063b843e45864abe68d0a00b3b7e32a1fcf"
+    },
+    {
+      "path": "assets/legacy/js/67-professional-workflow-restoration-v5.3.210-rc2.js",
+      "bytes": 10466,
+      "sha256": "7104415d3083983aad2c2c2803188579fdab1a3c223b20dbeb49aab79b5e63d0"
+    },
+    {
+      "path": "assets/legacy/js/69-release-support-v5.3.210-rc2.js",
+      "bytes": 14015,
+      "sha256": "929541f716a480d07b65f0c9e13d28419cdc37311b97f5a6f4435895434bad61"
+    },
+    {
+      "path": "assets/legacy/js/70-hei2020-core-v5.3.210-rc2-hf3.js",
+      "bytes": 6506,
+      "sha256": "b2d7ba39187d2ed688206581ea4213ec9cc4d2c777ae34edcd168c06b724de73"
+    },
+    {
+      "path": "assets/legacy/js/71-hei2020-input-adapter-v5.3.210-rc2-hf3.js",
+      "bytes": 7178,
+      "sha256": "0d2775f719d52963141a3c6ceb1ae19b82accdd2cb898613f0dd54ed0fd2ef9c"
+    },
+    {
+      "path": "assets/legacy/js/72-diet-interpretation-engine-v5.3.210-rc2-hf3.js",
+      "bytes": 13440,
+      "sha256": "3dc9c6ee6369b8c7a1bf89be2afcff355e30f2a55517ba6ecdea6027b8ba59da"
+    },
+    {
+      "path": "assets/legacy/js/73-hei2020-runtime-bridge-v5.3.210-rc2-hf3.js",
+      "bytes": 2078,
+      "sha256": "fe7999e4124f81b6cdf9645f9b512eda11f1d726e3afc9968e0a1dd00f7164a6"
+    },
+    {
+      "path": "assets/legacy/js/75-navigation-shell-v5.3.210-rc2-hf17.js",
+      "bytes": 29875,
+      "sha256": "afd01610d22bf885e21db4c0375e160efcb1fba32e064046720e1bd4305c7764"
+    },
+    {
+      "path": "assets/legacy/js/77-workspace-ration-overview-v5.3.210-rc2-hf15.js",
+      "bytes": 31596,
+      "sha256": "dd23d4cead552199bf59e6f70a6de87d4afa9e09a0b27bd07d75d35f5fbf4002"
+    },
+    {
+      "path": "assets/legacy/js/79-workspace-analysis-detail-v5.3.210-rc2-hf7.js",
+      "bytes": 51995,
+      "sha256": "a870dfc79b14f5648e24eceb33bcac0395f9b0a67f46bf3af2c433f0861c2b69"
+    },
+    {
+      "path": "assets/legacy/js/81-workspace-profile-needs-v5.3.210-rc2-hf18.js",
+      "bytes": 13285,
+      "sha256": "83bed548781a6fee0471e9d21d7b28f49a060074a5fcf9f64acb9edf15125259"
+    },
+    {
+      "path": "assets/legacy/js/83-workspace-correction-v5.3.210-rc2-hf11.js",
+      "bytes": 50788,
+      "sha256": "4cab95e54aca88a8da30ebc4fb01978670b4687a32ab9ab3a30e1890f396685c"
+    },
+    {
+      "path": "assets/legacy/js/85-workspace-correction-stage3b-v5.3.210-rc2-hf12.js",
+      "bytes": 24521,
+      "sha256": "36278a0a5b49ace0dbecdf234f5a0fd99441bbd791cb3c93f23809732978ce7d"
+    },
+    {
+      "path": "assets/legacy/js/87-workspace-report-v5.3.210-rc2-hf14.js",
+      "bytes": 37140,
+      "sha256": "352bb2258463de1a746c8c7ee5dabccc9ebd632769bd483017a54b5e011e188d"
+    },
+    {
+      "path": "assets/legacy/js/89-workspace-entry-ux-v5.3.210-rc2-hf21.js",
+      "bytes": 9840,
+      "sha256": "f41d84486a5aa3f536add7485ba15f427f54f7bd27f400a5a414058aae07c938"
+    },
+    {
+      "path": "assets/legacy/js/89-workspace-entry-ux-v6.0.0-alpha1.js",
+      "bytes": 14323,
+      "sha256": "94b77ca72432fa71695c364d905c7d1aa83cb4513b6bf0d41f93a7b966d46be2"
+    },
+    {
+      "path": "assets/loader/loader-assets-v5.3.37.json",
+      "bytes": 12026,
+      "sha256": "4cc3d34ce7b205746fd805383c621a03ed864e14c9d6dc93ee77d2884af83027"
+    },
+    {
+      "path": "assets/loader/loader-fallback-v5.3.37.png",
+      "bytes": 22503,
+      "sha256": "39b2745d56b638ffa285d184127855f3101d3e214b33df3ee8993cad985a49f0"
+    },
+    {
+      "path": "assets/loader/loader-sprite-sheet-retro-2bit-v5.3.148.png",
+      "bytes": 26310,
+      "sha256": "3df63caf4dbacab530070eb66ce57be1dd914c84b72f75e8a170b1ed1e5eef02"
+    },
+    {
+      "path": "assets/loader/loader-sprite-sheet-v5.3.37.png",
+      "bytes": 63496,
+      "sha256": "040e5bc2789b6e74c2a09d9b2d0add85f02cd78fdcf7f17189116882ed6ffef8"
+    },
+    {
+      "path": "assets/runtime/critical-shell-v5.3.210-rc2-hf22.js",
+      "bytes": 53250,
+      "sha256": "16a853c008a7be6b39872eac322f94e44c961c96b06cb362baa8925b8ff26100"
+    },
+    {
+      "path": "assets/runtime/critical-shell-v5.3.210-rc2-hf22.legacy.js",
+      "bytes": 53292,
+      "sha256": "142f0086f49303e180c35f59ea3b2ff3b35c31213c30f1e01f58b1dcc4b21959"
+    },
+    {
+      "path": "assets/runtime/critical-shell-v6.0.0-beta5.js",
+      "bytes": 76452,
+      "sha256": "00e13430a2fec202cd193801cf958d190b33e4f11dc5cc6b59a946c2ef7a85eb"
+    },
+    {
+      "path": "assets/runtime/critical-shell-v6.0.0-beta5.legacy.js",
+      "bytes": 76494,
+      "sha256": "67bafd92ea6854836f5a7bab4250b019309106e59c1ac80af2cfb038947593a2"
+    },
+    {
+      "path": "assets/runtime/deferred-runtime-v5.3.210-rc2-hf22.js",
+      "bytes": 3476195,
+      "sha256": "dab8114d746f17382aaac45df089a4ace88b48be4af09d5895c96a0f77b9affd"
+    },
+    {
+      "path": "assets/runtime/deferred-runtime-v5.3.210-rc2-hf22.legacy.js",
+      "bytes": 3448233,
+      "sha256": "aa34cea60fad13691cb3a68da3f1854f5564d4af97b7046bd3bdf5991ce9dc16"
+    },
+    {
+      "path": "assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js",
+      "bytes": 3317475,
+      "sha256": "f5000d3958e76798d65a8bc6a391c7402fa859d079a9ee32d681ca310889ac26"
+    },
+    {
+      "path": "assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js.gz",
+      "bytes": 619926,
+      "sha256": "53d2dafe4b7283cfaff1c7ca3db38b974d994d6d2ad6a83c5a01046cbbd87177"
+    },
+    {
+      "path": "assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js",
+      "bytes": 3289513,
+      "sha256": "e64123285b1d02ddbf216d255501914d42452a33b11fd55eccc375eed06d639a"
+    },
+    {
+      "path": "assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js.gz",
+      "bytes": 611333,
+      "sha256": "e7ebfd13c34003e35b46b958db3b99e102103e98bee79c2f35c75832114dc5f5"
+    },
+    {
+      "path": "assets/runtime/runtime-manifest-v5.3.210-rc2-hf22.js",
+      "bytes": 23920,
+      "sha256": "20516e24a185925e6f125d95d0144eb353978e57b46fe764fad0d97e3084cc61"
+    },
+    {
+      "path": "assets/runtime/runtime-manifest-v6.0.0-beta6.js",
+      "bytes": 24844,
+      "sha256": "0132a1c7cba603c4711af3fef6184fa285d447e9f192f74930a6ce712bae5b91"
+    },
+    {
+      "path": "assets/vendor/lamejs/lame.min.js",
+      "bytes": 156043,
+      "sha256": "15d285e2587b3bdbfd18a68de6ce07cc074f7480a82c3815da2dc1c348ec6df4"
+    },
+    {
+      "path": "config/runtime-assets.v6.0.0-beta6.json",
+      "bytes": 35626,
+      "sha256": "3b8a117391570fbd94644dad5bc1b6cb4d730b42c27212016eff0c9c9f62c209"
+    },
+    {
+      "path": "data/preparation-calculation-guard.v5.3.190.json",
+      "bytes": 1788,
+      "sha256": "4c5909b1b2eace5fe6ddc8e90bee087db55f5b4387b9e41ed73d11abd2374ef0"
+    },
+    {
+      "path": "data/preparation-database-map.v5.3.190.json",
+      "bytes": 688463,
+      "sha256": "d9d43ca4228d68b4d7e291376f76809a16e3d799edd80b1e319b6175d0b82ffb"
+    },
+    {
+      "path": "data/preparation-family-contract.v5.3.190.json",
+      "bytes": 7465,
+      "sha256": "2246141ce80e1688dd411f23a0fb3a5227561c626eaaed6fd3c25870c9354356"
+    },
+    {
+      "path": "data/preparation-family-migration-manifest.v5.3.190.json",
+      "bytes": 1070,
+      "sha256": "e5bc81b799c2536b73b421d12ae91753ecad1029f9a512987ab6db82a4861533"
+    },
+    {
+      "path": "data/preparation-family-registry.v5.3.190.json",
+      "bytes": 997990,
+      "sha256": "fc503f767e5deff29363c5fa9cf8d8be2561db7e4ea81b25ba75285bc40d4b98"
+    },
+    {
+      "path": "data/preparation-final-cross-pass5.v5.3.190.json",
+      "bytes": 3005,
+      "sha256": "1e7b287a16e2503429aa7ba6197c3d482cbc5409b5cdfe86c8f8274a7a4e74c3"
+    },
+    {
+      "path": "data/product-provenance-registry.v5.3.210-p1.3.json",
+      "bytes": 11159,
+      "sha256": "a2cc6b92a0bffd60da4857519f1a6042b001c5aac30355bb71f54ccdf1994b18"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.manifest.json",
+      "bytes": 4859,
+      "sha256": "9218ea065fde2212909a719d973a65a2a435e66381435385c479e3fa57806a43"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-01.json",
+      "bytes": 863442,
+      "sha256": "d60333af065558052b401f14abfc28d9d7b1a7e21c86f33161952f544da0b750"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-02.json",
+      "bytes": 797284,
+      "sha256": "59ecd8f1ba4d02cef0c25ea1353e2ccc43a95cca0776c0a37e3779bc49d718a9"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-03.json",
+      "bytes": 867197,
+      "sha256": "b84f337f691c724f1aabdcc47232df1541d756b28500a9f9acc6d1622000c0e9"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-04.json",
+      "bytes": 830988,
+      "sha256": "c6b8927f0998febf1b65b5ae8fe3dd0a9a2ea22849dd310bb79ae3b57d8d882a"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-05.json",
+      "bytes": 745583,
+      "sha256": "2707db503bb849007d03e2586f387aa74093ef9824a61a1b9d21a47621701232"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-06.json",
+      "bytes": 746232,
+      "sha256": "0f19812d8027db5636357065a1cfb2482268e0fc80799e95274d08a96c6ddf40"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-07.json",
+      "bytes": 706965,
+      "sha256": "d6f0e4d97421eb010ade2ec8bc27735d6000f9a42c85fa32248a82fbc80ce5d9"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-08.json",
+      "bytes": 882782,
+      "sha256": "bb512e383923cdba5cab75a27e0cfb26d1974ed9676c1aa28a1323d1372b60d4"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-09.json",
+      "bytes": 763036,
+      "sha256": "0f9e1e714fe8ed225f4039c929ba4f1b46dd3adf8eccfa122d5f49cf14ebf120"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-10.json",
+      "bytes": 860053,
+      "sha256": "8e965bd181990f380115e4b539cbe263bd1ded672577ebb6755273ee33ef6112"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-11.json",
+      "bytes": 627371,
+      "sha256": "48a66dfe33e1edbb2d1e054aee2d5416947fcaf8c767077aa925e83db4fbfcc4"
+    },
+    {
+      "path": "data/products.v5.3.210-p1.3.part-12.json",
+      "bytes": 33446,
+      "sha256": "abd780d652fc97b96a1732fb2054caf3b705bbfbe02e05cb51cc004e060a9bcc"
+    },
+    {
+      "path": "index-v5.3.210.html",
+      "bytes": 115439,
+      "sha256": "ddfb5be6d7da339ff94790b0ad7c98d20f6681d053c517546a47abdbe6ef2806"
+    },
+    {
+      "path": "index.html",
+      "bytes": 115439,
+      "sha256": "ddfb5be6d7da339ff94790b0ad7c98d20f6681d053c517546a47abdbe6ef2806"
+    },
+    {
+      "path": "privacy.html",
+      "bytes": 2184,
+      "sha256": "07b8cad50eb5d89fb2b1d6ebc609f272547b4942a80fdecf8b9e953d31b148dc"
+    },
+    {
+      "path": "release-sbom.spdx.json",
+      "bytes": 225135,
+      "sha256": "52095158396e6459d9112aa59a93996bce15e22354c220cc89cb62fa3849a0e6"
+    },
+    {
+      "path": "reports/v6-beta6-analysis-continuity.json",
+      "bytes": 82884,
+      "sha256": "8a7bd1f1528238cbe697a5d8b207785576f18c313d399b7400b31d40e2267949"
+    },
+    {
+      "path": "reports/v6-beta6-design-acceptance.json",
+      "bytes": 12631,
+      "sha256": "ff90dafd0eed5647348129749d7570f49e28202220c4eaddd12e9fff5c5d7203"
+    },
+    {
+      "path": "reports/v6-beta6-gemini-media-acceptance.json",
+      "bytes": 5152,
+      "sha256": "b4f7273615e3332c50f367fb3c44d9a070040e80c3b7a8837dec5aad5b9c31db"
+    },
+    {
+      "path": "reports/v6-beta6-hotfix1-navigation-access.json",
+      "bytes": 955,
+      "sha256": "17a24a78ed70417124867ba26908c1ce80b3a450acdcebd3b6b6e2f92ebd0e2e"
+    },
+    {
+      "path": "reports/v6-beta6-hotfix2-usability-analysis-recovery.json",
+      "bytes": 1220,
+      "sha256": "e177d73a214a01a7071ccd0d9a5defc9ac7814eb83a70169a9eec7b8375999b4"
+    },
+    {
+      "path": "reports/v6-beta6-hotfix3-quality-completion.json",
+      "bytes": 2877,
+      "sha256": "d897b03650dfaa129aa424a4f9b23394ef9cae2613d5427b782cbf7fc7da98bc"
+    },
+    {
+      "path": "reports/v6-beta6-hotfix4-final-static-audit.json",
+      "bytes": 1675,
+      "sha256": "6551fd903d0e83501001e6148c6acf5f3ef1734b902a59b9ac1a2b135182f744"
+    },
+    {
+      "path": "reports/v6-beta6-hotfix4-theme-parity.json",
+      "bytes": 1303,
+      "sha256": "14f7466f4b194b9bce9535bd056964decd4589041b9733ba310ead9a2f6a7e05"
+    },
+    {
+      "path": "reports/v6-beta6-interaction-acceptance.json",
+      "bytes": 9170,
+      "sha256": "453977515dbe9ae1f5493acfa5d55b0990138b3fb04ffcdbe666f48fee8aef06"
+    },
+    {
+      "path": "reports/v6-beta6-nutrient-group-acceptance.json",
+      "bytes": 10721,
+      "sha256": "a1ae269b9b173d01d4e7ef7126f7e18b56f7113cb1afe0860d4a5cf9a08ee047"
+    },
+    {
+      "path": "reports/v6-beta6-profile-acceptance.json",
+      "bytes": 3022,
+      "sha256": "fb0c44a2044c2a4420e59301e475b4560c3d29d88fa09a91bd4843a00639bdf4"
+    },
+    {
+      "path": "reports/v6-beta6-profile-hierarchy-acceptance.json",
+      "bytes": 6827,
+      "sha256": "eec71fb7d91d4d288e041fc745148c5ae350e1c1b9dcc1e6d03bf04fa1b7242a"
+    },
+    {
+      "path": "reports/v6-beta6-protected-comparison.json",
+      "bytes": 278,
+      "sha256": "46a528b0f200fc9a041d5de7827f8a5e4497030fecc8968c1be38ca8314273b0"
+    },
+    {
+      "path": "reports/v6-beta6-release-audit.json",
+      "bytes": 7846,
+      "sha256": "c65992cfdcb7b14d8ff327a716441547b6f262748412687e38193d2261c95662"
+    },
+    {
+      "path": "reports/v6-beta6-runtime-inventory.json",
+      "bytes": 38305,
+      "sha256": "aa43f2a0cbb2117cd2e5aa436113c4cb0a66626f15fca6e79e7491aa1e815e8a"
+    },
+    {
+      "path": "reports/v6-beta6-syntax-checks.json",
+      "bytes": 1856,
+      "sha256": "fca22dd17d2e3efc659ee05ecb264e0cff3efef2df8f014d668e852571209f6a"
+    },
+    {
+      "path": "reports/v6-beta6-ui-budget.json",
+      "bytes": 275,
+      "sha256": "9029ea988268d069a77d9a9e6b9e91b4d1480327c8963b7add366795578731ac"
+    },
+    {
+      "path": "robots.txt",
+      "bytes": 162,
+      "sha256": "9106d1e80c5034b111169d4afc80e41974daea8df0286e3538725cc11c02c181"
+    },
+    {
+      "path": "security.html",
+      "bytes": 1952,
+      "sha256": "9f16e5afaf4cf06be08a5f456424f45bd17e9e2b786daaa44a375efbeca8cfee"
+    }
+  ]
+}

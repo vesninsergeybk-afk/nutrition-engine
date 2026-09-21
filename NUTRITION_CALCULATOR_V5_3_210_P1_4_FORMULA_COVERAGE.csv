@@ -1,0 +1,30 @@
+﻿formula_id,title_ru,kind,source_count,golden_cases,boundary_cases,implementations,implementation_files_present,status
+anthropometry.bmi,Индекс массы тела,AUTHORITATIVE,1,3,0,1,True,active
+anthropometry.devine_ibw,Расчётная масса Devine,AUTHORITATIVE,1,3,1,1,True,active
+anthropometry.adjusted_weight,Скорректированная масса,LOCAL_POLICY,1,2,0,1,True,active
+anthropometry.weight_loss_pct,Непреднамеренная потеря массы,AUTHORITATIVE,1,2,0,1,True,active
+safety.nice_refeeding_screen,Скрининг риска рефидинга NICE,DECISION_RULE,1,4,3,1,True,active
+energy.mifflin_st_jeor,Основной обмен Mifflin–St Jeor,AUTHORITATIVE,1,3,0,1,True,active
+energy.ordinary_pal,Оценка TEE через PAL,LOCAL_POLICY,2,5,0,1,True,active
+energy.weight_screen,Весовой скрининговый диапазон энергии,LOCAL_POLICY,1,3,0,1,True,active
+energy.goal_factor,Целевой множитель энергии,LOCAL_POLICY,1,4,0,1,True,active
+protein.ordinary_target,Обычная цель белка,LOCAL_POLICY,1,6,0,1,True,active
+macros.fat_share,Жиры из доли энергии,DERIVED,2,2,0,1,True,active
+macros.carb_residual,Углеводы как остаток энергии,DERIVED,2,2,0,1,True,active
+fluids.ordinary_screen,Обычная оценка жидкости,LOCAL_POLICY,1,2,0,1,True,active
+meals.energy_split,Распределение по приёмам,DERIVED,1,2,0,2,True,active
+energy.nasem_adult_female_2023,NASEM 2023 EER для взрослых женщин,AUTHORITATIVE,1,4,0,1,True,active
+energy.nasem_pregnancy_2023,NASEM 2023 энергия при беременности,AUTHORITATIVE,1,5,0,1,True,active
+energy.nasem_lactation_2023,NASEM 2023 энергия при лактации,AUTHORITATIVE,1,2,0,1,True,active
+product.per100_scaling,Масштабирование значений на массу продукта,ARITHMETIC,1,3,0,2,True,active
+product.salt_to_sodium,Fallback соли в натрий,LOCAL_POLICY,1,2,0,2,True,active
+ration.nutrient_sum,Суммирование нутриентов рациона,ARITHMETIC,1,2,0,2,True,active
+norm.per_mj,Норма на мегаджоуль,DERIVED,1,2,0,1,True,active
+norm.percent_energy_to_grams,Процент энергии в граммы,DERIVED,1,2,0,1,True,active
+protein.efsa_pregnancy,Белок EFSA при беременности,AUTHORITATIVE,1,3,0,1,True,active
+protein.efsa_lactation,Белок EFSA при лактации,AUTHORITATIVE,1,2,0,1,True,active
+hei.density,HEI плотность на 1000 ккал,AUTHORITATIVE,1,2,0,2,True,active
+hei.adequacy_component,HEI adequacy interpolation,AUTHORITATIVE,1,24,0,2,True,active
+hei.moderation_component,HEI moderation interpolation,AUTHORITATIVE,1,12,0,2,True,active
+hei.fatty_acid_ratio,HEI отношение ненасыщенных к насыщенным жирам,AUTHORITATIVE,1,3,0,2,True,active
+hei.total,Суммарный HEI-2020,AUTHORITATIVE,1,2,0,2,True,active
