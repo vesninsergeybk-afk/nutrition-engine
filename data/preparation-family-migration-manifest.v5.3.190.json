@@ -1,0 +1,35 @@
+{
+  "version": "v5.3.190",
+  "build_date": "2026-07-14",
+  "application_mode": "pass5_runtime_cross_chain_guard_plus_search_identity_reconciliation",
+  "source_product_records_modified": true,
+  "legacy_product_count": 1100,
+  "additive_product_count": 5,
+  "record_count": 1105,
+  "applied_record_count": 280,
+  "modified_record_count": 8,
+  "modified_numeric_record_count": 0,
+  "identity_or_state_corrections": 0,
+  "search_safety_metadata_corrections": 8,
+  "modified_record_keys": [
+    "black_beans_boiled",
+    "black_beans_boiled_spp",
+    "chickpeas_boiled",
+    "chickpeas_boiled_spp",
+    "lentils_boiled",
+    "lentils_boiled_spp",
+    "shrimp_boiled",
+    "shrimp_boiled_spp"
+  ],
+  "modification_scopes": {
+    "canonical_visibility_reconciliation": 4,
+    "legacy_alias_metadata_reconciliation": 4
+  },
+  "numeric_profiles_unchanged": true,
+  "product_keys_unchanged": true,
+  "product_order_unchanged": true,
+  "runtime_redirect_count": 20,
+  "runtime_block_count": 3,
+  "saved_ration_migration_enabled": true,
+  "direct_state_add_guard_enabled": true
+}

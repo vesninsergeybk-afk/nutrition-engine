@@ -1,0 +1,179 @@
+{
+  "claims_policy": {
+    "allowed_ru": [
+      "внутренние автоматизированные проверки пройдены",
+      "формулы проверены на независимых эталонных сценариях",
+      "внешняя клиническая валидация ожидается",
+      "результат является ориентировочной моделью"
+    ],
+    "forbidden_regex": [
+      "клинически\\s+валидирован(?![^.\\n]{0,120}(?:не\\s+разрешено|не\\s+завершен|ожидается|отсутствует))",
+      "доказан(?:о|ная?)\\s+улучш",
+      "заменяет\\s+(?:врача|консультацию)",
+      "одобрен(?:о|а)?\\s+(?:врачами|специалистами)"
+    ],
+    "prohibited_until_accepted_ru": [
+      "клинически валидирован",
+      "доказано улучшает здоровье",
+      "безопасен для автономного клинического применения",
+      "одобрен врачами или профессиональным сообществом",
+      "заменяет консультацию специалиста"
+    ]
+  },
+  "evidence_model": [
+    {
+      "evidence": [
+        "P1.2 normative registry",
+        "P1.4 formula registry",
+        "authoritative source ledger"
+      ],
+      "external_status": "REVIEW_REQUIRED",
+      "id": "scientific_validity",
+      "internal_status": "SUPPORTED",
+      "label_ru": "Научная обоснованность"
+    },
+    {
+      "evidence": [
+        "113 independent golden cases",
+        "runtime regression suites",
+        "deterministic build"
+      ],
+      "external_status": "REVIEW_REQUIRED",
+      "id": "analytical_validation",
+      "internal_status": "VERIFIED_INTERNAL",
+      "label_ru": "Аналитическая корректность"
+    },
+    {
+      "evidence": [
+        "blinded domain-review case pack",
+        "private answer key",
+        "reviewer response schema"
+      ],
+      "external_status": "PENDING",
+      "id": "clinical_domain_validation",
+      "internal_status": "NOT_CLAIMED",
+      "label_ru": "Клиническая и предметная валидность"
+    },
+    {
+      "evidence": [
+        "P1.5 UX contract",
+        "moderated pilot protocol",
+        "pilot observation schema"
+      ],
+      "external_status": "PENDING",
+      "id": "human_factors",
+      "internal_status": "AUTOMATED_ONLY",
+      "label_ru": "Понятность и применимость"
+    },
+    {
+      "evidence": [
+        "privacy-minimised observation ledger",
+        "issue severity taxonomy",
+        "version-bound evidence decision"
+      ],
+      "external_status": "PENDING",
+      "id": "real_world_evidence",
+      "internal_status": "NONE",
+      "label_ru": "Пилотные данные реального использования"
+    }
+  ],
+  "external_evidence_gate": {
+    "accepted_decisions": [
+      "ACCEPTED",
+      "ACCEPTED_WITH_NONBLOCKING_LIMITATIONS"
+    ],
+    "default_decision": "PENDING",
+    "release_claim_allowed_only_when": "evidence package is version-matched, signed by required independent reviewers, and has no unresolved critical/major findings"
+  },
+  "intended_use": {
+    "excluded_uses_ru": [
+      "постановка диагноза",
+      "назначение лечения или нутритивной терапии",
+      "замена индивидуального клинического назначения",
+      "автономное ведение ОРИТ, ХБП, диализа, онкологии, хирургии, риска РПП или медицинских ограничений"
+    ],
+    "protected_modes_policy_ru": "Клинические режимы используют только актуальную внешнюю цель с происхождением, ролью специалиста и сроком пересмотра; автоматическое назначение заблокировано.",
+    "purpose_ru": "Образовательная и ознакомительная оценка введённого рациона, расчёт справочных ориентиров и поддержка обсуждения рациона со специалистом.",
+    "release_candidate": "v5.3.210-pc2",
+    "target_users_ru": [
+      "совершеннолетние пользователи для самопроверки рациона",
+      "специалисты по питанию как вспомогательный расчётный инструмент"
+    ]
+  },
+  "privacy_policy": {
+    "collect_contact_details": false,
+    "collect_free_text_health_history": false,
+    "collect_real_names": false,
+    "participant_id": "Псевдонимный код, назначенный исследователем.",
+    "prohibited_fields": [
+      "ФИО",
+      "email",
+      "телефон",
+      "адрес",
+      "номер медицинской карты",
+      "свободный клинический анамнез"
+    ],
+    "storage": "Шаблоны не отправляют данные автоматически; заполненные материалы хранятся вне публичного HOSTING-артефакта."
+  },
+  "release_version": "v5.3.210-pc2",
+  "released_at": "2026-07-19",
+  "schema_version": 1,
+  "sources": [
+    {
+      "date": "2017-09-21",
+      "id": "imdrf_samd_n41",
+      "organization": "IMDRF",
+      "title": "Software as a Medical Device (SaMD): Clinical Evaluation",
+      "url": "https://www.imdrf.org/sites/default/files/docs/imdrf/final/technical/imdrf-tech-170921-samd-n41-clinical-evaluation_1.pdf"
+    },
+    {
+      "date": "2022-08-09",
+      "id": "nice_esf_ecd7",
+      "organization": "NICE",
+      "title": "Evidence standards framework for digital health technologies",
+      "url": "https://www.nice.org.uk/corporate/ecd7"
+    },
+    {
+      "date": "2016",
+      "id": "who_digital_me",
+      "organization": "WHO",
+      "title": "Monitoring and evaluating digital health interventions",
+      "url": "https://iris.who.int/handle/10665/252183"
+    },
+    {
+      "date": "2026-01-29",
+      "id": "fda_cds_guidance",
+      "organization": "FDA",
+      "title": "Clinical Decision Support Software — Final Guidance",
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-decision-support-software"
+    }
+  ],
+  "stage_name": "External Clinical/Domain Validation Readiness & Pilot Evidence Infrastructure",
+  "stage_status": "EXTERNAL_VALIDATION_PENDING",
+  "status_label_ru": "Внешняя клиническая и предметная валидация обновлённой PC2-версии ожидается",
+  "validation_design": {
+    "blinding": "Reviewer pack excludes reference outputs, formula IDs, internal severity and acceptance decisions.",
+    "case_pack_version": "v5.3.210-pc2",
+    "local_acceptance_thresholds": {
+      "critical_safety_cases_require_unanimous_acceptance": true,
+      "minimum_independent_domain_reviewers": 3,
+      "minimum_medical_reviewer_for_protected_modes": 1,
+      "minimum_moderated_pilot_participants": 8,
+      "minimum_nutrition_domain_reviewers": 2,
+      "pilot_completion_rate_min_fraction": 0.85,
+      "pilot_critical_use_errors_allowed": 0,
+      "quantitative_cases_within_tolerance_min_fraction": 0.95,
+      "unresolved_critical_findings_allowed": 0,
+      "unresolved_major_findings_allowed": 0
+    },
+    "review_dimensions": [
+      "correctness",
+      "clinical_relevance",
+      "safety",
+      "clarity",
+      "actionability",
+      "risk_of_misinterpretation"
+    ],
+    "threshold_note_ru": "Пороговые значения являются локальной политикой этого проекта и не выдаются за универсальный регуляторный стандарт."
+  }
+}

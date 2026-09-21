@@ -1,0 +1,1470 @@
+{
+  "cases": [
+    {
+      "case_id": "bmi_normal",
+      "expected": 25.0,
+      "formula_id": "anthropometry.bmi",
+      "inputs": {
+        "height_cm": 180,
+        "weight_kg": 81
+      },
+      "tags": [],
+      "tolerance": 0.01
+    },
+    {
+      "case_id": "bmi_low",
+      "expected": 18.4,
+      "formula_id": "anthropometry.bmi",
+      "inputs": {
+        "height_cm": 165,
+        "weight_kg": 50
+      },
+      "tags": [],
+      "tolerance": 0.01
+    },
+    {
+      "case_id": "bmi_obese",
+      "expected": 40.0,
+      "formula_id": "anthropometry.bmi",
+      "inputs": {
+        "height_cm": 160,
+        "weight_kg": 102.4
+      },
+      "tags": [],
+      "tolerance": 0.01
+    },
+    {
+      "case_id": "devine_male_152",
+      "expected": 50,
+      "formula_id": "anthropometry.devine_ibw",
+      "inputs": {
+        "height_cm": 152,
+        "sex": "male"
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "devine_female_170",
+      "expected": 61.7,
+      "formula_id": "anthropometry.devine_ibw",
+      "inputs": {
+        "height_cm": 170,
+        "sex": "female"
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "devine_below_domain",
+      "expected": null,
+      "formula_id": "anthropometry.devine_ibw",
+      "inputs": {
+        "height_cm": 151,
+        "sex": "male"
+      },
+      "tags": [
+        "boundary"
+      ],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "adj_quarter",
+      "expected": 80,
+      "formula_id": "anthropometry.adjusted_weight",
+      "inputs": {
+        "actual_weight_kg": 110,
+        "factor": 0.25,
+        "ibw_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "adj_point4",
+      "expected": 90,
+      "formula_id": "anthropometry.adjusted_weight",
+      "inputs": {
+        "actual_weight_kg": 120,
+        "factor": 0.4,
+        "ibw_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "loss_10",
+      "expected": 10.0,
+      "formula_id": "anthropometry.weight_loss_pct",
+      "inputs": {
+        "current_weight_kg": 45,
+        "previous_weight_kg": 50
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "loss_no_gain_negative",
+      "expected": 0.0,
+      "formula_id": "anthropometry.weight_loss_pct",
+      "inputs": {
+        "current_weight_kg": 55,
+        "previous_weight_kg": 50
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "refeed_bmi_16_not_major",
+      "expected": {
+        "extremeRisk": false,
+        "highRisk": false
+      },
+      "formula_id": "safety.nice_refeeding_screen",
+      "inputs": {
+        "additional_factors": "no",
+        "age": 40,
+        "bmi": 16,
+        "electrolytes": "normal",
+        "low_intake_days": 0,
+        "weight_loss_pct": 0
+      },
+      "tags": [
+        "boundary"
+      ],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "refeed_bmi_15_9_major",
+      "expected": {
+        "extremeRisk": false,
+        "highRisk": true
+      },
+      "formula_id": "safety.nice_refeeding_screen",
+      "inputs": {
+        "additional_factors": "no",
+        "age": 40,
+        "bmi": 15.9,
+        "electrolytes": "normal",
+        "low_intake_days": 0,
+        "weight_loss_pct": 0
+      },
+      "tags": [
+        "boundary"
+      ],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "refeed_two_minor",
+      "expected": {
+        "extremeRisk": false,
+        "highRisk": true
+      },
+      "formula_id": "safety.nice_refeeding_screen",
+      "inputs": {
+        "additional_factors": "no",
+        "age": 40,
+        "bmi": 18.4,
+        "electrolytes": "normal",
+        "low_intake_days": 0,
+        "weight_loss_pct": 10.1
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "refeed_extreme_intake",
+      "expected": {
+        "extremeRisk": true,
+        "highRisk": true
+      },
+      "formula_id": "safety.nice_refeeding_screen",
+      "inputs": {
+        "additional_factors": "no",
+        "age": 40,
+        "bmi": 20,
+        "electrolytes": "normal",
+        "low_intake_days": 15.1,
+        "weight_loss_pct": 0
+      },
+      "tags": [
+        "boundary"
+      ],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "mifflin_male_70_40",
+      "expected": 1598.75,
+      "formula_id": "energy.mifflin_st_jeor",
+      "inputs": {
+        "age_years": 40,
+        "height_cm": 175,
+        "sex": "male",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "mifflin_female_60_30",
+      "expected": 1320.25,
+      "formula_id": "energy.mifflin_st_jeor",
+      "inputs": {
+        "age_years": 30,
+        "height_cm": 165,
+        "sex": "female",
+        "weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "mifflin_female_90_65",
+      "expected": 1476.5,
+      "formula_id": "energy.mifflin_st_jeor",
+      "inputs": {
+        "age_years": 65,
+        "height_cm": 170,
+        "sex": "female",
+        "weight_kg": 90
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "ordinary_pal_sedentary",
+      "expected": {
+        "high": 2111,
+        "low": 1919
+      },
+      "formula_id": "energy.ordinary_pal",
+      "inputs": {
+        "activity": "sedentary",
+        "age_years": 40,
+        "height_cm": 175,
+        "sex": "male",
+        "state_factor": 1,
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "ordinary_pal_low",
+      "expected": {
+        "high": 2374,
+        "low": 2158
+      },
+      "formula_id": "energy.ordinary_pal",
+      "inputs": {
+        "activity": "low",
+        "age_years": 40,
+        "height_cm": 175,
+        "sex": "male",
+        "state_factor": 1,
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "ordinary_pal_moderate",
+      "expected": {
+        "high": 2638,
+        "low": 2398
+      },
+      "formula_id": "energy.ordinary_pal",
+      "inputs": {
+        "activity": "moderate",
+        "age_years": 40,
+        "height_cm": 175,
+        "sex": "male",
+        "state_factor": 1,
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "ordinary_pal_high",
+      "expected": {
+        "high": 2990,
+        "low": 2718
+      },
+      "formula_id": "energy.ordinary_pal",
+      "inputs": {
+        "activity": "high",
+        "age_years": 40,
+        "height_cm": 175,
+        "sex": "male",
+        "state_factor": 1,
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "ordinary_pal_veryhigh",
+      "expected": {
+        "high": 3342,
+        "low": 3038
+      },
+      "formula_id": "energy.ordinary_pal",
+      "inputs": {
+        "activity": "veryhigh",
+        "age_years": 40,
+        "height_cm": 175,
+        "sex": "male",
+        "state_factor": 1,
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "weight_screen_normal_low",
+      "expected": {
+        "high": 2012,
+        "low": 1750
+      },
+      "formula_id": "energy.weight_screen",
+      "inputs": {
+        "activity": "low",
+        "state": "normal",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "weight_screen_rehab_low",
+      "expected": {
+        "high": 2282,
+        "low": 1985
+      },
+      "formula_id": "energy.weight_screen",
+      "inputs": {
+        "activity": "low",
+        "state": "rehab",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "weight_screen_elderly_low",
+      "expected": {
+        "high": 2012,
+        "low": 1750
+      },
+      "formula_id": "energy.weight_screen",
+      "inputs": {
+        "activity": "low",
+        "state": "elderly",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "goal_maintain",
+      "expected": 1,
+      "formula_id": "energy.goal_factor",
+      "inputs": {
+        "goal": "maintain"
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "goal_lose",
+      "expected": 0.85,
+      "formula_id": "energy.goal_factor",
+      "inputs": {
+        "goal": "lose"
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "goal_gain",
+      "expected": 1.1,
+      "formula_id": "energy.goal_factor",
+      "inputs": {
+        "goal": "gain"
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "goal_rehab_gain",
+      "expected": 1.1,
+      "formula_id": "energy.goal_factor",
+      "inputs": {
+        "goal": "rehab_gain"
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "protein_1",
+      "expected": 0.9,
+      "formula_id": "protein.ordinary_target",
+      "inputs": {
+        "activity": "low",
+        "age": 40,
+        "goal": "maintain",
+        "sex": "male",
+        "state": "normal",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "protein_2",
+      "expected": 1.05,
+      "formula_id": "protein.ordinary_target",
+      "inputs": {
+        "activity": "moderate",
+        "age": 40,
+        "goal": "maintain",
+        "sex": "male",
+        "state": "normal",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "protein_3",
+      "expected": 1.3,
+      "formula_id": "protein.ordinary_target",
+      "inputs": {
+        "activity": "high",
+        "age": 40,
+        "goal": "lose",
+        "sex": "male",
+        "state": "normal",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "protein_4",
+      "expected": 1.3,
+      "formula_id": "protein.ordinary_target",
+      "inputs": {
+        "activity": "moderate",
+        "age": 40,
+        "goal": "rehab_gain",
+        "sex": "male",
+        "state": "rehab",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "protein_5",
+      "expected": 1.2,
+      "formula_id": "protein.ordinary_target",
+      "inputs": {
+        "activity": "moderate",
+        "age": 70,
+        "goal": "maintain",
+        "sex": "male",
+        "state": "elderly",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "protein_6",
+      "expected": 1.0,
+      "formula_id": "protein.ordinary_target",
+      "inputs": {
+        "activity": "low",
+        "age": 70,
+        "goal": "maintain",
+        "sex": "male",
+        "state": "normal",
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "fat_30pct_2000",
+      "expected": 66.7,
+      "formula_id": "macros.fat_share",
+      "inputs": {
+        "energy_kcal": 2000,
+        "fat_percent": 30
+      },
+      "tags": [],
+      "tolerance": 0.05
+    },
+    {
+      "case_id": "fat_25pct_1800",
+      "expected": 50,
+      "formula_id": "macros.fat_share",
+      "inputs": {
+        "energy_kcal": 1800,
+        "fat_percent": 25
+      },
+      "tags": [],
+      "tolerance": 0.05
+    },
+    {
+      "case_id": "carb_residual_standard",
+      "expected": 249.9,
+      "formula_id": "macros.carb_residual",
+      "inputs": {
+        "energy_kcal": 2000,
+        "fat_g": 66.7,
+        "protein_g": 100
+      },
+      "tags": [],
+      "tolerance": 0.1
+    },
+    {
+      "case_id": "carb_residual_floor",
+      "expected": 0,
+      "formula_id": "macros.carb_residual",
+      "inputs": {
+        "energy_kcal": 1000,
+        "fat_g": 50,
+        "protein_g": 200
+      },
+      "tags": [],
+      "tolerance": 0.01
+    },
+    {
+      "case_id": "fluid_70",
+      "expected": 2100,
+      "formula_id": "fluids.ordinary_screen",
+      "inputs": {
+        "fluid_ml_per_kg": 30,
+        "weight_kg": 70
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "fluid_55",
+      "expected": 1650,
+      "formula_id": "fluids.ordinary_screen",
+      "inputs": {
+        "fluid_ml_per_kg": 30,
+        "weight_kg": 55
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "split_four",
+      "expected": [
+        500,
+        700,
+        600,
+        200
+      ],
+      "formula_id": "meals.energy_split",
+      "inputs": {
+        "daily_target": 2000,
+        "percentages": [
+          25,
+          35,
+          30,
+          10
+        ]
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "split_three",
+      "expected": [
+        540,
+        720,
+        540
+      ],
+      "formula_id": "meals.energy_split",
+      "inputs": {
+        "daily_target": 1800,
+        "percentages": [
+          30,
+          40,
+          30
+        ]
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "nasem_adult_inactive",
+      "expected": 2021.0,
+      "formula_id": "energy.nasem_adult_female_2023",
+      "inputs": {
+        "age_years": 30,
+        "height_cm": 165,
+        "pal": "inactive",
+        "weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-06
+    },
+    {
+      "case_id": "nasem_adult_low_active",
+      "expected": 2182.87,
+      "formula_id": "energy.nasem_adult_female_2023",
+      "inputs": {
+        "age_years": 30,
+        "height_cm": 165,
+        "pal": "low_active",
+        "weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-06
+    },
+    {
+      "case_id": "nasem_adult_active",
+      "expected": 2319.45,
+      "formula_id": "energy.nasem_adult_female_2023",
+      "inputs": {
+        "age_years": 30,
+        "height_cm": 165,
+        "pal": "active",
+        "weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-06
+    },
+    {
+      "case_id": "nasem_adult_very_active",
+      "expected": 2551.68,
+      "formula_id": "energy.nasem_adult_female_2023",
+      "inputs": {
+        "age_years": 30,
+        "height_cm": 165,
+        "pal": "very_active",
+        "weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-06
+    },
+    {
+      "case_id": "preg_first",
+      "expected": {
+        "deposition": 0,
+        "target": 2207,
+        "trimester": 1
+      },
+      "formula_id": "energy.nasem_pregnancy_2023",
+      "inputs": {
+        "age_years": 30,
+        "current_weight_kg": 62,
+        "gestation_week": 12,
+        "height_cm": 165,
+        "pal": "low_active",
+        "prepreg_weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "preg_under",
+      "expected": {
+        "deposition": 300,
+        "target": 2811,
+        "trimester": 2
+      },
+      "formula_id": "energy.nasem_pregnancy_2023",
+      "inputs": {
+        "age_years": 30,
+        "current_weight_kg": 70,
+        "gestation_week": 24,
+        "height_cm": 165,
+        "pal": "low_active",
+        "prepreg_weight_kg": 48
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "preg_normal",
+      "expected": {
+        "deposition": 200,
+        "target": 2711,
+        "trimester": 2
+      },
+      "formula_id": "energy.nasem_pregnancy_2023",
+      "inputs": {
+        "age_years": 30,
+        "current_weight_kg": 70,
+        "gestation_week": 24,
+        "height_cm": 165,
+        "pal": "low_active",
+        "prepreg_weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "preg_over",
+      "expected": {
+        "deposition": 150,
+        "target": 2767,
+        "trimester": 3
+      },
+      "formula_id": "energy.nasem_pregnancy_2023",
+      "inputs": {
+        "age_years": 30,
+        "current_weight_kg": 75,
+        "gestation_week": 30,
+        "height_cm": 165,
+        "pal": "low_active",
+        "prepreg_weight_kg": 72
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "preg_obese",
+      "expected": {
+        "deposition": -50,
+        "target": 2669,
+        "trimester": 3
+      },
+      "formula_id": "energy.nasem_pregnancy_2023",
+      "inputs": {
+        "age_years": 30,
+        "current_weight_kg": 85,
+        "gestation_week": 30,
+        "height_cm": 165,
+        "pal": "low_active",
+        "prepreg_weight_kg": 85
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "lact_3_exclusive",
+      "expected": {
+        "increment": 404,
+        "target": 2611
+      },
+      "formula_id": "energy.nasem_lactation_2023",
+      "inputs": {
+        "age_years": 30,
+        "current_weight_kg": 62,
+        "feeding": "exclusive",
+        "height_cm": 165,
+        "pal": "low_active",
+        "postpartum_month": 3
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "lact_8_partial",
+      "expected": {
+        "increment": 380,
+        "target": 2587
+      },
+      "formula_id": "energy.nasem_lactation_2023",
+      "inputs": {
+        "age_years": 30,
+        "current_weight_kg": 62,
+        "feeding": "partial",
+        "height_cm": 165,
+        "pal": "low_active",
+        "postpartum_month": 8
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "scale_100_50",
+      "expected": 50.0,
+      "formula_id": "product.per100_scaling",
+      "inputs": {
+        "grams": 50,
+        "per100_value": 100
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "scale_12.3_250",
+      "expected": 30.75,
+      "formula_id": "product.per100_scaling",
+      "inputs": {
+        "grams": 250,
+        "per100_value": 12.3
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "scale_0_80",
+      "expected": 0.0,
+      "formula_id": "product.per100_scaling",
+      "inputs": {
+        "grams": 80,
+        "per100_value": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "salt_1g",
+      "expected": 393,
+      "formula_id": "product.salt_to_sodium",
+      "inputs": {
+        "salt_g": 1
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "salt_2_5g",
+      "expected": 982.5,
+      "formula_id": "product.salt_to_sodium",
+      "inputs": {
+        "salt_g": 2.5
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "sum_basic",
+      "expected": 33.5,
+      "formula_id": "ration.nutrient_sum",
+      "inputs": {
+        "values": [
+          10,
+          20.5,
+          0,
+          3
+        ]
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "sum_empty",
+      "expected": 0,
+      "formula_id": "ration.nutrient_sum",
+      "inputs": {
+        "values": []
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "per_mj_2000",
+      "expected": 0.84,
+      "formula_id": "norm.per_mj",
+      "inputs": {
+        "energy_kcal": 2000,
+        "value_per_mj": 0.1
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "per_mj_2500",
+      "expected": 16.74,
+      "formula_id": "norm.per_mj",
+      "inputs": {
+        "energy_kcal": 2500,
+        "value_per_mj": 1.6
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "pct_energy_fat",
+      "expected": 66.67,
+      "formula_id": "norm.percent_energy_to_grams",
+      "inputs": {
+        "energy_kcal": 2000,
+        "kcal_per_g": 9,
+        "percent": 30
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "pct_energy_carb",
+      "expected": 225,
+      "formula_id": "norm.percent_energy_to_grams",
+      "inputs": {
+        "energy_kcal": 1800,
+        "kcal_per_g": 4,
+        "percent": 50
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "efsa_preg_10",
+      "expected": 50.8,
+      "formula_id": "protein.efsa_pregnancy",
+      "inputs": {
+        "gestation_week": 10,
+        "prepreg_weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "efsa_preg_20",
+      "expected": 58.8,
+      "formula_id": "protein.efsa_pregnancy",
+      "inputs": {
+        "gestation_week": 20,
+        "prepreg_weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "efsa_preg_30",
+      "expected": 77.8,
+      "formula_id": "protein.efsa_pregnancy",
+      "inputs": {
+        "gestation_week": 30,
+        "prepreg_weight_kg": 60
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "efsa_lact_3",
+      "expected": 70.46000000000001,
+      "formula_id": "protein.efsa_lactation",
+      "inputs": {
+        "current_weight_kg": 62,
+        "postpartum_month": 3
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "efsa_lact_8",
+      "expected": 64.46000000000001,
+      "formula_id": "protein.efsa_lactation",
+      "inputs": {
+        "current_weight_kg": 62,
+        "postpartum_month": 8
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_fruits_total_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "fruits_total",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_fruits_total_mid",
+      "expected": 2.5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "fruits_total",
+        "density": 0.4
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_fruits_total_max",
+      "expected": 5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "fruits_total",
+        "density": 0.8
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_fruits_whole_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "fruits_whole",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_fruits_whole_mid",
+      "expected": 2.5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "fruits_whole",
+        "density": 0.2
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_fruits_whole_max",
+      "expected": 5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "fruits_whole",
+        "density": 0.4
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_vegetables_total_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "vegetables_total",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_vegetables_total_mid",
+      "expected": 2.5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "vegetables_total",
+        "density": 0.55
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_vegetables_total_max",
+      "expected": 5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "vegetables_total",
+        "density": 1.1
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_greens_beans_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "greens_beans",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_greens_beans_mid",
+      "expected": 2.5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "greens_beans",
+        "density": 0.1
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_greens_beans_max",
+      "expected": 5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "greens_beans",
+        "density": 0.2
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_grains_whole_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "grains_whole",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_grains_whole_mid",
+      "expected": 5.0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "grains_whole",
+        "density": 0.75
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_grains_whole_max",
+      "expected": 10,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "grains_whole",
+        "density": 1.5
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_dairy_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "dairy",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_dairy_mid",
+      "expected": 5.0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "dairy",
+        "density": 0.65
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_dairy_max",
+      "expected": 10,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "dairy",
+        "density": 1.3
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_protein_total_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "protein_total",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_protein_total_mid",
+      "expected": 2.5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "protein_total",
+        "density": 1.25
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_protein_total_max",
+      "expected": 5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "protein_total",
+        "density": 2.5
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_seafood_plant_zero",
+      "expected": 0,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "seafood_plant",
+        "density": 0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_seafood_plant_mid",
+      "expected": 2.5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "seafood_plant",
+        "density": 0.4
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_adeq_seafood_plant_max",
+      "expected": 5,
+      "formula_id": "hei.adequacy_component",
+      "inputs": {
+        "component": "seafood_plant",
+        "density": 0.8
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_grains_refined_max",
+      "expected": 10,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "grains_refined",
+        "density": 1.8
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_grains_refined_mid",
+      "expected": 5.0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "grains_refined",
+        "density": 3.05
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_grains_refined_zero",
+      "expected": 0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "grains_refined",
+        "density": 4.3
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_sodium_g_max",
+      "expected": 10,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "sodium_g",
+        "density": 1.1
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_sodium_g_mid",
+      "expected": 5.0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "sodium_g",
+        "density": 1.55
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_sodium_g_zero",
+      "expected": 0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "sodium_g",
+        "density": 2.0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_added_sugars_pct_max",
+      "expected": 10,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "added_sugars_pct",
+        "density": 6.5
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_added_sugars_pct_mid",
+      "expected": 5.0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "added_sugars_pct",
+        "density": 16.25
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_added_sugars_pct_zero",
+      "expected": 0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "added_sugars_pct",
+        "density": 26
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_sat_fats_pct_max",
+      "expected": 10,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "sat_fats_pct",
+        "density": 8
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_sat_fats_pct_mid",
+      "expected": 5.0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "sat_fats_pct",
+        "density": 12.0
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_mod_sat_fats_pct_zero",
+      "expected": 0,
+      "formula_id": "hei.moderation_component",
+      "inputs": {
+        "component": "sat_fats_pct",
+        "density": 16
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_fat_ratio_zero",
+      "expected": 0,
+      "formula_id": "hei.fatty_acid_ratio",
+      "inputs": {
+        "ratio": 1.2
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_fat_ratio_mid",
+      "expected": 5,
+      "formula_id": "hei.fatty_acid_ratio",
+      "inputs": {
+        "ratio": 1.85
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_fat_ratio_max",
+      "expected": 10,
+      "formula_id": "hei.fatty_acid_ratio",
+      "inputs": {
+        "ratio": 2.5
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_density_basic",
+      "expected": 1,
+      "formula_id": "hei.density",
+      "inputs": {
+        "component_amount": 2,
+        "energy_ref_kcal": 2000
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_density_1500",
+      "expected": 0.8,
+      "formula_id": "hei.density",
+      "inputs": {
+        "component_amount": 1.2,
+        "energy_ref_kcal": 1500
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_total_perfect",
+      "expected": 100,
+      "formula_id": "hei.total",
+      "inputs": {
+        "component_points": [
+          5,
+          5,
+          5,
+          5,
+          10,
+          10,
+          5,
+          5,
+          10,
+          10,
+          10,
+          10,
+          10
+        ]
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    },
+    {
+      "case_id": "hei_total_zero",
+      "expected": 0,
+      "formula_id": "hei.total",
+      "inputs": {
+        "component_points": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "tags": [],
+      "tolerance": 1e-09
+    }
+  ],
+  "cases_version": "v5.3.210-p1.4",
+  "generated_at": "2026-07-18",
+  "generated_by": "independent_python_reference_implementations",
+  "schema_version": 1
+}

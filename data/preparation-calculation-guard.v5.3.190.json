@@ -1,0 +1,45 @@
+{
+  "version": "v5.3.190",
+  "build_date": "2026-07-14",
+  "schema": "preparation-calculation-guard-v1",
+  "registry_version": "v5.3.190",
+  "source_registry": "data/preparation-family-registry.v5.3.190.json",
+  "redirect_count": 20,
+  "blocked_count": 3,
+  "redirects": {
+    "atlantic_salmon_baked_spp": "salmon_atlantic_baked",
+    "barley_groats_cooked": "pearl_barley_cooked",
+    "basmati_rice_cooked": "rice_basmati",
+    "black_beans_boiled_spp": "black_beans_boiled",
+    "bulgur_dry": "bulgur",
+    "chickpeas_boiled_spp": "chickpeas_boiled",
+    "chickpeas_canned_with_liquid": "nut_konservirovannyy_bez_zalivki",
+    "chickpeas_cooked": "chickpeas_boiled",
+    "durum_pasta_cooked": "soft_pasta_cooked",
+    "edamame_boiled_spp": "edamame_boiled",
+    "green_buckwheat_cooked": "buckwheat_cooked",
+    "lentils_boiled_spp": "lentils_boiled",
+    "lentils_canned_with_liquid": "chechevitsa_konservirovannaya_bez_zalivki",
+    "lentils_cooked": "lentils_boiled",
+    "mackerel_baked_spp": "mackerel_baked",
+    "oyster_mushroom_raw": "mushroom_oyster_raw",
+    "pollock_baked_spp": "saithe_baked_spp",
+    "red_beans_canned_with_liquid": "fasol_krasnaya_konservirovannaya_bez_zalivki",
+    "shrimp_boiled_spp": "shrimp_boiled",
+    "split_peas_cooked": "peas_split_boiled"
+  },
+  "blocked_keys": [
+    "beef_boiled",
+    "capelin_baked_spp",
+    "mushroom_porcini_dried"
+  ],
+  "rules": {
+    "state_add_redirects_disabled_aliases": true,
+    "state_add_blocks_unsupported_profiles": true,
+    "saved_ration_redirects_disabled_aliases": true,
+    "saved_ration_removes_unsupported_profiles": true,
+    "composite_children_follow_same_guard": true,
+    "duplicate_entries_after_migration_are_consolidated": true,
+    "concrete_product_key_remains_calculation_source": true
+  }
+}
