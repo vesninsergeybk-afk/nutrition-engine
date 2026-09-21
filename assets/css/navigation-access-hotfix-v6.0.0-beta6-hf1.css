@@ -1,0 +1,28 @@
+/* v6.0.0 beta 6 hotfix 1 — permanent access to design, canvas and needs. */
+html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top{
+  display:grid!important;grid-column:1/-1!important;grid-row:auto!important;width:100%!important;max-width:none!important;margin:6px 0 0!important;justify-self:stretch!important
+}
+html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top .theme-switcher__options{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top .theme-switcher__option{min-height:42px!important}
+html[data-navigation-access-hotfix="1"] #navigationShell .navigation-shell__secondary [data-navshell-route="profile"]{display:none!important}
+html[data-navigation-access-hotfix="1"] #navigationShell [data-navshell-primary-profile] span{overflow-wrap:anywhere}
+html[data-navigation-access-hotfix="1"][data-navigation-shell="workspace"][data-navigation-route="profile"] #navigationShell{display:flex!important}
+html[data-navigation-access-hotfix="1"][data-navigation-shell="workspace"][data-navigation-route="profile"] #mainContent{padding-bottom:calc(94px + env(safe-area-inset-bottom,0px))!important}
+html[data-navigation-access-hotfix="1"] #workspaceViewSwitcher button[aria-disabled="true"]{opacity:1!important;cursor:pointer!important;pointer-events:auto!important}
+html[data-navigation-access-hotfix="1"] #workspaceViewSwitcher button:disabled{opacity:1!important;cursor:pointer!important;pointer-events:auto!important}
+@media(max-width:860px){
+  html[data-navigation-access-hotfix="1"][data-navigation-shell="workspace"][data-navigation-route="profile"] #navigationShell{display:block!important}
+  html[data-navigation-access-hotfix="1"] .navigation-shell__items{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  html[data-navigation-access-hotfix="1"] .navigation-shell__items a{font-size:9.5px!important;padding-left:1px!important;padding-right:1px!important}
+  html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top{padding:7px!important}
+  html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top .theme-switcher__label{font-size:10px!important}
+  html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top .theme-switcher__option{min-height:44px!important;padding:6px 4px!important;font-size:10.5px!important}
+}
+@media(max-width:370px){
+  html[data-navigation-access-hotfix="1"] .navigation-shell__items a{font-size:8.7px!important}
+  html[data-navigation-access-hotfix="1"] .navigation-shell__items svg{width:20px!important;height:20px!important}
+  html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top .theme-switcher__option{font-size:9.8px!important}
+}
+@media print{
+  html[data-navigation-access-hotfix="1"] #mainContent>header>.theme-switcher--top{display:none!important}
+}

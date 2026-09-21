@@ -1,0 +1,23 @@
+/* Nutrition Calculator v5.3.171 — preparation family UI pass 4 */
+.preparation-family-ui{margin:10px 0;padding:12px;border:1px solid #cbdbea;border-radius:13px;background:#f8fbff;color:#25384d;display:grid;gap:9px}
+.preparation-family-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.preparation-family-head>div{min-width:0}.preparation-family-head span{display:block;color:#526b84;font-size:11px;font-weight:850;letter-spacing:.035em;text-transform:uppercase}.preparation-family-head strong{display:block;margin-top:2px;color:#173a5d;font-size:14px;line-height:1.3}.preparation-family-head small{flex:0 0 auto;color:#526b84;font-size:11px;font-weight:750}
+.preparation-family-select-label{display:grid;gap:5px;color:#344b62;font-size:12px;font-weight:800}.preparation-family-select-label select{width:100%;min-width:0;padding:9px 10px;border:1px solid #aec5da;border-radius:9px;background:#fff;color:#17283a;font:inherit}
+.preparation-family-selected-name{font-size:12.5px;line-height:1.4;color:#3c536a}.preparation-family-selected-name strong{color:#173a5d}
+.preparation-family-badges{display:flex;flex-wrap:wrap;gap:5px}.preparation-family-badges span,.preparation-family-count{display:inline-flex;align-items:center;min-height:22px;padding:2px 7px;border:1px solid #c7d9e9;border-radius:999px;background:#fff;color:#425d76;font-size:10.5px;font-weight:750}
+.preparation-family-weight-note{padding:8px 9px;border-left:3px solid #3979ad;background:#eef6fd;color:#29465f;font-size:12px;line-height:1.4}
+.preparation-family-warning{padding:8px 9px;border:1px solid #e5c275;border-left:4px solid #b57910;border-radius:8px;background:#fff9e9;color:#65470d;font-size:12px;line-height:1.4}
+.preparation-family-search-card.preparation-family-needs-choice [data-role="add-search"]{opacity:.58;cursor:not-allowed}
+.preparation-family-search-card .search-result-title{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.preparation-family-gemini-ui{grid-column:1/-1;margin:10px 0 2px;background:#f7fbff}
+.gemini-ration-draft-row.needs-manual-review .preparation-family-gemini-ui{border-color:#d5a84f}
+@media(max-width:760px){.preparation-family-ui{padding:10px;margin:9px 0}.preparation-family-head{display:grid;gap:3px}.preparation-family-head small{justify-self:start}.preparation-family-badges{display:grid;grid-template-columns:1fr}.preparation-family-badges span{justify-content:flex-start;border-radius:7px}.preparation-family-select-label select{min-height:44px}.preparation-family-search-card .search-result-title{align-items:flex-start}.preparation-family-count{border-radius:6px}}
+@media screen{
+html[data-theme="retro-2bit"] .preparation-family-ui{color:var(--retro-ink)!important;border:1px solid var(--retro-dark)!important;border-radius:0!important;background:var(--retro-paper)!important;box-shadow:none!important}
+html[data-theme="retro-2bit"] .preparation-family-head span,html[data-theme="retro-2bit"] .preparation-family-head strong,html[data-theme="retro-2bit"] .preparation-family-head small,html[data-theme="retro-2bit"] .preparation-family-selected-name,html[data-theme="retro-2bit"] .preparation-family-selected-name strong,html[data-theme="retro-2bit"] .preparation-family-select-label{color:var(--retro-ink)!important}
+html[data-theme="retro-2bit"] .preparation-family-select-label select{color:var(--retro-ink)!important;border:1px solid var(--retro-ink)!important;border-radius:0!important;background:var(--retro-paper)!important;box-shadow:2px 2px 0 var(--retro-dark)!important}
+html[data-theme="retro-2bit"] .preparation-family-badges span,html[data-theme="retro-2bit"] .preparation-family-count{color:var(--retro-ink)!important;border:1px solid var(--retro-dark)!important;border-radius:0!important;background:var(--retro-light)!important;box-shadow:none!important}
+html[data-theme="retro-2bit"] .preparation-family-weight-note{color:var(--retro-ink)!important;border:1px solid var(--retro-dark)!important;border-left:4px solid var(--retro-ink)!important;background:var(--retro-paper)!important}
+html[data-theme="retro-2bit"] .preparation-family-warning{color:var(--retro-ink)!important;border:1px solid var(--retro-dark)!important;border-left:4px solid var(--retro-ink)!important;border-radius:0!important;background:var(--retro-light)!important;background-image:none!important;box-shadow:none!important}
+}
+@media print{.preparation-family-ui{display:none!important}}

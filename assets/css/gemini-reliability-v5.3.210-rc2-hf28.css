@@ -1,0 +1,15 @@
+/* HF28: media-specific interaction feedback. The global interaction system follows in HF29. */
+#geminiRationImportSection button{
+  transition:transform .1s ease,box-shadow .14s ease,background-color .14s ease,border-color .14s ease,color .14s ease;
+}
+#geminiRationImportSection button:active:not(:disabled){transform:translateY(1px) scale(.985);box-shadow:none}
+#geminiRationImportSection button:focus-visible{outline:3px solid rgba(16,97,201,.28);outline-offset:3px}
+#geminiRationImportSection button[data-action-state="working"]{box-shadow:0 0 0 4px rgba(29,111,201,.14);border-color:#1d6fc9}
+#geminiRationImportSection button[data-action-state="recording"],
+#geminiRationImportSection #geminiRationRecordAudio[aria-pressed="true"]{background:#fff1f0;border-color:#c83b31;color:#8f211a;box-shadow:0 0 0 4px rgba(200,59,49,.13)}
+#geminiRationImportSection button[data-action-state="error"]{border-color:#b83b31;color:#8d241c;background:#fff8f7}
+#geminiRationImportSection button[data-action-state="ready"]{border-color:#1b7a43}
+#geminiRationImportSection[aria-busy="true"] .gemini-ration-import__status{min-height:28px}
+#geminiRationAiEligibility:focus-visible + span,
+#geminiAiEligibility:focus-visible + span{outline:3px solid rgba(16,97,201,.24);outline-offset:4px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){#geminiRationImportSection button{transition:none}}

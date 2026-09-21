@@ -1,0 +1,161 @@
+/* V6 Beta 6 — design and usability refinement.
+ * Clarifies the first action, removes duplicate empty states and keeps
+ * desktop tools in the document flow instead of covering working content.
+ */
+
+/* ---------- Shared refinement ---------- */
+html[data-theme="ivory-brass"] body{background:linear-gradient(135deg,#f4eee4 0%,#f8f4ed 46%,#eee6d8 100%)}
+html[data-theme="ivory-brass"] .ivory-nav-theme button{min-height:36px!important}
+html[data-theme="ivory-brass"] .ivory-nav-theme button[aria-pressed="true"]{box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)!important}
+html[data-theme="ivory-brass"] #globalSearchSection .search-db-count{border-color:var(--ib-line)!important;background:#f7efe2!important;color:var(--ib-olive)!important;box-shadow:none!important}
+html[data-theme="ivory-brass"] #globalSearchSection .search-db-count strong{color:var(--ib-brass-dark)!important}
+html[data-theme="ivory-brass"] #globalSearchSection,
+html[data-theme="ivory-brass"] #rationSection,
+html[data-theme="ivory-brass"] #needsCompact{box-shadow:0 12px 34px rgba(76,59,32,.065)!important}
+
+/* Missing-field chips are prompts, not completed steps. */
+html[data-theme="ivory-brass"] body #mainContent .profile-continuity__missing button{
+  border-color:#d7c6a6!important;background:#fbf7ef!important;color:#5d553f!important;font-weight:750!important
+}
+html[data-theme="ivory-brass"] body #mainContent .profile-continuity__missing button:before{
+  content:'○';margin-right:5px;color:var(--ib-brass-dark);font-size:12px
+}
+html[data-theme="ivory-brass"] body #mainContent .profile-continuity__missing button:hover,
+html[data-theme="ivory-brass"] body #mainContent .profile-continuity__missing button:focus-visible{
+  border-color:var(--ib-brass)!important;background:#f4ead8!important;color:var(--ib-olive)!important
+}
+
+/* ---------- Desktop spatial workspace ---------- */
+@media(min-width:1080px){
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .ivory-ration-hero{
+    min-height:248px;padding:22px 24px 14px
+  }
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .ivory-ration-hero__art{min-height:218px}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .ivory-ration-hero__copy h1{font-size:clamp(36px,4vw,58px)}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .ivory-ration-hero__copy p{max-width:500px}
+
+  /* The action dock is a real part of the workspace, never an overlay. */
+
+  /* Before personal targets exist, one onboarding panel is enough. */
+  html[data-theme="ivory-brass"]:not([data-profile-calculation-state="current"]) .ivory-priority-card{display:none!important}
+
+  /* The four entry methods need readable labels in the narrow centre column. */
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] #workspaceRationEntryMethods{
+    grid-template-columns:1fr!important;gap:10px!important;padding:12px!important;border-color:var(--ib-line)!important;background:#fbf7ef!important
+  }
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__copy{padding:0 2px 2px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__copy>span{color:var(--ib-brass-dark)!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__copy>strong{color:var(--ib-ink)!important;font-family:var(--ib-serif);font-size:18px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__copy>small,
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__copy>em{color:var(--ib-muted)!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__grid button{
+    min-height:66px!important;border-color:#d8c7a9!important;background:#fffdf8!important;color:var(--ib-olive)!important
+  }
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__grid button:hover{border-color:var(--ib-brass)!important;background:#f6eddd!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__grid b,
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .workspace-ration-entry-methods__grid small{overflow:visible!important;text-overflow:clip!important;white-space:normal!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] .ivory-quick-dock{
+    grid-column:1/-1;display:flex;position:static;left:auto;bottom:auto;z-index:auto;justify-self:center;
+    margin:8px 0 0;padding:5px 8px;border-radius:18px;transform:none;box-shadow:0 8px 24px rgba(62,49,29,.09);backdrop-filter:none
+  }
+  html[data-theme="ivory-brass"] .ivory-quick-dock button{min-width:62px;min-height:44px!important;padding:5px 7px!important}
+  html[data-theme="ivory-brass"] .ivory-quick-dock .ivory-quick-dock__main{
+    width:48px;height:48px;min-width:48px;margin:0 3px;border-radius:14px!important
+  }
+  html[data-theme="ivory-brass"] .ivory-quick-dock .ivory-quick-dock__main svg{width:23px;height:23px}
+
+  /* Blank metrics add noise before there is a calculated profile. */
+  html[data-theme="ivory-brass"][data-profile-calculation-state="incomplete"] .ivory-metric-strip{display:none!important}
+
+  /* Empty nutrient overview is a compact onboarding panel, not five blank rings. */
+  html[data-theme="ivory-brass"] #ivoryInsightRail[data-ivory-group-state="empty"] #ivoryRadialChart,
+  html[data-theme="ivory-brass"] #ivoryInsightRail[data-ivory-group-state="empty"] .ivory-chart-legend,
+  html[data-theme="ivory-brass"] #ivoryInsightRail[data-ivory-group-state="empty"] #ivoryNutrientGroupList{display:none!important}
+  html[data-theme="ivory-brass"] #ivoryInsightRail[data-ivory-group-state="empty"] .ivory-group-overview-copy{margin-bottom:0}
+  html[data-theme="ivory-brass"][data-ivory-ration="empty"] .ivory-plate-summary{display:none!important}
+}
+
+.ivory-group-empty-state{display:grid;gap:7px;margin-top:13px;padding:14px;border:1px dashed #cfbc98;border-radius:13px;background:#faf4e9;color:var(--ib-muted)}
+.ivory-group-empty-state[hidden]{display:none!important}
+.ivory-group-empty-state strong{font-family:var(--ib-serif);font-size:18px;font-weight:600;color:var(--ib-ink)}
+.ivory-group-empty-state span{font-size:11.5px;line-height:1.45}
+html[data-theme="ivory-brass"] body #mainContent .ivory-group-empty-state button{justify-self:start;min-height:42px!important;padding:8px 12px!important;border:1px solid var(--ib-line)!important;border-radius:10px!important;background:#fffdf8!important;color:var(--ib-olive)!important;box-shadow:none!important;font-size:11.5px!important;font-weight:800!important}
+
+/* Profile card is one coherent task instead of nested title layers. */
+html[data-theme="ivory-brass"][data-navigation-route="profile"] #needsCompact{padding-top:14px!important}
+html[data-theme="ivory-brass"][data-navigation-route="profile"] #needs{border-color:var(--ib-line)!important;background:#fbf8f2!important}
+html[data-theme="ivory-brass"][data-navigation-route="profile"] #needs>.row:first-of-type{margin-bottom:8px!important}
+
+/* ---------- Mobile sequential experience ---------- */
+@media(max-width:899px){
+  /* Belt-and-braces: only the four primary routes remain in the fixed bar. */
+  html[data-theme="ivory-brass"] .navigation-shell__brand,
+  html[data-theme="ivory-brass"] .navigation-shell__secondary,
+  html[data-theme="ivory-brass"] #ivoryNavTheme{display:none!important}
+  html[data-theme="ivory-brass"] .navigation-shell{max-height:76px!important;overflow:hidden!important;padding:5px!important}
+  html[data-theme="ivory-brass"] .navigation-shell__items a{min-height:54px!important}
+
+  /* A single mobile ration summary is enough. */
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-navigation-route="ration"] #workspaceRationInlineSummary{display:none!important}
+  html[data-theme="ivory-brass"][data-ivory-ration="empty"] #ivoryMobileSummary{display:none!important}
+
+  /* Search comes before optional AI methods. */
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection{display:flex!important;flex-direction:column!important;gap:10px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection>.search-hero-head{order:1;margin:0!important;padding:0 1px 5px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection>.search-main-grid{order:2}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection>#globalSearchStatus{order:3}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection>#workspaceRationEntryMethods{order:4;margin-top:5px}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection>#searchAddedToast{order:5}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection>#ivorySearchMore{order:6}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection .search-hero-head{min-height:0!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection .search-hero-head h2{margin-bottom:4px!important;font-size:22px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #globalSearchSection .search-lead{margin:0!important;font-size:12px!important;line-height:1.42!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] #workspaceRationEntryMethods{padding:10px!important}
+
+  /* Compact, non-duplicated profile heading. */
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needsCompact{padding:10px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needs{padding:10px!important;border-radius:14px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needs>.row:first-of-type{
+    display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:46px!important;height:auto!important;margin:0 0 6px!important;padding:0!important
+  }
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needs>.row:first-of-type .section-title-row{display:flex!important;align-items:center!important;justify-content:flex-end!important;width:100%!important;min-height:44px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needs>.row:first-of-type h1,
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needs>.row:first-of-type .step-badge,
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needsHelpNeedsBtn{display:none!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #needsHelpBtn{min-height:44px!important;margin:0!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #profileHierarchyRoot{margin-top:0!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-hierarchy__basic{padding:0 12px 12px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-hierarchy__header{gap:7px;padding:12px 0 10px!important;margin-bottom:10px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-hierarchy__header{display:grid!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-hierarchy__header h3{font-size:20px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-hierarchy__header p{font-size:11.5px!important;line-height:1.4!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-hierarchy__purpose{margin-top:3px!important;font-size:10.5px!important;line-height:1.32!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #profileBasicSection>.profile-continuity--embedded{padding-top:10px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #profileContinuityMissing,
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #profileFocusMissing{display:none!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-continuity__actions{display:block!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] #profileCalculateContinue{width:100%!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-continuity__storage{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="profile"] .profile-continuity__storage button{justify-self:start;margin:0!important}
+}
+
+@media(max-width:430px){
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] .navigation-shell-context{padding:11px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] .navigation-shell-context__copy h2{font-size:21px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"] .navigation-shell-context__copy p{font-size:12.5px!important}
+}
+
+@media(prefers-reduced-motion:reduce){.ivory-quick-dock,.ivory-group-empty-state{transition:none!important}}
+
+/* Final colour coherence for the premium theme. */
+html[data-theme="ivory-brass"] #workspaceViewSwitcher{border-color:#d8c7a9!important;background:#f8f1e6!important;box-shadow:none!important}
+html[data-theme="ivory-brass"] #workspaceViewSwitcher>span{color:var(--ib-muted)!important}
+html[data-theme="ivory-brass"] body #workspaceViewSwitcher button{
+  border-color:transparent!important;background:transparent!important;color:var(--ib-olive)!important;box-shadow:none!important
+}
+html[data-theme="ivory-brass"] body #workspaceViewSwitcher button[aria-pressed="true"]{
+  border-color:var(--ib-olive)!important;background:var(--ib-olive)!important;color:#fffdf8!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)!important
+}
+html[data-theme="ivory-brass"] body #workspaceViewSwitcher button:focus-visible{outline-color:var(--ib-brass)!important}
+html[data-theme="ivory-brass"]:not([data-profile-calculation-state="current"]) #ivoryGroupEmptyState button{display:none!important}

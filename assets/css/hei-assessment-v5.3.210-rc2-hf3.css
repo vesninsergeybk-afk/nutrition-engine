@@ -1,0 +1,12 @@
+/* HEI interpretation block — RC2 HOTFIX3: compact by default, details on demand. */
+.hei-assessment{margin:10px 0 14px;padding:11px 12px;border:1px solid var(--line,#d8e0e8);border-radius:12px;background:var(--card,#fff);overflow-wrap:anywhere}
+.hei-assessment__head{display:flex;gap:8px;align-items:baseline;justify-content:space-between;margin-bottom:7px}.hei-assessment__head strong{font-size:14px}.hei-assessment__head span{font-size:11px;color:var(--muted,#667085);text-align:right}
+.hei-assessment__item{display:grid;grid-template-columns:minmax(190px,.42fr) minmax(0,1fr);gap:10px;align-items:start;padding:8px 10px;margin:6px 0;border-radius:9px;border-left:3px solid #b7791f;background:#fff8e8}.hei-assessment__item.is-critical{border-left-color:#b42318;background:#fff1f0}.hei-assessment__item p{margin:0;line-height:1.38;font-size:13px}.hei-assessment__item strong{font-size:13px;line-height:1.35}
+.hei-assessment__ok{margin:0;padding:7px 9px;border-radius:8px;background:#eef8f1;font-size:13px;line-height:1.35}.hei-assessment__more{margin:6px 0 0;font-size:12px;color:var(--muted,#667085)}
+.hei-assessment__limitations{margin-top:7px;border-top:1px solid var(--line,#d8e0e8);padding-top:7px}.hei-assessment__limitations>summary{cursor:pointer;font-size:12px;font-weight:750;color:#475467;list-style-position:inside}.hei-assessment__limitations ul{margin:7px 0 0;padding-left:20px;font-size:12px;line-height:1.4;color:#475467}.hei-assessment__limitations li+li{margin-top:4px}.hei-assessment__limitations p{margin:6px 0 0;font-size:12px;color:#667085}
+.hei-assessment__confidence{margin:7px 0 0;font-size:11px;line-height:1.35;color:var(--muted,#667085)}
+.hei-method-note{margin:0;font-size:13px;color:var(--muted,#667085)}
+@media(max-width:700px){.hei-assessment{padding:10px;margin:8px 0 12px}.hei-assessment__head{align-items:flex-start}.hei-assessment__head span{max-width:45%}.hei-assessment__item{grid-template-columns:1fr;gap:3px;padding:8px}.hei-assessment__item p{font-size:12px}.hei-assessment__ok{font-size:12px}}
+@media print{.hei-assessment__limitations{display:block}.hei-assessment__limitations>summary{list-style:none}.hei-assessment__limitations>summary::-webkit-details-marker{display:none}}
+/* Prevent the personalized HEI context row from extending the recommendation header beyond its card. */
+.hei-p1-heading{min-width:0;flex-wrap:wrap}.hei-p2-profile-context{box-sizing:border-box;flex:1 1 100%;width:100%;max-width:100%;min-width:0}.hei-p2-profile-context>div{min-width:0}

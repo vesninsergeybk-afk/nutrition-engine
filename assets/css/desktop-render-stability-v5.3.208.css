@@ -1,0 +1,57 @@
+/* v5.3.208 — desktop render stability and unified content rail */
+html{scrollbar-gutter:stable;}
+#heiPanel,#totalsSection,#dietAnalysisProfilePanel,#dataQualityPanel{overflow-anchor:none;}
+#heiLevers,#heiRecs,#heiTableBody,#totalsGrid,#microsGroups,#dietAnalysisProfilePanel,
+#heiLevers *,#heiRecs *,#totalsGrid *,#microsGroups *{
+  animation:none!important;
+}
+#heiLevers,#heiRecs,#totalsGrid,#microsGroups{transition:none!important;}
+@media (min-width:761px){
+  #mainContent.container{
+    width:min(100%,1200px)!important;
+    max-width:1200px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:24px!important;
+    padding-right:24px!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  #mainContent>.workflow-steps,
+  #mainContent>section.card,
+  #mainContent>details.card,
+  #mainContent>#needsCompact,
+  #mainContent>#geminiRationImportSection,
+  #mainContent>#globalSearchSection,
+  #mainContent>#rationSection,
+  #mainContent>#heiPanel,
+  #mainContent>#totalsSection,
+  #mainContent>#dietAnalysisProfilePanel,
+  #mainContent>#dataQualityPanel,
+  #mainContent>#additionalToolsSection,
+  #mainContent>#selectSection,
+  #mainContent>#presetsPanel,
+  #mainContent>#mealsSection,
+  #mainContent>#geminiAiSection,
+  #mainContent>#globalActions,
+  #mainContent>#legal-note{
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    transform:none!important;
+    box-sizing:border-box!important;
+  }
+  #mainContent>section.card,
+  #mainContent>details.card,
+  #mainContent>#legal-note{clear:both!important;}
+  #globalActions,#legal-note{max-width:none!important;}
+  #heiPanel .table-wrap,#totalsSection .totals-grid,#dietAnalysisProfilePanel>*{min-width:0;}
+}
+@media (max-width:760px){
+  html{scrollbar-gutter:auto;}
+}
+@media (prefers-reduced-motion:reduce){
+  #heiPanel *,#totalsSection *,#dietAnalysisProfilePanel *{scroll-behavior:auto!important;transition-duration:0.01ms!important;}
+}

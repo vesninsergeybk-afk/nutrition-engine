@@ -1,0 +1,20 @@
+/* Product Correction / Stabilization v5.3.210-pc1 */
+/* Product Correction / Stabilization PC1. */
+.pc1-product-header{display:grid;gap:10px;margin:12px 0 16px}
+.pc1-beta-banner{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid #b76500;border-radius:14px;background:#fff5e7;color:#6d3400;line-height:1.45}
+.pc1-beta-banner strong{flex:0 0 auto}.pc1-beta-banner span{font-size:13px}
+.pc1-mode-switch{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:13px 15px;border:1px solid var(--line,#d9e2ef);border-radius:14px;background:#fff}
+.pc1-mode-switch>div:first-child{display:grid;gap:3px}.pc1-mode-switch small{color:#526174;line-height:1.35}
+.pc1-segment{display:flex;gap:4px;padding:4px;border-radius:12px;background:#eef2f7}.pc1-segment button{min-height:38px;padding:7px 12px;border:0;background:transparent;color:#3b4d62}.pc1-segment button.active{background:#fff;color:#075a9c;box-shadow:0 2px 8px rgba(24,59,95,.14)}
+.pc1-scope-panel{border-color:rgba(154,91,0,.28);background:linear-gradient(135deg,#fff,#fff9ef)}
+.pc1-scope-panel__head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.pc1-scope-panel__head h2{margin:5px 0 0}.pc1-scope-status{padding:6px 10px;border-radius:999px;background:#fff0d6;color:#704000;font-size:11px;font-weight:800}.pc1-scope-status[data-state="complete"]{background:#e4f7ed;color:#087443}.pc1-scope-status[data-state="meal"]{background:#e9f2ff;color:#075a9c}
+.pc1-scope-grid{display:grid;grid-template-columns:minmax(220px,340px) minmax(0,1fr);gap:14px;margin-top:13px}.pc1-scope-grid label{display:grid;gap:6px}.pc1-scope-grid label>span{font-size:12px;font-weight:800}.pc1-completion{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pc1-completion small{flex-basis:100%;color:#526174;line-height:1.4}
+.pc1-preliminary-notice,.pc1-core-notice{padding:10px 12px;border-left:4px solid #b76500;border-radius:8px;background:#fff6e8;color:#603500;line-height:1.45;font-size:13px}.pc1-analysis-complete .pc1-preliminary-notice,.pc1-analysis-complete .pc1-core-notice{border-left-color:#087443;background:#edf9f2;color:#155b3a}
+.pc1-analysis-preliminary #p15CoreResults #heiPanel,.pc1-analysis-preliminary #p15AdvancedAnalysis,.pc1-analysis-preliminary #p15AiPlannerDrawer,body[data-analysis-state="meal"] #p15CoreResults #heiPanel,body[data-analysis-state="meal"] #p15AdvancedAnalysis,body[data-analysis-state="meal"] #p15AiPlannerDrawer{display:none!important}
+body[data-product-mode="simple"] #p15AdvancedAnalysis,body[data-product-mode="simple"] #p15AiPlannerDrawer,body[data-product-mode="simple"] #additionalToolsSection,body[data-product-mode="simple"] #needsClinicalModeFields,body[data-product-mode="simple"] #needsLowWeightSafety,body[data-product-mode="simple"] #p20ValidationStatus{display:none!important}
+body[data-product-mode="simple"] #p15AlternativeInput .p15-drawer__copy small{max-width:620px}
+body[data-product-mode="simple"] .search-result-card .composite-search-preview details,body[data-product-mode="simple"] .search-result-card .search-result-weighing-note{display:none!important}
+body[data-product-mode="simple"] .search-result-card{align-items:start}.pc1-product-correction-active #p15OverviewHei{overflow-wrap:anywhere}
+.pc1-product-correction-active .data-quality-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px}
+@media(max-width:700px){.pc1-beta-banner,.pc1-mode-switch,.pc1-scope-panel__head{display:grid}.pc1-segment{width:100%}.pc1-segment button{flex:1}.pc1-scope-grid{grid-template-columns:1fr}.pc1-completion{display:grid}.pc1-completion button{width:100%}}
+@media print{.pc1-product-header,.pc1-scope-panel{display:none!important}.pc1-analysis-preliminary #p15CoreResults #heiPanel{display:none!important}}

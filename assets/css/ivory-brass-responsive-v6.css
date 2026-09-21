@@ -1,0 +1,71 @@
+/* Responsive architecture: canvas only where spatial layout has room. */
+@media(min-width:1080px){
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #mainContent{display:grid!important;grid-template-columns:252px minmax(620px,1fr) minmax(330px,370px)!important;column-gap:12px!important;align-items:start}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #mainContent>header{grid-column:2/4!important;grid-row:1!important;margin-bottom:0!important}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] .navigation-shell{grid-column:1!important;grid-row:1/span 100!important;top:12px!important;max-height:calc(100vh - 24px);overflow:auto}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] .navigation-shell-context{grid-column:2!important;grid-row:auto!important;margin:0!important;min-width:0}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #mainContent>.navshell-managed.navshell-route-visible{grid-column:2!important;min-width:0;margin-top:12px!important}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #mainContent>#devPanel{grid-column:2!important}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #mainContent>header>.toolbar{max-width:100%}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #navigationShellContext>.navigation-shell-context__copy,
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #navigationShellContext>#workspaceProfileBackAction{display:none!important}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #navigationShellContext{display:grid!important;grid-template-columns:minmax(0,1fr)!important;padding:14px 16px!important}
+  html[data-theme="ivory-brass"][data-navigation-route="ration"][data-workspace-layout="canvas"] #workspaceRationInlineSummary{display:none!important}
+}
+@media(min-width:900px) and (max-width:1079px){
+  html[data-navigation-shell="workspace"] #mainContent{grid-template-columns:190px minmax(0,1fr)!important}
+  html[data-theme="ivory-brass"] .ivory-insight-rail,html[data-theme="ivory-brass"] .ivory-quick-dock{display:none!important}
+  html[data-theme="ivory-brass"][data-workspace-layout="canvas"] .ivory-metric-strip{display:grid;grid-template-columns:1fr!important}
+  html[data-theme="ivory-brass"] .ivory-metric-strip__score{display:none}
+}
+@media(max-width:899px){
+  html{--mobile-sequential-interface:1}
+  html[data-workspace-layout="canvas"]{--canvas-forced-off:1}
+  html[data-theme="ivory-brass"] #mainContent.container{max-width:100vw!important;padding:8px 8px calc(102px + env(safe-area-inset-bottom,0px))!important;overflow-x:hidden!important}
+  html[data-theme="ivory-brass"] #mainContent>header{border-radius:14px!important;padding:11px!important}
+  html[data-theme="ivory-brass"] #mainContent>header>.title{font-size:18px!important}
+  html[data-theme="ivory-brass"] .navigation-shell-context{border-radius:15px!important;padding:12px!important}
+  html[data-theme="ivory-brass"] .ivory-ration-hero,html[data-theme="ivory-brass"] .ivory-metric-strip,html[data-theme="ivory-brass"] .ivory-insight-rail,html[data-theme="ivory-brass"] .ivory-quick-dock{display:none!important}
+  html[data-theme="ivory-brass"] .ivory-mobile-summary{grid-column:1/-1;display:grid;gap:9px;margin-top:8px;padding:11px;border:1px solid var(--ib-line);border-radius:13px;background:#fffdf8}
+  .ivory-mobile-summary__top{display:flex;align-items:center;justify-content:space-between;gap:10px}.ivory-mobile-summary__top>div{display:grid;gap:1px}.ivory-mobile-summary__top span{color:var(--ib-brass-dark);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.ivory-mobile-summary__top strong{font-family:var(--ib-serif);font-size:17px;font-weight:500}.ivory-mobile-summary__top button{min-height:36px!important;padding:6px 10px!important;border:1px solid var(--ib-line)!important;border-radius:9px!important;background:#f5eee1!important;color:var(--ib-olive)!important;box-shadow:none!important;font-size:11px!important;font-weight:800!important}
+  .ivory-mobile-summary__metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.ivory-mobile-summary__metrics span{display:grid;gap:2px;min-width:0;padding:7px 5px;border-radius:9px;background:#f8f3ea;text-align:center}.ivory-mobile-summary__metrics b{overflow:hidden;color:var(--ib-muted);font-size:8px;text-overflow:ellipsis;white-space:nowrap}.ivory-mobile-summary__metrics strong{font-size:10px;white-space:nowrap}.ivory-mobile-summary__hint{padding-top:8px;border-top:1px solid #eee6da;color:var(--ib-muted);font-size:10px;line-height:1.35}
+  html[data-theme="ivory-brass"] .navigation-shell{background:rgba(255,253,248,.96)!important;border-color:var(--ib-line)!important}
+  html[data-theme="ivory-brass"] .navigation-shell__items a.is-active{box-shadow:none!important;background:#eee4d2!important}
+  html[data-theme="ivory-brass"] .workspace-ration-entry-methods{padding:10px!important}
+  html[data-theme="ivory-brass"] .workspace-ration-entry-methods__copy>strong{font-size:16px}
+  html[data-theme="ivory-brass"] .workspace-ration-entry-methods__grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html[data-theme="ivory-brass"] #globalSearchSection,html[data-theme="ivory-brass"] #rationSection{padding:13px!important}
+}
+@media(max-width:520px){
+  .ivory-mobile-summary__metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-theme="ivory-brass"] .workspace-view-switcher>span{display:none}
+  html[data-theme="ivory-brass"] .workspace-ration-entry-methods__grid button{min-height:62px!important}
+}
+@media(max-width:380px){html[data-theme="ivory-brass"] .workspace-ration-entry-methods__grid{grid-template-columns:1fr!important}}
+
+/* Beta 2: mobile uses a sequential, text-first nutrient group navigator. */
+@media(max-width:899px){
+  html[data-theme="ivory-brass"] .ivory-mobile-group-overview{display:none;gap:9px;margin-top:8px;padding:12px;border:1px solid var(--ib-line);border-radius:13px;background:#fffdf8}
+  html[data-theme="ivory-brass"][data-navigation-route^="analysis"] .ivory-mobile-group-overview{display:grid}
+  .ivory-mobile-group-overview__head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .ivory-mobile-group-overview__head>div{display:grid;gap:1px}.ivory-mobile-group-overview__head span{color:var(--ib-brass-dark);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.ivory-mobile-group-overview__head h2{margin:0;font-family:var(--ib-serif);font-size:18px;font-weight:500;color:var(--ib-ink)}
+  .ivory-mobile-group-overview__head button{min-height:38px!important;padding:6px 9px!important;border:1px solid var(--ib-line)!important;border-radius:9px!important;background:#f5eee1!important;color:var(--ib-olive)!important;box-shadow:none!important;font-size:10px!important;font-weight:800!important}
+  .ivory-mobile-group-overview>p{margin:0;color:var(--ib-muted);font-size:11.5px;line-height:1.45}
+  .ivory-nutrient-group-list.is-mobile{gap:7px}
+  .ivory-nutrient-group-list.is-mobile .ivory-nutrient-group-row{min-height:68px!important;padding:10px 11px!important}
+  .ivory-nutrient-group-list.is-mobile .ivory-nutrient-group-row__top strong{font-size:12.5px}.ivory-nutrient-group-list.is-mobile .ivory-nutrient-group-row__top b{font-size:10.5px}.ivory-nutrient-group-list.is-mobile .ivory-nutrient-group-row__counts{font-size:10.5px}
+}
+
+
+/* Beta 5 cross-stage hardening: profile is a focused task, not an empty dashboard. */
+html[data-theme="ivory-brass"][data-navigation-route="profile"] .ivory-metric-strip,
+html[data-theme="ivory-brass"][data-navigation-route="profile"] .ivory-insight-rail,
+html[data-theme="ivory-brass"][data-navigation-route="profile"] .ivory-quick-dock,
+html[data-theme="ivory-brass"][data-navigation-route="profile"] .ivory-mobile-summary{display:none!important}
+@media(min-width:1080px){
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"][data-navigation-route="profile"] #mainContent{grid-template-columns:252px minmax(620px,1fr)!important}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"][data-navigation-route="profile"] #mainContent>header,
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"][data-navigation-route="profile"] .navigation-shell-context,
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"][data-navigation-route="profile"] #mainContent>.navshell-managed.navshell-route-visible,
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"][data-navigation-route="profile"] #mainContent>#devPanel{grid-column:2!important}
+}

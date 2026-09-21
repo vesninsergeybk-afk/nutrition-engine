@@ -1,0 +1,62 @@
+/* nutrition calculator v5.3.160 — component groups for AI-recognized composite dishes */
+.gemini-ration-draft-row.is-component {
+  border-left-width:5px;
+}
+
+.gemini-ration-draft-row__component {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:5px 8px;
+  margin:3px 0 8px;
+  padding:7px 9px;
+  border:1px solid #9fc0df;
+  border-radius:9px;
+  background:#eaf4ff;
+  color:#204a73;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.35;
+}
+
+.gemini-ration-draft-row__component-role {
+  display:inline-flex;
+  align-items:center;
+  min-height:20px;
+  padding:2px 7px;
+  border-radius:999px;
+  background:#2563a8;
+  color:#fff;
+  font-size:9.5px;
+  font-weight:900;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+
+html[data-theme="retro-2bit"] .gemini-ration-draft-row__component {
+  border:2px solid var(--retro-ink,#111);
+  border-radius:0;
+  background:var(--retro-paper,#f4f4ef);
+  color:var(--retro-ink,#111);
+  box-shadow:3px 3px 0 var(--retro-ink,#111);
+  font-family:var(--retro-font,monospace);
+}
+
+html[data-theme="retro-2bit"] .gemini-ration-draft-row__component-role {
+  border:1px solid var(--retro-ink,#111);
+  border-radius:0;
+  background:var(--retro-ink,#111);
+  color:var(--retro-paper,#f4f4ef);
+  font-family:inherit;
+}
+
+@media(max-width:760px){
+  .gemini-ration-draft-row__component {
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:5px;
+  }
+  .gemini-ration-draft-row__component-role {
+    justify-self:start;
+  }
+}

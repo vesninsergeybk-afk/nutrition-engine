@@ -1,0 +1,18 @@
+/* v5.3.210-rc2 */
+/* RC2 — restore the direct professional workflow and keep secondary tools secondary. */
+.pc1-product-header,.p15-workflow,.p15-decision-summary,.pc1-scope-panel,.p15-result-overview,#p15CoreResults,#p15AdvancedAnalysis,#p15AiPlannerDrawer,#p20ValidationStatus{display:none!important}
+.rc2-professional-workflow #heiPanel,.rc2-professional-workflow #totalsSection,.rc2-professional-workflow #dietAnalysisProfilePanel,.rc2-professional-workflow #strictHarvardPlateDetails,.rc2-professional-workflow #dataQualityPanel{display:block!important;visibility:visible!important;opacity:1!important}
+.rc2-professional-workflow #heiPanel[aria-hidden="true"],.rc2-professional-workflow #totalsSection[aria-hidden="true"]{display:block!important}
+.rc2-current-ration-note{margin:8px 0 14px;color:#536273;font-size:14px;line-height:1.45}.rc2-current-ration-note[hidden]{display:none}
+.rc2-optional-input{margin:14px 0}.rc2-optional-input>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;list-style:none}.rc2-optional-input>summary::-webkit-details-marker{display:none}.rc2-optional-input>summary>span:first-child{display:grid;gap:4px}.rc2-optional-input>summary small{color:#5d6b7c;font-weight:500;line-height:1.35}.rc2-optional-badge{padding:6px 10px;border-radius:999px;background:#eef4fb;color:#255789;font-size:12px;font-weight:800;white-space:nowrap}.rc2-optional-input__body{margin-top:12px}.rc2-optional-input__body>#geminiRationImportSection{margin:0!important;box-shadow:none!important}
+.rc2-protected-subdetails{margin:10px 0;border:1px solid #cbd7e3;border-radius:12px;background:#f8fbfe}.rc2-protected-subdetails>summary{display:grid;gap:3px;padding:12px 14px;cursor:pointer}.rc2-protected-subdetails>summary small{color:#5d6b7c;font-weight:500}.rc2-protected-subdetails__body{padding:0 14px 14px}.rc2-protected-subdetails__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.rc2-protected-subdetails__body>fieldset{margin:0!important;border:0!important;padding:0!important}
+.rc2-professional-workflow #needsProtectedModeContext:not([open])>*:not(summary){display:none!important}
+.rc2-professional-workflow #heiRecs,.rc2-professional-workflow #heiLevers,.rc2-professional-workflow #heiTable{display:revert!important;visibility:visible!important}
+@media(max-width:700px){.rc2-optional-input>summary{align-items:flex-start}.rc2-optional-badge{white-space:normal}.rc2-protected-subdetails__grid{grid-template-columns:1fr}.rc2-current-ration-note{font-size:13px}}
+@media print{.rc2-optional-input{display:none!important}.rc2-current-ration-note{display:block!important}.rc2-professional-workflow #heiPanel,.rc2-professional-workflow #totalsSection,.rc2-professional-workflow #dietAnalysisProfilePanel,.rc2-professional-workflow #strictHarvardPlateDetails,.rc2-professional-workflow #dataQualityPanel{display:block!important}}
+
+.rc2-professional-workflow #heiPanel #heiTableFold{display:block!important}
+.rc2-professional-workflow #heiTableFold[open]>.table-wrap{display:block!important}
+/* Contrast corrections for the restored HEI table. */
+.rc2-professional-workflow #heiTableFold>summary small{color:#586879!important}
+.rc2-professional-workflow #heiTable thead th{color:#526174!important}

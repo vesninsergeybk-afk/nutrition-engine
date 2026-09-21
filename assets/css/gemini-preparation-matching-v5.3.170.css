@@ -1,0 +1,24 @@
+/* v5.3.170 — preparation-aware Gemini matching and manual-review safety */
+.gemini-ration-draft-row.needs-manual-review{
+  border-color:#c47b12;
+  background:#fffaf0;
+}
+.gemini-ration-draft-row.needs-manual-review .gemini-ration-draft-row__include{
+  color:#7a4b00;
+}
+.gemini-ration-draft-row.needs-manual-review .gemini-ration-draft-row__match{
+  border-left:4px solid #c47b12;
+  padding-left:10px;
+  color:#6f470c;
+}
+html[data-theme="retro-2bit"] .gemini-ration-draft-row.needs-manual-review{
+  color:var(--retro-ink)!important;
+  border:2px solid var(--retro-ink)!important;
+  border-left-width:6px!important;
+  background:var(--retro-paper)!important;
+  box-shadow:none!important;
+}
+html[data-theme="retro-2bit"] .gemini-ration-draft-row.needs-manual-review .gemini-ration-draft-row__match{
+  border-left:3px solid var(--retro-ink)!important;
+  color:var(--retro-ink)!important;
+}

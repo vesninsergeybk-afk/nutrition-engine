@@ -1,0 +1,230 @@
+/* NutedScope / Nutrition Calculator v6.0.0 beta 6 hotfix 3.
+ * Final UX completion: bounded header, explicit voice choices, analysis map,
+ * contextual return and mobile overflow hardening. Presentation only.
+ */
+html[data-quality-completion-hotfix="3"],
+html[data-quality-completion-hotfix="3"] body{max-width:100%;overflow-x:clip}
+html[data-quality-completion-hotfix="3"] #mainContent{min-width:0;max-width:100%;box-sizing:border-box}
+
+/* The HF2 controls were grid-positioned inside a flex header. Make the
+   containing layout explicit, bounded and identical in all three themes. */
+html[data-quality-completion-hotfix="3"] #mainContent>header{
+  display:grid!important;
+  grid-template-columns:minmax(260px,.72fr) minmax(620px,1.55fr)!important;
+  grid-template-areas:"brand controls" "settings settings"!important;
+  align-items:center!important;
+  gap:12px 22px!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  padding:16px 18px!important;margin:0!important;box-sizing:border-box!important;
+  overflow:visible!important
+}
+html[data-quality-completion-hotfix="3"] #mainContent>header>.title{
+  grid-area:brand!important;display:flex!important;flex-wrap:wrap!important;
+  align-items:center!important;align-content:center!important;gap:5px 8px!important;
+  min-width:0!important;max-width:100%!important;margin:0!important;
+  font-size:clamp(18px,1.55vw,26px)!important;line-height:1.08!important;
+  overflow-wrap:anywhere!important
+}
+html[data-quality-completion-hotfix="3"] #mainContent>header>.title .version-badge{
+  flex:0 0 auto!important;margin:0!important;max-width:100%!important;
+  font-size:10px!important;line-height:1.2!important;white-space:nowrap!important
+}
+html[data-quality-completion-hotfix="3"] #mainContent>header>.title .app-subtitle{
+  flex:1 0 100%!important;min-width:0!important;margin:1px 0 0!important;
+  font-size:12px!important;line-height:1.35!important;overflow-wrap:anywhere!important
+}
+html[data-quality-completion-hotfix="3"] #mainContent>header>#interfaceControlsBarHF2{
+  grid-area:controls!important;display:grid!important;
+  grid-template-columns:minmax(210px,.72fr) minmax(370px,1.25fr) minmax(126px,auto)!important;
+  grid-template-areas:"view theme settings"!important;
+  align-items:end!important;gap:9px!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;
+  padding:0!important;box-sizing:border-box!important;overflow:visible!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#workspaceViewSwitcher{
+  grid-area:view!important;display:grid!important;grid-template-columns:auto repeat(2,minmax(0,1fr))!important;
+  align-items:center!important;gap:5px!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;height:auto!important;margin:0!important;padding:5px!important;box-sizing:border-box!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#workspaceViewSwitcher>span{
+  margin:0 3px!important;white-space:nowrap!important;font-size:11px!important;font-weight:800!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#workspaceViewSwitcher button{
+  min-width:0!important;min-height:38px!important;padding:6px 8px!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#themeSwitcher{
+  grid-area:theme!important;display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;
+  align-items:center!important;gap:6px!important;width:100%!important;max-width:100%!important;
+  min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:5px!important;
+  box-sizing:border-box!important;overflow:visible!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#themeSwitcher>.theme-switcher__label{
+  margin:0 3px!important;white-space:nowrap!important;font-size:11px!important;font-weight:800!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#themeSwitcher>.theme-switcher__options{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:4px!important;width:100%!important;max-width:100%!important;min-width:0!important;
+  height:auto!important;overflow:visible!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2 #themeSwitcher .theme-switcher__option{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;min-height:38px!important;height:auto!important;
+  padding:6px 7px!important;box-sizing:border-box!important;white-space:normal!important;
+  word-break:normal!important;overflow-wrap:normal!important;line-height:1.15!important;text-align:center!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2 #themeSwitcher .theme-switcher__option span{
+  display:block!important;min-width:0!important;max-width:100%!important;white-space:normal!important;
+  word-break:normal!important;overflow-wrap:normal!important;font-size:11px!important;line-height:1.15!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#interfaceSettingsHF2{
+  grid-area:settings!important;align-self:stretch!important;width:100%!important;min-width:0!important;
+  min-height:48px!important;height:auto!important;margin:0!important;padding:7px 10px!important;
+  white-space:normal!important;line-height:1.2!important;box-sizing:border-box!important
+}
+html[data-quality-completion-hotfix="3"] #mainContent>header>.toolbar{
+  grid-area:settings!important;grid-column:auto!important;grid-row:auto!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;
+  padding-top:10px!important;box-sizing:border-box!important
+}
+html[data-quality-completion-hotfix="3"] #mainContent>header:not(.navshell-settings-open)>.toolbar{display:none!important}
+html[data-quality-completion-hotfix="3"] #mainContent>header.navshell-settings-open>.toolbar{
+  display:flex!important;flex-wrap:wrap!important;align-items:flex-start!important;gap:8px!important
+}
+
+/* Explicit, trustworthy audio choice: browser microphone or device recorder. */
+html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:stretch!important
+}
+html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid>[data-hf3-native-recorder]{
+  min-width:0!important;max-width:100%!important
+}
+html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid>[data-hf3-native-recorder] svg{
+  width:22px!important;height:22px!important
+}
+html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid>[data-hf3-native-recorder] span{
+  min-width:0!important
+}
+html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid>[data-hf3-native-recorder] b,
+html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid>[data-hf3-native-recorder] small{
+  overflow-wrap:anywhere!important
+}
+
+/* Replace the explanatory HF2 bridge with a real at-a-glance analysis map. */
+html[data-quality-completion-hotfix="3"] #analysisOverviewBridgeHF2{display:none!important}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3{
+  margin:16px 0 18px;padding:16px;border:1px solid var(--border,#d8e1eb);
+  border-radius:16px;background:var(--surface-soft,#f7f9fc);box-sizing:border-box
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__head>div>span{
+  display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent,#155eb8)
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__head h3{margin:3px 0 4px}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__head p{margin:0;color:var(--muted,#5f6f7f);max-width:800px}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card{
+  display:grid!important;grid-template-rows:auto auto 1fr auto;gap:5px;align-content:start;
+  min-width:0;min-height:132px;padding:13px!important;text-align:left!important;
+  border:1px solid var(--border,#d8e1eb)!important;background:var(--surface,#fff)!important;color:inherit!important;
+  border-radius:12px!important;box-shadow:none!important
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card>span{
+  font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#5f6f7f)
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card>strong{
+  font-size:clamp(20px,2vw,29px);line-height:1.05;overflow-wrap:anywhere
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card>small{
+  color:var(--muted,#5f6f7f);line-height:1.35;overflow-wrap:anywhere
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card>em{
+  font-style:normal;font-size:12px;font-weight:800;color:var(--accent,#155eb8)
+}
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card:hover,
+html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card:focus-visible{
+  transform:translateY(-1px);box-shadow:0 7px 18px rgba(20,48,78,.10)!important
+}
+
+/* Contextual return is a navigation action, not a generic page jump. */
+html[data-quality-completion-hotfix="3"] .hf2-analysis-head-actions{min-width:0!important}
+html[data-quality-completion-hotfix="3"] [data-hf3-analysis-back]{display:inline-flex!important;align-items:center!important;gap:5px!important}
+html[data-quality-completion-hotfix="3"] .analysis-return-context-hf3{
+  display:block;margin:4px 0 0;font-size:11px;color:var(--muted,#5f6f7f);font-weight:600
+}
+
+/* Protect restored flagship blocks from accidental clipping in every theme. */
+html[data-quality-completion-hotfix="3"][data-navigation-route="analysis/overview"] #dietAnalysisProfilePanel,
+html[data-quality-completion-hotfix="3"][data-navigation-route="analysis/overview"] #strictHarvardPlateDetails{
+  max-width:100%!important;min-width:0!important;box-sizing:border-box!important;overflow:visible!important
+}
+html[data-quality-completion-hotfix="3"] .diet-matrix-dashboard-v540,
+html[data-quality-completion-hotfix="3"] .diet-matrix-stage-v5337,
+html[data-quality-completion-hotfix="3"] #dietAnalysisMatrix,
+html[data-quality-completion-hotfix="3"] #harvardPlatePanel{max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+
+/* The old disclosure pseudo-element must never mirror the full word again. */
+html[data-quality-completion-hotfix="3"] .workspace-contributors>summary::after,
+html[data-quality-completion-hotfix="3"] .workspace-contributors[open]>summary::after{
+  transform:none!important;writing-mode:horizontal-tb!important;direction:ltr!important
+}
+
+html[data-theme="retro-2bit"][data-quality-completion-hotfix="3"] .analysis-command-center-hf3,
+html[data-theme="retro-2bit"][data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card{
+  border-radius:0!important;box-shadow:3px 3px 0 rgba(10,31,56,.16)!important
+}
+
+@media(max-width:1180px){
+  html[data-quality-completion-hotfix="3"] #mainContent>header{
+    grid-template-columns:1fr!important;grid-template-areas:"brand" "controls" "settings"!important;gap:10px!important
+  }
+  html[data-quality-completion-hotfix="3"] #mainContent>header>.title{justify-content:flex-start!important}
+  html[data-quality-completion-hotfix="3"] #mainContent>header>#interfaceControlsBarHF2{
+    grid-template-columns:minmax(210px,.72fr) minmax(360px,1.25fr) minmax(126px,.45fr)!important
+  }
+  html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:820px){
+  html[data-quality-completion-hotfix="3"] #mainContent>header{padding:13px!important}
+  html[data-quality-completion-hotfix="3"] #mainContent>header>#interfaceControlsBarHF2{
+    grid-template-columns:1fr!important;grid-template-areas:"view" "theme" "settings"!important;gap:7px!important
+  }
+  html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#interfaceSettingsHF2{min-height:42px!important}
+  html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__head{display:grid;grid-template-columns:1fr}
+  html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__grid{grid-template-columns:1fr!important}
+  html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card{min-height:104px}
+  html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:470px){
+  html[data-quality-completion-hotfix="3"] #mainContent>header{padding:11px!important;gap:8px!important}
+  html[data-quality-completion-hotfix="3"] #mainContent>header>.title{font-size:17px!important}
+  html[data-quality-completion-hotfix="3"] #mainContent>header>.title .version-badge{font-size:9px!important}
+  html[data-quality-completion-hotfix="3"] #mainContent>header>.title .app-subtitle{font-size:10.5px!important}
+  html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#workspaceViewSwitcher,
+  html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#themeSwitcher{padding:4px!important}
+  html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#workspaceViewSwitcher button,
+  html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2 #themeSwitcher .theme-switcher__option{min-height:36px!important;padding:5px 4px!important}
+  html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2 #themeSwitcher .theme-switcher__option span{font-size:10px!important}
+  html[data-quality-completion-hotfix="3"] .workspace-ration-entry-methods__grid{grid-template-columns:1fr!important}
+  html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3{padding:12px;margin:12px 0}
+}
+@media print{
+  html[data-quality-completion-hotfix="3"] .analysis-command-center-hf3__card{min-height:0!important;break-inside:avoid}
+  html[data-quality-completion-hotfix="3"] [data-hf3-native-recorder],
+  html[data-quality-completion-hotfix="3"] [data-hf3-analysis-back]{display:none!important}
+}
+
+/* Some legacy theme files override .visually-hidden and let the live status
+   occupy the first grid column. Keep it available to assistive technology
+   without letting it compress the three design buttons. */
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#themeSwitcher>#themeStatus{
+  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+  overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;
+  white-space:nowrap!important;border:0!important
+}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#themeSwitcher>.theme-switcher__label{grid-column:1!important;grid-row:1!important}
+html[data-quality-completion-hotfix="3"] #interfaceControlsBarHF2>#themeSwitcher>.theme-switcher__options{grid-column:2!important;grid-row:1!important}

@@ -1,0 +1,6 @@
+@media print{
+  html[data-theme="ivory-brass"] body{background:#fff!important;color:#111!important}
+  html[data-theme="ivory-brass"] #mainContent.container{max-width:none!important;padding:0!important}
+  .ivory-ration-hero,.ivory-metric-strip,.ivory-insight-rail,.ivory-quick-dock,.ivory-mobile-summary,.ivory-nav-theme{display:none!important}
+  html[data-theme="ivory-brass"] #mainContent>section.card,html[data-theme="ivory-brass"] #mainContent>details.card{box-shadow:none!important;border:1px solid #bbb!important;background:#fff!important}
+}

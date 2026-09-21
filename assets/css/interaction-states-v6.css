@@ -1,0 +1,12 @@
+/* Unified visible feedback; calculation neutral. */
+button,[role="button"],summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:disabled,[aria-disabled="true"]{cursor:not-allowed!important;filter:saturate(.55);opacity:.62}
+button[aria-busy="true"]{cursor:progress!important}
+button[aria-busy="true"]::after{content:"";display:inline-block;width:.8em;height:.8em;margin-left:.45em;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-.08em;animation:ui-v6-spin .75s linear infinite}
+@keyframes ui-v6-spin{to{transform:rotate(1turn)}}
+:where(label,.field,.form-field):focus-within{position:relative}
+html[data-theme="ivory-brass"] :where(label,.field,.form-field):focus-within{color:var(--ib-brass-dark)}
+[aria-pressed="true"],[aria-selected="true"],[aria-current="page"]{font-weight:800}
+[data-media-state="recording"]{position:relative}
+[data-media-state="recording"]::before{content:"";position:absolute;right:8px;top:8px;width:8px;height:8px;border-radius:50%;background:#d34c43;box-shadow:0 0 0 0 rgba(211,76,67,.35);animation:ui-v6-record 1.25s ease-out infinite}
+@keyframes ui-v6-record{70%{box-shadow:0 0 0 8px rgba(211,76,67,0)}}

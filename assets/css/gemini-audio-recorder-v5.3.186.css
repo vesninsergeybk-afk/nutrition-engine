@@ -1,0 +1,164 @@
+/* Nutrition Calculator v5.3.186 — real-time microphone state and monotonic recording timer */
+.gemini-ration-record-button span[aria-hidden="true"] {
+  display:inline-block;
+  margin-right:.42em;
+  font-size:.78em;
+  line-height:1;
+  color:#b42318;
+}
+.gemini-audio-recorder {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:14px;
+  align-items:center;
+  margin:14px 0 4px;
+  padding:14px;
+  border:1px solid #f0b4ad;
+  border-radius:16px;
+  background:#fff7f6;
+}
+.gemini-audio-recorder:not([hidden]) { display:grid !important; }
+.gemini-audio-recorder[hidden] { display:none !important; }
+.gemini-audio-recorder__signal {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#b42318;
+}
+.gemini-audio-recorder__signal i {
+  display:block;
+  width:3px;
+  height:9px;
+  border-radius:999px;
+  background:#fff;
+  animation:gemini-audio-level .72s ease-in-out infinite alternate;
+}
+.gemini-audio-recorder__signal i:nth-child(2) { height:18px; animation-delay:-.18s; }
+.gemini-audio-recorder__signal i:nth-child(3) { height:13px; animation-delay:-.36s; }
+.gemini-audio-recorder__signal i:nth-child(4) { height:7px; animation-delay:-.54s; }
+@keyframes gemini-audio-level { from { transform:scaleY(.58); } to { transform:scaleY(1.12); } }
+.gemini-audio-recorder__body { display:grid; gap:2px; min-width:0; }
+
+.gemini-audio-recorder__status-row {
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  min-width:0;
+}
+.gemini-audio-recorder__live-dot {
+  flex:0 0 auto;
+  width:10px;
+  height:10px;
+  margin-top:.36em;
+  border-radius:50%;
+  background:#b42318;
+  box-shadow:0 0 0 0 rgba(180,35,24,.38);
+}
+.gemini-audio-recorder[data-recorder-state="recording"] .gemini-audio-recorder__live-dot {
+  animation:gemini-recorder-live-pulse 1.15s ease-out infinite;
+}
+.gemini-audio-recorder[data-recorder-state="starting"] .gemini-audio-recorder__live-dot,
+.gemini-audio-recorder[data-recorder-state="processing"] .gemini-audio-recorder__live-dot {
+  background:#667085;
+  box-shadow:none;
+  animation:none;
+}
+@keyframes gemini-recorder-live-pulse {
+  0% { box-shadow:0 0 0 0 rgba(180,35,24,.38); }
+  70%,100% { box-shadow:0 0 0 8px rgba(180,35,24,0); }
+}
+#geminiRationRecorderTimer {
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  min-width:8.2em;
+  padding:3px 8px;
+  border:1px solid rgba(180,35,24,.22);
+  border-radius:8px;
+  background:rgba(255,255,255,.72);
+  font-size:1.08rem;
+  line-height:1.25;
+  letter-spacing:.02em;
+  font-variant-numeric:tabular-nums;
+  contain:layout paint;
+}
+.gemini-audio-recorder__body strong { color:#7a271a; }
+.gemini-audio-recorder__body span { font-weight:800; font-variant-numeric:tabular-nums; }
+.gemini-audio-recorder__body small { color:#667085; line-height:1.35; }
+.gemini-audio-recorder__actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+.gemini-audio-recorder__actions button { min-height:42px; }
+.gemini-ration-media-card__audio {
+  display:grid;
+  align-content:center;
+  gap:6px;
+  min-width:150px;
+}
+.gemini-ration-media-card__audio > span {
+  display:none;
+}
+.gemini-ration-media-card__audio audio {
+  display:block;
+  width:100%;
+  min-width:145px;
+  max-width:220px;
+  height:36px;
+}
+.gemini-ration-media-card__source { font-weight:700; color:#344054; }
+.gemini-ration-audio-codec-note {
+  display:block;
+  margin-top:5px;
+  color:#667085;
+  line-height:1.35;
+}
+@media (prefers-reduced-motion:reduce) {
+  .gemini-audio-recorder__signal i,
+  .gemini-audio-recorder__live-dot { animation:none !important; }
+}
+@media (max-width:720px) {
+  .gemini-audio-recorder { grid-template-columns:auto minmax(0,1fr); align-items:start; }
+  .gemini-audio-recorder__actions { grid-column:1 / -1; display:grid; grid-template-columns:1fr; width:100%; }
+  .gemini-audio-recorder__actions button { width:100%; }
+  .gemini-ration-media-card__audio { min-width:0; width:100%; }
+  .gemini-ration-media-card__audio audio { min-width:0; max-width:none; width:100%; }
+}
+/* Calm 2-bit theme: no extra shadow, texture or nested heavy frame. */
+html[data-theme="retro-2bit"] .gemini-ration-record-button span[aria-hidden="true"] { color:currentColor; }
+html[data-theme="retro-2bit"] .gemini-audio-recorder {
+  border:2px solid var(--retro-ink,#111);
+  border-radius:0;
+  background:var(--retro-paper,#fff);
+  box-shadow:none;
+}
+html[data-theme="retro-2bit"] .gemini-audio-recorder__signal {
+  width:40px;
+  height:40px;
+  border:2px solid var(--retro-ink,#111);
+  border-radius:0;
+  background:var(--retro-ink,#111);
+}
+html[data-theme="retro-2bit"] .gemini-audio-recorder__signal i { border-radius:0; background:var(--retro-paper,#fff); }
+html[data-theme="retro-2bit"] .gemini-audio-recorder__body strong,
+html[data-theme="retro-2bit"] .gemini-audio-recorder__body span,
+html[data-theme="retro-2bit"] .gemini-audio-recorder__body small,
+html[data-theme="retro-2bit"] .gemini-ration-audio-codec-note,
+html[data-theme="retro-2bit"] .gemini-ration-media-card__source { color:var(--retro-ink,#111); }
+html[data-theme="retro-2bit"] .gemini-ration-media-card__audio audio { filter:grayscale(1); }
+
+html[data-theme="retro-2bit"] .gemini-audio-recorder__live-dot {
+  border-radius:0;
+  background:var(--retro-ink,#111);
+  box-shadow:none;
+}
+html[data-theme="retro-2bit"] #geminiRationRecorderTimer {
+  border:2px solid var(--retro-ink,#111);
+  border-radius:0;
+  background:var(--retro-paper,#fff);
+  color:var(--retro-ink,#111);
+}
+
+/* Keep the recorder visibly alive while permission is requested, audio is captured, or MP3 is encoded. */
+.gemini-audio-recorder:not([hidden]) .gemini-audio-recorder__body span { min-width:7.4em; }

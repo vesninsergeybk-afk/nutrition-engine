@@ -1,0 +1,130 @@
+/* v6 beta 7 — restore visible presentation controls and permanent needs navigation. */
+#workspaceViewSwitcher{display:none!important}
+.primary-display-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;padding:7px 8px;border:1px solid #d7e1eb;border-radius:14px;background:rgba(255,255,255,.96);box-shadow:0 5px 18px rgba(31,55,79,.07);box-sizing:border-box}
+.primary-display-controls__group{display:flex;align-items:center;gap:6px;min-width:0}
+.primary-display-controls__group>span{flex:0 0 auto;color:#68798c;font-size:10px;font-weight:850;letter-spacing:.06em;text-transform:uppercase}
+.primary-display-controls__buttons{display:flex;align-items:center;gap:4px;min-width:0}
+#mainContent .primary-display-controls button{min-width:0!important;min-height:40px!important;height:auto!important;margin:0!important;padding:7px 10px!important;border:1px solid #d6e0ea!important;border-radius:10px!important;background:#fff!important;color:#40516a!important;box-shadow:none!important;font-size:11.5px!important;font-weight:800!important;line-height:1.15!important;white-space:nowrap!important}
+#mainContent .primary-display-controls button:hover{border-color:#91aac3!important;background:#f5f9fd!important}
+#mainContent .primary-display-controls button:active{transform:translateY(1px) scale(.985)}
+#mainContent .primary-display-controls button[aria-pressed="true"],#mainContent .primary-display-controls button.is-active{border-color:#0b61d6!important;background:#0b61d6!important;color:#fff!important}
+html[data-navigation-shell="workspace"] #navigationShell .navigation-shell__secondary>[data-navshell-route="profile"]{display:none!important}
+.navigation-shell__items [data-primary-needs-route="1"]{order:-10}
+
+html[data-theme="retro-2bit"] .primary-display-controls{border:2px solid var(--retro-ink)!important;border-radius:0!important;background:var(--retro-paper)!important;box-shadow:3px 3px 0 var(--retro-dark)!important}
+html[data-theme="retro-2bit"] .primary-display-controls__group>span{color:var(--retro-ink)!important;font-family:ui-monospace,Consolas,monospace!important}
+html[data-theme="retro-2bit"] #mainContent .primary-display-controls button{border:2px solid var(--retro-ink)!important;border-radius:0!important;background:var(--retro-paper)!important;color:var(--retro-ink)!important;font-family:ui-monospace,Consolas,monospace!important}
+html[data-theme="retro-2bit"] #mainContent .primary-display-controls button[aria-pressed="true"]{background:var(--retro-dark)!important;color:var(--retro-paper)!important}
+
+html[data-theme="ivory-brass"] .primary-display-controls{border-color:var(--ib-line)!important;background:rgba(255,253,248,.96)!important;box-shadow:var(--ib-shadow-soft)!important}
+html[data-theme="ivory-brass"] .primary-display-controls__group>span{color:var(--ib-muted)!important}
+html[data-theme="ivory-brass"] #mainContent .primary-display-controls button{border-color:var(--ib-line)!important;background:var(--ib-surface)!important;color:var(--ib-ink)!important}
+html[data-theme="ivory-brass"] #mainContent .primary-display-controls button:hover{border-color:var(--ib-brass)!important;background:#f8f0e1!important}
+html[data-theme="ivory-brass"] #mainContent .primary-display-controls button[aria-pressed="true"]{border-color:var(--ib-olive)!important;background:var(--ib-olive)!important;color:#fffdf8!important}
+
+html[data-navigation-shell="workspace"] #navigationShellContext>.primary-display-controls{align-self:start;justify-self:end;max-width:100%}
+html[data-navigation-shell="long"] #mainContent>header>.primary-display-controls{grid-column:1/-1;width:100%;justify-content:flex-start;margin-top:8px}
+
+@media(min-width:900px){
+  html[data-navigation-shell="workspace"] #navigationShellContext{grid-template-columns:minmax(0,1fr) auto!important}
+  html[data-navigation-shell="workspace"] #navigationShellContext>.primary-display-controls{grid-column:2;grid-row:1;align-self:center}
+  html[data-navigation-shell="workspace"] #navigationShellContext>.navigation-shell-context__copy{grid-column:1;grid-row:1}
+  html[data-theme="ivory-brass"][data-navigation-shell="workspace"][data-workspace-layout="canvas"] #primaryDisplayControls{grid-column:2!important}
+}
+
+@media(max-width:899px){
+  html[data-navigation-shell="workspace"] #navigationShellContext>.primary-display-controls{width:100%;justify-content:space-between;margin-top:8px}
+  .primary-display-controls{display:grid;grid-template-columns:1fr;gap:7px;padding:7px}
+  .primary-display-controls__group{display:grid;grid-template-columns:52px minmax(0,1fr);gap:6px}
+  .primary-display-controls__buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+  .primary-display-controls__views .primary-display-controls__buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #mainContent .primary-display-controls button{min-height:44px!important;padding:7px 5px!important;font-size:10.5px!important;white-space:normal!important}
+  .navigation-shell__items{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .navigation-shell__items a{min-width:0!important;padding-inline:1px!important;font-size:9.5px!important}
+  .navigation-shell__items a span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  html[data-theme="ivory-brass"] .navigation-shell{max-height:76px!important}
+}
+
+@media(max-width:370px){
+  .primary-display-controls__group{grid-template-columns:1fr}
+  .primary-display-controls__group>span{padding-left:2px}
+  .navigation-shell__items a{font-size:9px!important}
+}
+
+@media print{.primary-display-controls{display:none!important}}
+
+#primaryDisplayStatus{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;pointer-events:none!important}
+html[data-navigation-shell="long"] #navigationShellLongReturn>.primary-display-controls{flex:1 1 520px;justify-content:center;margin:0;position:relative;z-index:2}
+@media(max-width:899px){html[data-navigation-shell="long"] #navigationShellLongReturn>.primary-display-controls{width:100%;order:2}html[data-navigation-shell="long"] #navigationShellLongReturn>[data-navshell-return-workspace]{order:3}}
+@media(max-width:899px){
+  html[data-navigation-shell="workspace"][data-navigation-route="profile"] #navigationShell{display:grid!important}
+  html[data-navigation-shell="workspace"][data-navigation-route="profile"] #mainContent{padding-bottom:92px!important}
+}
+@media(max-width:899px){
+  html[data-navigation-shell="workspace"] #navigationShellContext{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-auto-flow:row!important;
+    align-items:start!important;
+  }
+  html[data-navigation-shell="workspace"] #navigationShellContext>.primary-display-controls{
+    grid-column:1!important;
+    grid-row:auto!important;
+    order:-20!important;
+  }
+  html[data-navigation-shell="workspace"] #navigationShellContext>.navigation-shell-context__copy{
+    grid-column:1!important;
+    grid-row:auto!important;
+    order:-10!important;
+    min-width:0!important;
+    width:100%!important;
+  }
+  .navigation-shell__items a span{overflow:visible!important;text-overflow:clip!important;white-space:normal!important;line-height:1.05!important;text-align:center!important}
+  .navigation-shell__items [data-primary-needs-route="1"] span{font-size:8.7px!important}
+}
+
+/* Beta 7 mobile composition: keep presentation controls always visible without pushing
+   the first anthropometric action below the useful first screen. */
+@media(max-width:899px){
+  html[data-navigation-shell="workspace"] #navigationShellContext>.primary-display-controls{
+    display:grid!important;
+    grid-template-columns:minmax(0,3fr) minmax(0,2fr)!important;
+    align-items:end!important;
+    gap:6px!important;
+    margin-top:4px!important;
+    padding:6px!important;
+  }
+  .primary-display-controls__group{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    align-content:end!important;
+    gap:3px!important;
+  }
+  .primary-display-controls__group>span{
+    min-height:12px;
+    padding-left:2px;
+    font-size:9px!important;
+    line-height:1.1!important;
+  }
+  .primary-display-controls__buttons{gap:3px!important}
+  #mainContent .primary-display-controls button{
+    min-height:44px!important;
+    padding:6px 3px!important;
+    font-size:9.5px!important;
+    line-height:1.08!important;
+  }
+  html[data-navigation-route="profile"] #navigationShellContext{
+    gap:5px!important;
+    margin-bottom:8px!important;
+    padding:8px 10px!important;
+  }
+  html[data-navigation-route="profile"] #navigationShellContext .navigation-shell-context__copy>span{display:none!important}
+  html[data-navigation-route="profile"] #navigationShellContext .navigation-shell-context__copy h2{
+    font-size:20px!important;
+    line-height:1.08!important;
+  }
+  html[data-navigation-route="profile"] #navigationShellContext .navigation-shell-context__copy p{
+    margin-top:3px!important;
+    font-size:11.5px!important;
+    line-height:1.28!important;
+  }
+}

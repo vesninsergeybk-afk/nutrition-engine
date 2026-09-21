@@ -1,0 +1,309 @@
+/* Nutrition Calculator v6 beta 3 — unified interaction states.
+   Presentation only: no nutrient, norm, HEI, Harvard Plate or persistence logic. */
+:root{
+  --uis-accent:#0b61d6;
+  --uis-accent-strong:#084b9f;
+  --uis-accent-soft:#eaf3ff;
+  --uis-focus:rgba(11,97,214,.30);
+  --uis-border:#cbd9e8;
+  --uis-surface:#fff;
+  --uis-surface-hover:#f6faff;
+  --uis-text:#17324d;
+  --uis-muted:#64748b;
+  --uis-success:#18723a;
+  --uis-success-soft:#eaf8ef;
+  --uis-error:#a93226;
+  --uis-error-soft:#fff0ee;
+  --uis-warning:#a15d08;
+  --uis-warning-soft:#fff5e5;
+  --uis-disabled:#708094;
+  --uis-control-motion:150ms;
+}
+html[data-theme="ivory-brass"]{
+  --uis-accent:var(--ib-olive,#41451d);
+  --uis-accent-strong:#303414;
+  --uis-accent-soft:#f0eadc;
+  --uis-focus:rgba(152,112,43,.34);
+  --uis-border:var(--ib-line,#ddd3c1);
+  --uis-surface:var(--ib-surface,#fffdf8);
+  --uis-surface-hover:#faf4e8;
+  --uis-text:var(--ib-ink,#24251f);
+  --uis-muted:var(--ib-muted,#6d685e);
+  --uis-success:#557642;
+  --uis-success-soft:#edf5e7;
+  --uis-error:#a84239;
+  --uis-error-soft:#fff0ec;
+  --uis-warning:#936413;
+  --uis-warning-soft:#fbf2df;
+}
+html[data-theme="retro-2bit"]{
+  --uis-accent:var(--retro-dark,#111827);
+  --uis-accent-strong:var(--retro-ink,#050505);
+  --uis-accent-soft:var(--retro-paper,#fff);
+  --uis-focus:rgba(0,0,0,.36);
+  --uis-border:var(--retro-ink,#050505);
+  --uis-surface:var(--retro-paper,#fff);
+  --uis-surface-hover:#fff7cc;
+  --uis-text:var(--retro-ink,#050505);
+  --uis-muted:#414141;
+  --uis-success:#075f2a;
+  --uis-success-soft:#dff6d8;
+  --uis-error:#8b1010;
+  --uis-error-soft:#ffe1dc;
+  --uis-warning:#6f4a00;
+  --uis-warning-soft:#fff2b5;
+  --uis-control-motion:0ms;
+}
+
+/* Every interactive target receives the same physical feedback contract. */
+:where(button,.btn,[role="button"],summary,a[href],input,select,textarea){
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+:where(button,.btn,[role="button"],summary,a[href]){
+  transition:transform var(--uis-control-motion) ease,box-shadow var(--uis-control-motion) ease,
+    border-color var(--uis-control-motion) ease,background-color var(--uis-control-motion) ease,
+    color var(--uis-control-motion) ease,opacity var(--uis-control-motion) ease;
+}
+:where(button,.btn,[role="button"],summary,a[href])[data-ui-pressed="true"],
+:where(button,.btn,[role="button"],summary,a[href]):not(:disabled):active{
+  transform:translateY(1px) scale(.985)!important;
+}
+html[data-theme="retro-2bit"] :where(button,.btn,[role="button"],summary,a[href])[data-ui-pressed="true"],
+html[data-theme="retro-2bit"] :where(button,.btn,[role="button"],summary,a[href]):not(:disabled):active{
+  transform:translate(2px,2px)!important;
+  box-shadow:none!important;
+}
+
+/* Keyboard focus is visible and theme-aware without looking like a data field. */
+:where(button,.btn,[role="button"],summary,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])):focus-visible{
+  outline:3px solid var(--uis-focus)!important;
+  outline-offset:3px!important;
+}
+:where(input,select,textarea):focus-visible{
+  border-color:var(--uis-accent)!important;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--uis-accent) 16%,transparent)!important;
+}
+:where(label,.field,.form-field,.search-field-card,.search-grams-card,.norm-input-wrap)[data-ui-focus-within="true"]{
+  color:var(--uis-accent-strong)!important;
+}
+:where(label,.field,.form-field,.search-field-card,.search-grams-card,.norm-input-wrap)[data-ui-focus-within="true"] > :where(input,select,textarea){
+  border-color:var(--uis-accent)!important;
+}
+
+@media(hover:hover){
+  :where(input:not(:disabled):not([readonly]),select:not(:disabled),textarea:not(:disabled)):hover{
+    border-color:color-mix(in srgb,var(--uis-accent) 48%,var(--uis-border))!important;
+  }
+  :where(button,.btn,[role="button"],summary,a[href]):not(:disabled):not([aria-disabled="true"]):hover{
+    filter:brightness(.985);
+  }
+}
+
+/* Persistent selection cannot be communicated by color alone. */
+html[data-interaction-system="v1"] :is(button,.btn,[role="button"],a[href])[data-ui-selected="true"],
+html[data-interaction-system="v1"] :is(button,.btn,[role="button"],a[href])[aria-pressed="true"],
+html[data-interaction-system="v1"] :is(button,.btn,[role="button"],a[href])[aria-selected="true"],
+html[data-interaction-system="v1"] :is(a[href])[aria-current="page"]{
+  font-weight:800!important;
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,currentColor 28%,transparent),0 3px 10px rgba(15,23,42,.08)!important;
+}
+:where(button,.btn,[role="button"])[data-ui-selected="true"]::before{
+  content:"✓";
+  display:inline-grid;
+  place-items:center;
+  width:1.15em;
+  height:1.15em;
+  margin-right:.35em;
+  border:1px solid currentColor;
+  border-radius:50%;
+  font-size:.72em;
+  line-height:1;
+  vertical-align:.08em;
+}
+/* Do not add a duplicate check to controls that already carry a visual marker. */
+:where(.theme-switcher__option,.navigation-shell__items a,.workspace-view-switcher button,.ivory-nav-theme button,
+  .diet-matrix-zone-q,.diet-overview-metric,.diet-map-score-card,.ivory-nutrient-group-row,
+  [data-ivory-nutrient-group],[data-ui-no-check])[data-ui-selected="true"]::before{content:none!important;display:none!important}
+
+/* Busy, working, recording, success and error states. */
+:where(button,.btn,[role="button"])[data-ui-busy="true"],
+:where(button,.btn,[role="button"])[aria-busy="true"]{
+  cursor:progress!important;
+  position:relative;
+}
+:where(button,.btn,[role="button"])[data-ui-busy="true"]::after,
+:where(button,.btn,[role="button"])[aria-busy="true"]::after{
+  content:"";
+  display:inline-block;
+  width:.82em;
+  height:.82em;
+  margin-left:.48em;
+  border:2px solid currentColor;
+  border-right-color:transparent;
+  border-radius:50%;
+  vertical-align:-.08em;
+  animation:uis-spin .72s linear infinite;
+}
+@keyframes uis-spin{to{transform:rotate(1turn)}}
+/* Busy describes progress; it is not automatically disabled. Only operations
+   explicitly marked as non-repeatable are pointer-locked. This keeps the
+   microphone permission button retryable while a browser dialog is pending. */
+:where(button,.btn,[role="button"])[data-ui-lock-while-busy="true"][data-ui-busy="true"]{
+  pointer-events:none!important;
+}
+:where(button,.btn,[role="button"])[data-ui-state="success"],
+:where(button,.btn,[role="button"])[data-ui-feedback="success"]{
+  border-color:var(--uis-success)!important;
+  background:var(--uis-success-soft)!important;
+  color:var(--uis-success)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--uis-success) 20%,transparent)!important;
+}
+:where(button,.btn,[role="button"])[data-ui-state="success"]::after,
+:where(button,.btn,[role="button"])[data-ui-feedback="success"]::after{
+  content:"✓";
+  display:inline-block;
+  margin-left:.42em;
+  font-weight:900;
+}
+:where(button,.btn,[role="button"])[data-ui-state="error"],
+:where(button,.btn,[role="button"])[data-ui-feedback="error"]{
+  border-color:var(--uis-error)!important;
+  background:var(--uis-error-soft)!important;
+  color:var(--uis-error)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--uis-error) 20%,transparent)!important;
+}
+:where(button,.btn,[role="button"])[data-ui-state="error"]::after,
+:where(button,.btn,[role="button"])[data-ui-feedback="error"]::after{
+  content:"!";
+  display:inline-grid;
+  place-items:center;
+  width:1.2em;
+  height:1.2em;
+  margin-left:.4em;
+  border:1px solid currentColor;
+  border-radius:50%;
+  font-size:.76em;
+  font-weight:900;
+}
+:where([data-media-state="recording"],[data-action-state="recording"],[data-recorder-state="recording"]){position:relative}
+:where([data-media-state="recording"],[data-action-state="recording"]):not(.gemini-audio-recorder)::after{
+  content:"";
+  display:inline-block;
+  width:.64em;
+  height:.64em;
+  margin-left:.45em;
+  border-radius:50%;
+  background:#d4473d;
+  box-shadow:0 0 0 0 rgba(212,71,61,.34);
+  animation:uis-record 1.25s ease-out infinite;
+}
+@keyframes uis-record{70%{box-shadow:0 0 0 8px rgba(212,71,61,0)}}
+
+/* Disabled and readonly states remain legible but unmistakably inactive. */
+:where(button,.btn,input,select,textarea):disabled,
+:where(button,.btn,[role="button"],[aria-disabled="true"])[aria-disabled="true"]{
+  cursor:not-allowed!important;
+  opacity:.58!important;
+  filter:saturate(.48)!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+:where(input,textarea)[readonly]{
+  cursor:default!important;
+  background:color-mix(in srgb,var(--uis-surface) 72%,#dbe3ea)!important;
+  color:var(--uis-muted)!important;
+  border-style:dashed!important;
+}
+
+/* Validation appears only after interaction or explicit aria-invalid. */
+html[data-interaction-system="v1"] :is(input,select,textarea)[data-ui-touched="true"]:invalid,
+html[data-interaction-system="v1"] :is(input,select,textarea)[aria-invalid="true"]{
+  border-color:var(--uis-error)!important;
+  background:var(--uis-error-soft)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--uis-error) 15%,transparent)!important;
+}
+html[data-interaction-system="v1"] :is(label,.field,.form-field)[data-ui-invalid="true"]{color:var(--uis-error)!important}
+html[data-interaction-system="v1"] :is(input,select,textarea)[data-ui-touched="true"]:valid:not(:placeholder-shown):not([readonly]){
+  border-color:color-mix(in srgb,var(--uis-success) 55%,var(--uis-border))!important;
+}
+
+/* Native choices receive a clear checked state in every theme. */
+:where(input[type="checkbox"],input[type="radio"]){accent-color:var(--uis-accent)}
+:where(label):has(> input[type="checkbox"]:checked),
+:where(label):has(> input[type="radio"]:checked){color:var(--uis-accent-strong)!important}
+:where(.ai-planner-task-card,.ai-planner-scale-grid label):has(input:checked){
+  border-color:var(--uis-accent)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--uis-accent) 24%,transparent),0 4px 12px rgba(15,23,42,.06)!important;
+}
+
+/* Details disclose state through background, chevron and ARIA. */
+details > summary{position:relative}
+details > summary[data-ui-expanded="true"],details[open] > summary{
+  background:var(--uis-accent-soft)!important;
+  color:var(--uis-accent-strong)!important;
+}
+details > summary[data-ui-expanded="true"]::after,details[open] > summary::after{
+  transform:rotate(180deg);
+}
+
+/* Live regions use a coherent state vocabulary. */
+:where([role="status"],[aria-live])[data-state="working"],
+:where([role="status"],[aria-live])[data-state="loading"]{color:var(--uis-accent-strong)!important}
+:where([role="status"],[aria-live])[data-state="success"]{color:var(--uis-success)!important}
+:where([role="status"],[aria-live])[data-state="error"]{color:var(--uis-error)!important}
+:where([role="status"],[aria-live])[data-state="warning"]{color:var(--uis-warning)!important}
+
+/* Search feedback is coherent and does not create a second toast system. */
+.search-added-toast.show[data-ui-feedback="success"]{
+  border-color:var(--uis-success)!important;
+  background:var(--uis-success-soft)!important;
+  color:var(--uis-success)!important;
+}
+.search-added-toast.show[data-ui-feedback="error"]{
+  border-color:var(--uis-error)!important;
+  background:var(--uis-error-soft)!important;
+  color:var(--uis-error)!important;
+}
+
+/* The profile's principal action communicates readiness and completion. */
+#profileCalculateContinue[data-ui-busy="true"],#needs_calc_btn[data-ui-busy="true"]{min-width:12.5em}
+#profileContinuityPanel[data-ui-profile-state="ready"] #profileCalculateContinue,
+#needs_calc_btn[data-needs-calculation-ready="1"]{
+  box-shadow:0 7px 18px color-mix(in srgb,var(--uis-accent) 19%,transparent)!important;
+}
+
+/* Pointer feedback must remain visible on touch targets. */
+@media(max-width:899px){
+  :where(button,.btn,[role="button"],summary,a[href]){min-height:44px}
+  :where(input,select,textarea){min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){
+  :where(button,.btn,[role="button"],summary,a[href],input,select,textarea){transition:none!important}
+  :where([data-media-state="recording"],[data-action-state="recording"])::after{animation:none!important}
+}
+
+/* High-specificity state safeguards.
+   Legacy release CSS contains deliberate !important component rules; these
+   selectors keep the common interaction contract authoritative without
+   changing layout or calculation components. */
+html[data-interaction-system="v1"] body :is(input,select,textarea)[data-ui-touched="true"]:invalid,
+html[data-interaction-system="v1"] body :is(input,select,textarea)[aria-invalid="true"]{
+  outline:2px solid var(--uis-error)!important;
+  outline-offset:1px!important;
+  border-color:var(--uis-error)!important;
+  background:var(--uis-error-soft)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--uis-error) 15%,transparent)!important;
+}
+html[data-interaction-system="v1"] body :is(.theme-switcher__option,.ivory-nav-theme button)[data-ui-selected="true"],
+html[data-interaction-system="v1"] body :is(.theme-switcher__option,.ivory-nav-theme button)[aria-pressed="true"]{
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,currentColor 38%,transparent),0 3px 10px rgba(15,23,42,.10)!important;
+}
+@media(max-width:899px){
+  html[data-interaction-system="v1"] body :is(button,.btn,[role="button"],summary,a[href]){
+    min-height:44px!important;
+  }
+  html[data-interaction-system="v1"] body :is(input,select,textarea){
+    min-height:44px!important;
+  }
+}

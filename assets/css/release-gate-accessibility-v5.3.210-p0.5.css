@@ -1,0 +1,28 @@
+/* P0.5 release-gate accessibility corrections.
+   Loaded last so the production bundle has one auditable contrast layer. */
+html:not([data-theme="retro-2bit"]) #regionSeg button small {
+  color: #40566f !important;
+  opacity: 1 !important;
+}
+html:not([data-theme="retro-2bit"]) #regionSeg button.active small,
+html:not([data-theme="retro-2bit"]) #regionSeg button[aria-pressed="true"] small {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+html:not([data-theme="retro-2bit"]) .theme-switcher__label,
+html:not([data-theme="retro-2bit"]) #strictHarvardPlateDetails > summary > span,
+html:not([data-theme="retro-2bit"]) .unit-tag,
+html:not([data-theme="retro-2bit"]) .sv-build-date {
+  color: #4b5f75 !important;
+  opacity: 1 !important;
+}
+html:not([data-theme="retro-2bit"]) .ai-planner-scale-grid input:checked + span {
+  background: #08745a !important;
+  border-color: #08745a !important;
+  color: #ffffff !important;
+}
+html:not([data-theme="retro-2bit"]) .ai-planner-scale-grid input:checked + span strong,
+html:not([data-theme="retro-2bit"]) .ai-planner-scale-grid input:checked + span small {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}

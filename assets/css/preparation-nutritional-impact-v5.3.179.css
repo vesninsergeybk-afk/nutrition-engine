@@ -1,0 +1,19 @@
+/* v5.3.179 — preparation nutritional impact */
+.preparation-family-impact-macros{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:9px 0;padding:9px 10px;border:1px solid #d7e3ef;border-radius:10px;background:#f8fbfe}
+.preparation-family-impact-macros span{font-size:12px;font-weight:850;color:#243b53}
+.preparation-family-impact-macros small{width:100%;color:#64748b;font-size:11px}
+.preparation-family-impact-summary{margin-top:8px;color:#40566d;font-size:12.5px;line-height:1.48}
+.preparation-family-impact-warning{margin-top:9px;padding:9px 10px;border:1px solid #e3b04b;border-left:4px solid #c77d00;border-radius:9px;background:#fff8e8;color:#694300;font-size:12px;line-height:1.45}
+.preparation-family-confirm{width:100%;margin-top:9px}
+.preparation-family-needs-confirmation{outline:2px solid rgba(199,125,0,.3);outline-offset:2px}
+@media(max-width:760px){.preparation-family-impact-macros{gap:5px}.preparation-family-impact-macros span{font-size:11.5px}.preparation-family-impact-warning{font-size:11.5px}}
+@media print{.preparation-family-confirm,.preparation-family-impact-warning{display:none!important}}
+@media screen{
+html[data-theme="retro-2bit"] .preparation-family-impact-macros,
+html[data-theme="retro-2bit"] .preparation-family-impact-warning,
+html[data-theme="retro-2bit"] .preparation-family-impact-summary{color:var(--retro-ink)!important;border-radius:0!important;background:var(--retro-paper)!important;background-image:none!important;box-shadow:none!important}
+html[data-theme="retro-2bit"] .preparation-family-impact-warning{border:1px solid var(--retro-dark)!important;border-left:4px solid var(--retro-ink)!important}
+html[data-theme="retro-2bit"] .preparation-family-impact-macros span,
+html[data-theme="retro-2bit"] .preparation-family-impact-macros small{color:var(--retro-ink)!important}
+html[data-theme="retro-2bit"] .preparation-family-needs-confirmation{outline:2px dashed var(--retro-ink)!important}
+}
