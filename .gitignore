@@ -1,0 +1,26 @@
+node_modules/
+reports/
+release/
+playwright-report/
+test-results/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+blob-report/
+*.log
+api/gemini-secret.php
+api/gemini-disabled.flag
+api/integrity-failed.flag
+api/*.state*
+api/*.lock
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Cloudflare local state / local secrets
+.dev.vars
+.dev.vars.*
+.wrangler/
