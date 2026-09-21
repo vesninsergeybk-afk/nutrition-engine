@@ -1,0 +1,650 @@
+{
+  "version": "v5.3.37",
+  "schema": "loader-asset-manifest-v1",
+  "sprite": "assets/loader/loader-sprite-sheet-v5.3.37.png",
+  "fallbackSprite": "assets/loader/loader-fallback-v5.3.37.png",
+  "frameSize": 128,
+  "columns": 8,
+  "rows": 4,
+  "totalFrames": 32,
+  "usedFrames": 26,
+  "reserveFrames": 6,
+  "integration": "CSS background-position",
+  "selection": "manifest-driven contextual weighted random with Harvard mobile clarity polish",
+  "antiRepeat": {
+    "storageKey": "nutri_v533_loader_recent_assets",
+    "strategy": "avoid recently used assets when alternatives exist; recent assets are penalized even when unavoidable"
+  },
+  "reducedMotion": {
+    "enabled": true,
+    "behavior": "disable stage mini-rotation and slow ticker interval"
+  },
+  "assets": [
+    {
+      "id": "boot_default",
+      "frame": 0,
+      "stages": [
+        "boot"
+      ],
+      "tags": [
+        "boot",
+        "start"
+      ],
+      "weight": 1.0
+    },
+    {
+      "id": "product_database",
+      "frame": 1,
+      "stages": [
+        "products",
+        "boot"
+      ],
+      "tags": [
+        "products",
+        "database"
+      ],
+      "weight": 1.25
+    },
+    {
+      "id": "product_database_alt",
+      "frame": 2,
+      "stages": [
+        "products"
+      ],
+      "tags": [
+        "products",
+        "database"
+      ],
+      "weight": 1.0
+    },
+    {
+      "id": "fruit_vegetables",
+      "frame": 3,
+      "stages": [
+        "products",
+        "runtime"
+      ],
+      "tags": [
+        "fruit",
+        "vegetables"
+      ],
+      "weight": 0.95
+    },
+    {
+      "id": "whole_grains",
+      "frame": 4,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "grains"
+      ],
+      "weight": 0.9
+    },
+    {
+      "id": "protein_foods",
+      "frame": 5,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "protein"
+      ],
+      "weight": 0.95
+    },
+    {
+      "id": "water_drinks",
+      "frame": 6,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "water",
+        "drinks"
+      ],
+      "weight": 0.8
+    },
+    {
+      "id": "healthy_fats",
+      "frame": 7,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "fats"
+      ],
+      "weight": 0.75
+    },
+    {
+      "id": "hei_analysis",
+      "frame": 8,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "hei",
+        "analysis"
+      ],
+      "weight": 1.3
+    },
+    {
+      "id": "harvard_plate",
+      "frame": 9,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "harvard",
+        "plate"
+      ],
+      "weight": 1.35
+    },
+    {
+      "id": "balanced_plate_build",
+      "frame": 10,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "balance",
+        "plate"
+      ],
+      "weight": 1.15
+    },
+    {
+      "id": "ready_default",
+      "frame": 11,
+      "stages": [
+        "finalize",
+        "done"
+      ],
+      "tags": [
+        "ready"
+      ],
+      "weight": 1.0
+    },
+    {
+      "id": "done_default",
+      "frame": 12,
+      "stages": [
+        "done"
+      ],
+      "tags": [
+        "done"
+      ],
+      "weight": 1.15
+    },
+    {
+      "id": "done_alt",
+      "frame": 13,
+      "stages": [
+        "done"
+      ],
+      "tags": [
+        "done"
+      ],
+      "weight": 1.0
+    },
+    {
+      "id": "done_boot_alt",
+      "frame": 14,
+      "stages": [
+        "done",
+        "boot"
+      ],
+      "tags": [
+        "done",
+        "boot"
+      ],
+      "weight": 0.8
+    },
+    {
+      "id": "error_default",
+      "frame": 15,
+      "stages": [
+        "error"
+      ],
+      "tags": [
+        "error"
+      ],
+      "weight": 1.0
+    },
+    {
+      "id": "macros_nutrients",
+      "frame": 16,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "macros",
+        "nutrients"
+      ],
+      "weight": 1.15
+    },
+    {
+      "id": "energy_calories",
+      "frame": 17,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "energy",
+        "calories"
+      ],
+      "weight": 1.05
+    },
+    {
+      "id": "product_search",
+      "frame": 18,
+      "stages": [
+        "products"
+      ],
+      "tags": [
+        "search",
+        "database"
+      ],
+      "weight": 1.25
+    },
+    {
+      "id": "add_to_diet",
+      "frame": 19,
+      "stages": [
+        "products"
+      ],
+      "tags": [
+        "add",
+        "ration"
+      ],
+      "weight": 1.05
+    },
+    {
+      "id": "portion_correction",
+      "frame": 20,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "portion",
+        "grams"
+      ],
+      "weight": 0.9
+    },
+    {
+      "id": "protein_gap",
+      "frame": 21,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "protein",
+        "gap"
+      ],
+      "weight": 0.75
+    },
+    {
+      "id": "vegetable_overbalance",
+      "frame": 22,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "plate",
+        "vegetables",
+        "skew"
+      ],
+      "weight": 0.55
+    },
+    {
+      "id": "hei_plate_balance",
+      "frame": 23,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "hei",
+        "plate"
+      ],
+      "weight": 1.1
+    },
+    {
+      "id": "data_check",
+      "frame": 24,
+      "stages": [
+        "finalize"
+      ],
+      "tags": [
+        "check",
+        "validation"
+      ],
+      "weight": 1.25
+    },
+    {
+      "id": "final_sync",
+      "frame": 25,
+      "stages": [
+        "finalize",
+        "done"
+      ],
+      "tags": [
+        "sync",
+        "done"
+      ],
+      "weight": 1.3
+    },
+    {
+      "id": "reserve_products",
+      "frame": 26,
+      "stages": [
+        "products"
+      ],
+      "tags": [
+        "reserve"
+      ],
+      "weight": 0.05
+    },
+    {
+      "id": "reserve_harvard",
+      "frame": 27,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "reserve"
+      ],
+      "weight": 0.05
+    },
+    {
+      "id": "reserve_macros",
+      "frame": 28,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "reserve"
+      ],
+      "weight": 0.05
+    },
+    {
+      "id": "reserve_plate",
+      "frame": 29,
+      "stages": [
+        "runtime"
+      ],
+      "tags": [
+        "reserve"
+      ],
+      "weight": 0.05
+    },
+    {
+      "id": "reserve_done",
+      "frame": 30,
+      "stages": [
+        "done"
+      ],
+      "tags": [
+        "reserve"
+      ],
+      "weight": 0.05
+    },
+    {
+      "id": "fallback_error",
+      "frame": 31,
+      "stages": [
+        "error"
+      ],
+      "tags": [
+        "fallback"
+      ],
+      "weight": 0.05
+    }
+  ],
+  "stagePools": {
+    "boot": [
+      "boot_default",
+      "done_boot_alt",
+      "product_database"
+    ],
+    "products": [
+      "product_database",
+      "product_database_alt",
+      "product_search",
+      "add_to_diet",
+      "fruit_vegetables"
+    ],
+    "runtime": [
+      "hei_analysis",
+      "harvard_plate",
+      "balanced_plate_build",
+      "whole_grains",
+      "protein_foods",
+      "water_drinks",
+      "healthy_fats",
+      "macros_nutrients",
+      "energy_calories",
+      "portion_correction",
+      "protein_gap",
+      "vegetable_overbalance",
+      "hei_plate_balance"
+    ],
+    "finalize": [
+      "data_check",
+      "final_sync",
+      "ready_default"
+    ],
+    "done": [
+      "done_default",
+      "done_alt",
+      "final_sync",
+      "ready_default",
+      "reserve_done"
+    ],
+    "error": [
+      "error_default",
+      "fallback_error"
+    ]
+  },
+  "stageSubpools": {
+    "productsPrimary": [
+      "product_database",
+      "product_search",
+      "product_database_alt"
+    ],
+    "productsSecondary": [
+      "add_to_diet",
+      "fruit_vegetables",
+      "product_database_alt"
+    ],
+    "runtimeEarly": [
+      "energy_calories",
+      "macros_nutrients",
+      "hei_analysis",
+      "whole_grains",
+      "protein_foods"
+    ],
+    "runtimeLate": [
+      "harvard_plate",
+      "hei_plate_balance",
+      "balanced_plate_build",
+      "portion_correction",
+      "protein_gap",
+      "vegetable_overbalance"
+    ],
+    "finalizePrimary": [
+      "data_check",
+      "final_sync"
+    ],
+    "donePrimary": [
+      "final_sync",
+      "done_default",
+      "done_alt",
+      "ready_default"
+    ]
+  },
+  "themes": {
+    "balancedMixed": {
+      "label": "Balanced mixed",
+      "stagePools": {
+        "products": [
+          "product_database",
+          "product_search",
+          "add_to_diet"
+        ],
+        "runtime": [
+          "hei_analysis",
+          "harvard_plate",
+          "macros_nutrients",
+          "hei_plate_balance",
+          "balanced_plate_build"
+        ],
+        "finalize": [
+          "data_check",
+          "final_sync"
+        ],
+        "done": [
+          "final_sync",
+          "done_default",
+          "done_alt"
+        ]
+      },
+      "weight": 1.4
+    },
+    "productFocused": {
+      "label": "Product focused",
+      "stagePools": {
+        "products": [
+          "product_search",
+          "product_database",
+          "product_database_alt",
+          "add_to_diet"
+        ],
+        "runtime": [
+          "macros_nutrients",
+          "energy_calories",
+          "hei_analysis"
+        ],
+        "finalize": [
+          "data_check",
+          "ready_default"
+        ],
+        "done": [
+          "done_default",
+          "final_sync"
+        ]
+      },
+      "weight": 1.0
+    },
+    "plateFocused": {
+      "label": "Plate focused",
+      "stagePools": {
+        "products": [
+          "fruit_vegetables",
+          "product_database",
+          "add_to_diet"
+        ],
+        "runtime": [
+          "harvard_plate",
+          "balanced_plate_build",
+          "portion_correction",
+          "vegetable_overbalance",
+          "protein_gap",
+          "hei_plate_balance"
+        ],
+        "finalize": [
+          "final_sync",
+          "data_check"
+        ],
+        "done": [
+          "final_sync",
+          "done_alt"
+        ]
+      },
+      "weight": 1.1
+    },
+    "analyticFocused": {
+      "label": "Analytic focused",
+      "stagePools": {
+        "products": [
+          "product_database",
+          "product_search"
+        ],
+        "runtime": [
+          "hei_analysis",
+          "energy_calories",
+          "macros_nutrients",
+          "hei_plate_balance"
+        ],
+        "finalize": [
+          "data_check",
+          "final_sync"
+        ],
+        "done": [
+          "ready_default",
+          "final_sync"
+        ]
+      },
+      "weight": 1.0
+    }
+  },
+  "healthCheck": {
+    "requiredFrames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "allowedReserveFrames": [
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "rules": [
+      "Every asset id must be unique.",
+      "Every asset frame must be within 0..31.",
+      "Every stage pool id must exist in assets.",
+      "Fallback sprite must use the same grid geometry as the active sprite."
+    ]
+  },
+  "notes": [
+    "Harvard Mobile Clarity Polish.",
+    "Sector rows under the diagram now look and behave like explicit disclosure buttons.",
+    "Outside-the-plate products are split into separately accounted items and attention items.",
+    "Additional level summaries are visually separated and no longer read as merged text.",
+    "Stale v5.2.23 UI badge and stale loader metadata are removed."
+  ],
+  "hardening": {
+    "manifestTimeoutMs": 5000,
+    "productChunkTimeoutMs": 20000,
+    "productOverallWatchdogMs": null,
+    "productFetchCache": "default",
+    "runtimeRescue": true,
+    "manifestBlocksRuntime": false,
+    "productFailureBlocksRuntime": "only if every product source truly fails; no premature watchdog cutoff",
+    "optionalScriptsLoading": "ordered parallel dynamic scripts with async=false",
+    "fallbackCssIfSpriteFails": true
+  }
+}
