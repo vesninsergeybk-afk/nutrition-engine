@@ -1,0 +1,115 @@
+{
+  "version": "v5.3.148",
+  "schema": "retro-2bit-icon-sprite-v1",
+  "file": "assets/icons/retro-2bit-icons-v1.png",
+  "tileSize": 16,
+  "columns": 5,
+  "rows": 4,
+  "palette": [
+    "transparent",
+    "#111111",
+    "#4a4a4a"
+  ],
+  "icons": {
+    "info": {
+      "index": 0,
+      "x": 0,
+      "y": 0
+    },
+    "close": {
+      "index": 1,
+      "x": 16,
+      "y": 0
+    },
+    "search": {
+      "index": 2,
+      "x": 32,
+      "y": 0
+    },
+    "add": {
+      "index": 3,
+      "x": 48,
+      "y": 0
+    },
+    "trash": {
+      "index": 4,
+      "x": 64,
+      "y": 0
+    },
+    "edit": {
+      "index": 5,
+      "x": 0,
+      "y": 16
+    },
+    "print": {
+      "index": 6,
+      "x": 16,
+      "y": 16
+    },
+    "pdf": {
+      "index": 7,
+      "x": 32,
+      "y": 16
+    },
+    "calc": {
+      "index": 8,
+      "x": 48,
+      "y": 16
+    },
+    "list": {
+      "index": 9,
+      "x": 64,
+      "y": 16
+    },
+    "chart": {
+      "index": 10,
+      "x": 0,
+      "y": 32
+    },
+    "norms": {
+      "index": 11,
+      "x": 16,
+      "y": 32
+    },
+    "matrix": {
+      "index": 12,
+      "x": 32,
+      "y": 32
+    },
+    "plate": {
+      "index": 13,
+      "x": 48,
+      "y": 32
+    },
+    "ai": {
+      "index": 14,
+      "x": 64,
+      "y": 32
+    },
+    "upload": {
+      "index": 15,
+      "x": 0,
+      "y": 48
+    },
+    "camera": {
+      "index": 16,
+      "x": 16,
+      "y": 48
+    },
+    "audio": {
+      "index": 17,
+      "x": 32,
+      "y": 48
+    },
+    "reset": {
+      "index": 18,
+      "x": 48,
+      "y": 48
+    },
+    "check": {
+      "index": 19,
+      "x": 64,
+      "y": 48
+    }
+  }
+}

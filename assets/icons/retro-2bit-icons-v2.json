@@ -1,0 +1,75 @@
+{
+  "version": "v5.3.163",
+  "schema": "retro-2bit-icon-set-v2",
+  "directory": "assets/icons/retro-2bit-v2",
+  "size": 20,
+  "palette": [
+    "transparent",
+    "#111111",
+    "#4a4a4a",
+    "#b8b8b8",
+    "#f4f4ef"
+  ],
+  "icons": {
+    "info": {
+      "file": "assets/icons/retro-2bit-v2/info.svg"
+    },
+    "close": {
+      "file": "assets/icons/retro-2bit-v2/close.svg"
+    },
+    "search": {
+      "file": "assets/icons/retro-2bit-v2/search.svg"
+    },
+    "add": {
+      "file": "assets/icons/retro-2bit-v2/add.svg"
+    },
+    "remove": {
+      "file": "assets/icons/retro-2bit-v2/remove.svg"
+    },
+    "edit": {
+      "file": "assets/icons/retro-2bit-v2/edit.svg"
+    },
+    "print": {
+      "file": "assets/icons/retro-2bit-v2/print.svg"
+    },
+    "pdf": {
+      "file": "assets/icons/retro-2bit-v2/pdf.svg"
+    },
+    "calculate": {
+      "file": "assets/icons/retro-2bit-v2/calculate.svg"
+    },
+    "ration": {
+      "file": "assets/icons/retro-2bit-v2/ration.svg"
+    },
+    "hei": {
+      "file": "assets/icons/retro-2bit-v2/hei.svg"
+    },
+    "norms": {
+      "file": "assets/icons/retro-2bit-v2/norms.svg"
+    },
+    "matrix": {
+      "file": "assets/icons/retro-2bit-v2/matrix.svg"
+    },
+    "plate": {
+      "file": "assets/icons/retro-2bit-v2/plate.svg"
+    },
+    "ai": {
+      "file": "assets/icons/retro-2bit-v2/ai.svg"
+    },
+    "upload": {
+      "file": "assets/icons/retro-2bit-v2/upload.svg"
+    },
+    "camera": {
+      "file": "assets/icons/retro-2bit-v2/camera.svg"
+    },
+    "audio": {
+      "file": "assets/icons/retro-2bit-v2/audio.svg"
+    },
+    "reset": {
+      "file": "assets/icons/retro-2bit-v2/reset.svg"
+    },
+    "check": {
+      "file": "assets/icons/retro-2bit-v2/check.svg"
+    }
+  }
+}
