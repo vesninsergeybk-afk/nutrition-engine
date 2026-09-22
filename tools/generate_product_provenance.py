@@ -178,7 +178,7 @@ def build(write=True):
         manifest_chunks.append({'json':jrel,'script':jsrel,'count':len(arr),'json_bytes':len(jdata),'json_sha256':sha(jdata),'script_bytes':len(js),'script_sha256':sha(js)})
     registry={
       'schema_version':1,'registry_version':OUT_VERSION,'generated_at':'2026-07-18T00:00:00Z',
-      'policy_path':str(POLICY_PATH.relative_to(ROOT)),'source_registry_path':str(SOURCE_REGISTRY_PATH.relative_to(ROOT)),
+      'policy_path':POLICY_PATH.relative_to(ROOT).as_posix(),'source_registry_path':SOURCE_REGISTRY_PATH.relative_to(ROOT).as_posix(),
       'baseline_version':BASE_VERSION,'products_count':len(all_products),'nutrient_fields':policy['nutrient_fields'],
       'method_relative_uncertainty':policy['method_relative_uncertainty'],
       'statistics':{k:(dict(sorted(v.items())) if isinstance(v,collections.Counter) else v) for k,v in stats.items()},
