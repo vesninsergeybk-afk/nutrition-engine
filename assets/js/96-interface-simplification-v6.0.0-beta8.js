@@ -14,11 +14,32 @@
 
   function settingsHeader(){return d.querySelector('#mainContent>header');}
 
+  function syncSettingsVisibility(){
+    var header=settingsHeader();
+    if(!header)return;
+    var mobile=w.innerWidth<900;
+    var open=header.classList.contains('interface-settings-pass1-open');
+    var ids=['workspaceViewSwitcher','themeSwitcher'];
+    var i,node;
+    for(i=0;i<ids.length;i++){
+      node=byId(ids[i]);
+      if(!node)continue;
+      if(mobile&&!open)node.style.setProperty('display','none','important');
+      else node.style.removeProperty('display');
+    }
+    var toolbar=header.querySelector(':scope > .toolbar');
+    if(toolbar){
+      if(mobile&&!open)toolbar.style.setProperty('display','none','important');
+      else toolbar.style.removeProperty('display');
+    }
+  }
+
   function setSettingsOpen(open){
     var header=settingsHeader(),button=byId('interfaceSettingsPass1');
     if(!header)return;
     header.classList.toggle('interface-settings-pass1-open',!!open);
     if(button)button.setAttribute('aria-expanded',open?'true':'false');
+    syncSettingsVisibility();
   }
 
   function ensureSettingsControl(){
@@ -138,6 +159,7 @@
   function refresh(){
     mark();
     ensureSettingsControl();
+    syncSettingsVisibility();
     simplifyEntryMethods();
     simplifyPersonContext();
   }
