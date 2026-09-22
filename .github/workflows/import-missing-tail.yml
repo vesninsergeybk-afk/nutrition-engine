@@ -1,0 +1,46 @@
+name: Import missing Nutrition Engine tail
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.transfer/**'
+
+permissions:
+  contents: write
+
+jobs:
+  import-tail:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reassemble and verify transfer archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ne-tail-parts
+          for z in .transfer/tail-chunk-*.zip; do
+            unzip -q "$z" -d /tmp/ne-tail-parts
+          done
+          cat /tmp/ne-tail-parts/tail.part.* > /tmp/missing-tail.zip
+          echo '2bb42521c22b001fe479c8c2c3e8757f100a66175e0901034ab62bb01f1ae2fd  /tmp/missing-tail.zip' | sha256sum -c -
+          test "$(unzip -Z1 /tmp/missing-tail.zip | wc -l)" -eq 18
+
+      - name: Import missing files
+        shell: bash
+        run: |
+          set -euo pipefail
+          unzip -qo /tmp/missing-tail.zip -d "$GITHUB_WORKSPACE"
+          while IFS= read -r path; do
+            test -f "$path"
+            git add -- "$path"
+          done < <(unzip -Z1 /tmp/missing-tail.zip)
+          git rm -r .transfer
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Import Nutrition Engine batch 59'
+          git push origin HEAD:main
