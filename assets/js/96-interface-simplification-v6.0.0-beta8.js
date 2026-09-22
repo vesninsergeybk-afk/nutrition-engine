@@ -78,25 +78,25 @@
   function rationItemCount(){
     var resolved=false,count=0,api,state,items,i,item,grams;
     try{
-      api=w.NutritionWorkspaceDailyCycleHF15;
-      if(api&&typeof api.getSummary==='function'){
-        state=api.getSummary();
-        if(state&&state.items!=null){
-          resolved=true;
-          count=Math.max(0,Number(state.items)||0);
+      if(w.State&&typeof w.State.get==='function'){
+        items=w.State.get()||[];
+        resolved=true;
+        count=0;
+        for(i=0;i<items.length;i++){
+          item=items[i];
+          grams=item&&Number(item.grams);
+          if(isFinite(grams)&&grams>0)count++;
         }
       }
     }catch(_){}
     if(!resolved){
       try{
-        if(w.State&&typeof w.State.get==='function'){
-          items=w.State.get()||[];
-          resolved=true;
-          count=0;
-          for(i=0;i<items.length;i++){
-            item=items[i];
-            grams=item&&Number(item.grams);
-            if(isFinite(grams)&&grams>0)count++;
+        api=w.NutritionWorkspaceDailyCycleHF15;
+        if(api&&typeof api.getSummary==='function'){
+          state=api.getSummary();
+          if(state&&state.items!=null){
+            resolved=true;
+            count=Math.max(0,Number(state.items)||0);
           }
         }
       }catch(_){}
