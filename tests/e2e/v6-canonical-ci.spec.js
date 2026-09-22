@@ -273,3 +273,26 @@ test('mobile search results and help dialog stay inside their usable viewport', 
   await dialog.locator('.close-btn').click();
   await expect(dialog).toBeHidden();
 });
+
+
+test('mobile workspace removes duplicate profile chrome without losing profile access', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+
+  const back = page.locator('#workspaceProfileBackAction');
+  if (await back.count()) await expect(back).toBeHidden();
+
+  const person = page.locator('#workspacePersonContext');
+  await expect(person).toBeVisible();
+  await expect(person.locator('#workspacePersonEdit')).toBeVisible();
+  await expect(person.locator('.workspace-person-context__targets')).toBeHidden();
+  await expect(page.locator('#navigationShellContext .navigation-shell-context__copy p')).toBeHidden();
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('profile'));
+  await expect(page.locator('#navigationShellContext .navigation-shell-context__copy p')).toBeVisible();
+});
