@@ -318,3 +318,37 @@ test('mobile profile uses one heading surface and removes the orphaned name wrap
   await page.setViewportSize({ width: 1024, height: 900 });
   await expect(page.locator('#navigationShellContext')).toBeVisible();
 });
+
+
+test('production recovery ignores stale v1 canvas preference and opens sections workspace', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem('nutritionCalculator.workspaceLayout.v1', 'canvas');
+      localStorage.removeItem('nutritionCalculator.workspaceLayout.v2');
+    } catch (_) {}
+  });
+
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.waitForFunction(() =>
+    window.NutritionWorkspaceEntryUXHF28 &&
+    document.documentElement.getAttribute('data-navigation-shell') === 'workspace' &&
+    document.documentElement.getAttribute('data-workspace-layout') === 'sections',
+    null, { timeout: 15000 }
+  );
+
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+  await expect(page.locator('html')).toHaveAttribute('data-workspace-layout', 'sections');
+  await expect(page.locator('#navigationShell')).toBeVisible();
+  await expect(page.locator('#navigationShellContext')).toBeVisible();
+
+  const stored = await page.evaluate(() => ({
+    old: localStorage.getItem('nutritionCalculator.workspaceLayout.v1'),
+    current: localStorage.getItem('nutritionCalculator.workspaceLayout.v2')
+  }));
+  expect(stored.old).toBe('canvas');
+  expect(stored.current).toBeNull();
+});
