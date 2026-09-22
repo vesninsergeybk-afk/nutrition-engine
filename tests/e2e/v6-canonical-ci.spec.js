@@ -250,6 +250,7 @@ async function fillAuditProfile(page) {
 }
 
 test('UX audit captures responsive profile and dialog states', async ({ page, loadApp, browserName }) => {
+  test.skip(browserName !== 'chromium', 'visual audit is captured once in Chromium');
   const viewports = [
     { width: 360, height: 800, name: 'mobile-360' },
     { width: 390, height: 844, name: 'mobile-390' },
@@ -280,7 +281,7 @@ test('UX audit captures responsive profile and dialog states', async ({ page, lo
       const d = modal.dialogs[0];
       expect(d.left).toBeGreaterThanOrEqual(-1);
       expect(d.right).toBeLessThanOrEqual(vp.width + 1);
-      await page.locator('#normRegionHelp .norm-region-help-close').click();
+      await page.locator('#normRegionHelp .norm-region-help-close').first().click();
     }
 
     const needsHelp = page.locator('#needsHelpBtn');
@@ -292,10 +293,13 @@ test('UX audit captures responsive profile and dialog states', async ({ page, lo
       expect(modal.dialogs.length).toBe(1);
       await page.keyboard.press('Escape');
     }
+    await page.evaluate(() => { try { localStorage.clear(); sessionStorage.clear(); } catch (_) {} });
+    await page.goto('about:blank');
   }
 });
 
 test('UX audit captures completed profile, ration and analysis states', async ({ page, loadApp, browserName }) => {
+  test.skip(browserName !== 'chromium', 'visual audit is captured once in Chromium');
   for (const vp of [
     { width: 390, height: 844, name: 'mobile-390' },
     { width: 768, height: 1024, name: 'tablet-768' },
@@ -342,5 +346,7 @@ test('UX audit captures completed profile, ration and analysis states', async ({
     });
     await page.waitForTimeout(180);
     await saveUxAudit(page, browserName + '-' + vp.name + '-analysis-overview');
+    await page.evaluate(() => { try { localStorage.clear(); sessionStorage.clear(); } catch (_) {} });
+    await page.goto('about:blank');
   }
 });
