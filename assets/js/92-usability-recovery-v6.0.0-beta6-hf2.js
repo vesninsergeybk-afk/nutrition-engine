@@ -76,7 +76,17 @@
   function afterNeedsComputed(){
     if(!needsCalculationRequested){w.setTimeout(patchNeedsFlow,0);return;}
     needsCalculationRequested=false;
-    w.setTimeout(function(){patchNeedsFlow();navigate('profile','needs_out');scrollToNode(byId('needs_out')||byId('workspaceProfileNext'));},90);
+    w.setTimeout(function(){
+      patchNeedsFlow();
+      var api=shell(),state=null;
+      try{state=api&&typeof api.getState==='function'?api.getState():null;}catch(_){}
+      /* The current Needs Checkpoint uses the long canvas as the primary
+         consultation surface. Calling navigate() from long mode implicitly
+         switches NavigationShell back to workspace, so preserve the active
+         canvas and only scroll to the freshly calculated results. */
+      if(!state||state.mode!=='long')navigate('profile','needs_out');
+      scrollToNode(byId('needs_out')||byId('workspaceProfileNext'));
+    },90);
   }
 
   function openVoiceDirectly(event){

@@ -77,7 +77,7 @@ test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ pa
   expect(failures).toEqual([]);
 });
 
-test('mobile checkpoint opens at the beginning without horizontal overflow', async ({ page, loadApp }) => {
+test('mobile checkpoint opens at the needs step without horizontal overflow', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
   await waitForCheckpoint(page);
@@ -86,15 +86,21 @@ test('mobile checkpoint opens at the beginning without horizontal overflow', asy
   await expect(page.locator('#needsCompact')).toBeVisible();
   await expect(page.locator('.workflow-steps')).toBeVisible();
 
-  const state = await page.evaluate(() => ({
-    scroll: document.documentElement.scrollWidth,
-    client: document.documentElement.clientWidth,
-    y: window.scrollY,
-    hash: window.location.hash
-  }));
+  const state = await page.evaluate(() => {
+    const needs = document.getElementById('needsCompact');
+    const rect = needs && needs.getBoundingClientRect();
+    return {
+      scroll: document.documentElement.scrollWidth,
+      client: document.documentElement.clientWidth,
+      needsTop: rect && rect.top,
+      hash: window.location.hash
+    };
+  });
   expect(state.scroll).toBeLessThanOrEqual(state.client + 1);
-  expect(state.y).toBeLessThanOrEqual(2);
-  expect(state.hash).toBe('');
+  expect(state.needsTop).not.toBeNull();
+  expect(state.needsTop).toBeGreaterThanOrEqual(-2);
+  expect(state.needsTop).toBeLessThanOrEqual(80);
+  expect(state.hash).toBe('#needsCompact');
 });
 
 test('current needs checkpoint calculates and preserves the profile across steps', async ({ page, loadApp }) => {
