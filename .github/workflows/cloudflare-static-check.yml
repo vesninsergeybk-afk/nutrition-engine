@@ -3,6 +3,7 @@ name: Cloudflare Static Check
 on:
   push:
     branches:
+      - main
       - cloudflare/static-preview
   pull_request:
     paths:
