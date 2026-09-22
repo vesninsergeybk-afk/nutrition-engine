@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / ".cloudflare" / "dist"
 
 # Cloudflare Static Assets must never expose server-side PHP or project-internal
-# material. The runtime inventory is still used as the source of truth for the
-# browser closure, but server-only paths are intentionally omitted here.
+# material. The runtime inventory remains the source of truth for browser files,
+# while server-only API paths are intentionally omitted here.
 BLOCKED_TOP_LEVEL = {
     ".github",
     "_source_metadata",
@@ -49,6 +49,10 @@ REQUIRED_PUBLIC = {
 }
 
 
+def is_server_only(rel: str) -> bool:
+    return PurePosixPath(rel).parts[:1] == ("api",)
+
+
 def is_blocked(rel: str) -> bool:
     p = PurePosixPath(rel)
     if not p.parts:
@@ -58,8 +62,6 @@ def is_blocked(rel: str) -> bool:
     if len(p.parts) == 1 and rel in BLOCKED_ROOT_FILES:
         return True
     lowered = rel.lower()
-    # Fail closed if a future runtime reference unexpectedly points at a file
-    # whose name signals private credentials or private review material.
     if "gemini-secret" in lowered or "reference_answer_key_private" in lowered:
         return True
     return False
@@ -67,8 +69,16 @@ def is_blocked(rel: str) -> bool:
 
 def main() -> None:
     runtime_files, missing = compute_runtime()
-    if missing:
-        raise SystemExit("Cloudflare build aborted: runtime closure is incomplete: " + ", ".join(missing))
+
+    # The public Git repository intentionally omits api/gemini-secret.php, and
+    # the first Cloudflare deployment intentionally omits the entire PHP API.
+    # Missing browser-side files are still fatal.
+    missing_browser = sorted(rel for rel in missing if not is_server_only(rel))
+    if missing_browser:
+        raise SystemExit(
+            "Cloudflare build aborted: browser runtime closure is incomplete: "
+            + ", ".join(missing_browser)
+        )
 
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -82,14 +92,12 @@ def main() -> None:
             continue
         src = ROOT / rel
         if not src.is_file():
-            raise SystemExit(f"Cloudflare build aborted: expected runtime file is missing: {rel}")
+            raise SystemExit(f"Cloudflare build aborted: expected browser runtime file is missing: {rel}")
         dst = OUT / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
         copied.append(rel)
 
-    # security.txt is safe and useful on a public origin even though it is not
-    # required by the browser runtime closure.
     security_txt = ROOT / ".well-known" / "security.txt"
     if security_txt.is_file():
         dst = OUT / ".well-known" / "security.txt"
@@ -104,24 +112,31 @@ def main() -> None:
             + ", ".join(missing_public)
         )
 
-    # Explicit safety invariant: no PHP or known secret/private artifacts may
-    # enter the static directory where Cloudflare would serve them as files.
+    # Fail closed if server-side code or known private artifacts enter the
+    # directory that Cloudflare will serve publicly.
     unsafe = []
     for path in OUT.rglob("*"):
         if not path.is_file():
             continue
         rel = path.relative_to(OUT).as_posix()
         lowered = rel.lower()
-        if path.suffix.lower() == ".php" or "gemini-secret" in lowered or "reference_answer_key_private" in lowered:
+        if (
+            path.suffix.lower() == ".php"
+            or "gemini-secret" in lowered
+            or "reference_answer_key_private" in lowered
+        ):
             unsafe.append(rel)
     if unsafe:
-        raise SystemExit("Cloudflare build aborted: unsafe static files detected: " + ", ".join(sorted(unsafe)))
+        raise SystemExit(
+            "Cloudflare build aborted: unsafe static files detected: "
+            + ", ".join(sorted(unsafe))
+        )
 
     result = {
         "ok": True,
         "output": OUT.relative_to(ROOT).as_posix(),
         "copied_files": len(set(copied)),
-        "server_only_files_omitted": len(omitted),
+        "server_only_runtime_files_omitted": len(set(omitted) | set(missing)),
         "gemini_api_migrated": False,
         "note": "Static calculator is deployable; PHP Gemini endpoints are intentionally not published.",
     }
