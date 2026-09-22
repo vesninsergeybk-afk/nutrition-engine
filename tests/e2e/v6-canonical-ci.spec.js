@@ -230,10 +230,6 @@ async function fillAuditProfile(page) {
   await page.fill('#needs_h', '175');
   await page.fill('#needs_w', '74');
   await page.selectOption('#needs_activity', 'low');
-  const state = page.locator('#needs_state');
-  if (await state.count()) await state.selectOption('normal');
-  const goal = page.locator('#needs_goal');
-  if (await goal.count()) await goal.selectOption('maintain');
 }
 
 test('UX audit captures responsive profile and dialog states', async ({ page, loadApp, browserName }) => {
