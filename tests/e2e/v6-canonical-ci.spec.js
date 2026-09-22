@@ -318,3 +318,48 @@ test('mobile profile uses one heading surface and removes the orphaned name wrap
   await page.setViewportSize({ width: 1024, height: 900 });
   await expect(page.locator('#navigationShellContext')).toBeVisible();
 });
+
+
+test('empty ration keeps one primary action and restores analytics after the first product', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('html')).toHaveAttribute('data-ration-empty', '1');
+
+  await expect(page.locator('#workspaceFocusSearch')).toBeVisible();
+  await expect(page.locator('#workspaceRationAttention')).toBeHidden();
+  await expect(page.locator('.workspace-ration-inline__metrics')).toBeHidden();
+  await expect(page.locator('#workspaceOpenRation')).toBeHidden();
+  const rationAnalytics = page.locator('.theme-parity-ration-hf4');
+  if (await rationAnalytics.count()) await expect(rationAnalytics).toBeHidden();
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('analysis/overview'));
+  const commandCenter = page.locator('#analysisCommandCenterHF3');
+  if (await commandCenter.count()) await expect(commandCenter).toBeHidden();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__metrics')).toBeHidden();
+  await expect(page.locator('#workspaceOverviewIssueList .workspace-overview__empty')).toBeVisible();
+  await expect(page.locator('#workspaceOverviewIssueList [data-workspace-route="ration"]')).toBeVisible();
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  const search = page.locator('#globalSearchInput');
+  await search.fill('банан');
+  await page.waitForFunction(() => {
+    const el = document.getElementById('globalResults');
+    return el && el.classList.contains('has-query') && el.getBoundingClientRect().height > 0;
+  }, null, { timeout: 10000 });
+  const add = page.locator('#globalResults button[data-role="add-search"]:not([disabled]), #globalResults button[data-role="add"]:not([disabled])').first();
+  await expect(add).toBeVisible();
+  await add.click();
+
+  await expect(page.locator('html')).toHaveAttribute('data-ration-empty', '0', { timeout: 10000 });
+  await expect(page.locator('#workspaceRationAttention')).toBeVisible();
+  await expect(page.locator('.workspace-ration-inline__metrics')).toBeVisible();
+  if (await rationAnalytics.count()) await expect(rationAnalytics).toBeVisible();
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('analysis/overview'));
+  if (await commandCenter.count()) await expect(commandCenter).toBeVisible();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__metrics')).toBeVisible();
+});
