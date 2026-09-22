@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-rc2-hf15",
+  "stage": "4.6",
+  "contract_id": "nutrition-calculator-stage-4-6-daily-cycle-v1",
+  "scope": {
+    "standard_search_add_preserves_query": true,
+    "standard_search_add_preserves_focus": true,
+    "standard_search_add_preserves_search_position": true,
+    "explicit_open_ration_action": true,
+    "composite_add_and_edit_behavior_preserved": true,
+    "mobile_target_minimum_px": 44,
+    "sticky_focus_clearance": true
+  },
+  "viewport_matrix": [
+    [
+      360,
+      800
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1366,
+      768
+    ],
+    [
+      1440,
+      900
+    ]
+  ],
+  "browser_matrix": {
+    "chromium": "PASSED",
+    "firefox": "PENDING_BROWSER_BINARY",
+    "webkit": "PENDING_BROWSER_BINARY"
+  },
+  "manual_matrix": {
+    "talkback": "PENDING_REAL_DEVICE_REVIEW",
+    "voiceover": "PENDING_REAL_DEVICE_REVIEW",
+    "browser_text_scaling": "PENDING_REAL_DEVICE_REVIEW",
+    "mobile_browser_bars": "PENDING_REAL_DEVICE_REVIEW",
+    "system_print_dialog": "PENDING_REAL_DEVICE_REVIEW"
+  },
+  "change_boundary": {
+    "calculation_model_changed": false,
+    "formula_registry_changed": false,
+    "normative_registry_changed": false,
+    "product_database_changed": false,
+    "meal_data_model_changed": false,
+    "stage5a_applied": false,
+    "long_mode_removed": false
+  },
+  "browser_evidence": {
+    "chromium_report": "reports/stage-4-6-chromium-acceptance.json",
+    "daily_journey_report": "reports/stage-4-6-daily-journey.json",
+    "print_pdf": "reports/stage-4-6-chromium-print.pdf",
+    "viewport_results_dir": "reports/stage-4-6-matrix"
+  }
+}

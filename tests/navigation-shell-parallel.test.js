@@ -1,0 +1,25 @@
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const ROOT=path.resolve(__dirname,'..');
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,'config/runtime-assets.v5.3.210-rc2.json'),'utf8'));
+const js=fs.readFileSync(path.join(ROOT,'assets/js/75-navigation-shell-v5.3.210-rc2-hf17.js'),'utf8');
+const legacy=fs.readFileSync(path.join(ROOT,'assets/legacy/js/75-navigation-shell-v5.3.210-rc2-hf17.js'),'utf8');
+const css=fs.readFileSync(path.join(ROOT,'assets/css/navigation-shell-v5.3.210-rc2-hf17.css'),'utf8');
+let pass=0;
+function check(name,fn){try{fn();pass++;console.log('PASS',name);}catch(e){console.error('FAIL',name,e.message);process.exitCode=1;}}
+check('workspace shell is the unconditional ordinary default',()=>assert.ok(js.includes("return queryMode()===MODE_LONG?MODE_LONG:MODE_WORKSPACE")&&js.includes('safeRemove(storageRef(\'localStorage\'),LEGACY_MODE_KEY)')));
+check('only ui=long enters the technical fallback',()=>assert.ok(js.includes("searchParams.get('ui')")&&js.includes('value===MODE_LONG?MODE_LONG')));
+check('profile setup plus four primary workspaces exist',()=>['profile','ration','analysis/overview','correction','report'].forEach(x=>assert.ok(js.includes("'"+x+"'")||js.includes(x+':{'))));
+check('analysis has three focused views',()=>['analysis/overview','analysis/nutrients','analysis/hei'].forEach(x=>assert.ok(js.includes(x))));
+check('legacy page sections are hidden not recreated',()=>assert.ok(js.includes('setWorkspaceVisibility')&&js.includes('restoreLongPage')&&!js.includes('cloneNode(')));
+check('hash routes and browser history supported',()=>assert.ok(js.includes('commitUrl')&&js.includes("addEventListener('popstate'")&&js.includes("addEventListener('hashchange'")));
+check('per-route scroll restoration supported',()=>assert.ok(js.includes('routeScroll')&&js.includes("storageRef('sessionStorage')")&&js.includes('restoreScroll')&&js.includes('jumpTo')));
+check('ordinary architecture switcher and full canvas action are absent',()=>assert.ok(!js.includes('navigationShellModeSwitcher')&&!js.includes('data-navshell-mode')&&!js.includes('Полное полотно')));
+check('technical fallback exposes one explicit return action',()=>assert.ok(js.includes('data-navshell-return-workspace')&&js.includes('Вернуться к рабочим разделам')&&js.includes('returnToWorkspace')));
+check('mobile has one bottom navigation and hides mini cart',()=>assert.ok(css.includes('position:fixed')&&css.includes('#v40MiniCart{display:none!important}')&&css.includes('grid-template-columns:repeat(4')));
+check('desktop uses side navigation rail',()=>assert.ok(css.includes('grid-template-columns:minmax(156px,190px)')&&css.includes('position:sticky')));
+check('runtime config includes HF17 shell in both runtimes',()=>{const u='./assets/js/75-navigation-shell-v5.3.210-rc2-hf17.js?v=v5.3.210-rc2-hf17';assert.ok(cfg.modern_core_scripts.includes(u));assert.ok(cfg.legacy_core_scripts.includes(u.replace('./assets/js/','./assets/legacy/js/')));});
+check('runtime CSS includes only HF17 shell layer',()=>assert.ok(cfg.css_sources.includes('assets/css/navigation-shell-v5.3.210-rc2-hf17.css')&&!cfg.css_sources.includes('assets/css/navigation-shell-v5.3.210-rc2-hf14.css')));
+check('modern and legacy controllers are byte-identical',()=>assert.equal(js,legacy));
+if(!process.exitCode)console.log(`navigation shell: ${pass}/14 checks passed`);

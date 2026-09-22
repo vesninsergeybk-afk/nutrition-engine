@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const ROOT=path.join(__dirname,'..');let A=0;function check(name,fn){fn();A++;}
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,'config/runtime-assets.v5.3.210-rc1.json'),'utf8'));
+const js=fs.readFileSync(path.join(ROOT,'assets/js/69-beta-release-support-v5.3.210-rc1.js'),'utf8');
+const legacy=fs.readFileSync(path.join(ROOT,'assets/legacy/js/69-beta-release-support-v5.3.210-rc1.js'),'utf8');
+const css=fs.readFileSync(path.join(ROOT,'assets/css/beta-release-support-v5.3.210-rc1.css'),'utf8');
+const html=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');
+const ht=fs.readFileSync(path.join(ROOT,'.htaccess'),'utf8');
+const headers=fs.readFileSync(path.join(ROOT,'_headers'),'utf8');
+check('runtime version',()=>assert.equal(cfg.release_version,'v5.3.210-rc1'));
+check('support modern runtime',()=>assert.ok(cfg.modern_core_scripts.some(x=>x.includes('69-beta-release-support-v5.3.210-rc1.js'))));
+check('support legacy runtime',()=>assert.ok(cfg.legacy_core_scripts.some(x=>x.includes('69-beta-release-support-v5.3.210-rc1.js'))));
+check('support CSS runtime',()=>assert.ok(cfg.css_sources.includes('assets/css/beta-release-support-v5.3.210-rc1.css')));
+check('modern legacy exact',()=>assert.equal(js,legacy));
+check('privacy declaration',()=>assert.ok(js.includes('contains_user_content:false')&&js.includes('localStorage and sessionStorage contents')));
+check('does not read storage content',()=>assert.ok(!/localStorage\.getItem|sessionStorage\.getItem/.test(js)));
+check('diagnostic API',()=>assert.ok(js.includes('NutritionBetaSupportRC1')&&js.includes('collect:collect')&&js.includes('Скачать диагностический JSON')));
+check('baseline explicit',()=>assert.ok(js.includes("BASELINE='v5.3.210-pc2'")));
+check('index active RC1',()=>assert.ok(html.includes('runtime-manifest-v5.3.210-rc1.js')&&html.includes('runtime-bundle-v5.3.210-rc1.css')));
+check('robots noindex',()=>assert.match(fs.readFileSync(path.join(ROOT,'robots.txt'),'utf8'),/Disallow:\s*\//));
+check('HTML meta noindex fallback',()=>assert.ok(html.includes('name="robots"')&&html.includes('noindex, nofollow, noarchive')));
+check('API noindex fallback',()=>assert.ok(fs.readFileSync(path.join(ROOT,'api/gemini.php'),'utf8').includes('X-Robots-Tag: noindex, nofollow, noarchive')));
+check('legacy-safe promise cleanup',()=>assert.ok(!js.includes('.finally(')));
+check('Apache noindex',()=>assert.ok(ht.includes('X-Robots-Tag "noindex, nofollow, noarchive"')));
+check('static immutable caching',()=>assert.ok(ht.includes('max-age=31536000, immutable')&&headers.includes('/assets/*')));
+check('support styling',()=>assert.ok(css.includes('.rc1-beta-support')&&css.includes('@media print')));
+const needsModern=fs.readFileSync(path.join(ROOT,'assets/js/04-needs-norms.js'),'utf8');
+const needsLegacy=fs.readFileSync(path.join(ROOT,'assets/legacy/js/04-needs-norms.js'),'utf8');
+check('needs action disabled in static HTML',()=>assert.ok(html.includes('data-needs-calculation-ready="0"')&&html.includes('disabled id="needs_calc_btn"')));
+check('modern needs action waits for app ready',()=>assert.ok(needsModern.includes("window.addEventListener('app:ready', enableNeedsCalculation")&&needsModern.includes("data-needs-calculation-ready','1'")));
+check('legacy needs action waits for app ready',()=>assert.ok(needsLegacy.includes("window.addEventListener('app:ready', enableNeedsCalculation")&&needsLegacy.includes("data-needs-calculation-ready', '1'")));
+console.log(JSON.stringify({status:'PASS',assertions:A,release:'v5.3.210-rc1',baseline:'v5.3.210-pc2'},null,2));

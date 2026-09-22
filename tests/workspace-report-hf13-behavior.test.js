@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('assert'),fs=require('fs'),vm=require('vm'),path=require('path');
+const source=fs.readFileSync(path.join(__dirname,'..','assets/js/87-workspace-report-v5.3.210-rc2-hf14.js'),'utf8');
+const base={version:'base-report',generatedAt:'21.07.2026',hash:'abc',calculationSource:'core',needs:{person:'Иван Иванов',goal:'Поддержание массы',energy:'2200',protein:'95',fat:'73',carbs:'290',fluid:'2300',method:'Mifflin',inputComplete:true,personalizationApplied:true,inputs:[{key:'sex',value:'Мужчина'},{key:'age',value:'45 лет'},{key:'height',value:'175 см'},{key:'weight',value:'74 кг'},{key:'goal',value:'Поддержание массы'},{key:'activity',value:'Средняя'},{key:'state',value:'Взрослый'},{key:'norm_region',value:'США DRI'}]},displayRationRows:[{kind:'normal',level:0,key:'oats',name:'Овсянка',grams:100,note:''}],rationPositionCount:1,totals:{kcal:2100,protein_g:92,fat_g:70,carbs_g:275,fiber_g:25,sfa_g:18,salt_g:5,sodium_mg:2000},macros:[],vitamins:[],minerals:[],hei:{total:82,grade:'B',rows:[]},patientContent:{conclusion:'Рацион в целом близок к ориентирам.',strengths:[{title:'Белок',detail:'Ориентир достигнут.'}],priorities:[{title:'Добавить клетчатку',reason:'Ниже ориентира.',action:'Добавить бобовые.'}]},provenanceQuality:{summary:{high:1,medium:0,low:0,total:1,assumed_zero_products:0}},sourceQuality:{label:'высокая',high:1,total:1},dietAssessment:{limitations:[]},productCorrection:{analysisState:'complete'}};
+const analysis={items:1,sourceQuality:{label:'высокая'},nutrients:[{key:'fiber_g',title:'Клетчатка',group:'basic',actual:25,unit:'г',target:30,mode:'adequacy',status:{code:'medium',label:'Немного ниже ориентира',note:'До ориентира остаётся небольшая разница.'},quality:{label:'значение есть у всех продуктов'},coverage:{items:[{name:'Овсянка',value:10,share:40,grams:100}]}}],hei:{model:{total:82,grade:'B'},rows:[{key:'fruits_whole',title:'Цельные фрукты',points:4,maxPoints:5,pct:80,actual:'0,7 cup-eq',norm:'0,8 cup-eq',status:{code:'medium',label:'Можно улучшить'},confidence:'высокая',contributors:{positive:{items:[{name:'Яблоко',share:100}]}}}],guardrails:[{code:'high',title:'Натрий выше ориентира',body:'2200 мг при ориентире 2000 мг.',nutrient:'sodium_mg'}]}};
+const listeners={};
+const document={readyState:'complete',getElementById(){return null;},addEventListener(){},querySelector(){return null;},createElement(){return {};},body:{appendChild(){}}};
+const window={NutritionReportV5:{buildReportModel:()=>base},NutritionAnalysisWorkspaceHF7:{getViewModel:()=>analysis},NavigationShellV1:{getState:()=>({route:'ration'})},WorkspaceCorrectionHF11:{getLastApplied:()=>({productName:'Сыр',before:100,after:70,appliedAt:'2026-07-21'})},WorkspaceCorrectionStage3BHF12:{getLastApplied:()=>null},addEventListener(n,f){listeners[n]=f;},dispatchEvent(){},setTimeout(fn){fn();return 0;},clearTimeout(){},localStorage:{getItem(){return null;},setItem(){}},CustomEvent:function(){},open(){return null;},alert(){}};
+const ctx={window,document,CustomEvent:window.CustomEvent,console,Date,JSON,Math,Number,String,Object,Array,RegExp,isFinite,setTimeout:window.setTimeout,clearTimeout:window.clearTimeout,Blob:function(){},URL:{createObjectURL(){return''},revokeObjectURL(){}}};
+vm.createContext(ctx);vm.runInContext(source,ctx);const api=window.WorkspaceReportHF13;let n=0;function check(name,fn){fn();n++;console.log('PASS',name);}
+check('API initializes without a report panel',()=>assert.ok(api));
+const model=api.buildReportModel({detailedNutrients:true,fullHei:true,contributors:true,appliedChanges:true,methodology:false});
+check('model is serializable',()=>assert.ok(JSON.stringify(model).includes('Иван Иванов')));
+check('report options have an explicit model contract',()=>assert.equal(Object.keys(model.reportOptions).length,5));
+check('canonical values are preserved',()=>{assert.equal(model.totals.kcal,2100);assert.equal(model.hei.total,82);assert.equal(model.nutrients.basic[0].actual,25);});
+check('contributors come from analysis view model',()=>assert.equal(model.nutrients.basic[0].contributors[0].name,'Овсянка'));
+check('confirmed quantity change is represented',()=>assert.equal(model.appliedChanges[0].type,'quantity'));
+const body=api.buildBodyHtml(model),doc=api.buildDocumentHtml(model);
+check('document contains exact preview body',()=>assert.ok(doc.includes(body)));
+check('required sections are present',()=>['Человек и расчётные потребности','Состав рациона','Краткий итог','Качество исходных данных'].forEach(x=>assert.ok(body.includes(x))));
+check('optional nutrient and HEI details are present',()=>assert.ok(body.includes('Нутриенты и ориентиры')&&body.includes('Цельные фрукты')));
+check('separate restrictions remain visible beside HEI',()=>assert.ok(body.includes('Натрий выше ориентира')));
+check('technical HEI units are not exposed',()=>assert.ok(!/cup-eq|oz-eq|ounce|унц/i.test(doc)&&body.includes('условн. порц.')));
+const lean=api.buildReportModel({detailedNutrients:false,fullHei:false,contributors:false,appliedChanges:false,methodology:false});
+const leanBody=api.buildBodyHtml(lean);
+check('optional detailed nutrients can be excluded',()=>assert.ok(!leanBody.includes('Нутриенты и ориентиры')));
+check('HEI summary remains when full components are excluded',()=>assert.ok(leanBody.includes('HEI-2020')&&!leanBody.includes('Цельные фрукты')));
+console.log(JSON.stringify({status:'PASS',assertions:n},null,2));

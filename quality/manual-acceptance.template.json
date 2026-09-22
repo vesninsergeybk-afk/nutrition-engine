@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-p2.0",
+  "reviewed_at": "YYYY-MM-DDTHH:MM:SS+02:00",
+  "reviewer": "",
+  "environment": {
+    "https_staging_url": "",
+    "browser_versions": {},
+    "screen_reader": ""
+  },
+  "checks": {
+    "keyboard_review": {
+      "passed": false,
+      "evidence": ""
+    },
+    "screen_reader_review": {
+      "passed": false,
+      "evidence": ""
+    },
+    "real_https_staging_smoke": {
+      "passed": false,
+      "evidence": ""
+    },
+    "apache_secret_denial": {
+      "passed": false,
+      "evidence": ""
+    },
+    "rollback_rehearsal": {
+      "passed": false,
+      "evidence": ""
+    },
+    "external_review_packet_locked": {
+      "passed": false,
+      "evidence": ""
+    },
+    "pilot_protocol_approved": {
+      "passed": false,
+      "evidence": ""
+    }
+  },
+  "decision": "pending",
+  "notes": ""
+}

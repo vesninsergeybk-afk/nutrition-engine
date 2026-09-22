@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-rc2-hf15",
+  "status": "PENDING_REAL_DEVICE_REVIEW",
+  "checks": [
+    {"id":"talkback_android","status":"PENDING","notes":""},
+    {"id":"voiceover_ios","status":"PENDING","notes":""},
+    {"id":"text_scale_200","status":"PENDING","notes":""},
+    {"id":"mobile_browser_dynamic_bars","status":"PENDING","notes":""},
+    {"id":"physical_touch_target_spacing","status":"PENDING","notes":""},
+    {"id":"system_print_dialog_and_pdf","status":"PENDING","notes":""}
+  ]
+}

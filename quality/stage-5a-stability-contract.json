@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-rc2-hf17",
+  "stage": "5A-S",
+  "contract_id": "nutrition-calculator-stage-5a-stability-gate-v1",
+  "purpose": "Закрыть стабилизационный барьер после этапа 5А до очистки 5Б: устранить фоновый цикл наблюдателя видимости, проверить длительные переходы, повреждённое хранилище и сохранение состояния без изменения расчётного контура.",
+  "confirmed_defect": {
+    "id": "navigation-visibility-observer-feedback-loop",
+    "hf16_observed_mutations_per_second": 7072,
+    "cause": "MutationObserver реагировал на безусловную повторную запись hidden и aria-hidden, после чего снова запускал тот же guard.",
+    "required_fix": "Идемпотентно изменять DOM-атрибуты только при фактическом расхождении состояния."
+  },
+  "stability_targets": {
+    "steady_state_managed_attribute_mutations_per_second_max": 2,
+    "post_route_settle_mutations_per_second_max": 2,
+    "route_cycles": 20,
+    "routes_per_cycle": 7,
+    "technical_fallback_roundtrips": 4,
+    "managed_mutations_per_transition_max": 15,
+    "idempotent_refresh_calls": 100,
+    "duplicate_ids_allowed": 0,
+    "ration_state_must_be_preserved": true,
+    "unrelated_query_parameters_must_be_preserved": true,
+    "corrupted_storage_must_fail_safe": true,
+    "external_visibility_drift_must_be_repaired": true,
+    "synthetic_200_percent_text_reflow_must_not_overflow": true
+  },
+  "change_boundary": {
+    "calculation_model_changed": false,
+    "formula_registry_changed": false,
+    "normative_registry_changed": false,
+    "product_database_changed": false,
+    "meal_data_model_changed": false,
+    "legacy_dom_dependencies_removed": false,
+    "stage5b_cleanup_applied": false
+  },
+  "browser_matrix": {
+    "chromium": "REQUIRED_LOCAL_STABILITY_EVIDENCE",
+    "firefox": "REQUIRED_CI_OR_EXTERNAL_BROWSER",
+    "webkit": "REQUIRED_CI_OR_EXTERNAL_BROWSER",
+    "direct_http_navigation": "PENDING_EXTERNAL_ENVIRONMENT"
+  },
+  "manual_matrix": {
+    "talkback": "PENDING_REAL_DEVICE_REVIEW",
+    "voiceover": "PENDING_REAL_DEVICE_REVIEW",
+    "browser_text_scaling": "PENDING_REAL_DEVICE_REVIEW",
+    "mobile_browser_bars": "PENDING_REAL_DEVICE_REVIEW",
+    "system_print_dialog": "PENDING_REAL_DEVICE_REVIEW"
+  }
+}

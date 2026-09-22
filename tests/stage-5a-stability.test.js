@@ -1,0 +1,20 @@
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const ROOT=path.resolve(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
+const cfg=JSON.parse(read('config/runtime-assets.v5.3.210-rc2.json'));
+const contract=JSON.parse(read('quality/stage-5a-stability-contract.json'));
+const nav=read('assets/js/75-navigation-shell-v5.3.210-rc2-hf17.js');
+const legacy=read('assets/legacy/js/75-navigation-shell-v5.3.210-rc2-hf17.js');
+let passed=0;function check(name,fn){try{fn();passed++;console.log('PASS '+name);}catch(e){console.error('FAIL '+name+' — '+e.message);process.exitCode=1;}}
+check('stability contract and release version',()=>{assert.equal(contract.stage,'5A-S');assert.equal(contract.release_version,'v5.3.210-rc2-hf17');assert.equal(cfg.release_version,'v5.3.210-rc2-hf18');});
+check('HF18 successor keeps the HF17 controller active in both runtimes',()=>{assert.ok(cfg.modern_core_scripts.some(x=>x.includes('75-navigation-shell-v5.3.210-rc2-hf17.js')));assert.ok(cfg.legacy_core_scripts.some(x=>x.includes('75-navigation-shell-v5.3.210-rc2-hf17.js')));});
+check('visibility writes are centralized',()=>assert.ok(nav.includes('function applyManagedState(el,hidden,routeVisible)')));
+check('hidden property is only changed on mismatch',()=>assert.ok(nav.includes('if(el.hidden!==hidden)el.hidden=hidden')));
+check('aria-hidden writes are idempotent',()=>{assert.ok(nav.includes("if(el.getAttribute('aria-hidden')!=='true')"));assert.ok(nav.includes("else if(el.hasAttribute('aria-hidden'))"));});
+check('route-visible class writes are idempotent',()=>{assert.ok(nav.includes("if(!el.classList.contains('navshell-route-visible'))"));assert.ok(nav.includes("else if(el.classList.contains('navshell-route-visible'))"));});
+check('observer guard remains available for external drift',()=>{assert.ok(nav.includes('new MutationObserver'));assert.ok(nav.includes('scheduleVisibilityGuard'));});
+check('workspace and long restoration use the same stable writer',()=>assert.equal((nav.match(/applyManagedState\(/g)||[]).length,3));
+check('modern and legacy controllers are identical',()=>assert.equal(nav,legacy));
+check('stage 5B remains outside the change boundary',()=>{assert.equal(contract.change_boundary.stage5b_cleanup_applied,false);assert.equal(contract.change_boundary.legacy_dom_dependencies_removed,false);});
+check('calculation and data contracts remain unchanged',()=>['calculation_model_changed','formula_registry_changed','normative_registry_changed','product_database_changed','meal_data_model_changed'].forEach(k=>assert.equal(contract.change_boundary[k],false,k)));
+if(!process.exitCode)console.log(`stage 5A stability: ${passed}/11 checks passed`);

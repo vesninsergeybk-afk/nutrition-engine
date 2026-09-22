@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-rc2-hf18",
+  "stage": "5A-SF",
+  "contract_id": "nutrition-calculator-stage-5a-final-stability-v1",
+  "purpose": "Исправить недостаток аудита HOTFIX17: проверять установившееся состояние всего документа, а не только атрибуты секций навигационной оболочки, и устранить циклы обновления профиля и нормативного сравнения без изменения расчётов.",
+  "confirmed_findings": [
+    {
+      "id": "profile-workspace-observer-feedback-loop",
+      "source": "81-workspace-profile-needs",
+      "cause": "Модуль наблюдал v40NeedsStatus и при каждом refresh безусловно перезаписывал его textContent, повторно запуская собственный observer."
+    },
+    {
+      "id": "norm-comparison-bootstrap-poll-loop",
+      "source": "60-norm-region-clarity",
+      "cause": "Загрузочный poll считал уже обёрнутый State.setRegion неготовым и повторно рендерил сравнительные таблицы каждые 50 мс."
+    },
+    {
+      "id": "hf17-report-scope-overstatement",
+      "source": "HOTFIX17 documentation",
+      "cause": "Нулевая активность была подтверждена только для hidden/aria-hidden управляемых секций, но описана как полное бездействие всего интерфейса."
+    }
+  ],
+  "stability_targets": {
+    "startup_settle_ms": 8000,
+    "full_document_observation_ms": 3000,
+    "full_document_mutations_max": 2,
+    "profile_norm_refresh_calls": 100,
+    "profile_norm_refresh_mutations_max": 2,
+    "post_repair_mutations_max": 2,
+    "previous_hf17_navigation_stability_must_pass": true,
+    "daily_workflow_must_pass": true
+  },
+  "change_boundary": {
+    "calculation_model_changed": false,
+    "formula_registry_changed": false,
+    "normative_registry_values_changed": false,
+    "product_database_changed": false,
+    "meal_data_model_changed": false,
+    "stage5b_cleanup_applied": false,
+    "legacy_dom_dependencies_removed": false
+  },
+  "external_acceptance": {
+    "firefox": "PENDING_EXTERNAL_BROWSER",
+    "webkit": "PENDING_EXTERNAL_BROWSER",
+    "talkback": "PENDING_REAL_DEVICE_REVIEW",
+    "voiceover": "PENDING_REAL_DEVICE_REVIEW",
+    "real_hosting_url": "PENDING_EXTERNAL_ENVIRONMENT"
+  }
+}

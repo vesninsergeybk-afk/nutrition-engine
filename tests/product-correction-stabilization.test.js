@@ -1,0 +1,21 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const ROOT=path.resolve(__dirname,'..');let n=0;function check(name,fn){fn();n++;console.log('PASS',name)}
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,'config/runtime-assets.v5.3.210-rc1.json'),'utf8'));
+const html=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');
+const ux=fs.readFileSync(path.join(ROOT,'assets/js/67-ux-decision-hierarchy-v5.3.210-pc2.js'),'utf8');
+const report=fs.readFileSync(path.join(ROOT,'assets/js/29-report-builder-v5.js'),'utf8');
+const dq=fs.readFileSync(path.join(ROOT,'assets/js/30-methodology-governance-v5.js'),'utf8');
+const search=fs.readFileSync(path.join(ROOT,'assets/js/08-ux-search-mobile-v5.3.207.js'),'utf8');
+check('release version',()=>assert.equal(cfg.release_version,'v5.3.210-rc1'));
+check('PC1 CSS present',()=>assert.ok(cfg.css_sources.includes('assets/css/product-correction-stabilization-v5.3.210-pc2.css')));
+for(const branch of ['modern_core_scripts','legacy_core_scripts']) check(branch+' consolidated UX',()=>{assert.ok(cfg[branch].some(x=>x.includes('67-ux-decision-hierarchy-v5.3.210-pc2.js')));assert.ok(!cfg[branch].some(x=>x.includes('67-ux-decision-hierarchy-v5.3.210-p1.5.js')))});
+check('HTML RC1 bundle and manifest',()=>{assert.ok(html.includes('runtime-bundle-v5.3.210-rc1.css'));assert.ok(html.includes('runtime-manifest-v5.3.210-rc1.js'))});
+check('explicit analysis scope',()=>assert.ok(ux.includes('pc1AnalysisScope')&&ux.includes("analysisState")));
+check('confirmation bound to ration signature',()=>assert.ok(ux.includes('stableRationSignature')&&ux.includes('confirmedRation.pc1')));
+check('HEI reads numeric model not title year',()=>assert.ok(ux.includes('__lastHEIModel.total')&&ux.includes('value<=100')));
+check('one product not declared complete',()=>{assert.ok(ux.includes('Добавлен фрагмент суточного рациона'));assert.ok(!ux.includes('Рацион собран.'))});
+check('simple and professional modes',()=>assert.ok(ux.includes("data-product-mode")&&ux.includes("professionalValues")));
+check('report preliminary gating',()=>assert.ok(report.includes('data-report-status="preliminary"')&&report.includes('Любые HEI-, структурные и клинически смежные выводы намеренно скрыты')));
+check('data confidence separate from completeness',()=>assert.ok(dq.includes('Достоверность и заполненность — разные показатели')&&dq.includes('ProductDataQualityV13.productSummary')));
+check('generic search ranking',()=>assert.ok(search.includes('genericIntentBonus')&&search.includes("'гречка':['buckwheat_cooked'")));
+console.log(JSON.stringify({ok:true,assertions:n}));

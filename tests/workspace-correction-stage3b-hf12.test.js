@@ -1,0 +1,26 @@
+'use strict';
+const assert=require('assert');const fs=require('fs');const path=require('path');const ROOT=path.resolve(__dirname,'..');
+const js=fs.readFileSync(path.join(ROOT,'assets/js/85-workspace-correction-stage3b-v5.3.210-rc2-hf12.js'),'utf8');
+const css=fs.readFileSync(path.join(ROOT,'assets/css/workspace-correction-stage3b-v5.3.210-rc2-hf12.css'),'utf8');
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,'config/runtime-assets.v5.3.210-rc2.json'),'utf8'));let n=0;
+function check(name,fn){try{fn();n++;console.log('PASS',name);}catch(e){console.error('FAIL',name,e.message);process.exitCode=1;}}
+check('stage 3B is an extension, not a second correction engine',()=>assert.ok(js.includes('extends HF11')&&js.includes('baseApi()')));
+check('only one alternative scenario is selected',()=>assert.ok(js.includes("selectedId=''")&&js.includes('getSelected')));
+check('replacement and addition are both supported',()=>assert.ok(js.includes("type:'replace_item'")&&js.includes("type:'add_item'")));
+check('candidate cards show concrete quantities',()=>assert.ok(js.includes("fmt(op.gramsBefore,0)")&&js.includes("fmt(op.gramsAfter,0)")));
+check('low-quality candidates are filtered',()=>assert.ok(js.includes('qualityOk')&&js.includes('confidence_score')));
+check('replacement is restricted to similar food roles',()=>assert.ok(js.includes('roleScore')&&js.includes('score<6')));
+check('addition is restricted by nutrient food families',()=>assert.ok(js.includes('FAMILY_HINTS')&&js.includes('additionFamilyOk')));
+check('candidate pool is bounded before full recalculation',()=>assert.ok(js.includes('pre.slice(0,24)')&&js.includes('pre.slice(0,30)')));
+check('all candidates use canonical snapshots and HEI',()=>assert.ok(js.includes('core().snapshot')&&js.includes('HEIRuntimeV2')));
+check('weak candidates are rejected by HF11 verdict',()=>assert.ok(js.includes('localVerdict')&&js.includes('v.candidate')));
+check('no more than three candidates are shown',()=>assert.ok((js.match(/slice\(0,3\)/g)||[]).length>=2));
+check('main quantity path stays primary',()=>assert.ok(js.includes('if(bv&&bv.candidate){panel.hidden=true')));
+check('apply requires explicit confirmation',()=>assert.ok(js.includes('reviewConfirmed')&&js.includes('Подтвердить применение')));
+check('replacement apply is transactional',()=>assert.ok(js.includes('w.State.remove(op.sourceRef)')&&js.includes('if(!added){restored=w.State.add')));
+check('one-step undo exists for both operations',()=>assert.ok(js.includes("a.type==='replace_item'")&&js.includes('data-stage3b-undo')));
+check('replacement undo restores before removal',()=>assert.ok(js.indexOf('restored=w.State.add(a.source.key')<js.indexOf('w.State.remove(itemRef(added))')));
+check('composite source replacement is blocked',()=>assert.ok(js.includes('isComposite(source)')));
+check('mobile layout remains one-column without fixed panel',()=>assert.ok(css.includes('grid-template-columns:1fr')&&!css.includes('position:fixed')));
+check('runtime loads HF12 stage3B assets',()=>{assert.equal(cfg.release_version,'v5.3.210-rc2-hf18');assert.ok(cfg.modern_core_scripts.some(x=>x.includes('85-workspace-correction-stage3b')));assert.ok(cfg.css_sources.includes('assets/css/workspace-correction-stage3b-v5.3.210-rc2-hf12.css'));});
+if(!process.exitCode)console.log(`workspace correction Stage 3B HF12: ${n}/19 checks passed`);

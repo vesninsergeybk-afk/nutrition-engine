@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "contract_id": "nutrition-calculator-stage-4-5-architecture-v1",
+  "release_version": "v5.3.210-rc2-hf14",
+  "purpose": "Закрепить принадлежность ключевых функций, сквозной путь, адаптивность и печать до перехода к этапу 5А.",
+  "change_boundary": {
+    "allowed": [
+      "исправление размещения",
+      "сохранение состояния",
+      "ясность следующего действия",
+      "адаптивная компоновка",
+      "доступность",
+      "печать и PDF",
+      "согласованность представлений"
+    ],
+    "forbidden": [
+      "новые расчётные формулы",
+      "новая модель нутриентов или HEI",
+      "новый пользовательский раздел",
+      "удаление резервного длинного полотна",
+      "перенос полной формы потребностей в рацион"
+    ]
+  },
+  "routes": [
+    {
+      "route": "profile",
+      "workspace": "profile",
+      "owns": ["workspaceProfilePanel", "needsCompact"],
+      "forbids": ["globalSearchSection", "rationSection", "workspaceOverviewPanel", "workspaceNutrientsPanel", "workspaceHeiPanel", "workspaceCorrectionPanel", "workspaceReportPanel"]
+    },
+    {
+      "route": "ration",
+      "workspace": "ration",
+      "owns": ["globalSearchSection", "rationSection", "workspaceRationSecondary", "geminiRationImportSection", "rc2AlternativeInput", "additionalToolsSection"],
+      "forbids": ["workspaceProfilePanel", "needsCompact", "workspaceOverviewPanel", "workspaceNutrientsPanel", "workspaceHeiPanel", "workspaceCorrectionPanel", "workspaceReportPanel"]
+    },
+    {
+      "route": "analysis/overview",
+      "workspace": "analysis",
+      "owns": ["workspaceOverviewPanel"],
+      "forbids": ["workspaceProfilePanel", "needsCompact", "globalSearchSection", "rationSection", "workspaceNutrientsPanel", "workspaceHeiPanel", "workspaceCorrectionPanel", "workspaceReportPanel"]
+    },
+    {
+      "route": "analysis/nutrients",
+      "workspace": "analysis",
+      "owns": ["workspaceNutrientsPanel"],
+      "forbids": ["workspaceProfilePanel", "needsCompact", "globalSearchSection", "rationSection", "workspaceOverviewPanel", "workspaceHeiPanel", "workspaceCorrectionPanel", "workspaceReportPanel"]
+    },
+    {
+      "route": "analysis/hei",
+      "workspace": "analysis",
+      "owns": ["workspaceHeiPanel"],
+      "forbids": ["workspaceProfilePanel", "needsCompact", "globalSearchSection", "rationSection", "workspaceOverviewPanel", "workspaceNutrientsPanel", "workspaceCorrectionPanel", "workspaceReportPanel"]
+    },
+    {
+      "route": "correction",
+      "workspace": "correction",
+      "owns": ["workspaceCorrectionPanel"],
+      "forbids": ["workspaceProfilePanel", "needsCompact", "globalSearchSection", "rationSection", "workspaceOverviewPanel", "workspaceNutrientsPanel", "workspaceHeiPanel", "workspaceReportPanel"]
+    },
+    {
+      "route": "report",
+      "workspace": "report",
+      "owns": ["workspaceReportPanel"],
+      "forbids": ["workspaceProfilePanel", "needsCompact", "globalSearchSection", "rationSection", "workspaceOverviewPanel", "workspaceNutrientsPanel", "workspaceHeiPanel", "workspaceCorrectionPanel", "globalActions", "legal-note"]
+    }
+  ],
+  "contextual_summaries": [
+    {
+      "id": "workspacePersonContext",
+      "meaning": "Краткие данные человека и рассчитанные ориентиры",
+      "allowed_routes": ["ration", "analysis/overview", "analysis/nutrients", "analysis/hei", "correction", "report"],
+      "must_not_contain": "Полную редактируемую форму расчёта потребностей"
+    },
+    {
+      "id": "navigationShellRationKpi",
+      "meaning": "Краткий итог текущего рациона",
+      "allowed_routes": ["ration"],
+      "must_not_contain": "Редактор рациона"
+    }
+  ],
+  "always_hidden_in_workspace": ["rc1BetaSupport", "geminiAiSection", "globalActions", "legal-note"],
+  "full_journey": [
+    "новый пользователь",
+    "профиль",
+    "расчёт потребностей",
+    "рацион",
+    "обзор анализа",
+    "нутриенты",
+    "HEI",
+    "улучшение",
+    "отчёт",
+    "возврат к профилю",
+    "повторный расчёт",
+    "повторное открытие анализа и отчёта"
+  ],
+  "viewports": [
+    {"width": 360, "height": 800, "class": "phone"},
+    {"width": 390, "height": 844, "class": "phone"},
+    {"width": 430, "height": 932, "class": "phone"},
+    {"width": 768, "height": 1024, "class": "tablet"},
+    {"width": 1366, "height": 768, "class": "desktop"},
+    {"width": 1440, "height": 900, "class": "desktop"}
+  ],
+  "print_cases": [
+    "обычный рацион",
+    "большой рацион",
+    "длинные названия продуктов",
+    "полный состав отчёта",
+    "сокращённый состав отчёта",
+    "неполные данные",
+    "несколько подтверждённых изменений",
+    "разрывы таблиц между страницами"
+  ],
+  "manual_gates": ["TalkBack", "VoiceOver", "увеличенный системный шрифт", "панели мобильного браузера", "реальный диалог печати", "сохранение PDF"],
+  "fallback_policy": {
+    "stage_4_5": "Видимый обратимый переход к длинному полотну сохраняется.",
+    "stage_5a": "Пользовательский переключатель скрывается, длинное полотно остаётся только аварийным путём.",
+    "stage_5b": "Старые обходные пути удаляются только после периода стабильности и отдельной регрессии."
+  }
+}

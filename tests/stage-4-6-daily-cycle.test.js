@@ -1,0 +1,26 @@
+'use strict';
+const fs=require('fs');
+const path=require('path');
+const assert=require('assert');
+const ROOT=path.resolve(__dirname,'..');
+const read=(p)=>fs.readFileSync(path.join(ROOT,p),'utf8');
+const cfg=JSON.parse(read('config/runtime-assets.v5.3.210-rc2.json'));
+const contract=JSON.parse(read('quality/stage-4-6-daily-cycle-contract.json'));
+const search=read('assets/js/08-ux-search-mobile-v5.3.210-rc2-hf15.js');
+const legacySearch=read('assets/legacy/js/08-ux-search-mobile-v5.3.210-rc2-hf15.js');
+const ration=read('assets/js/77-workspace-ration-overview-v5.3.210-rc2-hf15.js');
+const legacy=read('assets/legacy/js/77-workspace-ration-overview-v5.3.210-rc2-hf15.js');
+const css=read('assets/css/workspace-daily-cycle-v5.3.210-rc2-hf15.css');
+const results=[];
+function check(name,fn){try{fn();results.push({name,pass:true});console.log('PASS',name);}catch(error){results.push({name,pass:false,error:error.message});console.error('FAIL',name,error.message);}}
+check('stage 4.6 contract and release version',()=>{assert.equal(contract.stage,'4.6');assert.equal(contract.release_version,'v5.3.210-rc2-hf15');assert.equal(cfg.release_version,'v5.3.210-rc2-hf18');});
+check('HF15 runtime activates daily-cycle assets',()=>{assert.ok(cfg.css_sources.includes('assets/css/workspace-daily-cycle-v5.3.210-rc2-hf15.css'));assert.ok(cfg.modern_core_scripts.some(x=>x.includes('08-ux-search-mobile-v5.3.210-rc2-hf15.js')));assert.ok(cfg.modern_core_scripts.some(x=>x.includes('77-workspace-ration-overview-v5.3.210-rc2-hf15.js')));assert.ok(cfg.legacy_core_scripts.some(x=>x.includes('77-workspace-ration-overview-v5.3.210-rc2-hf15.js')));});
+check('obsolete active add-cycle scripts are replaced',()=>{const active=cfg.modern_core_scripts.concat(cfg.legacy_core_scripts).join('\n');assert.ok(!active.includes('08-ux-search-mobile-v5.3.207.js'));assert.ok(!active.includes('77-workspace-ration-overview-v5.3.210-rc2-hf8.js'));});
+check('standard add no longer clears query or navigates automatically',()=>{const start=ration.indexOf('var addButton=');const end=ration.indexOf("var target=e.target",start);const block=ration.slice(start,end);assert.ok(start>0&&end>start);assert.ok(!block.includes("input.value=''"));assert.ok(!block.includes("navigate('ration','rationSection')"));assert.ok(block.includes("focus({preventScroll:true})"));assert.ok(block.includes('setSelectionRange(0,input.value.length)'));assert.ok(block.includes('workspace-ration:add-cycle-preserved'));});
+check('success feedback has safe explicit ration action',()=>{assert.ok(search.includes("actionLabel:'Открыть рацион'"));assert.ok(search.includes("setAttribute('data-search-open-ration','')"));assert.ok(search.includes("message.textContent=String(text||'')"));assert.ok(search.includes("window.NavigationShellV1.navigate('ration','rationSection')"));});
+check('explicit composite editing path remains unchanged',()=>{assert.ok(search.includes("if(addEdit) openCompositeEntryAfterAdd(key)"));assert.ok(search.includes("section.scrollIntoView({ behavior:'smooth', block:'start' })"));});
+check('mobile action and sticky focus clearance meet bounded contract',()=>{assert.ok(css.includes('min-height:44px!important'));assert.ok(css.includes('env(safe-area-inset-bottom,0px)'));assert.ok(css.includes('scroll-padding-bottom'));assert.ok(css.includes(':focus-visible'));});
+check('modern and legacy search controllers are byte-identical',()=>assert.equal(search,legacySearch));
+check('modern and legacy workspace controllers are byte-identical',()=>assert.equal(ration,legacy));
+check('stage boundary remains unchanged',()=>{for(const key of ['calculation_model_changed','formula_registry_changed','normative_registry_changed','product_database_changed','meal_data_model_changed','stage5a_applied','long_mode_removed'])assert.equal(contract.change_boundary[key],false,key);});
+const failed=results.filter(x=>!x.pass);console.log(JSON.stringify({suite:'stage-4-6-daily-cycle',assertions:results.length,failed:failed.length},null,2));if(failed.length)process.exit(1);

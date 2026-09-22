@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-rc2-hf16",
+  "stage": "5A",
+  "contract_id": "nutrition-calculator-stage-5a-unified-interface-v1",
+  "purpose": "Сделать рабочие разделы единственным обычным интерфейсом, сохранив длинное полотно как непостоянный технический резерв без удаления старых DOM-узлов и обработчиков.",
+  "ordinary_interface": {
+    "default_mode": "workspace",
+    "primary_destinations": [
+      "ration",
+      "analysis",
+      "correction",
+      "report"
+    ],
+    "mode_switcher_present": false,
+    "full_canvas_navigation_action_present": false,
+    "workspace_query_parameter_required": false
+  },
+  "technical_fallback": {
+    "entry": "?ui=long",
+    "aliases_supported": false,
+    "persistent_storage_allowed": false,
+    "legacy_persisted_mode_removed_on_start": true,
+    "return_action_count": 1,
+    "return_action_label": "Вернуться к рабочим разделам",
+    "return_removes_query_parameter": true,
+    "return_preserves_last_workspace_route": true,
+    "long_dom_removed": false,
+    "legacy_handlers_removed": false
+  },
+  "state_contract": {
+    "ration_preserved_across_fallback_roundtrip": true,
+    "profile_preserved_across_fallback_roundtrip": true,
+    "last_workspace_route_not_replaced_by_long": true,
+    "browser_history_must_not_loop_between_modes": true,
+    "hash_routes_remain_available": true,
+    "report_and_print_independent_of_mode_switcher": true
+  },
+  "viewport_matrix": [
+    [
+      360,
+      800
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1366,
+      768
+    ],
+    [
+      1440,
+      900
+    ]
+  ],
+  "change_boundary": {
+    "calculation_model_changed": false,
+    "formula_registry_changed": false,
+    "normative_registry_changed": false,
+    "product_database_changed": false,
+    "meal_data_model_changed": false,
+    "old_dom_dependencies_removed": false,
+    "stage5b_cleanup_applied": false
+  },
+  "browser_matrix": {
+    "chromium": "PASSED_INLINE_FULL_APPLICATION_WITH_PRODUCTION_URL_ADAPTER",
+    "firefox": "PENDING_BROWSER_BINARY",
+    "webkit": "PENDING_BROWSER_BINARY",
+    "direct_http_navigation": "PENDING_EXTERNAL_ENVIRONMENT"
+  },
+  "manual_matrix": {
+    "talkback": "PENDING_REAL_DEVICE_REVIEW",
+    "voiceover": "PENDING_REAL_DEVICE_REVIEW",
+    "browser_text_scaling": "PENDING_REAL_DEVICE_REVIEW",
+    "mobile_browser_bars": "PENDING_REAL_DEVICE_REVIEW",
+    "system_print_dialog": "PENDING_REAL_DEVICE_REVIEW"
+  }
+}

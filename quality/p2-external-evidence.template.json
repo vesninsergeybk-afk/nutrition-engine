@@ -1,0 +1,22 @@
+{
+  "blind_pack_sha256": "58f09a6980c69cfdf56e4a48fd2d1191755d9dbfcfbd595d7fb57a30b5a3a711",
+  "claim_authorization": {
+    "authorized_at": "",
+    "external_validation_claim_allowed": false,
+    "reason_ru": "Реальные независимые заключения и пилотные наблюдения ещё не внесены."
+  },
+  "created_at": "2026-07-19",
+  "decision": "PENDING",
+  "evidence_status": "PENDING",
+  "findings": [],
+  "metrics": {
+    "completion_rate": null,
+    "critical_use_errors": null,
+    "quantitative_case_acceptance_rate": null
+  },
+  "pilot_observations": [],
+  "reference_key_sha256": "652057d7b5bd0379e1d4b6bb55479dfc3e32d0430ced2f418e522f62b356ee5c",
+  "release_version": "v5.3.210-pc2",
+  "reviewers": [],
+  "schema_version": 1
+}

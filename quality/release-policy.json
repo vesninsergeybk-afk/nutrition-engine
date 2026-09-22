@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-p2.0",
+  "required_automated_gates": [
+    "static_integrity",
+    "historical_safety_regression",
+    "api_security_regression",
+    "browser_chromium",
+    "browser_firefox_ci",
+    "browser_webkit_ci",
+    "automated_wcag_2_2_a_aa",
+    "apache_staging",
+    "deterministic_build",
+    "artifact_verification"
+  ],
+  "required_manual_gates": [
+    "keyboard_review",
+    "screen_reader_review",
+    "real_https_staging_smoke",
+    "apache_secret_denial",
+    "rollback_rehearsal",
+    "external_review_packet_locked",
+    "pilot_protocol_approved"
+  ],
+  "blocking_axe_impacts": [
+    "critical",
+    "serious"
+  ],
+  "hosting_artifact_excludes": [
+    ".github",
+    "tests",
+    "tools",
+    "quality",
+    "reports",
+    "release",
+    "node_modules",
+    "hosting-check.html",
+    "package.json",
+    "package-lock.json",
+    "playwright.config.cjs",
+    "config",
+    "index-v5.3.208.html",
+    "index-v5.3.209.html",
+    "historical unreachable assets/data"
+  ],
+  "required_external_evidence_gate": "version_matched_independent_domain_review_and_pilot"
+}

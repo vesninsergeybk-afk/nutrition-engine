@@ -1,0 +1,21 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const ROOT=path.resolve(__dirname,'..');let n=0;function check(name,fn){fn();n++;console.log('PASS',name)}
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,'config/runtime-assets.v5.3.210-rc1.json'),'utf8'));
+const ux=fs.readFileSync(path.join(ROOT,'assets/js/67-ux-decision-hierarchy-v5.3.210-pc2.js'),'utf8');
+const css=fs.readFileSync(path.join(ROOT,'assets/css/product-correction-stabilization-v5.3.210-pc2.css'),'utf8');
+const search=fs.readFileSync(path.join(ROOT,'assets/js/08-ux-search-mobile-v5.3.207.js'),'utf8');
+const core=fs.readFileSync(path.join(ROOT,'assets/js/03-app-core-v5.3.208.js'),'utf8');
+const html=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');
+check('RC1 release with PC2 product baseline',()=>assert.equal(cfg.release_version,'v5.3.210-rc1'));
+check('PC2 assets in both branches',()=>{for(const branch of ['modern_core_scripts','legacy_core_scripts'])assert.ok(cfg[branch].some(x=>x.includes('67-ux-decision-hierarchy-v5.3.210-pc2.js'))) });
+check('focused priority panel',()=>assert.ok(ux.includes('pc2PriorityPanel')&&ux.includes('pc2PriorityList')&&ux.includes('.slice(0,5)')));
+check('priority sources combine totals and HEI',()=>assert.ok(ux.includes('totalPriorities')&&ux.includes('heiPriorities')&&ux.includes('renderPriorities')));
+check('two result tabs',()=>assert.ok(ux.includes('pc2TabNutrition')&&ux.includes('pc2TabQuality')&&ux.includes('setCoreTab')));
+check('quality tab gated by complete day',()=>assert.ok(ux.includes('qBtn.disabled=!complete')));
+check('compact simple search CSS',()=>assert.ok(css.includes('body[data-product-mode="simple"] #globalResults .search-result-card')&&css.includes('.preparation-family-head{display:none')));
+check('expanded aliases',()=>{for(const token of ["t === 'помидор'","t === 'огурец'","t === 'макароны'","t === 'кофе'","t === 'брокколи'"])assert.ok(search.includes(token),token)});
+check('expanded editorial map',()=>{for(const token of ["'яйцо':['egg_whole_boiled']","'хлеб':['white_bread'","'сыр':['cheese_russian'","'помидор':['tomato_raw'","'макароны':['durum_pasta_cooked'"])assert.ok(search.includes(token),token)});
+check('core generic priorities retained',()=>assert.ok(core.includes('Product Correction PC2: expanded generic-first editorial map')));
+check('RC1 bundle and manifest active',()=>assert.ok(html.includes('runtime-bundle-v5.3.210-rc1.css')&&html.includes('runtime-manifest-v5.3.210-rc1.js')));
+check('legacy API compatibility preserved',()=>assert.ok(ux.includes('NutritionProductCorrectionPC1=w.NutritionProductCorrectionPC2')));
+console.log(JSON.stringify({ok:true,assertions:n}));

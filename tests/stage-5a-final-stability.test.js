@@ -1,0 +1,22 @@
+'use strict';
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const ROOT=path.resolve(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
+const cfg=JSON.parse(read('config/runtime-assets.v5.3.210-rc2.json'));
+const contract=JSON.parse(read('quality/stage-5a-final-stability-contract.json'));
+const profile=read('assets/js/81-workspace-profile-needs-v5.3.210-rc2-hf18.js');
+const profileLegacy=read('assets/legacy/js/81-workspace-profile-needs-v5.3.210-rc2-hf18.js');
+const norm=read('assets/js/60-norm-region-clarity-v5.3.210-rc2-hf18.js');
+const normLegacy=read('assets/legacy/js/60-norm-region-clarity-v5.3.210-rc2-hf18.js');
+let passed=0;function check(name,fn){try{fn();passed++;console.log('PASS '+name);}catch(e){console.error('FAIL '+name+' — '+e.message);process.exitCode=1;}}
+check('final stability contract and release version',()=>{assert.equal(contract.stage,'5A-SF');assert.equal(contract.release_version,'v5.3.210-rc2-hf18');assert.equal(cfg.release_version,contract.release_version);});
+check('HF18 profile and norm modules are active in both runtimes',()=>{for(const key of ['modern_core_scripts','legacy_core_scripts']){assert.ok(cfg[key].some(x=>x.includes('60-norm-region-clarity-v5.3.210-rc2-hf18.js')),key);assert.ok(cfg[key].some(x=>x.includes('81-workspace-profile-needs-v5.3.210-rc2-hf18.js')),key);}});
+check('profile writes use idempotent helpers',()=>{assert.ok(profile.includes('function setText(node,value)'));assert.ok(profile.includes('function setAttr(node,name,value)'));assert.ok(profile.includes('function setHidden(node,value)'));assert.ok(profile.includes("setText(status,ready()?"));assert.ok(!profile.includes("if(status)status.textContent=ready()?"));});
+check('profile observer remains available for external changes',()=>{assert.ok(profile.includes("['needs_out','v40NeedsStatus']"));assert.ok(profile.includes('new MutationObserver(schedule)'));});
+check('norm rendering caches normalized HTML',()=>{assert.ok(norm.includes('__normStableSource'));assert.ok(norm.includes('__normStableRendered'));assert.ok(norm.includes('node.innerHTML===node.__normStableRendered'));});
+check('already wrapped regional state is treated as ready',()=>assert.ok(norm.includes('if(window.State.__normRegionClarityWrapped)return true')));
+check('bootstrap poll only starts when initial dependencies are not ready',()=>assert.ok(norm.includes('if(!(initialSynced&&initialWrapped&&initialRendered))')));
+check('modern and legacy profile modules are identical',()=>assert.equal(profile,profileLegacy));
+check('modern and legacy norm modules are identical',()=>assert.equal(norm,normLegacy));
+check('calculation and data boundaries remain closed',()=>Object.entries(contract.change_boundary).forEach(([k,v])=>assert.equal(v,false,k)));
+if(!process.exitCode)console.log(`stage 5A final stability: ${passed}/10 checks passed`);

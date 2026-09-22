@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+
+<html lang="ru" data-ui-version="6.0.0-beta6-hotfix4" data-build-date="2026-08-06" data-security-release="hf28" data-performance-release="v6-beta6-hotfix4-theme-parity">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<meta charset="utf-8"/>
+<meta name="robots" content="noindex, nofollow, noarchive"/>
+<meta name="description" content="Локальный калькулятор нутриентов. Не запрашивает пароли, платёжные данные или банковские реквизиты."/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; worker-src 'self' blob:; manifest-src 'self'"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta name="application-name" content="Калькулятор рациона Сергея Веснина"/>
+<meta name="application-build-date" content="2026-08-06T18:49:00Z"/>
+<meta name="author" content="Веснин Сергей Вячеславович"/>
+<title>Калькулятор рациона Сергея Веснина — v6.0 beta 6 hotfix 4</title><link href="./assets/css/browser-compatibility-v5.3.192.css?v=5.3.192" rel="stylesheet" data-browser-compatibility="pass2"/><script src="./assets/js/00-browser-compatibility-gate-v5.3.210.js?v=v5.3.210-rc2-hf21" data-browser-compatibility-gate="pass2-visual-patch"></script><script data-theme-bootstrap="v2">
+(function(){
+  var key='nutritionCalculator.uiTheme.v1';
+  var allowed={'modern':1,'retro-2bit':1,'ivory-brass':1};
+  var selected='modern',query='',safe=false;
+  try { var params=new URLSearchParams(window.location.search||'');query=params.get('theme')||'';safe=params.get('safe-ui')==='1'; } catch(_) {}
+  try { var saved=localStorage.getItem(key); selected=safe?'modern':(allowed[query]?query:(allowed[saved]?saved:'modern')); if(!safe&&allowed[query])localStorage.setItem(key,query); } catch(_) {}
+  if(window.__LEGACY_COMPAT_MODE__)selected='modern';
+  document.documentElement.setAttribute('data-theme',selected);
+  if(safe)document.documentElement.setAttribute('data-safe-ui','1');
+  window.__INITIAL_UI_THEME__=selected;
+})();
+</script><link href="./assets/css/runtime-bundle-v5.3.210-rc2-hf21.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-runtime-css-bundle="v6.0.0-beta6-design-refinement"/>
+<link href="./assets/css/gemini-reliability-v5.3.210-rc2-hf28.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet"/>
+<link href="./assets/css/theme-system-v2.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="theme-system"/>
+<link href="./assets/css/theme-switcher-v4.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="theme-switcher"/>
+
+<link href="./assets/css/theme-ivory-brass-v6.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="ivory-brass"/>
+<link href="./assets/css/ivory-brass-responsive-v6.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="responsive"/>
+<link href="./assets/css/profile-continuity-v6.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="profile-continuity"/>
+<link href="./assets/css/profile-hierarchy-v6.0.0-beta5.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="profile-hierarchy"/>
+<link href="./assets/css/interaction-states-v6.0.0-beta3.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="interaction-states"/>
+<link href="./assets/css/design-refinement-v6.0.0-beta6.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" data-ui-v6="design-refinement"/>
+<link href="./assets/css/ivory-brass-print-v6.css?v=v6.0.0-beta6-design-refinement" rel="stylesheet" media="print" data-ui-v6="print"/>
+<link href="./assets/css/navigation-access-hotfix-v6.0.0-beta6-hf1.css?v=v6.0.0-beta6-hotfix1" rel="stylesheet" data-ui-hotfix="navigation-access"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Needs Calculator styles -->
+
+
+
+
+
+  <script>
+  (function(){
+    var APP_VERSION = '6.0.0-beta6-hotfix3';
+    try {
+      if(typeof URL==='function'){
+        var u=new URL(window.location.href),current=u.searchParams.get('v');
+        if(current!==APP_VERSION&&!u.searchParams.get('noautov')){u.searchParams.set('v',APP_VERSION);if(window.history&&typeof window.history.replaceState==='function')window.history.replaceState(window.history.state,'',u.toString());}
+      }
+    } catch(_) {}
+    window.__APP_DEPLOY_VERSION__='v'+APP_VERSION;window.__EXPECTED_RUNTIME_RELEASE__='v6.0.0-beta6-design-refinement';
+    var buildDate=document.documentElement.getAttribute('data-build-date')||'',buildRu=buildDate;
+    try{buildRu=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(buildDate+'T12:00:00Z'));}catch(_){}
+    window.__APP_BUILD_DATE__=buildDate;window.__APP_BUILD_DATE_RU__=buildRu;window.__APP_BRAND_NAME__='Калькулятор рациона Сергея Веснина';
+    var buildMeta=document.querySelector('meta[name="application-build-date"]');if(buildMeta)buildMeta.setAttribute('content',buildDate);
+    var fillDate=function(){var nodes=document.querySelectorAll('[data-app-build-date-label]');for(var i=0;i<nodes.length;i++)nodes[i].textContent='Сборка от '+buildRu+'.';};
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fillDate,false);else fillDate();
+  })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script defer src="./assets/js/theme-retro-2bit-graphics-v1.js?v=5.3.184" data-theme-graphics="v1"></script>
+<script defer src="./assets/js/theme-retro-2bit-export-v1.js?v=5.3.159" data-theme-export="v1"></script>
+<script defer src="./assets/js/profile-persistence-v6.0.0-beta5.js?v=v6.0.0-beta6-design-refinement" data-profile-persistence="v1"></script>
+<script defer src="./assets/js/theme-controller-v2.js?v=v6.0.0-beta6-design-refinement" data-theme-controller="v2"></script>
+<script defer src="./assets/js/interaction-state-controller-v6.0.0-beta3.js?v=v6.0.0-beta6-design-refinement" data-interaction-controller="v1"></script>
+<script defer src="./assets/js/ivory-brass-charts-v6.js?v=v6.0.0-beta6-design-refinement" data-ivory-module="charts"></script>
+<script defer src="./assets/js/ivory-brass-view-model-v6.js?v=v6.0.0-beta6-design-refinement" data-ivory-module="view-model"></script>
+<script defer src="./assets/js/profile-hierarchy-v6.0.0-beta5.js?v=v6.0.0-beta6-design-refinement" data-profile-hierarchy="v2"></script>
+<script defer src="./assets/js/ivory-brass-search-compact-v6.js?v=v6.0.0-beta6-design-refinement" data-ivory-module="search-compact"></script>
+<script defer src="./assets/js/ivory-brass-shell-v6.js?v=v6.0.0-beta6-design-refinement" data-ivory-module="shell"></script>
+<script defer src="./assets/js/analysis-feature-continuity-v6.0.0-beta1.js?v=v6.0.0-beta6-design-refinement" data-feature-continuity="v1"></script>
+<link href="./assets/css/usability-recovery-v6.0.0-beta6-hf2.css?v=v6.0.0-beta6-hotfix2" rel="stylesheet" data-ui-hotfix="usability-recovery"/>
+<link href="./assets/css/quality-completion-v6.0.0-beta6-hf3.css?v=v6.0.0-beta6-hotfix3" rel="stylesheet" data-ui-hotfix="quality-completion"/>
+<link href="./assets/css/theme-parity-typography-v6.0.0-beta6-hf4.css?v=v6.0.0-beta6-hotfix4" rel="stylesheet" data-ui-hotfix="theme-parity-typography"/>
+</head>
+<body>
+<a class="skip-link" href="#needs_sex">Перейти к основным данным профиля</a>
+<a class="skip-link skip-link--second" href="#globalSearchSection">Перейти к поиску продуктов</a>
+<main class="container" id="mainContent">
+<header>
+<div class="title">Калькулятор рациона Сергея Веснина</div>
+<div class="toolbar">
+<select aria-label="Профиль норм" id="normProfile">
+<option value="adult">Нормы: Взрослый</option>
+<option value="custom">Нормы: Свои…</option>
+</select>
+<div class="norm-region-switcher" id="normRegionSwitcher">
+<div class="norm-region-switcher__head">
+<span class="norm-region-switcher__label">Нормы микронутриентов</span>
+<button aria-controls="normRegionHelp" aria-haspopup="dialog" aria-label="Справка о различиях норм США и ЕС" class="norm-region-help-button" id="normRegionHelpBtn" type="button"><span aria-hidden="true">i</span></button>
+</div>
+<div class="norm-region-switcher__controls">
+<div aria-label="Выбор системы норм микронутриентов" class="seg" id="regionSeg" role="group">
+<button aria-pressed="true" class="active" data-region="us" type="button"><span>США</span><small>DRI</small></button>
+<button aria-pressed="false" data-region="eu" type="button"><span>ЕС</span><small>EFSA</small></button>
+</div>
+<button class="secondary" id="resetBtn" type="button">Сброс</button>
+</div>
+<p aria-live="polite" class="norm-region-status" id="normRegionStatus" role="status"><span>Применяются нормы:</span> <strong>США</strong> <small>DRI</small></p>
+</div>
+<button class="secondary" id="editNormsBtn">Собственные нормы</button>
+<button class="ghost dev-only" id="devToggle" title="Панель диагностики для разработчика">Диагностика</button>
+<div class="theme-switcher" id="themeSwitcher" aria-label="Выбор оформления">
+<span class="theme-switcher__label">Тема</span>
+<div class="theme-switcher__options" role="group" aria-label="Тема оформления">
+<button class="theme-switcher__option" data-theme-value="modern" aria-pressed="true" type="button"><span>Современная</span></button>
+<button class="theme-switcher__option" data-theme-value="retro-2bit" aria-pressed="false" type="button"><span>2-bit</span></button>
+<button class="theme-switcher__option" data-theme-value="ivory-brass" aria-pressed="false" type="button"><span>Ivory &amp; Brass</span></button>
+</div>
+<span class="visually-hidden" id="themeStatus" aria-live="polite">Современное оформление включено</span>
+</div>
+</div>
+</header>
+<dialog aria-labelledby="normRegionHelpTitle" class="norm-region-help-dialog" id="normRegionHelp">
+<div class="norm-region-help-dialog__head">
+<div>
+<span class="norm-region-help-dialog__eyebrow">Справка к переключателю</span>
+<strong id="normRegionHelpTitle">Какие нормы меняются при выборе США или ЕС</strong>
+</div>
+<button aria-label="Закрыть справку" class="close-btn norm-region-help-close" type="button">✕</button>
+</div>
+<div class="norm-region-help-dialog__body">
+<p class="norm-region-help-dialog__lead">Переключатель выбирает нормативную систему, по которой в разделе «Дневные нормы» оцениваются витамины и минералы. Таблицы ниже показывают, какие значения получит именно выбранный возрастно-половой профиль.</p>
+<div class="norm-region-help-dialog__profiles">
+<section>
+<span>США</span>
+<h3>DRI: RDA, AI и UL</h3>
+<p>RDA обозначает рекомендуемое потребление, AI — адекватное потребление при недостатке данных для RDA, UL — верхний допустимый уровень длительного потребления.</p>
+</section>
+<section>
+<span>ЕС</span>
+<h3>EFSA DRV: PRI, AI, UL и безопасный уровень</h3>
+<p>PRI близок по назначению к RDA. Для некоторых веществ EFSA не устанавливает UL, указывая вместо него безопасный уровень, который нельзя трактовать как верхнюю границу.</p>
+</section>
+</div>
+<section class="norm-region-help-dialog__scope" aria-labelledby="normComparisonScopeTitle">
+<h3 id="normComparisonScopeTitle">Что именно пересчитывается</h3>
+<div class="norm-region-change-points">
+<div><strong>Ориентир достаточности</strong><span>Суточное значение, с которым сравнивается рацион.</span></div>
+<div><strong>Тип ориентира</strong><span>RDA, PRI или AI — в зависимости от системы и доказательной базы.</span></div>
+<div><strong>Граница безопасности</strong><span>UL, область его действия либо отдельный безопасный уровень EFSA.</span></div>
+</div>
+</section>
+<section class="norm-region-help-dialog__examples" aria-labelledby="normComparisonTitle">
+<div class="norm-region-comparison-head">
+<div>
+<h3 id="normComparisonTitle">Сравнение для выбранного профиля</h3>
+<p id="normComparisonProfileNote">Значения уточняются по полу и возрасту, введённым в калькуляторе потребностей.</p>
+</div>
+<span class="norm-region-profile-chip" id="normComparisonProfile">Взрослый профиль</span>
+<p class="norm-region-help-dialog__fineprint" id="normRegistryStatus" role="status">Нормативный реестр загружается…</p>
+</div>
+<details class="norm-region-comparison-details" open>
+<summary>Ориентиры достаточного потребления</summary>
+<p class="norm-region-help-dialog__fineprint">Показаны параметры, у которых различается число, тип референсного значения или возрастно-половое правило. Значения относятся к здоровым людям и не являются лечебными дозировками.</p>
+<div class="norm-region-help-table-wrap">
+<table class="norm-region-help-table" aria-label="Сравнение референсных значений США и ЕС">
+<thead><tr><th scope="col">Показатель</th><th scope="col">США — DRI</th><th scope="col">ЕС — EFSA</th></tr></thead>
+<tbody id="normReferenceComparisonBody"><tr><td colspan="3">Таблица будет рассчитана после загрузки профиля.</td></tr></tbody>
+</table>
+</div>
+</details>
+<details class="norm-region-comparison-details">
+<summary>Верхние и безопасные уровни</summary>
+<p class="norm-region-help-dialog__fineprint">Область действия имеет значение: некоторые пределы относятся ко всему поступлению, другие — только к добавкам, синтетическим формам или отдельной форме витамина.</p>
+<div class="norm-region-help-table-wrap">
+<table class="norm-region-help-table norm-region-help-table--safety" aria-label="Сравнение верхних и безопасных уровней США и ЕС">
+<thead><tr><th scope="col">Показатель</th><th scope="col">США — DRI</th><th scope="col">ЕС — EFSA</th></tr></thead>
+<tbody id="normSafetyComparisonBody"><tr><td colspan="3">Таблица будет рассчитана после загрузки профиля.</td></tr></tbody>
+</table>
+</div>
+</details>
+</section>
+<section class="norm-region-help-dialog__unchanged">
+<h3>Что останется прежним</h3>
+<p>Переключатель не меняет состав продуктов, КБЖУ, массу продуктов в рационе, формулу энергии, макронутриенты, HEI-2020 и «Гарвардскую тарелку». Для детей до 18 лет применяются отдельные российские возрастно-половые нормы; при беременности, лактации и клинических состояниях справочные значения не заменяют индивидуального назначения.</p>
+</section>
+<p class="norm-region-help-dialog__note"><strong>Важно:</strong> верхний допустимый или безопасный уровень — это граница, а не цель. При заболеваниях, приёме лекарств и использовании высокодозных добавок ориентиры требуют клинической интерпретации.</p>
+</div>
+<div class="norm-region-help-dialog__footer">
+<button class="norm-region-help-close" type="button">Понятно</button>
+</div>
+</dialog>
+<nav aria-label="Основные шаги калькулятора" class="workflow-steps"><a href="#needsCompact"><span>1</span>Потребности</a><a href="#globalSearchSection"><span>2</span>Рацион</a><a href="#heiPanel"><span>3</span>HEI</a><a href="#totalsSection"><span>4</span>Нормы</a><a href="#dietAnalysisProfilePanel"><span>5</span>Профиль</a><a href="#globalActions"><span>6</span>Отчёт</a></nav><section class="card" id="needsCompact" style="margin-bottom:16px;">
+<dialog aria-labelledby="needsHelpTitle" id="needsHelp">
+<div class="dialog-head" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+<strong id="needsHelpTitle">Справка: Калькулятор потребностей</strong>
+<button aria-label="Закрыть" class="close-btn" formmethod="dialog" title="Закрыть">✕</button>
+</div>
+<div class="dialog-body" style="margin-top:8px;">
+<pre class="help-pre">"Приветствую тебя, дорогой гость! Эта страница представляет собой сводный калькулятор потребностей КБЖУ (калорий, белков, жиров и углеводов), калькулятор индекса здорового питания ( Healthy Eating Index, или HEI 2020 года редакции) и калькулятор микро и макронутриентов (белки, жиры, углеводы, витамины, минералы).
+
+В базе сейчас 1105 продуктовых карточек разного уровня достоверности. У каждого продукта есть набор параметров, по которым программа распознаёт состав и включает его в расчёты. База продолжает дорабатываться: если заметите неверную категорию, дубль или английское название, напишите мне в ВК: https://vk.com/vesninsergey.
+
+Для начала заполните основные данные: рост, вес, возраст и профиль активности. Особые состояния и медицинские ограничения доступны в отдельном дополнительном блоке. Калькулятор рассчитает ориентиры по калорийности, БЖУ и воде. В раскрывающихся подпунтах этого калькулятора можно получить более подробную информацию о методе расчёта, суммарных потребностях КБЖУ и распределении КБЖУ по нескольким приемам пищи. Расчёт потребностей является ориентировочной моделью и не заменяет индивидуального назначения специалиста.
+
+Расчёты из калькулятора потребностей нужны для суточных норм КБЖУ в блоке нутриентов ниже. Индекс здорового питания использует фактическую энергию введённого набора продуктов; целевой калораж персональных потребностей не подменяет знаменатель HEI.
+
+Внешние методики, локальные правила продукта и границы их применимости разделены в формульном реестре.
+
+Автор калькуляторов Сергей Веснин, любое некоммерческое использование разрешено."</pre>
+</div>
+</dialog>
+<div class="small">Сначала рассчитайте потребности человека. Полученные ориентиры будут использоваться при анализе его рациона.</div>
+<div class="alert" id="needs-method-notice" style="font-size:12px;line-height:1.45;margin:10px 0;">Для обычных профилей калькулятор использует Mifflin–St Jeor или разрешённый весовой ориентир. Предоперационный, послеоперационный, ОРИТ, ХБП, диализ и онкологический профиль работают только с актуальной внешней клинической целью: универсальные коэффициенты энергии и белка в них не рассчитываются.</div>
+<div class="card" id="needs">
+<div class="row" style="align-items:center; gap:6px; flex-wrap:wrap;"><div class="section-title-row">
+<span class="step-badge">Шаг 1</span>
+<h1>Калькулятор потребностей</h1>
+<button aria-controls="needsHelpNeeds" aria-haspopup="dialog" aria-label="Справка по разделу" class="btn secondary" data-dialog="needsHelp" id="needsHelpBtn" title="Справка по разделу" type="button">Справка</button>
+</div>
+<div class="row" style="gap:12px; margin: 12px 0;">
+<div>
+<label for="needs_person_name">Имя или ФИО (необязательно)</label>
+<input id="needs_person_name" placeholder="Иван Иванов" style="min-width:240px;" type="text"/>
+<div class="small">Используется только в локальном отчёте; поле можно оставить пустым.</div>
+</div>
+</div>
+<button aria-controls="needsHelpNeeds" aria-haspopup="dialog" aria-label="Справка по разделу" class="icon-btn icon-btn--small" id="needsHelpNeedsBtn" title="Справка по разделу" type="button">?</button></div>
+<dialog aria-labelledby="needsHelpNeedsTitle" id="needsHelpNeeds">
+<div class="dialog-head" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+<strong id="needsHelpNeedsTitle">Справка</strong>
+<button aria-label="Закрыть" class="close-btn" formmethod="dialog" title="Закрыть">✕</button>
+</div>
+<div class="dialog-body">
+<p>Приветствую тебя, дорогой гость! Эта страница представляет собой сводный калькулятор потребностей КБЖУ (калорий, белков, жиров и углеводов), калькулятор индекса здорового питания ( Healthy Eating Index, или HEI 2020 года редакции) и калькулятор микро и макронутриентов (белки, жиры, углеводы, витамины, минералы).</p>
+<p>В базе сейчас 1105 продуктовых карточек разного уровня достоверности. У каждого продукта есть набор параметров, по которым программа распознаёт состав и включает его в расчёты. База продолжает дорабатываться: если заметите неверную категорию, дубль или английское название, напишите мне в ВК: <a href="https://vk.com/vesninsergey" rel="noopener" target="_blank">https://vk.com/vesninsergey</a>.</p>
+<p>Для начала заполните основные данные: рост, вес, возраст и профиль активности. Особые состояния и медицинские ограничения доступны в отдельном дополнительном блоке. Калькулятор рассчитает ориентиры по калорийности, БЖУ и воде.</p>
+<p>В раскрывающихся подпунтах этого калькулятора можно получить более подробную информацию о методе расчёта, суммарных потребностях КБЖУ и распределении КБЖУ по нескольким приемам пищи.</p>
+<p>Этот калькулятор почти полностью повторяет мой клинический калькулятор потребностей с этой страницы <a href="https://medicaltest.page.gd" rel="noopener" target="_blank">https://medicaltest.page.gd</a>.</p>
+<p>Расчёты из калькулятора потребностей нужны для суточных норм КБЖУ в блоке нутриентов ниже. Индекс здорового питания использует фактическую энергию введённого набора продуктов; целевой калораж персональных потребностей не подменяет знаменатель HEI.</p>
+<p>Внешние методики, локальные правила продукта и границы их применимости разделены в формульном реестре.</p>
+<p>Автор калькуляторов Сергей Веснин, любое некоммерческое использование разрешено.</p>
+</div>
+</dialog>
+<div class="grid">
+<div>
+<label for="needs_sex">Пол</label>
+<select id="needs_sex">
+<option value="male">Мужской</option>
+<option value="female">Женский</option>
+</select>
+</div>
+<div>
+<label for="needs_h">Рост (см)</label>
+<input id="needs_h" inputmode="decimal" placeholder="например, 175" type="number"/>
+</div>
+<div>
+<label for="needs_w">Масса (кг)</label>
+<input id="needs_w" inputmode="decimal" placeholder="например, 74" type="number"/>
+</div>
+<div>
+<label for="needs_age">Возраст (лет)</label>
+<input id="needs_age" inputmode="numeric" placeholder="например, 45" type="number" min="1" max="120" step="1"/>
+<div class="needs-age-profile-progress" id="needsAgeProfileProgress" role="status" aria-live="polite" aria-atomic="true" hidden>
+<div class="needs-age-profile-progress-copy"><strong id="needsAgeProfileProgressTitle">Подбираем возрастной профиль</strong><span id="needsAgeProfileProgressText">Проверяем введённый возраст…</span></div>
+<div class="needs-age-profile-progress-track" id="needsAgeProfileProgressTrack" role="progressbar" aria-label="Выбор возрастного профиля" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
+<i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i><i aria-hidden="true"></i>
+</div>
+</div>
+<div class="needs-age-profile-indicator" id="needsAgeProfileIndicator" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+</div>
+<div>
+<label for="needs_bmi">ИМТ</label>
+<input id="needs_bmi" placeholder="—" readonly="" type="number"/>
+</div>
+<div>
+<label for="needs_state">Профиль состояния</label>
+<select id="needs_state">
+<option selected="" value="normal">Обычное состояние</option>
+<option value="rehab">Реабилитация / набор</option>
+<option value="preop">Предоперационный период</option>
+<option value="postop">Послеоперационный период</option>
+<option value="icu">Критическое (ОРИТ)</option>
+<option value="elderly">Пожилой пациент</option>
+<option value="ckd">ХБП (без диализа)</option>
+<option value="dialysis">Диализ</option>
+<option value="oncology">Онкология</option>
+</select>
+</div>
+<div>
+<label for="needs_activity">Активность</label>
+<select id="needs_activity">
+<option value="sedentary">Малоподвижный</option>
+<option selected="" value="low">Низкая</option>
+<option value="moderate">Умеренная</option>
+<option value="high">Высокая</option>
+<option value="veryhigh">Очень высокая</option>
+</select>
+</div>
+<div>
+<label for="needs_edema">Отёки/асцит</label>
+<select id="needs_edema">
+<option selected="" value="no">Нет</option>
+<option value="yes">Есть</option>
+</select>
+</div>
+<div>
+<label for="needs_goal">Цель</label>
+<select id="needs_goal">
+<option selected="" value="maintain">Поддержание</option>
+<option value="lose">Снижение веса</option>
+<option value="gain">Набор массы</option>
+<option value="rehab_gain">Реабилитация/ускоренный набор</option>
+</select>
+</div>
+<div>
+<label for="needs_diet_style">Пищевой стиль</label>
+<select id="needs_diet_style">
+<option selected="" value="mixed">Смешанный рацион</option>
+<option value="no_dairy">Без молочных продуктов</option>
+<option value="plant_forward">Преимущественно растительный</option>
+<option value="vegetarian">Вегетарианский</option>
+<option value="low_appetite">Сниженный аппетит / малый объём еды</option>
+</select>
+<div class="small">Влияет на интерпретацию кальция, B12, железа, белка и продуктовых замен.</div>
+</div>
+<div>
+<label for="needs_guardrail">Защитный сценарий</label>
+<select id="needs_guardrail">
+<option selected="" value="none">Нет</option>
+<option value="pregnancy">Беременность</option>
+<option value="lactation">Лактация</option>
+<option value="ed_risk">Риск РПП / выраженные ограничения</option>
+<option value="medical_restriction">Есть медицинские ограничения</option>
+</select>
+<div class="small">Ограничивает автоматические выводы и отключает дефицит при чувствительных сценариях.</div>
+</div>
+<details id="needsProtectedModeContext" style="grid-column:1/-1;" class="fold">
+<summary>Контекст защищённого режима</summary>
+<div id="needsProtectedModeStatus" class="alert" role="status" aria-live="polite"><strong>Обычный режим</strong><div class="small" style="margin-top:4px;">Ограничения не активны.</div></div>
+<div class="small" style="margin:8px 0 10px;">Специальные профили не должны превращать справочный расчёт в автоматическое назначение. Клинические состояния работают только с актуальной внешней целью с указанным происхождением и сроком пересмотра.</div>
+<div id="needsLifeStagePalField" class="grid" hidden>
+<div><label for="needs_nasem_pal">Категория активности NASEM для жизненного EER</label><select id="needs_nasem_pal"><option selected value="unknown">Не выбрана</option><option value="inactive">Inactive — только повседневная минимальная активность</option><option value="low_active">Low active — умеренное дополнительное движение</option><option value="active">Active — значительная регулярная активность</option><option value="very_active">Very active — очень высокая суммарная активность</option></select><div class="small">Это отдельная категория для уравнений NASEM 2023. Она не выводится автоматически из общего списка активности, потому что категории PAL нельзя надёжно отождествить с тренировочными рекомендациями.</div></div>
+</div>
+<div id="needsPregnancyFields" class="grid" hidden>
+<div><label for="needs_gestation_week">Срок беременности (недель)</label><input id="needs_gestation_week" type="number" min="1" max="42" step="1" inputmode="numeric" placeholder="например, 24"/></div>
+<div><label for="needs_prepreg_w">Добеременная масса (кг)</label><input id="needs_prepreg_w" type="number" min="15" max="300" step="0.1" inputmode="decimal" placeholder="например, 62"/><div class="small">Нужна для исходного ИМТ и белкового ориентира; текущая масса остаётся отдельным полем выше.</div></div>
+<div><label for="needs_fetus_count">Число плодов</label><select id="needs_fetus_count"><option selected value="unknown">Не подтверждено</option><option value="singleton">Одноплодная беременность</option><option value="multiple">Двойня или многоплодная</option></select><div class="small">Одноплодность должна быть подтверждена пользователем и не устанавливается по умолчанию.</div></div>
+<div><label for="needs_pregnancy_complications">Осложнения беременности</label><select id="needs_pregnancy_complications"><option selected value="unknown">Неизвестно / не оценено</option><option value="none">Нет известных осложнений</option><option value="yes">Есть осложнения</option></select><div class="small">При осложнениях, многоплодии или неизвестном статусе автоматический жизненный расчёт не выполняется.</div></div>
+</div>
+<div id="needsLactationFields" class="grid" hidden>
+<div><label for="needs_postpartum_month">Месяц после родов</label><input id="needs_postpartum_month" type="number" min="0" max="12" step="1" inputmode="numeric" placeholder="0–12"/></div>
+<div><label for="needs_lactation_feeding">Объём грудного вскармливания</label><select id="needs_lactation_feeding"><option selected value="unknown">Неизвестно</option><option value="exclusive">Исключительно грудное, 0–6 месяцев</option><option value="partial">Частичное, 7–12 месяцев</option><option value="other">Другой объём / смешанное</option></select><div class="small">Калькулятор не придумывает коэффициент для неизвестной продукции молока.</div></div>
+</div>
+<div id="needsClinicalModeFields" class="grid" hidden>
+<div style="grid-column:1/-1;" class="alert"><strong>Только по внешней подтверждённой цели.</strong><div class="small" style="margin-top:4px;">Для ОРИТ, ХБП, диализа, хирургии, онкологии, риска РПП и неуточнённых медицинских ограничений калькулятор не создаёт универсальную цель по коэффициенту. Для расчёта нужны одновременно энергия, белок и происхождение актуального назначения.</div></div>
+<div><label for="needs_clinical_energy_manual">Внешняя энергия (ккал/сут) — обязательно</label><input id="needs_clinical_energy_manual" type="number" min="300" max="10000" step="1" inputmode="numeric" placeholder="например, 1850"/></div>
+<div><label for="needs_clinical_reference_weight">Расчётная/сухая масса назначения (кг) — обязательно</label><input id="needs_clinical_reference_weight" type="number" min="15" max="400" step="0.1" inputmode="decimal" placeholder="например, 68"/><div class="small">Масса, к которой относится внешняя цель; она не вычисляется формулой Devine.</div></div>
+<div><label for="needs_clinical_confirmed_by">Кем подтверждено — обязательно</label><input id="needs_clinical_confirmed_by" type="text" maxlength="120" placeholder="имя, инициалы или внутренний ID специалиста"/></div>
+<div><label for="needs_clinical_confirmed_role">Роль специалиста — обязательно</label><select id="needs_clinical_confirmed_role"><option selected value="unknown">Не указана</option><option value="physician">Лечащий врач</option><option value="clinical_dietitian">Клинический диетолог / нутрициолог медорганизации</option><option value="multidisciplinary_team">Мультидисциплинарная команда</option><option value="other_clinician">Другой медицинский специалист</option></select></div>
+<div><label for="needs_clinical_confirmed_at">Дата подтверждения — обязательно</label><input id="needs_clinical_confirmed_at" type="date"/></div>
+<div><label for="needs_clinical_review_due_at">Пересмотреть не позднее — обязательно</label><input id="needs_clinical_review_due_at" type="date"/><div class="small">Просроченная цель не применяется. Технический срок актуальности — не более 366 дней от даты подтверждения; это контроль свежести данных, а не клиническая периодичность пересмотра.</div></div>
+<div><label for="needs_clinical_source_method">Источник / метод — обязательно</label><input id="needs_clinical_source_method" type="text" maxlength="240" placeholder="например, непрямая калориметрия + локальный протокол"/></div>
+<div><label for="needs_clinical_phase">Клиническая фаза — обязательно</label><select id="needs_clinical_phase"><option selected value="unknown">Не указана</option><option value="stable">Стабильное состояние</option><option value="acute_early">Острая ранняя фаза</option><option value="acute_late">Острая поздняя фаза</option><option value="recovery">Восстановление / реабилитация</option><option value="preoperative">Предоперационная</option><option value="postoperative">Послеоперационная</option><option value="active_treatment">Активное лечение</option><option value="other">Другая</option></select></div>
+<div><label for="needs_clinical_route">Путь питания — обязательно</label><select id="needs_clinical_route"><option selected value="unknown">Не указан</option><option value="oral">Пероральный</option><option value="enteral">Энтеральный</option><option value="parenteral">Парентеральный</option><option value="mixed">Смешанный</option></select></div>
+<div style="grid-column:1/-1;"><label for="needs_clinical_source_note">Примечание / контекст пересмотра <span class="small">(обязательно для «другой специалист» или «другая фаза»)</span></label><textarea id="needs_clinical_source_note" maxlength="600" rows="2" placeholder="например, действительна до следующего лабораторного контроля или смены фазы лечения"></textarea></div>
+<div style="grid-column:1/-1;"><label><input id="needs_clinical_targets_confirmed" type="checkbox"/> Подтверждаю, что энергия и белок выше являются актуальной внешней целью специалиста и относятся к указанным фазе, пути питания и расчётной массе</label><div class="small">Даже после подтверждения автоперенос, автоматическое распределение, расчёт жидкости, производные жиры/углеводы и AI-планирование остаются отключёнными.</div></div>
+</div>
+<fieldset style="grid-column:1/-1;margin-top:10px;">
+<legend>Дополнительные пересекающиеся факторы</legend>
+<div class="grid">
+<div><label><input id="needs_additional_ed_risk" type="checkbox"/> Текущий или недавний риск РПП</label><div class="small">Можно отметить одновременно с беременностью, лактацией или клиническим профилем.</div></div>
+<div><label><input id="needs_additional_medical_restriction" type="checkbox"/> Есть дополнительные медицинские ограничения</label><div class="small">При сочетании с беременностью или лактацией автоматическая энергетическая цель блокируется до индивидуальной проверки.</div></div>
+<div><label><input id="needs_additional_clinical_conditions" type="checkbox"/> Есть дополнительные клинические состояния помимо выбранного</label><div class="small">До внедрения clinicalContexts[] такой профиль работает fail closed: калькулятор не пытается свести коморбидность к одному пункту списка.</div></div>
+</div>
+</fieldset>
+</details>
+<details id="needsLowWeightSafety" style="grid-column:1/-1;" class="fold">
+<summary>Скрининг выраженного дефицита массы и риска рефидинга</summary>
+<div class="small" style="margin:8px 0 10px;">Для взрослых с низким ИМТ калькулятор учитывает динамику массы, длительность очень малого потребления, электролиты и дополнительные факторы риска. Это скрининг безопасности, а не диагноз и не схема начала питания.</div>
+<div class="grid">
+<div>
+<label for="needs_prev_w">Масса 3–6 месяцев назад (кг)</label>
+<input id="needs_prev_w" inputmode="decimal" placeholder="если известна" type="number" min="15" max="400" step="0.1"/>
+<div class="small">Указывайте прежнюю массу только при непреднамеренном снижении.</div>
+</div>
+<div>
+<label for="needs_weight_loss_pct">Непреднамеренная потеря массы</label>
+<input id="needs_weight_loss_pct" placeholder="—" readonly="" type="text"/>
+</div>
+<div>
+<label for="needs_low_intake_days">Очень малое или отсутствующее питание (дней)</label>
+<input id="needs_low_intake_days" inputmode="numeric" placeholder="0, если не было" type="number" min="0" max="365" step="1"/>
+</div>
+<div>
+<label for="needs_electrolytes">Калий, фосфат или магний до питания</label>
+<select id="needs_electrolytes">
+<option selected="" value="unknown">Неизвестно</option>
+<option value="normal">Нет известных снижений</option>
+<option value="low">Есть сниженный показатель</option>
+</select>
+</div>
+<div>
+<label for="needs_refeeding_factors">Дополнительные факторы риска</label>
+<select id="needs_refeeding_factors">
+<option selected="" value="unknown">Неизвестно</option>
+<option value="no">Нет известных</option>
+<option value="yes">Есть</option>
+</select>
+<div class="small">Например: злоупотребление алкоголем либо приём инсулина, химиотерапии, антацидов или диуретиков.</div>
+</div>
+<div>
+<label for="needs_calc_w_manual">Расчётная/сухая масса (кг) — только вручную</label>
+<input id="needs_calc_w_manual" inputmode="decimal" placeholder="для отёков или сложного клинического профиля" type="number" min="15" max="400" step="0.1"/>
+<div class="small">Не заполняйте для обычного худого пациента без отёков: тогда используется фактическая масса.</div>
+</div>
+</div>
+</details>
+<div>
+<label for="needs_protein_manual">Белок, вручную (г/сут)</label>
+<input id="needs_protein_manual" inputmode="decimal" placeholder="например, 90" type="number"/><div class="small">Для обычного профиля — опциональная ручная настройка. Для клинический режим только по внешней подтверждённой цели — обязательная часть внешней цели.</div>
+<div class="small">В обычном профиле пустое поле позволяет расчёт по г/кг; в клиническом external-target-only расчёт без внешней цели белка блокируется.</div>
+</div>
+<div>
+<label for="needs_split">Распределение по приёмам</label>
+<select id="needs_split">
+<option value="3|30,40,30">3 приёма — 30% / 40% / 30%</option>
+<option selected="" value="4|25,35,30,10">4 приёма — 25% / 35% / 30% / 10%</option>
+<option value="5|20,30,25,15,10">5 приёмов — 20% / 30% / 25% / 15% / 10%</option>
+</select>
+</div>
+<div class="row">
+<label> </label>
+<button aria-disabled="true" class="btn" data-needs-calculation-ready="0" disabled id="needs_calc_btn" type="button">Рассчитать</button>
+<button class="btn secondary" id="needs_reset_btn" type="button">Сбросить</button>
+<button class="btn ghost" id="needs_print_btn" type="button">Печать</button>
+<button class="btn ghost" id="needs_pdf_btn" type="button">Сохранить PDF</button>
+</div>
+</div>
+<div class="result" id="needs_out">
+      Введите исходные данные и нажмите «Рассчитать».
+    </div>
+<details class="row" id="dbg">
+<summary>Отладка / метаданные</summary>
+<pre id="dbg_json" style="white-space:pre-wrap;margin:0;"></pre>
+</details>
+</div>
+</section><section class="card gemini-ration-import" id="geminiRationImportSection">
+<div class="gemini-ration-import__head">
+<div>
+<span class="step-badge">Шаг 2</span>
+<div class="gemini-ration-import__kicker">Gemini API · фото и аудио</div>
+<h2>Добавить рацион по фотографии или голосовому описанию</h2>
+</div>
+<span class="gemini-ration-import__badge">Добавляет, не заменяет</span>
+</div>
+<p class="gemini-ration-import__intro">Загрузите фотографии блюд и упаковок, выберите готовую аудиозапись либо запишите голос непосредственно в калькуляторе. Запись с микрофона автоматически останавливается через пять минут. Аудио проверяется по длительности и при необходимости преобразуется в компактный речевой MP3 объёмом менее 1 МБ ещё до отправки. Составные блюда распознаются по отдельным значимым компонентам, каждый из которых получает собственную массу и отдельно сопоставляется с продуктом той же группы в базе.</p>
+<div class="gemini-ration-import__privacy"><strong>Важно:</strong> распознавание блюда и оценка массы по фотографии приблизительны. Ничего не попадёт в рацион без подтверждения. Каждая распознанная позиция имеет отдельную заметную галочку «Выбрано для рациона»; снимите её у того, что добавлять не нужно. После добавления каждую позицию можно изменить или удалить обычным способом.</div>
+<label class="gemini-ration-import__privacy" for="geminiRationAiEligibility"><input id="geminiRationAiEligibility" type="checkbox"/> <span><strong>Подтверждаю, что мне 18 лет или больше</strong>, использую AI-функцию только для немедицинского планирования питания, понимаю, что распознавание может ошибаться, и соглашаюсь на отправку выбранных фотографий, аудио, комментария и данных рациона в Gemini для обработки. Не загружайте медицинские документы и иные чувствительные персональные данные.</span></label>
+<div class="gemini-ration-import__upload-row">
+<input id="geminiRationPhotoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden>
+<input id="geminiRationCameraInput" type="file" accept="image/*" capture="environment" hidden>
+<input id="geminiRationAudioInput" type="file" accept="audio/wav,audio/mpeg,audio/mp3,audio/aac,audio/ogg,audio/opus,audio/webm,audio/flac,audio/mp4,audio/x-m4a,audio/aiff,.mp3,.wav,.aac,.ogg,.opus,.webm,.flac,.m4a,.mp4,.aif,.aiff" multiple hidden>
+<button type="button" id="geminiRationChoosePhotos">Выбрать фотографии</button>
+<button type="button" class="secondary" id="geminiRationTakePhoto">Сделать фото</button>
+<button type="button" class="secondary gemini-ration-record-button" id="geminiRationRecordAudio"><span aria-hidden="true">●</span> Записать голос</button>
+<button type="button" class="secondary" id="geminiRationChooseAudio">Выбрать аудиофайл</button>
+</div>
+<div class="gemini-audio-recorder" id="geminiRationRecorderPanel" hidden>
+<div class="gemini-audio-recorder__signal" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="gemini-audio-recorder__body"><div class="gemini-audio-recorder__status-row"><span class="gemini-audio-recorder__live-dot" aria-hidden="true"></span><strong id="geminiRationRecorderState" aria-live="polite">Идёт запись</strong></div><span id="geminiRationRecorderTimer" role="timer" aria-label="Длительность записи">0:00 / 5:00</span><small>После остановки запись будет подготовлена для распознавания и уменьшена до 1 МБ.</small></div>
+<div class="gemini-audio-recorder__actions"><button type="button" id="geminiRationStopRecording">Остановить и добавить</button><button type="button" class="secondary" id="geminiRationCancelRecording">Отменить</button></div>
+</div>
+<div class="gemini-ration-import__limits">До 8 файлов. Одна аудиозапись — не более 5 минут; подготовленный файл — не более 1 МБ. Фотографии автоматически уменьшаются до безопасного для хостинга размера. Доступ к микрофону работает по HTTPS.</div>
+<small class="gemini-ration-audio-codec-note">Для локального сжатия речи используется отдельный модуль <a href="https://lame.sourceforge.net/" target="_blank" rel="noopener noreferrer">lamejs/LAME</a> по лицензии LGPL.</small>
+<div id="geminiRationMediaQueue" class="gemini-ration-media-queue" hidden></div>
+<label class="gemini-ration-import__context" for="geminiRationContext">Комментарий к материалам — необязательно
+<textarea id="geminiRationContext" maxlength="800" rows="2" placeholder="Например: первое фото — завтрак, второе — обед; в аудио перечислен весь день"></textarea>
+</label>
+<div class="gemini-ration-import__actions">
+<button type="button" id="geminiRationRecognizeBtn" disabled>Распознать и подобрать продукты</button>
+<button type="button" class="secondary" id="geminiRationClearMediaBtn" disabled>Очистить файлы</button>
+</div>
+<div class="gemini-ration-import__status" id="geminiRationStatus" role="status" aria-live="polite"></div>
+<div class="gemini-ration-import__progress" id="geminiRationProgress" data-step="0" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+<div class="gemini-ration-draft" id="geminiRationDraft" hidden>
+<div class="gemini-ration-draft__head"><div><strong>Черновик распознанного рациона</strong><span>Проверьте подобранный продукт и массу каждого компонента. У составного блюда все части показаны отдельными строками, а галочка определяет, что именно попадёт в рацион.</span></div><span id="geminiRationDraftSummary" role="status" aria-live="polite">Выбрано 0 из 0</span></div>
+<div id="geminiRationDraftWarnings" class="gemini-ration-draft__warnings" hidden></div>
+<div id="geminiRationDraftSources" class="gemini-ration-draft__sources" hidden></div>
+<div id="geminiRationDraftRows" class="gemini-ration-draft__rows"></div>
+<div class="gemini-ration-draft__actions">
+<button type="button" id="geminiRationAddDraftBtn">Добавить выбранное к рациону</button>
+<button type="button" class="secondary" id="geminiRationDiscardDraftBtn">Удалить черновик</button>
+</div>
+</div>
+</section><section class="card search-hero" id="globalSearchSection">
+<div class="search-hero-head">
+<div>
+<span class="step-badge">Шаг 2</span>
+<h2>Быстрый поиск продуктов</h2>
+<p class="search-lead">Основной способ собрать рацион: начните вводить название продукта, выберите нужную строку, укажите граммы и добавьте её в итоговый рацион. Каталог по разделам оставлен ниже как дополнительный справочник.</p>
+</div>
+<div aria-label="Количество продуктов в базе" class="search-db-count">
+<strong id="uxDbCount">—</strong>
+<span>продуктов в базе</span>
+</div>
+</div>
+<div class="search-main-grid">
+<div class="search-field-card">
+<label for="globalSearchInput">Что ищем?</label>
+<div class="search-line">
+<input autocomplete="off" class="search-input-main" id="globalSearchInput" inputmode="search" placeholder="Например: йогурт, курица, гречка, вафли" type="text"/>
+<button class="secondary" id="globalSearchClear" type="button">Очистить</button>
+</div>
+<div aria-live="polite" class="mobile-results-anchor" id="mobileSearchResultsAnchor" role="region"></div>
+<div class="search-field-hint">Можно вводить часть названия: «творог», «зеленая линия», «тофу», «хлебец». Результаты сортируются так, чтобы точные совпадения были выше.</div>
+<div aria-label="Быстрые примеры поиска" class="quick-searches">
+<button data-search-example="йогурт" type="button">йогурт</button>
+<button data-search-example="творог" type="button">творог</button>
+<button data-search-example="курица" type="button">курица</button>
+<button data-search-example="гречка" type="button">гречка</button>
+<button data-search-example="зелёная линия" type="button">Зелёная Линия</button>
+</div>
+</div>
+<div class="search-grams-card">
+<label for="globalSearchGrams">Граммы по умолчанию</label>
+<input id="globalSearchGrams" max="5000" min="1" step="1" type="number" value="100"/>
+<div aria-label="Быстрый выбор граммов" class="quick-grams">
+<button data-search-grams="50" type="button">50 г</button>
+<button data-search-grams="100" type="button">100 г</button>
+<button data-search-grams="150" type="button">150 г</button>
+<button data-search-grams="200" type="button">200 г</button>
+</div>
+</div>
+</div>
+<div class="search-status" id="globalSearchStatus">Начните вводить название продукта. Поиск работает по всей базе, без открытия категорий.</div>
+<div aria-live="polite" class="search-added-toast" id="searchAddedToast"></div>
+<div class="search-results-enhanced" id="globalResults"></div>
+</section><section class="card" id="rationSection">
+<div class="ration-head-enhanced">
+<div>
+<span class="step-badge">Шаг 2</span>
+<h2>Итоговый рацион</h2>
+<p class="ration-subtitle">Это рабочая корзина рациона: сюда попадают продукты из поиска. Меняйте граммы прямо в строках, расчёты обновятся автоматически.</p>
+</div>
+<div class="ration-head-status">
+<div class="ration-kpi-strip" id="rationKpiStrip">Рацион пока пуст</div>
+<div class="ration-attention-strip" id="rationAttentionStrip" hidden></div>
+</div>
+</div>
+<div class="ration-ui-legend" id="rationUiLegend">
+  <span class="ration-legend-item"><span class="ration-legend-composite" aria-hidden="true"></span><span>Голубым отмечены комплексные блюда: их состав можно раскрыть и изменить.</span></span>
+  <span class="ration-legend-item"><span class="ration-legend-impact" aria-hidden="true"></span><span>Цветные метки появляются только при заметном вкладе в натрий, насыщенные жиры или добавленный сахар.</span></span>
+</div>
+<table class="ration-table" id="rationTable">
+<thead>
+<tr>
+<th>Продукт</th>
+<th>Группы</th>
+<th>Граммы</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="rationBody"></tbody>
+</table>
+<div class="toolbar" style="justify-content:flex-end; margin: 8px 0;">
+<button id="printRationBtn" title="Распечатать итоговый рацион">Печать</button>
+<button id="exportRationPdfBtn" title="Сохранить итоговый рацион как PDF">Сохранить PDF</button>
+<button class="secondary" id="loadRationJsonBtn" title="Загрузить сохранённый рацион из JSON" type="button">Загрузить JSON</button>
+<button aria-label="Сохранить итоговый рацион как JSON" id="exportRationJsonBtn" title="Сохранить итоговый рацион как JSON" type="button">Сохранить JSON</button>
+<button class="danger" id="clearRationBtn" title="Удалить все позиции из Итогового рациона">Очистить рацион</button>
+</div>
+<div class="footer-note">Данные сохраняются локально в вашем браузере.</div>
+</section><section class="card" id="heiPanel" style="margin:16px 0;">
+<div class="section-title-block"><span class="step-badge">Шаг 3</span><h2 class="card-title">Индекс качества рациона HEI‑2020 <span class="chip" id="heiBadge">фактическая энергия рациона</span></h2></div>
+<div class="row hei-method-row" style="gap:8px;align-items:center;margin:6px 0 10px 0;">
+<input checked="" id="heiEnergyActual" name="heiEnergyMode" type="radio" value="actual" hidden aria-hidden="true"/>
+<p class="hei-method-note"><strong>Методика:</strong> HEI‑2020 автоматически рассчитывается по фактической энергии введённого набора продуктов. Целевой калораж персональных потребностей не используется как знаменатель индекса.</p>
+<div style="flex:1"></div>
+<button class="secondary" id="heiPrintBtn" type="button">Печать</button>
+<button class="secondary" id="heiPdfBtn" type="button">PDF</button>
+</div>
+<div class="alert" id="heiSummary">HEI: —</div>
+<div class="table-wrap">
+<table class="ration-table" id="heiTable">
+<thead>
+<tr>
+<th>Компонент HEI‑2020</th>
+<th>Ваше значение</th>
+<th>Норматив</th>
+<th>Что изменить</th>
+<th>Балл</th>
+</tr>
+</thead>
+<tbody id="heiTableBody"></tbody>
+<tfoot>
+<tr>
+<td colspan="4" style="text-align:right"><strong>Итоговый балл HEI‑2020</strong></td>
+<td id="heiTotalCell"><strong>—</strong></td>
+</tr>
+</tfoot>
+</table>
+</div>
+<div id="heiLevers"></div>
+<div id="whatifHint" style="display:none;margin-top:10px;padding:8px 10px;border-radius:8px;background:#f1f5f9;color:#0f172a;"></div>
+<div id="heiRecs" style="margin-top:10px;"></div>
+<details class="fold" id="heiReference" style="margin-top:12px;">
+<summary>Подробнее об индексе HEI‑2020 и этом калькуляторе</summary>
+<div>
+<h3>1) Что такое HEI (и краткая история индекса)</h3>
+<p><strong>HEI оценивает структуру и качество рациона:</strong> насколько питание близко к рекомендациям здорового образа жизни. Индекс складывается из отдельных компонент: овощей, фруктов, цельных злаков, молочной группы, белковых продуктов, морепродуктов и растительных белков, качества жиров и показателей умеренности.</p>
+<p><em>Компоненты двух типов:</em> <strong>адекватность</strong> — показатели, которые нужно набрать, и <strong>умеренность</strong> — показатели, для которых более низкие значения получают более высокий балл. Итоговый балл HEI складывается из баллов всех компонент.</p>
+<p><em>Краткая история.</em> Первая версия HEI‑1995 была создана как зеркало официальных рекомендаций. Дальше индекс обновлялся вместе с Dietary Guidelines for Americans: HEI‑2005 закрепил плотности «на 1000 ккал» и схему «адекватность/умеренность», HEI‑2010 уточнил состав и шкалы, HEI‑2015 и HEI‑2020 актуализировали пороги, сохранив базовую логику.</p>
+<h3>2) Что именно мы берём из рациона</h3>
+<p>Вы вводите продукты и граммы. Калькулятор сопоставляет им пищевую ценность: ккал, жиры с делением на насыщённые, мононенасыщенные и полиненасыщенные, углеводы, добавленный сахар, натрий и другие показатели. Затем продукт относится к пищевой группе: овощам, фруктам, цельным или рафинированным злакам, молочной группе, белковым источникам и их подгруппам. При нехватке явных меток используется распознавание по названию, чтобы продукт попал в нужную «корзину».</p>
+<h3>3) Единицы HEI и нормировка «на 1000 ккал»</h3>
+<p>HEI использует <strong>стандартизированные эквиваленты пищевых групп</strong> и выражает большинство компонентов как <strong>плотности на 1000 ккал</strong>. Внутреннее приведение делает рационы разной калорийности сопоставимыми, а пользователю количество, ориентиры и дефициты показываются в граммах; для жидких молочных продуктов допускаются миллилитры.</p>
+<p><em>Исключения:</em> соотношение жиров — чистое отношение (МНЖК+ПНЖК)/НЖК в граммах; насыщённые жиры и добавленный сахар — в % энергии; натрий — обычно мг/1000 ккал.</p>
+<h3>4) Как мы собираем рацион в «логические корзины»</h3>
+<ul>
+<li><strong>Овощи</strong> (в т.ч. подгруппы), <strong>фрукты</strong> (в т.ч. «цельные фрукты»);</li>
+<li><strong>Злаки</strong>: цельнозерновые (адекватность) и рафинированные (умеренность);</li>
+<li><strong>Молочные</strong> (молоко/йогурт и сыры — через собственные эквиваленты);</li>
+<li><strong>Белковые продукты (всего)</strong> — животные и растительные источники белка; пользовательский вывод приводится к граммам;</li>
+<li><strong>Морепродукты и растительные белки</strong> — отдельная адекватностная компонента (рыба/морепродукты + орехи/семена/соя + бобовые).</li>
+</ul>
+<p><em>Бобовые учитываются одновременно</em> во всех применимых компонентах HEI: в общей овощной группе, группе зелени и бобовых, общей белковой группе, а также в группе морепродуктов и растительных белков.</p>
+<h3>5) Компоненты HEI: что измеряем и как интерпретировать</h3>
+<p><strong>Адекватность (надо добирать):</strong> овощи, фрукты, цельные фрукты, цельнозерновые и молочные продукты, белковые продукты, морепродукты и растительные белки. Стандартизация выполняется внутри расчёта, а пользовательский вывод даётся в граммах или миллилитрах. <strong>Соотношение жиров</strong> рассчитывается как <code>R=(МНЖК+ПНЖК)/НЖК</code>.</p>
+<p><strong>Умеренность (более низкие значения получают более высокий балл):</strong> насыщённые жиры, % энергии; добавленный сахар, % энергии; натрий, мг/1000 ккал.</p>
+<h3>6) Как из значений получаются баллы</h3>
+<p>Для каждой компоненты задана целевая и низкая зона. Между ними действует <strong>линейная шкала</strong>:</p>
+<ul>
+<li><strong>Адекватность:</strong> ниже минимума — 0; на целевом уровне — максимум; между ними баллы растут пропорционально.</li>
+<li><strong>Умеренность:</strong> до порога максимального балла — максимум; при выраженном превышении — 0; между ними баллы снижаются пропорционально.</li>
+</ul>
+<h3>7) Два показателя, о которых чаще всего спрашивают</h3>
+<p><strong>Соотношение жиров (R):</strong> <code>R=(МНЖК+ПНЖК)/НЖК</code> — индикатор замещения: чем больше ненасыщённых жиров при умеренных насыщённых, тем выше R и баллы; при отсутствии насыщённых жиров и наличии ненасыщённых начисляется максимальный балл; если не указаны ни насыщённые, ни ненасыщённые жиры, показатель неинформативен.</p>
+<p><strong>Натрий — как мы считаем (из соли и из продуктов):</strong></p>
+<ol>
+<li><em>Из продуктов:</em> суммируем натрий (мг) из карточек продуктов.</li>
+<li><em>Из добавленной соли:</em> если указана соль (NaCl) в граммах, переводим в натрий: 1 г соли ≈ 393 мг натрия (<code>натрий (мг) = граммы соли × 393</code>).</li>
+<li><em>Плотность:</em> <code>натрий (мг/1000 ккал) = (натрий из продуктов + из соли) / ккал × 1000</code>.</li>
+</ol>
+<p>Это компонента умеренности: чем ниже плотность натрия, тем больше баллов.</p>
+<h3>8) Наглядные мини‑примеры</h3>
+<ul>
+<li>Цельнозерновая каша ↑ → растут баллы по цельным злакам.</li>
+<li>Меньше сладких напитков → падает % энергии из добавленного сахара → баллы растут.</li>
+<li>Замена части насыщённых жиров на растительные масла/орехи → растёт R → плюс к баллам качества жиров.</li>
+<li>Сокращение солёных полуфабрикатов/соусов → падает натрий (мг/1000 ккал) → баллы по натрию вверх.</li>
+</ul>
+<h3>9) Как читать наш отчёт</h3>
+<ol>
+<li><strong>Смотрите на общий HEI</strong> — это тренд, но причины ниже.</li>
+<li><strong>Разберите таблицу по компонентам:</strong> «ваше значение», «целевая зона», «баллы». Для адекватности — добираем до зоны; для умеренности — снижаем до зоны.</li>
+<li><strong>Откройте карточки рекомендаций:</strong> статус (ОК/Нужно улучшить/Приоритет) и конкретные действия: что добавить/заменить/сократить. В некоторых карточках есть аккордеоны‑подсказки (например, «О соотношении жиров»).</li>
+<li><strong>Сверьте «Приоритеты»:</strong> 2–3 шага с наибольшим эффектом — начните с них.</li>
+<li><strong>Проверьте «узкие места»:</strong> скрытый натрий (хлеб, сыры, соусы), сахар (напитки/десерты), качество жиров (замещение НЖК на МНЖК/ПНЖК).</li>
+<li><strong>Запланируйте 1–2 изменения на завтра</strong> и посмотрите, как это сдвинет нужные строки в «зелёную зону».</li>
+</ol>
+</div>
+</details>
+</section><section class="card" id="totalsSection">
+<div class="section-title-block"><span class="step-badge">Шаг 4</span><h2>Итоги и дневные нормы</h2></div><div class="muted" id="needsSyncNote" style="font-size:12px;margin:4px 0 8px 0;"></div>
+<div class="legend">
+<div class="item"><strong>RDA</strong> — рекомендуемая дневная норма</div>
+<div class="item"><strong>AI</strong> — адекватное потребление (когда данных для RDA недостаточно)</div>
+<div class="item"><strong>UL</strong> — верхний допустимый уровень (не целевое значение)</div>
+</div>
+<div class="totals-grid" id="totalsGrid"></div>
+<details class="card norms" open="" style="margin-top:12px;">
+<summary><strong>Расширенные нутриенты и витамины/минералы</strong></summary>
+<div class="hint" style="margin:8px 0;">
+<strong>Подсказка:</strong> для витамина D значения показываются в мкг и в <strong>МЕ</strong> (Международные Единицы; 1 мкг = 40 МЕ)
+        </div>
+<div class="hint" style="margin:6px 0 4px 0;"><strong>Расшифровка сокращений:</strong></div>
+<div class="hint">
+          RDA — рекомендуемая суточная норма (Recommended Dietary Allowance)<br/>
+          UL — верхний допустимый уровень (Tolerable Upper Intake Level; не целевое значение)<br/>
+          AI — адекватное потребление (Adequate Intake; используется при недостатке данных для RDA)
+        </div>
+<div id="microsGroups" style="margin-top:10px;"></div>
+</details>
+<div class="toolbar" id="totalsActions" style="display:flex; gap:8px; margin:12px 0 0 0;">
+<button id="printTotalsBtn" title="Распечатать блок итогов" type="button">Печать</button>
+<button id="exportTotalsPdfBtn" title="Сохранить итоги как PDF" type="button">PDF</button>
+</div>
+</section><section class="card diet-analysis-card diet-analysis-redesigned diet-profile-v540" id="dietAnalysisProfilePanel">
+<div class="diet-analysis-head diet-analysis-head-redesigned">
+<div>
+<span class="step-badge">Шаг 5</span>
+<h2>Профиль анализа рациона</h2>
+<p class="muted">Расширенная аналитическая карта, связывающая HEI, структуру подтверждённого суточного ввода и объясняющие домены.</p>
+</div>
+<span class="diet-analysis-badge">Качество × структура</span>
+</div>
+<div class="diet-overview-card">
+<div class="diet-overview-main">
+<span class="diet-overview-kicker">Итог профиля</span>
+<div class="diet-analysis-main" id="dietAnalysisMainConclusion">Добавьте продукты и рассчитайте рацион, чтобы увидеть профиль анализа.</div>
+<div class="diet-analysis-step" id="dietAnalysisFirstStep">Первый практический шаг появится после расчёта.</div>
+</div>
+<div class="diet-overview-metrics" aria-label="Ключевые показатели профиля анализа">
+<button class="diet-overview-metric" data-diet-inspect="axis-hei" type="button"><span>HEI</span><strong id="dietProfileHeiScore">—</strong><small>качество рациона</small></button>
+<button class="diet-overview-metric" data-diet-inspect="axis-structure" type="button"><span>Структура</span><strong id="dietProfileStructureScore">—</strong><small>дневной профиль</small></button>
+<button class="diet-overview-metric" data-diet-inspect="agreement" type="button"><span>Интерпретация</span><strong id="dietProfileAgreementScore">—</strong><small>согласованность</small></button>
+</div>
+</div>
+<div class="diet-matrix-card diet-clinical-map-card diet-matrix-card-v540">
+<div class="diet-map-topline diet-map-topline-v5337 diet-map-topline-v5338 diet-map-topline-v540">
+<div class="diet-matrix-title-icon-v5338" aria-hidden="true"><span></span></div>
+<div>
+<strong>Диагностическая матрица<br>качества и структуры</strong>
+<small>Матрица показывает, как соотносятся качество рациона и структура питания.</small>
+</div>
+<span id="dietMatrixZoneLabel">Ждём рацион</span>
+</div>
+<div class="diet-matrix-dashboard-v5337 diet-matrix-dashboard-v5338 diet-matrix-dashboard-v540">
+<div class="diet-matrix-axis-row diet-matrix-axis-row-top">
+<button class="diet-matrix-axis-pill" data-diet-inspect="axis-hei" type="button">Качество рациона (HEI)</button>
+</div>
+<div class="diet-matrix-stage-v5337">
+<div class="diet-matrix-y-scale" aria-hidden="true"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+<div class="diet-matrix-grid-v5337 diet-matrix-grid-v5338 diet-matrix-grid-v540" id="dietAnalysisMatrix" aria-label="Матрица качества и структуры рациона" role="group" style="--x:50;--y:50">
+<button class="diet-matrix-zone-q zone-q-structure" data-diet-zone="structure" type="button"><b>Качество<br>без структуры</b><span>качество выше структуры</span></button>
+<button class="diet-matrix-zone-q zone-q-strong" data-diet-zone="strong" type="button"><b>Устойчивый<br>профиль</b><span>качество и структура согласованы</span></button>
+<button class="diet-matrix-zone-q zone-q-complex" data-diet-zone="complex" type="button"><b>Хаотичный<br>рацион</b><span>оба слоя требуют внимания</span></button>
+<button class="diet-matrix-zone-q zone-q-quality" data-diet-zone="quality" type="button"><b>Структура<br>без качества</b><span>структура выше качества</span></button>
+<i class="diet-matrix-threshold-v5337 threshold-x50" aria-hidden="true"></i>
+<i class="diet-matrix-threshold-v5337 threshold-y50" aria-hidden="true"></i>
+<i class="diet-matrix-threshold-v5337 threshold-x70" aria-hidden="true"></i>
+<i class="diet-matrix-threshold-v5337 threshold-y70" aria-hidden="true"></i>
+<i class="diet-matrix-projection-line projection-hei" aria-hidden="true"></i>
+<i class="diet-matrix-projection-line projection-structure" aria-hidden="true"></i>
+<span class="diet-matrix-threshold-label label-x50">50</span><span class="diet-matrix-threshold-label label-x70">70+</span>
+<span class="diet-matrix-threshold-label label-y50">50</span><span class="diet-matrix-threshold-label label-y70">70+</span>
+<span class="diet-matrix-projection-badge projection-hei-badge" id="dietMatrixHeiProjection">—</span>
+<span class="diet-matrix-projection-badge projection-structure-badge" id="dietMatrixStructureProjection">—</span>
+<button class="diet-matrix-point-v5337" id="dietAnalysisPoint" data-diet-inspect="point" type="button" aria-label="Разобрать точку рациона"><span></span></button>
+<span class="diet-matrix-point-caption-v5337" id="dietAnalysisPointCaption">Ждём рацион</span>
+</div>
+</div>
+<div class="diet-matrix-x-scale" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+<div class="diet-matrix-axis-row diet-matrix-axis-row-bottom">
+<button class="diet-matrix-axis-pill" data-diet-inspect="axis-structure" type="button">Структура рациона</button>
+</div>
+</div>
+<div class="diet-map-summary-strip diet-map-summary-strip-v5337 diet-map-summary-strip-v5338 diet-map-summary-strip-v540" aria-label="Текущие координаты профиля">
+<button class="diet-map-score-card diet-map-score-card-quality" data-diet-inspect="axis-hei" type="button">
+<span>Качество</span>
+<strong><span id="dietAxisHeiValue">—</span>/100</strong>
+<em>ось HEI</em>
+<i class="diet-map-mini-scale"><b id="dietAxisHeiFill" style="--value:0"></b></i>
+</button>
+<button class="diet-map-score-card diet-map-score-card-structure" data-diet-inspect="axis-structure" type="button">
+<span>Структура</span>
+<strong><span id="dietAxisStructureValue">—</span>/100</strong>
+<em>ось дневного профиля</em>
+<i class="diet-map-mini-scale"><b id="dietAxisStructureFill" style="--value:0"></b></i>
+</button>
+<button class="diet-map-score-card diet-map-score-card-zone" data-diet-inspect="current-zone" type="button">
+<span>Зона</span>
+<strong id="dietAxisZoneValue">—</strong>
+<em>текущий профиль</em>
+</button>
+</div>
+<div class="diet-matrix-reading-v5337 diet-matrix-insight-v5338 diet-matrix-insight-v540">
+<strong>Вывод:</strong> <span id="dietMatrixInsightText">Рацион появится после расчёта.</span>
+</div>
+<details class="diet-matrix-details-v540 diet-matrix-diagnostic-details" open>
+<summary>Главный диагностический разбор</summary>
+<div class="diet-matrix-narrative-host" id="dietMatrixNarrativeHost">
+<div class="diet-domain-placeholder">После расчёта здесь появится персональный разбор точки, ограничителей и первого практического шага.</div>
+</div>
+<div class="diet-matrix-inspect-accordions" id="dietMatrixInspectAccordions" aria-label="Разделы диагностического разбора">
+<details class="diet-matrix-inspect-accordion" data-diet-accordion="point">
+<summary data-diet-inspect="point"><span>Точка рациона</span><strong>Почему точка здесь</strong></summary>
+<div class="diet-matrix-inspect-body" data-diet-accordion-body="point"></div>
+</details>
+<details class="diet-matrix-inspect-accordion" data-diet-accordion="axis-structure">
+<summary data-diet-inspect="axis-structure"><span>Структурная ось</span><strong>Что ограничивает структуру</strong></summary>
+<div class="diet-matrix-inspect-body" data-diet-accordion-body="axis-structure"></div>
+</details>
+<details class="diet-matrix-inspect-accordion" data-diet-accordion="axis-hei">
+<summary data-diet-inspect="axis-hei"><span>Ось качества</span><strong>Что снижает HEI</strong></summary>
+<div class="diet-matrix-inspect-body" data-diet-accordion-body="axis-hei"></div>
+</details>
+<details class="diet-matrix-inspect-accordion" data-diet-accordion="first-action">
+<summary data-diet-inspect="first-action"><span>Первый шаг</span><strong>Что улучшить первым</strong></summary>
+<div class="diet-matrix-inspect-body" data-diet-accordion-body="first-action"></div>
+</details>
+<details class="diet-matrix-inspect-accordion" data-diet-accordion="strengths">
+<summary data-diet-inspect="strengths"><span>Сильные стороны</span><strong>Что уже хорошо</strong></summary>
+<div class="diet-matrix-inspect-body" data-diet-accordion-body="strengths"></div>
+</details>
+<details class="diet-matrix-inspect-accordion" data-diet-accordion="threshold-70">
+<summary data-diet-inspect="threshold-70"><span>Ориентир</span><strong>Как читать 70+</strong></summary>
+<div class="diet-matrix-inspect-body" data-diet-accordion-body="threshold-70"></div>
+</details>
+<details class="diet-matrix-inspect-accordion" data-diet-accordion="agreement">
+<summary data-diet-inspect="agreement"><span>Согласованность</span><strong>Согласованность осей</strong></summary>
+<div class="diet-matrix-inspect-body" data-diet-accordion-body="agreement"></div>
+</details>
+</div>
+<div class="diet-matrix-zone-explain diet-map-explain diet-map-explain-legacy" id="dietMatrixZoneExplain" hidden>
+<strong>Разбор выбранной области</strong>
+<p>Нажмите на показатель или зону матрицы, чтобы увидеть пояснение.</p>
+</div>
+</details>
+</div>
+<div class="diet-domain-profile" id="dietDomainProfile">
+<div class="diet-domain-placeholder">После расчёта здесь появятся домены структуры, сгруппированные по приоритету: главные ограничения, рабочие зоны и сильные стороны.</div>
+</div>
+<div class="diet-interpretation-card diet-interpretation-compact-card" id="dietInterpretationReliability" hidden>
+<strong>Согласованность осей</strong>
+<div class="diet-interpretation-status">Ждём данные для сопоставления.</div>
+</div>
+<details class="diet-analysis-help">
+<summary><strong>Справка по профилю анализа</strong><span>Как читать матрицу, домены структуры и согласованность осей.</span></summary>
+<div class="diet-analysis-help-body">
+<p>HEI оценивает качество компонентов рациона. Структурный профиль показывает распределение основных пищевых групп в дневном рационе. Вместе эти слои помогают понять, за счёт чего сформировался итоговый результат.</p>
+<p>Матрица показывает положение рациона по двум осям: качество по HEI и структура дневного рациона. Вертикальная ось отвечает за качество компонентов, горизонтальная — за структурную собранность дневного рациона.</p>
+<p>Структурная ось использует расширенную модель дневного рациона: растительную основу, цельные злаки, фактическое белковое обеспечение, молочно-кальциевый вклад, продукты вне основной структуры и структурный баланс.</p>
+<details class="diet-context-help diet-plant-balance-help">
+<summary><span>Справка</span><strong>Фруктов много, овощей мало</strong><em>как читать растительную основу</em></summary>
+<div class="diet-context-help-body">
+<p><b>Главная логика.</b> Фрукты и овощи разделяются по пищевой роли. Овощи, зелень, бобовые и некрахмалистые овощи формируют объёмную основу основных приёмов пищи. Фрукты работают как отдельный сладкий растительный слой: цельный фрукт, ягоды, перекус, десертная часть или добавление к завтраку.</p>
+<p><b>Как применять.</b> Если фруктовая часть уже высокая, она поддерживает фруктовый компонент. Овощная основа при этом остаётся самостоятельным слоем структуры тарелки. Практический шаг: сохранить фрукты как отдельную часть и добавить 120–150 г овощей, зелени или бобовых к основному приёму пищи.</p>
+<p><b>Классификация.</b> Помидор в этой логике относится к овощной части. Картофель и фри относятся к крахмалистой части, поскольку по структуре тарелки ближе к хлебу и крупам. Бобовые могут поддерживать и растительный слой, и белковую часть.</p>
+</div>
+</details>
+<p>Согласованность осей вынесена отдельно. Она показывает близость результатов HEI и структурной оси, но не оценивает достоверность продуктовых данных: качество источников выводится отдельным показателем.</p>
+<p>В строгой Гарвардской тарелке молочные продукты показаны отдельно от основного цветного круга. В профиле анализа они учитываются функционально: как молочно-кальциевый вклад и вклад в фактическое белковое обеспечение.</p>
+<details class="diet-method-facts-details">
+<summary><strong>Методические показатели и внутренние расчёты</strong><span>Строгая Harvard-структура, молочный белковый эквивалент и кальций из молочной группы.</span></summary>
+<div id="dietMethodFacts" class="diet-method-facts-host"></div>
+</details>
+</div>
+</details>
+</section>
+<details class="card diet-analysis-extra-harvard" id="strictHarvardPlateDetails">
+<summary>
+<strong>Дополнительно: строгая Гарвардская тарелка</strong>
+<span>Показать исходную структурную модель: молочные продукты остаются вне основного цветного круга.</span>
+</summary>
+<div class="diet-analysis-extra-harvard-body">
+<section class="harvard-plate-card harvard-plate-card-embedded" id="harvardPlatePanel">
+<div class="harvard-plate-head">
+<div>
+<span class="step-badge">Дополнительно</span>
+<h2 class="harvard-plate-title">Строгая Гарвардская тарелка</h2>
+<p class="harvard-plate-subtitle">Справочная структурная модель: овощи, фрукты, цельные злаки и белковые продукты показаны в основной тарелке, а молочные продукты, вода и отдельные группы учитываются рядом с ней.</p>
+</div>
+<span class="harvard-plate-badge">Структурная проверка</span>
+</div>
+<div class="harvard-plate-layout">
+<div class="harvard-plate-visual-wrap">
+<div aria-label="Гарвардская тарелка: визуализация структуры рациона" class="harvard-plate-visual" id="harvardPlateVisual"></div>
+<div class="harvard-plate-companions" id="harvardPlateCompanions"></div>
+<p class="harvard-plate-caption">В расчёт основной тарелки входят овощи, фрукты, цельные злаки и белковые продукты. Подробности по секторам и продукты вне цветного круга раскрываются сразу под диаграммой.</p>
+</div>
+<div class="harvard-plate-status">
+<div class="harvard-plate-score">
+<div class="harvard-plate-score-ring" id="harvardPlateScoreRing" style="--plate-score:0">—</div>
+<div class="harvard-plate-score-text" id="harvardPlateScoreText"><strong>Ждём рацион</strong><span>Добавьте продукты, чтобы увидеть структуру тарелки.</span></div>
+</div>
+<div class="harvard-plate-metrics" id="harvardPlateMetrics"></div>
+<div class="harvard-plate-actions">
+<button class="secondary" id="harvardPlateSampleBtn" type="button">Показать пример сбалансированной тарелки</button>
+<span class="harvard-plate-auto-note" id="harvardPlateAutoNote">Обновляется автоматически</span>
+</div>
+<details class="harvard-plate-diagnostics">
+<summary>Диагностика визуализации</summary>
+<div class="harvard-plate-diagnostics-body">
+<button class="ghost" id="harvardPlateRefreshBtn" type="button">Пересчитать тарелку вручную</button>
+<p>Обычный сценарий обновляется автоматически после добавления, удаления или изменения продукта.</p>
+</div>
+</details>
+</div>
+</div>
+<details class="harvard-plate-explain" id="harvardPlateExplain">
+<summary>
+<strong>Что вошло в расчёт Гарвардской тарелки</strong>
+<span>Показывает распределение продуктов по секторам и отдельным группам.</span>
+</summary>
+<div class="harvard-plate-explain-body" id="harvardPlateExplainBody"></div>
+</details>
+</section>
+</div>
+</details><section class="card data-quality-card" id="dataQualityPanel">
+<div class="data-quality-head">
+<div>
+<span class="step-badge">Проверка</span>
+<h2>Качество данных</h2>
+<p class="muted">Здесь отдельно показаны достоверность источников и заполненность полей карточек. Высокая заполненность не означает высокой точности.</p>
+</div>
+<span class="data-quality-version">v5.2.25</span>
+</div>
+<div class="data-quality-summary" id="dataQualitySummary">Добавьте продукты, чтобы оценить покрытие данных.</div>
+<details class="data-quality-details">
+<summary>Подробнее о достоверности, заполненности и проверке энергии</summary>
+<div id="dataQualityDetails"></div>
+</details>
+</section>
+
+
+
+
+
+<!-- ==== HEI MODULE START ==== -->
+
+<script id="hei_map" type="application/json">
+{
+  "cup_eq": {
+    "vegetables.leafy_raw": 70,
+    "vegetables.leafy_cooked": 130,
+    "vegetables.generic_raw": 130,
+    "vegetables.generic_cooked": 130,
+    "vegetables.legumes_cooked": 170,
+    "fruits.generic": 150,
+    "fruits.dried": 40,
+    "dairy.milk_yogurt": 244,
+    "dairy.cheese": 42
+  },
+  "oz_eq": {
+    "grains.whole_cooked": 85,
+    "grains.refined_cooked": 85,
+    "grains.dry": 28.35,
+    "protein.meat_fish_eggs": 28.35,
+    "protein.legume_cooked": 43,
+    "protein.nuts_seeds": 14.0
+  }
+}
+</script>
+<!-- ==== HEI MODULE END ==== -->
+
+<details class="card additional-tools" id="additionalToolsSection">
+<summary>
+<div class="additional-title">
+<strong>Дополнительно</strong>
+<span>Ручной каталог, HEI-группы, готовые примеры рационов и черновик распределения по приёмам пищи. Обычно быстрее пользоваться поиском выше.</span>
+</div>
+<div class="additional-indicator">Показать дополнительные инструменты</div>
+</summary>
+<div class="additional-body">
+<details class="card catalog-drawer" id="selectSection">
+<summary>
+<div class="catalog-drawer-title">
+<strong>Ручной выбор по разделам</strong>
+<span>Дополнительный режим для просмотра базы: можно раскрывать группы продуктов и переключать обычный каталог или HEI-группы.</span>
+</div>
+<div class="catalog-drawer-indicator">Показать разделы</div>
+</summary>
+<div class="catalog-drawer-body">
+<div class="row" id="catHeaderRow" style="align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+<h2 style="margin:0">Выбор продуктов (<span id="groupingTitle">каталог</span>)</h2>
+<div class="seg" id="groupingSeg">
+<button class="active" data-mode="catalog">Каталог</button>
+<button data-mode="hei">HEI-группы</button>
+</div>
+</div>
+<p class="catalog-mode-help">Этот блок можно не открывать при обычной работе. Он нужен, если хочется посмотреть продукты по разделам или проверить, к какой группе они отнесены.</p>
+<div class="row" id="categories"></div>
+</div>
+</details>
+<section class="card" id="presetsPanel" style="margin:16px 0;">
+<div class="row" style="gap:12px; align-items:center; flex-wrap:wrap;">
+<select disabled="" id="presetSelect" title="Выбор готового примера рациона (доступно после расчёта потребностей)">
+<option value="">Готовые примеры: выберите…</option>
+</select>
+<div class="preset-actions" style="display:grid; grid-template-columns: 2fr 1fr; gap:12px; align-items:stretch;">
+<button class="secondary" id="loadPresetJsonBtn" title="Загрузить пресет из JSON" type="button">Загрузить JSON</button>
+<input accept="application/json" aria-label="Файл JSON с сохранённым рационом" id="presetJsonFile" style="display:none" type="file"/>
+<button class="secondary" id="applyPresetBtn">Применить пример</button>
+<button aria-controls="presetsHelp" aria-haspopup="dialog" aria-label="Справка по разделу" class="btn secondary" data-dialog="presetsHelp" id="presetsHelpBtn" onclick="(function(){var d=document.getElementById('presetsHelp');if(!d){alert('Окно справки не найдено');return;}if(typeof d.showModal==='function'){d.showModal();}else{d.setAttribute('open','');}})()" title="Справка по разделу" type="button">Справка</button>
+</div>
+<span class="muted" style="font-size:12px;">Доступно после расчёта потребностей</span>
+</div>
+</section>
+<details class="card fold meal-planner-drawer" id="mealsSection" style="margin-top:16px;">
+<summary class="row" style="justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+<div class="meal-planner-title">
+<h2 style="margin:0">Черновик распределения по приёмам пищи</h2>
+<span>Примерно раскладывает уже собранный рацион по дню, показывает слабые места и позволяет вручную перемещать продукты.</span>
+</div>
+<span class="muted" style="font-size:12px; user-select:none; display:inline-flex; align-items:center; gap:6px;"><svg class="chev" fill="none" height="14" stroke="currentColor" style="transition:transform .2s;" viewbox="0 0 24 24" width="14"><polyline points="8 4 16 12 8 20" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>показать</span>
+</summary>
+<div class="meal-planner-intro">
+Раздел приблизительно раскладывает текущий рацион по приёмам пищи. Проверьте блюда, порции и удобство вручную: алгоритм не учитывает ваш фактический режим, рецепты и личные предпочтения. Это рабочий черновик для самопроверки; медицинские назначения и готовое меню остаются в зоне очной работы со специалистом.
+</div>
+<div class="meal-planner-controls">
+<label class="muted" for="mealScheme">Схема дня:</label>
+<select id="mealScheme" title="Выберите схему приёмов пищи">
+<option value="3">3 приёма: завтрак / обед / ужин</option>
+<option selected="" value="4">4 приёма: завтрак / обед / перекус / ужин</option>
+<option value="5">5 приёмов</option>
+<option value="5_late">5 приёмов + поздний перекус</option>
+</select>
+<button class="secondary" disabled="" id="distributeBtn" type="button">Сделать черновик</button>
+<button class="secondary" disabled="" id="mealRefreshBtn" type="button">Обновить черновик</button>
+<button class="ghost" disabled="" id="mealResetBtn" type="button">Сбросить распределение</button>
+<label class="meal-auto-label" title="Выключено по умолчанию, чтобы ручные решения сохранялись до вашего действия">
+<input aria-label="Обновлять черновик при изменении рациона" id="mealsAutoToggle" type="checkbox"/>
+<span class="muted">Обновлять черновик при изменении рациона</span>
+</label>
+<span class="meal-stale-badge" id="mealsStaleBadge" style="display:none;">Черновик устарел</span>
+</div>
+<div id="mealsOut" style="margin-top:12px;"></div>
+</details>
+</div>
+</details>
+</div>
+<div class="dev-panel card" id="devPanel">
+<h3>DEV панель</h3>
+<div class="toolbar" id="devTabs" style="margin-bottom:8px;">
+<button class="secondary" data-tab="state">State</button>
+<button class="secondary" data-tab="logs">Logs</button>
+<button class="secondary" data-tab="data">Data Quality</button>
+<button class="secondary" data-tab="perf">Perf</button>
+<button class="secondary" data-tab="tests">Tests</button>
+<button class="secondary" data-tab="norms">Norm Coverage</button>
+<button class="secondary" data-tab="catalogqa">Catalog QA</button>
+</div>
+<div id="devContent"></div>
+</div>
+<!-- Embedded DB -->
+<script id="db" type="application/json">[]</script>
+<!-- EXTRA FOOD PATCH: дополняем базу новыми продуктами, если их ещё нет -->
+<script id="age_rda_table" type="application/json">[]</script>
+<!-- Needs Calculator scripts -->
+<dialog aria-labelledby="presetsHelpTitle" id="presetsHelp">
+<div class="dialog-head" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+<strong id="presetsHelpTitle">Справка: Пресеты рациона</strong>
+<button aria-label="Закрыть" class="close-btn" formmethod="dialog" title="Закрыть">✕</button>
+</div>
+<div class="dialog-body" style="margin-top:8px;">
+<p>Это блок выбора пресетов — стандартизированных вариантов рациона. В бОльшей степени это нужно для тестирования функций интерфейса, ну или просто можно поизучать, как те или иные варианты рациона выглядят с точки зрения аналитики нашего калькулятора.</p><p>Также можно <b>загрузить свой рацион</b>.</p><p>Для этого нужно сначала сохранить его в формате JSON (для этого есть соответствующая кнопка в итоговом рационе). Затем, если у вас уже есть сохранённый рацион, вы можете загрузить его, нажав «Загрузить JSON».</p><p>Таким образом, однажды собрав свой ассортимент продуктов, вы можете всегда быстро его загрузить без необходимости каждый раз заново собирать свою продуктовую корзину из базы продуктов.</p>
+</div>
+</dialog>
+<!-- BEGIN: __NEEDS_SEX_METHOD_ADAPTER__ -->
+<!-- END: __NEEDS_SEX_METHOD_ADAPTER__ -->
+<section class="card gemini-ai-section" id="geminiAiSection" data-build="v5.3.210-rc2">
+<div class="gemini-ai-head"><div><span class="step-badge">Практический план</span><div class="gemini-ai-kicker">Gemini + расчётное ядро</div><h2>ИИ‑помощник по перестройке рациона</h2></div><span class="gemini-ai-badge">Полный пересчёт</span></div>
+<p class="gemini-ai-intro">По умолчанию используется глубокая коррекция: калькулятор формирует согласованный комплекс из нескольких добавлений, сокращений и замен, проверяет КБЖУ, витамины, минералы, ограничиваемые компоненты и HEI, а затем полностью пересчитывает рацион. Каждое действие можно отключить или отредактировать по граммам до применения. Gemini объясняет только уже проверенные варианты и не придумывает числовой эффект.</p>
+<fieldset class="ai-planner-taskset"><legend>Что требуется сделать?</legend><div class="ai-planner-task-grid">
+<label class="ai-planner-task-card"><input type="radio" name="aiPlannerTask" value="overall" checked/><span><strong>Улучшить рацион в целом</strong><small>Найти изменения, которые одновременно помогают нескольким слабым показателям.</small></span></label>
+<label class="ai-planner-task-card"><input type="radio" name="aiPlannerTask" value="metric"/><span><strong>Исправить конкретный показатель</strong><small>Выбрать белок, КБЖУ, витамин, минерал или ограничиваемый компонент.</small></span></label>
+<label class="ai-planner-task-card"><input type="radio" name="aiPlannerTask" value="replace"/><span><strong>Заменить конкретный продукт</strong><small>Сохранить его пищевую роль и подобрать более удачную альтернативу.</small></span></label>
+</div></fieldset>
+<div class="ai-planner-context-grid">
+<label id="aiPlannerTargetWrap" hidden>Какой показатель исправить?<select id="aiPlannerTargetMetric"></select></label>
+<label id="aiPlannerReplaceWrap" hidden>Какой продукт заменить?<select id="aiPlannerReplaceProduct"><option value="">Выберите продукт из текущего рациона</option></select></label>
+<label id="aiPlannerReplaceCriterionWrap" hidden>Что улучшить при замене?<select id="aiPlannerReplaceCriterion"></select></label>
+</div>
+<fieldset class="ai-planner-scales"><legend>Допустимый масштаб изменений</legend><div class="ai-planner-scale-grid">
+<label><input type="radio" name="aiPlannerScale" value="2"/><span><strong>Минимальная</strong><small>до двух действий</small></span></label>
+<label><input type="radio" name="aiPlannerScale" value="4"/><span><strong>Оптимальная</strong><small>до четырёх действий</small></span></label>
+<label><input type="radio" name="aiPlannerScale" value="6" checked/><span><strong>Глубокая</strong><small>до шести действий · по умолчанию</small></span></label>
+</div><p class="ai-planner-scale-help">Глубокая коррекция является стандартным режимом и стремится одновременно исправить несколько слабых показателей. Каждое добавление, сокращение или замена считается отдельным действием; часть действий может использоваться для сохранения калорийности и снижения избытков.</p></fieldset>
+<fieldset class="ai-planner-constraints"><legend>Что нельзя ухудшать?</legend><div class="ai-planner-constraint-grid">
+<label><input id="aiPlannerPreserveEnergy" type="checkbox" checked/> Сохранить калорийность максимально близко</label>
+<label><input id="aiPlannerPreserveProtein" type="checkbox"/> Не снижать белок</label>
+<label><input id="aiPlannerNoRaiseFat" type="checkbox"/> Не повышать жиры</label>
+<label><input id="aiPlannerNoRaiseCarbs" type="checkbox"/> Не повышать углеводы</label>
+<label><input id="aiPlannerNoRaiseSodium" type="checkbox"/> Не повышать натрий</label>
+</div></fieldset>
+<div class="gemini-ai-constraint"><label for="geminiAiConstraint">Что ещё важно сохранить или исключить? <span>необязательно</span></label><textarea id="geminiAiConstraint" maxlength="600" placeholder="Например: без молочных продуктов; сохранить мясо; использовать обычные недорогие продукты; не добавлять рыбу."></textarea><p>Свободное условие влияет на подбор продуктов. Все числовые ограничения проверяются расчётным ядром.</p></div>
+<label class="gemini-ration-import__privacy" for="geminiAiEligibility"><input id="geminiAiEligibility" type="checkbox"/> <span><strong>Подтверждаю, что мне 18 лет или больше</strong>, использую AI-функцию только для немедицинского планирования питания, понимаю, что ответ может ошибаться, и соглашаюсь на отправку данных текущего рациона в Gemini для обработки. Без подтверждения и для защищённого клинического профиля варианты рассчитываются локально без отправки данных.</span></label>
+<div class="gemini-ai-actions"><button id="geminiAiRunBtn" type="button">Построить глубокую коррекцию</button><button class="secondary" hidden id="geminiAiClearBtn" type="button">Очистить результаты</button></div>
+<div aria-live="polite" class="gemini-ai-status" id="geminiAiStatus" role="status"></div><div class="gemini-ai-output" hidden id="geminiAiOutput"></div>
+</section>
+<section class="card" id="globalActions">
+<span class="step-badge">Шаг 6</span>
+<h2>Общая печать и экспорт</h2>
+<p class="muted">Здесь можно распечатать или сохранить в PDF единый отчёт: потребности, фактический рацион, HEI‑2020, дневные нормы, профиль анализа рациона, строгую Гарвардскую тарелку и краткую справку о покрытии данных.</p>
+<div class="toolbar">
+<button id="printAllBtn" type="button">Общая печать</button>
+<button class="secondary" id="exportAllPdfBtn" type="button">PDF / печать отчёта</button>
+</div>
+</section>
+<section id="legal-note">
+<h3>Границы применения.</h3>
+<p>Данный инструмент является бета-версией для ориентировочного анализа фактического или планируемого рациона. Клиническая диагностика, врачебное решение и назначение лечения остаются за лечащим врачом и мультидисциплинарной командой. Результаты зависят от введённых данных; ошибки ввода или неверное толкование показателей могут привести к ошибочным выводам. Любые изменения терапии, включая нутритивную поддержку, энтеральное или парентеральное питание, а также изменение режима белка при ХБП, должны приниматься медицинскими специалистами. Ответственность за клинические решения лежит на медицинской организации и врачах. Материалы сайта подготовлены на основе открытых некоммерческих источников. Цитирование и копирование разрешены в некоммерческих целях.</p>
+<footer class="sv-authorship" aria-label="Авторство и дата сборки"><strong>Калькулятор рациона Сергея Веснина</strong><span>Разработка и реализация Веснина Сергея Вячеславовича. 2026 год.</span><span class="sv-build-date" data-app-build-date-label></span><span><a href="./privacy.html">Конфиденциальность</a> · <a href="./security.html">Безопасность</a></span></footer>
+</section>
+</main>
+<script defer src="./assets/runtime/runtime-manifest-v6.0.0-beta6.js?v=v6-needs-checkpoint-2026-09-11" data-runtime-manifest="v6.0.0-beta6-design-refinement"></script>
+<script defer src="./assets/js/00-runtime-selector-v6.0.0-beta6.js?v=v6.0.0-beta6-design-refinement" data-runtime-selector="manifest-driven"></script>
+<script defer src="./assets/js/91-navigation-access-hotfix-v6.0.0-beta6-hf1.js?v=v6.0.0-beta6-hotfix1" data-ui-hotfix="navigation-access"></script>
+<script defer src="./assets/js/92-usability-recovery-v6.0.0-beta6-hf2.js?v=v6.0.0-beta6-hotfix2" data-ui-hotfix="usability-recovery"></script>
+<script defer src="./assets/js/93-quality-completion-v6.0.0-beta6-hf3.js?v=v6.0.0-beta6-hotfix3" data-ui-hotfix="quality-completion"></script>
+<script defer src="./assets/js/94-theme-parity-typography-v6.0.0-beta6-hf4.js?v=v6.0.0-beta6-hotfix4" data-ui-hotfix="theme-parity-typography"></script>
+</body>
+</html>

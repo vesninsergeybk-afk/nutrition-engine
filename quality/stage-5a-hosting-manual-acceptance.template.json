@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "release": "v5.3.210-rc2-hf18",
+  "staging_url": "https://STAGING_HOST",
+  "tested_at": "",
+  "tester": "",
+  "allowed_statuses": ["PASS", "FAIL_BLOCKING", "FAIL_MAJOR", "FAIL_MINOR", "NOT_RUN"],
+  "environments": [
+    {
+      "name": "Android Chrome + TalkBack",
+      "device": "",
+      "os_version": "",
+      "browser_version": "",
+      "checks": {
+        "profile_needs_first_product": "NOT_RUN",
+        "sequential_add_5_7_products": "NOT_RUN",
+        "edit_grams_without_focus_loss": "NOT_RUN",
+        "analysis_contributors_correction_apply_undo": "NOT_RUN",
+        "technical_long_roundtrip": "NOT_RUN",
+        "back_forward_real_urls": "NOT_RUN",
+        "dynamic_browser_bars": "NOT_RUN",
+        "screen_reader_names_order_and_status": "NOT_RUN",
+        "text_scale_200_percent": "NOT_RUN",
+        "system_print_pdf": "NOT_RUN"
+      },
+      "notes": ""
+    },
+    {
+      "name": "iPhone/iPad Safari + VoiceOver",
+      "device": "",
+      "os_version": "",
+      "browser_version": "",
+      "checks": {
+        "profile_needs_first_product": "NOT_RUN",
+        "sequential_add_5_7_products": "NOT_RUN",
+        "edit_grams_without_focus_loss": "NOT_RUN",
+        "analysis_contributors_correction_apply_undo": "NOT_RUN",
+        "technical_long_roundtrip": "NOT_RUN",
+        "back_forward_real_urls": "NOT_RUN",
+        "dynamic_browser_bars": "NOT_RUN",
+        "screen_reader_names_order_and_status": "NOT_RUN",
+        "text_scale_200_percent": "NOT_RUN",
+        "system_print_pdf": "NOT_RUN"
+      },
+      "notes": ""
+    },
+    {
+      "name": "Desktop Firefox",
+      "device": "",
+      "os_version": "",
+      "browser_version": "",
+      "checks": {
+        "full_daily_cycle": "NOT_RUN",
+        "reload_state": "NOT_RUN",
+        "back_forward_real_urls": "NOT_RUN",
+        "direct_ui_long": "NOT_RUN",
+        "keyboard_only": "NOT_RUN",
+        "text_scale_200_percent": "NOT_RUN",
+        "system_print_pdf": "NOT_RUN"
+      },
+      "notes": ""
+    },
+    {
+      "name": "Desktop Safari/WebKit",
+      "device": "",
+      "os_version": "",
+      "browser_version": "",
+      "checks": {
+        "full_daily_cycle": "NOT_RUN",
+        "reload_state": "NOT_RUN",
+        "back_forward_real_urls": "NOT_RUN",
+        "direct_ui_long": "NOT_RUN",
+        "keyboard_only": "NOT_RUN",
+        "text_scale_200_percent": "NOT_RUN",
+        "system_print_pdf": "NOT_RUN"
+      },
+      "notes": ""
+    }
+  ],
+  "defects": [],
+  "decision": "PENDING_EXTERNAL_STAGING_BROWSER",
+  "stage5b_authorized": false
+}

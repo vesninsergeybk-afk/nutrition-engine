@@ -1,0 +1,23 @@
+'use strict';
+const assert=require('assert');const fs=require('fs');const path=require('path');
+const ROOT=path.resolve(__dirname,'..');let n=0;
+function check(name,fn){fn();n++;console.log(`PASS ${name}`)}
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,'config/runtime-assets.v5.3.210-rc2.json'),'utf8'));
+const html=fs.readFileSync(path.join(ROOT,'index.html'),'utf8');
+const js=fs.readFileSync(path.join(ROOT,'assets/js/67-professional-workflow-restoration-v5.3.210-rc2.js'),'utf8');
+const legacy=fs.readFileSync(path.join(ROOT,'assets/legacy/js/67-professional-workflow-restoration-v5.3.210-rc2.js'),'utf8');
+const css=fs.readFileSync(path.join(ROOT,'assets/css/professional-workflow-restoration-v5.3.210-rc2.css'),'utf8');
+check('release version',()=>assert.equal(cfg.release_version,'v5.3.210-rc2-hf18'));
+check('single active professional controller',()=>{for(const b of ['modern_core_scripts','legacy_core_scripts']){const a=cfg[b].join('\n');assert.ok(a.includes('67-professional-workflow-restoration-v5.3.210-rc2.js'));assert.ok(!a.includes('67-ux-decision-hierarchy-v5.3.210-pc2.js'));assert.ok(!a.includes('68-validation-readiness-v5.3.210-pc2.js'));}});
+check('old active CSS layers removed',()=>{const a=cfg.css_sources.join('\n');assert.ok(a.includes('professional-workflow-restoration-v5.3.210-rc2.css'));assert.ok(!a.includes('product-correction-stabilization'));assert.ok(!a.includes('validation-readiness'));assert.ok(!a.includes('ux-decision-hierarchy-v5.3.210-p1.5.css'));});
+check('active bundle and manifest',()=>assert.ok(html.includes('runtime-bundle-v5.3.210-rc2-hf18.css')&&html.includes('runtime-manifest-v5.3.210-rc2-hf18.js')));
+check('direct analysis section IDs retained',()=>{for(const id of ['heiPanel','heiTable','totalsSection','dietAnalysisProfilePanel','dietAnalysisMatrix','strictHarvardPlateDetails','dataQualityPanel'])assert.ok(html.includes(`id="${id}"`),id);});
+check('no product mode gate',()=>{assert.ok(js.includes("mode:'professional'"));assert.ok(!js.includes('data-pc-mode'));assert.ok(!js.includes('pc1ConfirmComplete'));});
+check('direct result order encoded',()=>assert.ok(js.includes('[hei,totals,diet,harvard,quality]')));
+check('obsolete overlays removed at runtime',()=>{for(const id of ['pc1ProductHeader','p15DecisionSummary','pc1ScopePanel','p15CoreResults','p15AdvancedAnalysis','p20ValidationStatus'])assert.ok(js.includes(id),id);});
+check('Harvard stays optional but accessible',()=>assert.ok(js.includes("harvard.open=false")&&html.includes('Дополнительно: строгая Гарвардская тарелка')));
+check('protected inputs progressively nested',()=>assert.ok(js.includes('rc2IntersectingFactors')&&js.includes('rc2PregnancyAdvanced')));
+check('no prominent beta banner',()=>assert.ok(!js.includes('Бета-версия для проверки')&&!css.includes('pc1-product-header{display:block')));
+check('modern legacy workflow identical',()=>assert.equal(js,legacy));
+check('report builder modern legacy identical',()=>assert.equal(fs.readFileSync(path.join(ROOT,'assets/js/29-report-builder-v5.js'),'utf8'),fs.readFileSync(path.join(ROOT,'assets/legacy/js/29-report-builder-v5.js'),'utf8')));
+console.log(JSON.stringify({status:'PASS',assertions:n},null,2));

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-rc2-hf16",
+  "stage": "5A",
+  "status": "PENDING_REAL_DEVICE_REVIEW",
+  "checks": {
+    "firefox_full_journey": null,
+    "webkit_full_journey": null,
+    "talkback_workspace_navigation": null,
+    "voiceover_workspace_navigation": null,
+    "text_scaling_200_percent": null,
+    "mobile_browser_bars": null,
+    "system_print_dialog": null,
+    "technical_long_fallback_roundtrip": null
+  },
+  "notes": "Заполняется только по результатам проверки на реальных браузерах и устройствах."
+}

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Security and ownership checks may crawl the site. Indexing remains disabled
+# by the noindex meta tag and X-Robots-Tag response header.

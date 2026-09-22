@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "release_version": "v5.3.210-rc2-hf14",
+  "status": "PENDING_REAL_DEVICE_REVIEW",
+  "checks": {
+    "talkback_android": {"passed": false, "device": "", "browser": "", "notes": ""},
+    "voiceover_ios": {"passed": false, "device": "", "browser": "", "notes": ""},
+    "system_font_200_percent": {"passed": false, "platform": "", "notes": ""},
+    "mobile_browser_panels": {"passed": false, "platform": "", "notes": ""},
+    "print_dialog_chromium": {"passed": false, "platform": "", "notes": ""},
+    "print_dialog_firefox": {"passed": false, "platform": "", "notes": ""},
+    "save_pdf_webkit": {"passed": false, "platform": "", "notes": ""}
+  },
+  "blocking_rule": "Этап 5А не получает окончательного допуска при критической или серьёзной ошибке в любом пункте.",
+  "decision": "PENDING"
+}

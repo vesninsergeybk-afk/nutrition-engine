@@ -1,0 +1,41 @@
+{
+  "name": "nutrition-calculator-release-gate",
+  "version": "6.0.0-beta.7",
+  "private": true,
+  "description": "V6 Beta 7: restores always-visible three-theme selection, working Sections/Canvas modes and permanent access to profile and needs.",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "test:browser": "playwright test",
+    "test:browser:chromium": "playwright test --project=chromium",
+    "test:a11y": "playwright test tests/e2e/accessibility.spec.js",
+    "gate": "python3 tools/release_gate.py --profile full",
+    "gate:ci": "python3 tools/release_gate.py --profile ci",
+    "test:hf22:static": "python3 tools/hf22_fast_start_audit.py --json-out reports/hf22-fast-start-static.json",
+    "test:hf22:browser": "python3 tools/hf22_fast_start_chromium.py --chromium /usr/bin/chromium --json-out reports/hf22-fast-start-browser.json",
+    "build:hf22": "python3 tools/build_hf22_fast_start.py",
+    "test:hf23:browser": "python3 tools/hf23_media_entry_chromium.py --chromium /usr/bin/chromium --json-out reports/hf23-media-entry-browser.json",
+    "test:hf23:static": "python3 tools/hf23_media_entry_audit.py --json-out reports/hf23-media-entry-static.json",
+    "build:hf23": "python3 tools/build_hf23_media_entry.py",
+    "test:hf24:static": "python3 tools/hf24_media_lazy_audit.py --json-out reports/hf24-media-lazy-static.json",
+    "test:hf24:browser": "python3 tools/hf24_acceptance_chromium.py --chromium /usr/bin/chromium --json-out reports/hf24-acceptance-browser.json",
+    "build:hf24": "python3 tools/build_hf24_media_lazy.py",
+    "test:hf27:startup": "python3 tools/hf27_truthful_loader_smoke.py",
+    "test:hf27:media": "python3 tools/hf27_microphone_resilience_acceptance.py --chromium /usr/bin/chromium --json-out reports/hf27-microphone-resilience-acceptance.json",
+    "test:hf27:photo": "python3 tools/hf27_photo_acceptance.py --chromium /usr/bin/chromium --json-out reports/hf27-photo-acceptance.json",
+    "build:hf27": "python3 tools/build_hf27_microphone_resilience.py",
+    "test:hf28:utf8": "php tests/hf28-utf8-safe.test.php",
+    "test:hf28:contract": "node tests/hf28-gemini-contract.test.js && python3 tools/hf28_http_contract_test.py --json-out reports/hf28-http-contract.json",
+    "test:hf28:media-mock": "php tests/hf28-media-mock-e2e.test.php",
+    "test:hf28:browser": "python3 tools/hf28_gemini_reliability_acceptance.py --chromium /usr/bin/chromium --json-out reports/hf28-browser-acceptance.json",
+    "test:hf28:live-probe": "python3 tools/hf28_live_audio_probe.py",
+    "audit:hf28": "python3 tools/hf28_release_audit.py",
+    "build:hf28": "python3 tools/build_hf28_gemini_reliability.py",
+    "test:hf28:credentials": "php tests/hf28-credential-loading.test.php"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@playwright/test": "1.61.1"
+  }
+}

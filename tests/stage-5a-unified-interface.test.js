@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('assert');
+const fs=require('fs');
+const path=require('path');
+const ROOT=path.resolve(__dirname,'..');
+const read=rel=>fs.readFileSync(path.join(ROOT,rel),'utf8');
+const contract=JSON.parse(read('quality/stage-5a-unified-interface-contract.json'));
+const cfg=JSON.parse(read('config/runtime-assets.v5.3.210-rc2.json'));
+const nav=read('assets/js/75-navigation-shell-v5.3.210-rc2-hf17.js');
+const legacy=read('assets/legacy/js/75-navigation-shell-v5.3.210-rc2-hf17.js');
+const css=read('assets/css/navigation-shell-v5.3.210-rc2-hf17.css');
+let passed=0;
+function check(name,fn){try{fn();passed++;console.log('PASS',name);}catch(error){console.error('FAIL',name,error.message);process.exitCode=1;}}
+check('stage 5A contract and current release',()=>{assert.equal(contract.stage,'5A');assert.equal(contract.release_version,'v5.3.210-rc2-hf16');assert.equal(cfg.release_version,'v5.3.210-rc2-hf18');});
+check('workspace is the unconditional ordinary default',()=>{assert.ok(nav.includes("return queryMode()===MODE_LONG?MODE_LONG:MODE_WORKSPACE"));assert.ok(!nav.includes('saved===MODE_LONG?MODE_LONG:MODE_WORKSPACE'));});
+check('only ui=long enters the fallback',()=>{assert.ok(nav.includes("return value===MODE_LONG?MODE_LONG:''"));assert.ok(!nav.includes("value==='page'"));assert.ok(!nav.includes("value==='sections'"));});
+check('legacy persisted mode is removed and never written',()=>{assert.ok(nav.includes("safeRemove(storageRef('localStorage'),LEGACY_MODE_KEY)"));assert.ok(!nav.includes("safeSet(storageRef('localStorage'),LEGACY_MODE_KEY"));});
+check('ordinary architecture switcher is absent',()=>{assert.ok(!nav.includes('createModeSwitcher'));assert.ok(!nav.includes('navigationShellModeSwitcher'));assert.ok(!nav.includes('data-navshell-mode'));assert.ok(!nav.includes('Полное полотно'));});
+check('navigation exposes only four work areas plus profile and settings',()=>{assert.ok(nav.includes("navLink('ration','Рацион'"));assert.ok(nav.includes("navLink('analysis/overview','Анализ'"));assert.ok(nav.includes("navLink('correction','Улучшить'"));assert.ok(nav.includes("navLink('report','Отчёт'"));assert.ok(nav.includes('Профиль и потребности'));assert.ok(nav.includes('Настройки интерфейса'));});
+check('technical fallback has exactly one return action',()=>{assert.equal((nav.match(/data-navshell-return-workspace/g)||[]).length,2);assert.equal((nav.match(/Вернуться к рабочим разделам/g)||[]).length,1);assert.ok(nav.includes('returnToWorkspace'));});
+check('return removes query and preserves the active route',()=>{assert.ok(nav.includes("url.searchParams.delete('ui')"));assert.ok(nav.includes('replaceLocation(MODE_WORKSPACE,currentRoute)'));assert.ok(nav.includes('route:currentRoute'));});
+check('long mode remains DOM restoration rather than deletion',()=>{assert.ok(nav.includes('restoreLongPage()'));assert.ok(nav.includes('data-navshell-original-hidden'));assert.ok(!nav.includes('removeChild('));assert.ok(!nav.includes('cloneNode('));});
+check('route persistence remains separate from technical mode',()=>{assert.ok(nav.includes("safeSet(storageRef('localStorage'),ROUTE_KEY,route)"));assert.ok(nav.includes('last')||nav.includes('currentRoute'));});
+check('fallback return target is accessible and printable controls stay hidden',()=>{assert.ok(css.includes('min-height:44px!important'));assert.ok(css.includes('data-navigation-long-fallback="technical"'));assert.ok(css.includes('.navigation-shell-long-return{display:none}'));assert.ok(css.includes('.navigation-shell,.navigation-shell-context,.navigation-shell-long-return{display:none!important}'));});
+check('modern and legacy controllers are identical',()=>assert.equal(nav,legacy));
+check('HF17 stability successor preserves the stage 5A shell layer',()=>{assert.ok(cfg.css_sources.includes('assets/css/navigation-shell-v5.3.210-rc2-hf17.css'));assert.ok(!cfg.css_sources.includes('assets/css/navigation-shell-v5.3.210-rc2-hf14.css'));assert.ok(cfg.modern_core_scripts.some(x=>x.includes('75-navigation-shell-v5.3.210-rc2-hf17.js')));assert.ok(cfg.legacy_core_scripts.some(x=>x.includes('75-navigation-shell-v5.3.210-rc2-hf17.js')));assert.ok(cfg.selftest_scripts.some(x=>x.includes('76-navigation-shell-selftest-v5.3.210-rc2-hf17.js')));});
+check('change boundary remains non-calculation',()=>Object.entries(contract.change_boundary).forEach(([key,value])=>assert.equal(value,false,key)));
+if(!process.exitCode)console.log(`stage 5A unified interface: ${passed}/14 checks passed`);
