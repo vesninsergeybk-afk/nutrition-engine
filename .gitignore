@@ -24,3 +24,4 @@ api/*.lock
 .dev.vars
 .dev.vars.*
 .wrangler/
+.cloudflare/
