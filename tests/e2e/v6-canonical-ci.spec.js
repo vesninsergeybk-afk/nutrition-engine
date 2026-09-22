@@ -164,6 +164,23 @@ test('all three current themes remain user-selectable in the checkpoint canvas',
 });
 
 
+async function waitForFullUxReady(page) {
+  await page.waitForFunction(() =>
+    window.__APP_BOOTSTRAP_META__ &&
+    window.__APP_BOOTSTRAP_META__.status === 'ready' &&
+    window.__RUNTIME_LOADER_CLOSED__ === true &&
+    document.documentElement.getAttribute('data-runtime-phase') === 'ready',
+    null, { timeout: 45000 }
+  );
+  await page.waitForFunction(() => {
+    const overlay = document.getElementById('runtimeBootStatusOverlay');
+    if (!overlay) return true;
+    const st = getComputedStyle(overlay);
+    return st.visibility === 'hidden' || st.display === 'none' || Number(st.opacity) === 0;
+  }, null, { timeout: 5000 });
+  await page.waitForTimeout(450);
+}
+
 async function saveUxAudit(page, name) {
   const dir = path.resolve(process.cwd(), 'reports/playwright-artifacts/ux-audit');
   fs.mkdirSync(dir, { recursive: true });
@@ -243,6 +260,7 @@ test('UX audit captures responsive profile and dialog states', async ({ page, lo
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await loadApp();
     await waitForCheckpoint(page);
+    await waitForFullUxReady(page);
     const base = await saveUxAudit(page, browserName + '-' + vp.name + '-profile');
     expect(base.document.scrollWidth).toBeLessThanOrEqual(base.document.clientWidth + 1);
 
@@ -286,6 +304,7 @@ test('UX audit captures completed profile, ration and analysis states', async ({
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await loadApp();
     await waitForCheckpoint(page);
+    await waitForFullUxReady(page);
     await fillAuditProfile(page);
     const action = page.locator('#profileCalculateContinue');
     await expect(action).toBeVisible();
