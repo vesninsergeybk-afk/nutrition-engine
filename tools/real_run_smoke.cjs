@@ -23,6 +23,7 @@ const { chromium } = require('@playwright/test');
 
 const args = process.argv.slice(2);
 const headed = args.includes('--headed');
+const keepOpen = args.includes('--keep-open');
 const slowMoArg = args.find(a => a.startsWith('--slowmo='));
 const portArg = args.find(a => a.startsWith('--port='));
 const PORT = portArg ? Number(portArg.split('=')[1]) : 4173;
@@ -192,7 +193,14 @@ async function main() {
   record('печатная версия сформирована', pdf.length > 1000, `${Math.round(pdf.length / 1024)} КБ PDF`);
   await page.emulateMedia({ media: 'screen' });
 
-  await browser.close();
+  if (keepOpen) {
+    console.log('\nОкно оставлено открытым: приложение в конце сценария открыто на вкладке отчёта.');
+    console.log('Пройдитесь по разделам сами — окно закроется, когда вы его закроете.');
+    await page.bringToFront().catch(() => {});
+    await context.waitForEvent('close', { timeout: 0 }).catch(() => {});
+  }
+
+  await browser.close().catch(() => {});
 
   const summary = {
     origin: ORIGIN,
