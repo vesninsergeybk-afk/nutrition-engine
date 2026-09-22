@@ -91,6 +91,36 @@ html[data-interface-simplification="1"] .workspace-alt-entry__buttons button{
   margin:0!important;
 }
 
+/* Empty ration: show the next useful action, not an analysis dashboard with no data. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="ration"] #workspaceRationAttention,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="ration"] .workspace-ration-inline__metrics,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="ration"] #workspaceOpenRation,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="ration"] .theme-parity-ration-hf4{
+  display:none!important;
+}
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="ration"] .workspace-ration-inline__actions{
+  margin-top:10px!important;
+}
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="ration"] #workspaceFocusSearch{
+  min-width:180px!important;
+}
+
+/* Empty analysis: one explanation and one route back to ration are enough. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] #analysisCommandCenterHF3,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] .workspace-overview__metrics,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] .workspace-overview__quality,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] .workspace-overview__actions,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] .workspace-overview__head>button,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] .workspace-overview__section-head{
+  display:none!important;
+}
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] .workspace-overview__issues{
+  margin-top:12px!important;
+}
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-ration-empty="1"][data-navigation-route="analysis/overview"] .workspace-overview__empty{
+  margin:0!important;
+}
+
 @media(max-width:899px){
   html[data-interface-simplification="1"] #interfaceSettingsPass1{
     display:flex!important;
