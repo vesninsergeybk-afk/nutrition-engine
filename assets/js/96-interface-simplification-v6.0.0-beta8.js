@@ -12,12 +12,38 @@
     d.documentElement.setAttribute('data-interface-simplification','1');
   }
 
-  function simplifySettings(){
-    var button=byId('interfaceSettingsHF2');
-    if(button){
-      setText(button,'Настройки');
+  function settingsHeader(){return d.querySelector('#mainContent>header');}
+
+  function setSettingsOpen(open){
+    var header=settingsHeader(),button=byId('interfaceSettingsPass1');
+    if(!header)return;
+    header.classList.toggle('interface-settings-pass1-open',!!open);
+    if(button)button.setAttribute('aria-expanded',open?'true':'false');
+  }
+
+  function ensureSettingsControl(){
+    var header=settingsHeader();
+    if(!header)return;
+    var button=byId('interfaceSettingsPass1');
+    if(!button){
+      button=d.createElement('button');
+      button.id='interfaceSettingsPass1';
+      button.type='button';
+      button.className='secondary interface-settings-pass1';
+      button.setAttribute('aria-expanded','false');
+      button.setAttribute('aria-controls','workspaceViewSwitcher themeSwitcher normRegionSwitcher');
       button.setAttribute('aria-label','Показать или скрыть настройки интерфейса и норм');
+      button.textContent='Настройки';
+      var title=header.querySelector('.title');
+      if(title&&title.nextSibling)header.insertBefore(button,title.nextSibling);
+      else header.insertBefore(button,header.firstChild);
     }
+    var legacy=byId('interfaceSettingsHF2');
+    if(legacy){
+      legacy.setAttribute('aria-hidden','true');
+      legacy.setAttribute('tabindex','-1');
+    }
+    button.setAttribute('aria-expanded',header.classList.contains('interface-settings-pass1-open')?'true':'false');
   }
 
   function simplifyPersonContext(){
@@ -86,6 +112,13 @@
   }
 
   function handleClick(event){
+    var settings=closest(event.target,'#interfaceSettingsPass1');
+    if(settings){
+      event.preventDefault();
+      var header=settingsHeader();
+      setSettingsOpen(!(header&&header.classList.contains('interface-settings-pass1-open')));
+      return;
+    }
     var close=closest(event.target,'dialog .close-btn, dialog .norm-region-help-close');
     if(close){
       var dialog=closest(close,'dialog');
@@ -104,7 +137,7 @@
 
   function refresh(){
     mark();
-    simplifySettings();
+    ensureSettingsControl();
     simplifyEntryMethods();
     simplifyPersonContext();
   }
