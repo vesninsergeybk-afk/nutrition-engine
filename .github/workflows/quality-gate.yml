@@ -30,10 +30,10 @@ jobs:
           node-version: '24.14.0'
           package-manager-cache: false
 
-      - name: Install system dependencies
+      - name: Install core system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends apache2 libapache2-mod-php php-cli curl python3 unzip
+          sudo apt-get install -y --no-install-recommends php-cli curl
 
       - name: Create non-secret CI configuration
         run: |
@@ -43,13 +43,8 @@ jobs:
       - name: Install locked JavaScript dependencies
         run: npm ci --ignore-scripts
 
-      - name: Run deterministic core and safety suites
-        run: |
-          python3 tools/release_gate.py \
-            --profile ci \
-            --stop-after apache_source \
-            --skip-build \
-            --summary-out reports/release-gate-core-summary.json
+      - name: Run canonical V6 core and safety suites
+        run: python3 tools/ci_core_gate_v6.py
 
       - name: Upload core reports
         if: always()
