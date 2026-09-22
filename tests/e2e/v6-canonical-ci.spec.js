@@ -296,3 +296,25 @@ test('mobile workspace removes duplicate profile chrome without losing profile a
   await page.evaluate(() => window.NavigationShellV1.navigate('profile'));
   await expect(page.locator('#navigationShellContext .navigation-shell-context__copy p')).toBeVisible();
 });
+
+
+test('mobile profile uses one heading surface and removes the orphaned name wrapper', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('profile'));
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+  await page.waitForFunction(() => document.documentElement.getAttribute('data-profile-hierarchy') === 'v2');
+
+  await expect(page.locator('#navigationShellContext')).toBeHidden();
+  await expect(page.locator('#needs .section-title-row h1')).toBeVisible();
+  await expect(page.locator('#needsHelpBtn')).toBeVisible();
+
+  const orphan = page.locator('#needs > .row:first-child > .row');
+  if (await orphan.count()) await expect(orphan).toBeHidden();
+
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await expect(page.locator('#navigationShellContext')).toBeVisible();
+});
