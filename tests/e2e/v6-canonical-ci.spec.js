@@ -185,7 +185,7 @@ async function saveUxAudit(page, name) {
   const dir = path.resolve(process.cwd(), 'reports/playwright-artifacts/ux-audit');
   fs.mkdirSync(dir, { recursive: true });
   const safe = name.replace(/[^a-z0-9_-]+/gi, '-').toLowerCase();
-  await page.screenshot({ path: path.join(dir, safe + '.png'), fullPage: true });
+  await page.screenshot({ path: path.join(dir, safe + '.png'), fullPage: false });
   const metrics = await page.evaluate(() => {
     const visible = el => {
       if (!el) return false;
