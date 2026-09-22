@@ -321,16 +321,24 @@
   function injectStyles(){if(safeGet('needsCheckpointStyle'))return;var s=d.createElement('style');s.id='needsCheckpointStyle';s.textContent='html[data-navigation-shell="long"] #mainContent{width:min(100%,1200px)!important;max-width:1200px!important}html[data-navigation-shell="long"] #mainContent>#needsCompact,html[data-navigation-shell="long"] #mainContent>#consultationNeedsSummary{width:100%!important;max-width:none!important;box-sizing:border-box}.consultation-needs-summary{margin:-2px 0 16px}.consultation-summary-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.consultation-summary-grid,.needs-checkpoint-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.consultation-summary-grid>div,.needs-checkpoint-result{padding:11px 12px;border:1px solid var(--line,#d9d9d9);border-radius:12px;background:var(--card,#fff)}.consultation-summary-grid span,.needs-checkpoint-result span{display:block;font-size:12px;opacity:.72}.consultation-summary-grid strong,.needs-checkpoint-result strong{display:block;margin-top:3px;font-size:17px}.consultation-summary-grid small,.needs-checkpoint-result small{display:block;margin-top:4px;line-height:1.35;opacity:.72}.workflow-steps{position:sticky;top:0;z-index:15;overflow-x:auto}.workflow-steps a{white-space:nowrap}@media(max-width:760px){.consultation-summary-grid,.needs-checkpoint-results{grid-template-columns:1fr 1fr}html[data-navigation-shell="long"] #mainContent{width:100%!important;max-width:100%!important}}@media(max-width:430px){.consultation-summary-grid,.needs-checkpoint-results{grid-template-columns:1fr}}';(d.head||d.documentElement).appendChild(s);}
   function setLongMode(){try{if(w.NavigationShellV1&&w.NavigationShellV1.setMode)w.NavigationShellV1.setMode('long');else d.documentElement.setAttribute('data-navigation-shell','long');}catch(_){d.documentElement.setAttribute('data-navigation-shell','long');}}
   function settleInitialLongMode(){
+    /* Long mode is only a boot fallback. Once the section-based workspace is
+       available, hand control back to it instead of forcing canvas again. */
     setLongMode();
-    if(w.NutritionWorkspaceEntryUXHF28)return;
     var settled=false;
     function finalize(){
-      if(settled)return;settled=true;
+      if(settled)return;
+      var ux=w.NutritionWorkspaceEntryUXHF28;
+      if(!ux)return;
+      settled=true;
       try{if(w.removeEventListener)w.removeEventListener('workspace-entry-ux:ready',finalize,false);}catch(_){}
-      setLongMode();
+      try{
+        if(typeof ux.setMode==='function'){ux.setMode('sections',{persist:false,force:true});return;}
+        if(w.NavigationShellV1&&w.NavigationShellV1.setMode)w.NavigationShellV1.setMode('workspace');
+      }catch(_){}
     }
+    if(w.NutritionWorkspaceEntryUXHF28){w.setTimeout(finalize,0);return;}
     try{if(w.addEventListener)w.addEventListener('workspace-entry-ux:ready',finalize,false);}catch(_){}
-    w.setTimeout(finalize,1500);
+    w.setTimeout(function(){if(w.NutritionWorkspaceEntryUXHF28)finalize();},1500);
   }
   function updateNotice(){var n=safeGet('needs-method-notice');if(n)n.innerHTML='<b>Обычный взрослый:</b> поддерживающая энергия рассчитывается по NASEM 2023. Белковый референс и целевой профиль показаны отдельно; диапазон не превращается в рабочую точку автоматически. Защищённые клинические, детские, беременность и лактация остаются в специальных контурах.';}
   function init(){
