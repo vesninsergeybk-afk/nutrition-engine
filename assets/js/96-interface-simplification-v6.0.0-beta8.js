@@ -27,7 +27,7 @@
       if(mobile&&!open)node.style.setProperty('display','none','important');
       else node.style.removeProperty('display');
     }
-    var toolbar=header.querySelector(':scope > .toolbar');
+    var toolbar=header.querySelector('.toolbar');
     if(toolbar){
       if(mobile&&!open)toolbar.style.setProperty('display','none','important');
       else toolbar.style.removeProperty('display');
