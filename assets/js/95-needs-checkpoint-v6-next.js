@@ -320,11 +320,22 @@
   function syncWorkflow(){var nav=d.querySelector('.workflow-steps');if(!nav)return;nav.innerHTML='<a href="#needsCompact"><span>1</span>Потребности</a><a href="#globalSearchSection"><span>2</span>Рацион</a><a href="#heiPanel"><span>3</span>Анализ</a><a href="#geminiAiSection"><span>4</span>Улучшить</a><a href="#globalActions"><span>5</span>Отчёт</a>';}
   function injectStyles(){if(safeGet('needsCheckpointStyle'))return;var s=d.createElement('style');s.id='needsCheckpointStyle';s.textContent='html[data-navigation-shell="long"] #mainContent{width:min(100%,1200px)!important;max-width:1200px!important}html[data-navigation-shell="long"] #mainContent>#needsCompact,html[data-navigation-shell="long"] #mainContent>#consultationNeedsSummary{width:100%!important;max-width:none!important;box-sizing:border-box}.consultation-needs-summary{margin:-2px 0 16px}.consultation-summary-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.consultation-summary-grid,.needs-checkpoint-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.consultation-summary-grid>div,.needs-checkpoint-result{padding:11px 12px;border:1px solid var(--line,#d9d9d9);border-radius:12px;background:var(--card,#fff)}.consultation-summary-grid span,.needs-checkpoint-result span{display:block;font-size:12px;opacity:.72}.consultation-summary-grid strong,.needs-checkpoint-result strong{display:block;margin-top:3px;font-size:17px}.consultation-summary-grid small,.needs-checkpoint-result small{display:block;margin-top:4px;line-height:1.35;opacity:.72}.workflow-steps{position:sticky;top:0;z-index:15;overflow-x:auto}.workflow-steps a{white-space:nowrap}@media(max-width:760px){.consultation-summary-grid,.needs-checkpoint-results{grid-template-columns:1fr 1fr}html[data-navigation-shell="long"] #mainContent{width:100%!important;max-width:100%!important}}@media(max-width:430px){.consultation-summary-grid,.needs-checkpoint-results{grid-template-columns:1fr}}';(d.head||d.documentElement).appendChild(s);}
   function setLongMode(){try{if(w.NavigationShellV1&&w.NavigationShellV1.setMode)w.NavigationShellV1.setMode('long');else d.documentElement.setAttribute('data-navigation-shell','long');}catch(_){d.documentElement.setAttribute('data-navigation-shell','long');}}
+  function settleInitialLongMode(){
+    setLongMode();
+    if(w.NutritionWorkspaceEntryUXHF28)return;
+    var settled=false;
+    function finalize(){
+      if(settled)return;settled=true;
+      try{if(w.removeEventListener)w.removeEventListener('workspace-entry-ux:ready',finalize,false);}catch(_){}
+      setLongMode();
+    }
+    try{if(w.addEventListener)w.addEventListener('workspace-entry-ux:ready',finalize,false);}catch(_){}
+    w.setTimeout(finalize,1500);
+  }
   function updateNotice(){var n=safeGet('needs-method-notice');if(n)n.innerHTML='<b>Обычный взрослый:</b> поддерживающая энергия рассчитывается по NASEM 2023. Белковый референс и целевой профиль показаны отдельно; диапазон не превращается в рабочую точку автоматически. Защищённые клинические, детские, беременность и лактация остаются в специальных контурах.';}
   function init(){
     if(!d||w.__NEEDS_CHECKPOINT_MOUNTED__)return;w.__NEEDS_CHECKPOINT_MOUNTED__=true;
-    readClinicianPrefs();rebuildActivity();injectControls();injectSummary();injectStyles();syncWorkflow();updateNotice();renderPolicy();bindControls();setLongMode();
-    w.setTimeout(function(){setLongMode();},120);
+    readClinicianPrefs();rebuildActivity();injectControls();injectSummary();injectStyles();syncWorkflow();updateNotice();renderPolicy();bindControls();settleInitialLongMode();
   }
 
   var api={version:VERSION,configure:configure,getConfig:getConfig,resetPatient:resetPatient,calculate:calculate,nasemEnergy:nasemEnergy,bmi:bmiOf,dgeWeight:dgeWeight,devine:devine,proteinReference:proteinReference,proteinTarget:proteinTarget,activity:clone(ACTIVITY),init:init};

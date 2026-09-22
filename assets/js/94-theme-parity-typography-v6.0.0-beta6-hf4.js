@@ -160,7 +160,7 @@
   function schedule(){w.clearTimeout(timer);timer=w.setTimeout(refresh,70);}
   function init(){
     d.addEventListener('click',onClick,true);w.addEventListener('resize',schedule,false);w.addEventListener('orientationchange',schedule,false);
-    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','nutrition-ui:view-model','nutrition:themechange','ration:changed','hei:rendered','diet:assessment-ready','diet:profile-rendered','analysis-workspace:ready','quality-completion-hotfix:ready'].forEach(function(name){w.addEventListener(name,schedule,false);});
+    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','nutrition-ui:view-model','nutrition:themechange','ration:changed','hei:rendered','diet:assessment-ready','diet:profile-rendered','analysis-workspace:ready','workspace-entry-ux:ready','workspace-correction:ready','usability-recovery-hotfix:ready','quality-completion-hotfix:ready'].forEach(function(name){w.addEventListener(name,schedule,false);});
     if(w.MutationObserver){try{observer=new MutationObserver(schedule);observer.observe(d.body||d.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','open','data-theme','data-navigation-route','aria-pressed']});}catch(_){} }
     refresh();w.NutritionThemeParityHotfix={version:VERSION,refresh:refresh};emit('theme-parity-hotfix:ready',{version:VERSION});
   }
