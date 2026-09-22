@@ -8,19 +8,26 @@ function captureRuntimeFailures(page) {
     const text = msg.text();
     // WebKit reports this standards limitation as a console error even though it
     // does not represent an application failure.
-    if (text.includes("frame-ancestors") && text.includes("HTML meta element")) return;
+    if (text.includes("frame-ancestors") && text.toLowerCase().includes("meta")) return;
     failures.push(`console: ${text}`);
   });
-  page.on('requestfailed', request => failures.push(`requestfailed: ${request.url()} ${request.failure()?.errorText || ''}`));
+  page.on('requestfailed', request => {
+    const url = request.url();
+    const reason = request.failure()?.errorText || '';
+    // The runtime loader intentionally falls back from the compressed bundle
+    // when a browser aborts the .gz fetch. loadApp() verifies that the fallback
+    // completed, so this transport-level abort is not an application failure.
+    if (url.includes('/assets/runtime/deferred-runtime-') && url.includes('.js.gz') &&
+        /ERR_ABORTED|NS_BINDING_ABORTED|cancelled|canceled/i.test(reason)) return;
+    failures.push(`requestfailed: ${url} ${reason}`);
+  });
   return failures;
 }
 
 async function waitForCheckpoint(page) {
   await page.waitForFunction(() => {
     const html = document.documentElement;
-    const ids = ['needs_sex', 'needs_age', 'needs_h', 'needs_w', 'needs_activity'];
-    const visible = id => {
-      const node = document.getElementById(id);
+    const visible = node => {
       if (!node) return false;
       const style = getComputedStyle(node);
       const rect = node.getBoundingClientRect();
@@ -32,9 +39,17 @@ async function waitForCheckpoint(page) {
       window.NutritionNeedsCheckpointV1 &&
       window.__NEEDS_CHECKPOINT_MOUNTED__ &&
       html.getAttribute('data-navigation-shell') === 'long' &&
-      ids.every(visible)
+      visible(document.getElementById('needsCompact')) &&
+      visible(document.querySelector('.workflow-steps')) &&
+      document.getElementById('profileCalculateContinue')
     );
   }, null, { timeout: 25000 });
+}
+
+async function openNeeds(page) {
+  const toggle = page.locator('#v40NeedsToggle');
+  if (await toggle.count() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click();
+  await expect(page.locator('#needs_sex')).toBeVisible();
 }
 
 test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ page, loadApp }) => {
@@ -86,6 +101,7 @@ test('current needs checkpoint calculates and preserves the profile across steps
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
   await waitForCheckpoint(page);
+  await openNeeds(page);
 
   await page.selectOption('#needs_sex', 'female');
   await page.fill('#needs_age', '42');
