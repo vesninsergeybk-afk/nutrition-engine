@@ -1,0 +1,36 @@
+name: Cloudflare Static Check
+
+on:
+  push:
+    branches:
+      - cloudflare/static-preview
+  pull_request:
+    paths:
+      - wrangler.jsonc
+      - tools/build_cloudflare_static.py
+      - _headers
+      - index.html
+      - assets/**
+      - data/**
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build safe static closure
+        run: python3 tools/build_cloudflare_static.py
+      - name: Assert no server-side files are public
+        run: |
+          test -f .cloudflare/dist/index.html
+          test -f .cloudflare/dist/_headers
+          test -f .cloudflare/dist/robots.txt
+          test -f .cloudflare/dist/privacy.html
+          test -f .cloudflare/dist/security.html
+          if find .cloudflare/dist -type f -name '*.php' | grep -q .; then
+            echo "PHP file leaked into Cloudflare static output"
+            exit 1
+          fi
+      - name: Wrangler dry run
+        run: npx --yes wrangler@latest deploy --dry-run --outdir .cloudflare/wrangler-dry-run
