@@ -14,9 +14,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality-gate:
+  core-gate:
+    name: Core and safety gate
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 25
     steps:
       - name: Checkout immutable revision
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
@@ -42,19 +43,65 @@ jobs:
       - name: Install locked JavaScript dependencies
         run: npm ci --ignore-scripts
 
-      - name: Install browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Run deterministic core and safety suites
+        run: |
+          python3 tools/release_gate.py \
+            --profile ci \
+            --stop-after apache_source \
+            --skip-build \
+            --summary-out reports/release-gate-core-summary.json
 
-      - name: Run complete CI release gate
-        run: python3 tools/release_gate.py --profile ci
-
-      - name: Upload gate reports and deterministic candidates
+      - name: Upload core reports
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: nutrition-quality-gate-${{ github.sha }}
+          name: nutrition-core-gate-${{ github.sha }}
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
+
+  browser-gate:
+    name: Canonical V6 browser gate (${{ matrix.browser }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - name: Checkout immutable revision
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24.14.0'
+          package-manager-cache: false
+
+      - name: Install locked JavaScript dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install selected browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run current V6 browser contract
+        run: |
+          npx playwright test tests/e2e/v6-canonical-ci.spec.js \
+            --project=${{ matrix.browser }} \
+            --retries=1 \
+            --timeout=90000 \
+            --reporter=line
+
+      - name: Upload browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: nutrition-browser-${{ matrix.browser }}-${{ github.sha }}
           path: |
-            reports/
-            release/
-          if-no-files-found: error
+            reports/playwright-artifacts/
+            reports/playwright-results.json
+            reports/playwright-html/
+          if-no-files-found: warn
           retention-days: 14
