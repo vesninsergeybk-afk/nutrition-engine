@@ -160,3 +160,115 @@ test('all three current themes remain user-selectable in the checkpoint canvas',
     await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'long');
   }
 });
+
+
+async function waitForInterfacePass1(page) {
+  await page.waitForFunction(() =>
+    document.documentElement.getAttribute('data-interface-simplification') === '1' &&
+    window.NutritionInterfaceSimplification &&
+    window.__APP_BOOTSTRAP_META__ &&
+    window.__APP_BOOTSTRAP_META__.status === 'ready' &&
+    window.__RUNTIME_LOADER_CLOSED__ === true,
+    null, { timeout: 30000 }
+  );
+}
+
+test('mobile interface keeps secondary display controls behind one settings action', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  const settings = page.locator('#interfaceSettingsHF2');
+  await expect(settings).toBeVisible();
+  await expect(settings).toHaveText('Настройки');
+  await expect(settings).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#workspaceViewSwitcher')).toBeHidden();
+  await expect(page.locator('#themeSwitcher')).toBeHidden();
+  await expect(page.locator('#mainContent > header > .toolbar')).toBeHidden();
+
+  await settings.click();
+  await expect(settings).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('#workspaceViewSwitcher')).toBeVisible();
+  await expect(page.locator('#themeSwitcher')).toBeVisible();
+  await expect(page.locator('#mainContent > header > .toolbar')).toBeVisible();
+
+  await settings.click();
+  await expect(settings).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#themeSwitcher')).toBeHidden();
+});
+
+test('mobile ration starts with text search and keeps alternatives collapsed', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+  await expect(page.locator('#globalSearchInput')).toBeVisible();
+
+  const alternative = page.locator('#workspaceAltEntryMethods');
+  await expect(alternative).toBeVisible();
+  await expect(alternative).not.toHaveAttribute('open', '');
+  await expect(alternative.locator('button[data-ration-entry-method]')).toHaveCount(3);
+
+  const order = await page.evaluate(() => ({
+    search: document.getElementById('globalSearchInput').getBoundingClientRect().top,
+    alternatives: document.getElementById('workspaceAltEntryMethods').getBoundingClientRect().top
+  }));
+  expect(order.search).toBeLessThan(order.alternatives);
+
+  await alternative.locator('summary').click();
+  await expect(alternative).toHaveAttribute('open', '');
+  await expect(alternative.locator('[data-ration-entry-method="photo"]')).toBeVisible();
+  await expect(alternative.locator('[data-ration-entry-method="voice"]')).toBeVisible();
+  await expect(alternative.locator('[data-ration-entry-method="audio"]')).toBeVisible();
+});
+
+test('mobile search results and help dialog stay inside their usable viewport', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  const search = page.locator('#globalSearchInput');
+  await search.fill('банан');
+  await page.waitForFunction(() => {
+    const results = document.getElementById('globalResults');
+    return results && results.classList.contains('has-query') && results.getBoundingClientRect().height > 0;
+  });
+
+  const geometry = await page.evaluate(() => {
+    const results = document.getElementById('globalResults').getBoundingClientRect();
+    const nav = document.getElementById('navigationShell').getBoundingClientRect();
+    return {
+      resultsBottom: results.bottom,
+      navTop: nav.top,
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth
+    };
+  });
+  expect(geometry.resultsBottom).toBeLessThanOrEqual(geometry.navTop + 1);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('profile'));
+  const help = page.locator('#needsHelpNeedsBtn');
+  await expect(help).toBeVisible();
+  await help.click();
+  const dialog = page.locator('dialog[open]').last();
+  await expect(dialog).toBeVisible();
+
+  const dialogGeometry = await dialog.evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width };
+  });
+  expect(dialogGeometry.left).toBeGreaterThanOrEqual(7);
+  expect(dialogGeometry.right).toBeLessThanOrEqual(383);
+  expect(dialogGeometry.top).toBeGreaterThanOrEqual(7);
+  expect(dialogGeometry.bottom).toBeLessThanOrEqual(837);
+
+  await dialog.locator('.close-btn').click();
+  await expect(dialog).toBeHidden();
+});
