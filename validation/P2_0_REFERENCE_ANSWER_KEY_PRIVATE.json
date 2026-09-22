@@ -1,0 +1,574 @@
+{
+  "case_count": 51,
+  "cases": [
+    {
+      "case_id": "P2-Q-001",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 18.4,
+        "formula_id": "anthropometry.bmi",
+        "source_case_id": "bmi_low",
+        "tags": [],
+        "tolerance": 0.01
+      }
+    },
+    {
+      "case_id": "P2-Q-002",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 40.0,
+        "formula_id": "anthropometry.bmi",
+        "source_case_id": "bmi_obese",
+        "tags": [],
+        "tolerance": 0.01
+      }
+    },
+    {
+      "case_id": "P2-Q-003",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": null,
+        "formula_id": "anthropometry.devine_ibw",
+        "source_case_id": "devine_below_domain",
+        "tags": [
+          "boundary"
+        ],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-004",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 10.0,
+        "formula_id": "anthropometry.weight_loss_pct",
+        "source_case_id": "loss_10",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-005",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "extremeRisk": false,
+          "highRisk": false
+        },
+        "formula_id": "safety.nice_refeeding_screen",
+        "source_case_id": "refeed_bmi_16_not_major",
+        "tags": [
+          "boundary"
+        ],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-006",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "extremeRisk": false,
+          "highRisk": true
+        },
+        "formula_id": "safety.nice_refeeding_screen",
+        "source_case_id": "refeed_bmi_15_9_major",
+        "tags": [
+          "boundary"
+        ],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-007",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "extremeRisk": false,
+          "highRisk": true
+        },
+        "formula_id": "safety.nice_refeeding_screen",
+        "source_case_id": "refeed_two_minor",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-008",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "extremeRisk": true,
+          "highRisk": true
+        },
+        "formula_id": "safety.nice_refeeding_screen",
+        "source_case_id": "refeed_extreme_intake",
+        "tags": [
+          "boundary"
+        ],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-009",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 1598.75,
+        "formula_id": "energy.mifflin_st_jeor",
+        "source_case_id": "mifflin_male_70_40",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-010",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 1320.25,
+        "formula_id": "energy.mifflin_st_jeor",
+        "source_case_id": "mifflin_female_60_30",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-011",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "high": 2111,
+          "low": 1919
+        },
+        "formula_id": "energy.ordinary_pal",
+        "source_case_id": "ordinary_pal_sedentary",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-012",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "high": 3342,
+          "low": 3038
+        },
+        "formula_id": "energy.ordinary_pal",
+        "source_case_id": "ordinary_pal_veryhigh",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-013",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "high": 2282,
+          "low": 1985
+        },
+        "formula_id": "energy.weight_screen",
+        "source_case_id": "weight_screen_rehab_low",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-014",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 0.85,
+        "formula_id": "energy.goal_factor",
+        "source_case_id": "goal_lose",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-015",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 1.1,
+        "formula_id": "energy.goal_factor",
+        "source_case_id": "goal_rehab_gain",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-016",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 1.05,
+        "formula_id": "protein.ordinary_target",
+        "source_case_id": "protein_2",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-017",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 1.0,
+        "formula_id": "protein.ordinary_target",
+        "source_case_id": "protein_6",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-018",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 0,
+        "formula_id": "macros.carb_residual",
+        "source_case_id": "carb_residual_floor",
+        "tags": [],
+        "tolerance": 0.01
+      }
+    },
+    {
+      "case_id": "P2-Q-019",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 1650,
+        "formula_id": "fluids.ordinary_screen",
+        "source_case_id": "fluid_55",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-020",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 2319.45,
+        "formula_id": "energy.nasem_adult_female_2023",
+        "source_case_id": "nasem_adult_active",
+        "tags": [],
+        "tolerance": 1e-06
+      }
+    },
+    {
+      "case_id": "P2-Q-021",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "deposition": 0,
+          "target": 2207,
+          "trimester": 1
+        },
+        "formula_id": "energy.nasem_pregnancy_2023",
+        "source_case_id": "preg_first",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-022",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "deposition": 300,
+          "target": 2811,
+          "trimester": 2
+        },
+        "formula_id": "energy.nasem_pregnancy_2023",
+        "source_case_id": "preg_under",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-023",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "deposition": -50,
+          "target": 2669,
+          "trimester": 3
+        },
+        "formula_id": "energy.nasem_pregnancy_2023",
+        "source_case_id": "preg_obese",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-024",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "increment": 404,
+          "target": 2611
+        },
+        "formula_id": "energy.nasem_lactation_2023",
+        "source_case_id": "lact_3_exclusive",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-025",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": {
+          "increment": 380,
+          "target": 2587
+        },
+        "formula_id": "energy.nasem_lactation_2023",
+        "source_case_id": "lact_8_partial",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-026",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 58.8,
+        "formula_id": "protein.efsa_pregnancy",
+        "source_case_id": "efsa_preg_20",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-027",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 64.46000000000001,
+        "formula_id": "protein.efsa_lactation",
+        "source_case_id": "efsa_lact_8",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-028",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 5.0,
+        "formula_id": "hei.moderation_component",
+        "source_case_id": "hei_mod_sodium_g_mid",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-029",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 0,
+        "formula_id": "hei.moderation_component",
+        "source_case_id": "hei_mod_added_sugars_pct_zero",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-030",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 5,
+        "formula_id": "hei.fatty_acid_ratio",
+        "source_case_id": "hei_fat_ratio_mid",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-Q-031",
+      "case_type": "QUANTITATIVE_OR_RULE",
+      "reference": {
+        "expected": 100,
+        "formula_id": "hei.total",
+        "source_case_id": "hei_total_perfect",
+        "tags": [],
+        "tolerance": 1e-09
+      }
+    },
+    {
+      "case_id": "P2-S-001",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "BLOCK_AUTOMATED_PLAN",
+        "rule_family": "adult_refeeding_screen",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-002",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "DO_NOT_TRIGGER_MAJOR_CRITERION",
+        "rule_family": "adult_refeeding_screen",
+        "severity": "MAJOR"
+      }
+    },
+    {
+      "case_id": "P2-S-003",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "BLOCK_AND_ESCALATE",
+        "rule_family": "adult_refeeding_screen",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-004",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "REQUIRE_EXTERNAL_TARGET",
+        "rule_family": "protected_mode",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-005",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "REQUIRE_EXTERNAL_TARGET",
+        "rule_family": "protected_mode",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-006",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "REQUIRE_EXTERNAL_TARGET",
+        "rule_family": "protected_mode",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-007",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "APPLY_EXTERNAL_TARGET_ONLY",
+        "rule_family": "protected_mode",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-008",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "BLOCK_STALE_TARGET",
+        "rule_family": "protected_mode",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-009",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "BLOCK_AUTOMATION_AND_REFER",
+        "rule_family": "life_stage_plus_risk",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-S-010",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "REQUEST_MISSING_INPUT",
+        "rule_family": "life_stage_missing_input",
+        "severity": "MAJOR"
+      }
+    },
+    {
+      "case_id": "P2-S-011",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "SHOW_UNCERTAINTY_AND_LIMIT_CLAIM",
+        "rule_family": "data_quality",
+        "severity": "MAJOR"
+      }
+    },
+    {
+      "case_id": "P2-S-012",
+      "case_type": "SAFETY_DECISION",
+      "reference": {
+        "expected_action": "DENY_AI_PLAN",
+        "rule_family": "ai_guard",
+        "severity": "CRITICAL"
+      }
+    },
+    {
+      "case_id": "P2-U-001",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Основное действие ведёт к расчёту потребностей; результаты ещё не показываются.",
+        "severity": "MINOR"
+      }
+    },
+    {
+      "case_id": "P2-U-002",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Основное действие ведёт к добавлению первого продукта.",
+        "severity": "MINOR"
+      }
+    },
+    {
+      "case_id": "P2-U-003",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Сначала показан краткий итог; полные таблицы раскрываются по действию.",
+        "severity": "MINOR"
+      }
+    },
+    {
+      "case_id": "P2-U-004",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Нули не трактуются как доказанное отсутствие нутриента.",
+        "severity": "MINOR"
+      }
+    },
+    {
+      "case_id": "P2-U-005",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Отчёт показывает формульную трассировку и статус внешней валидации PENDING.",
+        "severity": "MINOR"
+      }
+    },
+    {
+      "case_id": "P2-U-006",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Интерфейс явно сообщает, что инструмент не ставит диагноз и не назначает лечение.",
+        "severity": "MAJOR"
+      }
+    },
+    {
+      "case_id": "P2-U-007",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Отчёт различает внешнее назначение и автоматическую формулу.",
+        "severity": "MAJOR"
+      }
+    },
+    {
+      "case_id": "P2-U-008",
+      "case_type": "USABILITY_INTERPRETATION",
+      "reference": {
+        "expected_behavior_ru": "Внешние методики, локальные политики и неподтверждённые клинические утверждения разделены.",
+        "severity": "MINOR"
+      }
+    }
+  ],
+  "confidentiality": "PRIVATE_REFERENCE_KEY — do not provide to reviewers before response lock.",
+  "generated_at": "2026-07-19",
+  "integrity": {
+    "content_sha256": "652057d7b5bd0379e1d4b6bb55479dfc3e32d0430ced2f418e522f62b356ee5c",
+    "paired_blind_sha256": "58f09a6980c69cfdf56e4a48fd2d1191755d9dbfcfbd595d7fb57a30b5a3a711"
+  },
+  "pack_id": "nutrition-calculator-p2-domain-review-key",
+  "release_version": "v5.3.210-pc2",
+  "schema_version": 1
+}

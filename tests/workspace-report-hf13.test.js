@@ -1,0 +1,24 @@
+'use strict';
+const assert=require('assert'),fs=require('fs'),path=require('path');
+const ROOT=path.resolve(__dirname,'..');
+const js=fs.readFileSync(path.join(ROOT,'assets/js/87-workspace-report-v5.3.210-rc2-hf14.js'),'utf8');
+const css=fs.readFileSync(path.join(ROOT,'assets/css/workspace-report-v5.3.210-rc2-hf14.css'),'utf8');
+const nav=fs.readFileSync(path.join(ROOT,'assets/js/75-navigation-shell-v5.3.210-rc2-hf13.js'),'utf8');
+const cfg=JSON.parse(fs.readFileSync(path.join(ROOT,'config/runtime-assets.v5.3.210-rc2.json'),'utf8'));
+let n=0;function check(name,fn){try{fn();n++;console.log('PASS',name);}catch(e){console.error('FAIL',name,e.message);process.exitCode=1;}}
+check('report model is explicit and serializable',()=>assert.ok(js.includes("SCHEMA='nutrition-workspace-report-v1'")&&js.includes('JSON.stringify(model')));
+check('canonical report and analysis APIs are reused',()=>assert.ok(js.includes('NutritionReportV5')&&js.includes('NutritionAnalysisWorkspaceHF7')));
+check('no nutrient or HEI recalculation is introduced',()=>assert.ok(!js.includes('scaledPerItem(')&&!js.includes('calculateFromSnapshot(')));
+check('one body renderer powers preview and document',()=>assert.ok(js.includes('function buildBodyHtml')&&js.includes("buildDocumentHtml")&&js.includes("buildBodyHtml(m)")));
+check('profile needs ration totals nutrients HEI and quality are modeled',()=>['profile:','needs:','ration:','totals:','nutrients:','hei:','dataQuality:','reportOptions:'].forEach(x=>assert.ok(js.includes(x))));
+check('confirmed correction is represented',()=>assert.ok(js.includes('WorkspaceCorrectionHF11')&&js.includes('WorkspaceCorrectionStage3BHF12')&&js.includes('appliedChanges')));
+check('bounded options are persisted without replacing focused controls',()=>assert.ok(js.includes('DEFAULT_OPTIONS')&&js.includes('reportOptions:clone(options)')&&js.includes('optionInputs[i].checked')&&!js.includes("byId('workspaceReportOptions').innerHTML=optionsHtml(options)")));
+check('separate HEI restrictions are included',()=>assert.ok(js.includes('function guardrailsHtml')&&js.includes('Отдельные ограничения')));
+check('technical HEI units are humanized',()=>assert.ok(js.includes('function humanizeHeiMeasure')&&js.includes('условн. порц.')));
+check('print PDF and JSON actions exist',()=>assert.ok(js.includes('data-workspace-report-print')&&js.includes('data-workspace-report-pdf')&&js.includes('data-workspace-report-json')));
+check('legacy print buttons are rebound to unified report',()=>assert.ok(js.includes("replaceLegacyButton('printAllBtn'")&&js.includes("replaceLegacyButton('exportAllPdfBtn'")));
+check('report workspace replaces old DOM report route',()=>assert.ok(nav.includes("ids:['workspaceReportPanel']")&&nav.includes("'globalActions','legal-note'")));
+check('mobile report does not add fixed navigation layer',()=>assert.ok(css.includes('@media(max-width:680px)')&&!css.includes('position:fixed')));
+check('mobile tables become cards',()=>assert.ok(css.includes('.workspace-report-mobile-list')&&css.includes('.workspace-report-table-wrap{display:none}')));
+check('runtime loads accepted report assets',()=>{assert.equal(cfg.release_version,'v5.3.210-rc2-hf18');assert.ok(cfg.modern_core_scripts.some(x=>x.includes('87-workspace-report-v5.3.210-rc2-hf14')));assert.ok(cfg.legacy_core_scripts.some(x=>x.includes('87-workspace-report-v5.3.210-rc2-hf14')));assert.ok(cfg.selftest_scripts.some(x=>x.includes('88-workspace-report-selftest')));assert.ok(cfg.css_sources.includes('assets/css/workspace-report-v5.3.210-rc2-hf14.css'));});
+if(!process.exitCode)console.log(`workspace report HF13: ${n}/15 checks passed`);

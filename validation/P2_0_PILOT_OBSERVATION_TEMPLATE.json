@@ -1,0 +1,54 @@
+{
+  "consent_recorded_externally": false,
+  "contains_direct_identifiers": false,
+  "issues": [],
+  "moderator_pseudonym": "",
+  "observation_id": "",
+  "participant_group": "LAY_USER_OR_NUTRITION_PROFESSIONAL",
+  "participant_pseudonym": "",
+  "ratings_1_to_5": {
+    "clarity": null,
+    "confidence_in_next_step": null,
+    "perceived_burden": null,
+    "understanding_of_limitations": null
+  },
+  "release_version": "v5.3.210-pc2",
+  "safety_observations": [],
+  "schema_version": 1,
+  "session_date": "",
+  "session_decision": "INCOMPLETE",
+  "tasks": [
+    {
+      "assistance_count": 0,
+      "completed": null,
+      "critical_use_error": false,
+      "notes_ru": "",
+      "task_id": "calculate_needs",
+      "time_seconds": null
+    },
+    {
+      "assistance_count": 0,
+      "completed": null,
+      "critical_use_error": false,
+      "notes_ru": "",
+      "task_id": "add_first_product",
+      "time_seconds": null
+    },
+    {
+      "assistance_count": 0,
+      "completed": null,
+      "critical_use_error": false,
+      "notes_ru": "",
+      "task_id": "interpret_summary",
+      "time_seconds": null
+    },
+    {
+      "assistance_count": 0,
+      "completed": null,
+      "critical_use_error": false,
+      "notes_ru": "",
+      "task_id": "find_limitations",
+      "time_seconds": null
+    }
+  ]
+}

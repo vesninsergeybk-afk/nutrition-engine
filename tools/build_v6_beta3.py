@@ -1,0 +1,128 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse, hashlib, json, os, stat, subprocess, sys, zipfile
+from pathlib import Path
+from runtime_inventory import compute as compute_runtime
+ROOT=Path(__file__).resolve().parents[1]
+OUT=Path('/mnt/data')
+VERSION='v6.0.0-beta3-interaction-coherence'
+BASE='v6.0.0-beta2-nutrient-group-overview'
+CREATED='2026-08-05T11:50:00Z'
+FIXED_DT=(2026,8,5,11,50,0)
+HOSTING_NAME='NUTRITION_CALCULATOR_V6_0_0_BETA3_INTERACTION_COHERENCE_HOSTING_PRIVATE.zip'
+FULL_NAME='NUTRITION_CALCULATOR_V6_0_0_BETA3_INTERACTION_COHERENCE_ACCEPTED_FULL_PRIVATE_AUDITED.zip'
+SECRET='api/gemini-secret.php'
+EXCLUDE_PARTS={'.git','node_modules','release','__pycache__','.pytest_cache','.mypy_cache','.ruff_cache','playwright-report','test-results','blob-report','.cache'}
+EXCLUDE_NAMES={'release-manifest.json','release-sbom.spdx.json','reports/v6-beta3-build.json','reports/v6-beta3-archive-verification.json'}
+HOSTING_DOCS=[
+ 'config/runtime-assets.v6.0.0-beta3.json','README_DEPLOY_V6_BETA3_RU.md',
+ 'NUTRITION_CALCULATOR_V6_0_0_BETA3_INTERACTION_COHERENCE_RELEASE_NOTES_RU.md',
+ 'NUTRITION_CALCULATOR_V6_0_0_BETA3_INTERACTION_COHERENCE_CHANGELOG_RU.md',
+ 'NUTRITION_CALCULATOR_V6_0_0_BETA3_INTERACTION_COHERENCE_TEST_REPORT_RU.md',
+ 'NUTRITION_CALCULATOR_V6_0_0_BETA3_INTERACTION_COHERENCE_AUDIT_RU.md',
+ 'NUTRITION_CALCULATOR_V6_0_0_BETA3_INTERACTION_COHERENCE_FINAL_ACCEPTANCE_RU.md']
+REQUIRED_REPORTS=[
+ 'reports/v6-beta3-release-audit.json','reports/v6-beta3-interaction-acceptance.json','reports/v6-beta3-nutrient-group-acceptance.json',
+ 'reports/v6-beta3-profile-acceptance.json','reports/v6-beta3-analysis-continuity.json',
+ 'reports/v6-beta3-ivory-acceptance.json','reports/v6-beta3-ivory-extended-acceptance.json',
+ 'reports/v6-beta3-gemini-media-acceptance.json','reports/v6-beta3-syntax-checks.json',
+ 'reports/v6-beta3-runtime-inventory.json','reports/v6-beta3-protected-comparison.json',
+ 'reports/v6-beta3-generator-idempotency.json','reports/v6-beta3-ui-budget.json','reports/v6-beta3-extracted-hosting-acceptance.json',
+ 'reports/hf28-http-contract.json','reports/hf28-packaged-secret-http.json']
+def sha(data:bytes)->str:return hashlib.sha256(data).hexdigest()
+def mode(rel:str)->int:
+ if rel==SECRET:return 0o600
+ if rel.startswith('tools/') and rel.endswith(('.py','.sh')):return 0o755
+ if rel.startswith('tests/') and rel.endswith(('.py','.sh','.js','.php')):return 0o755
+ return 0o644
+def read_json(rel):return json.loads((ROOT/rel).read_text(encoding='utf-8'))
+def clean_caches():
+ for p in sorted(ROOT.rglob('__pycache__'),reverse=True):
+  if p.is_dir():
+   for q in sorted(p.rglob('*'),reverse=True):
+    if q.is_file():q.unlink()
+    elif q.is_dir():q.rmdir()
+   p.rmdir()
+ for p in ROOT.rglob('*.pyc'):p.unlink(missing_ok=True)
+def runtime_files():
+ rels,missing=compute_runtime()
+ if missing:raise SystemExit('runtime closure incomplete: '+', '.join(missing))
+ merged=list(rels)
+ for rel in HOSTING_DOCS:
+  if rel not in merged:merged.append(rel)
+ rows=[]
+ for rel in sorted(merged):
+  p=ROOT/rel
+  if not p.is_file():raise SystemExit('hosting payload missing: '+rel)
+  rows.append((rel,p.read_bytes(),mode(rel)))
+ return rows
+def full_files():
+ rows=[]
+ for p in sorted(ROOT.rglob('*')):
+  if not p.is_file():continue
+  rel=p.relative_to(ROOT).as_posix()
+  if any(x in EXCLUDE_PARTS for x in Path(rel).parts) or rel in EXCLUDE_NAMES:continue
+  rows.append((rel,p.read_bytes(),mode(rel)))
+ return rows
+def file_rows(files):return [{'path':r,'size':len(d),'sha256':sha(d),'mode':oct(m)} for r,d,m in files]
+def manifest(kind,files):
+ audit=read_json('reports/v6-beta3-release-audit.json');interaction=read_json('reports/v6-beta3-interaction-acceptance.json');group=read_json('reports/v6-beta3-nutrient-group-acceptance.json');profile=read_json('reports/v6-beta3-profile-acceptance.json');analysis=read_json('reports/v6-beta3-analysis-continuity.json');ui=read_json('reports/v6-beta3-ivory-acceptance.json');ux=read_json('reports/v6-beta3-ivory-extended-acceptance.json');media=read_json('reports/v6-beta3-gemini-media-acceptance.json');runtime=read_json('reports/v6-beta3-runtime-inventory.json');protected=read_json('reports/v6-beta3-protected-comparison.json');budget=read_json('reports/v6-beta3-ui-budget.json');syntax=read_json('reports/v6-beta3-syntax-checks.json');http=read_json('reports/hf28-http-contract.json');secret_http=read_json('reports/hf28-packaged-secret-http.json');extracted=read_json('reports/v6-beta3-extracted-hosting-acceptance.json');live=read_json('reports/v6-live-audio-transport-probe.json')
+ rows=file_rows(files)
+ return {
+  'schema_version':6,'release_version':VERSION,'base_release':BASE,'artifact_kind':kind,'created_at':CREATED,
+  'file_count':len(rows),'uncompressed_bytes':sum(x['size'] for x in rows),
+  'change_scope':'HOTFIX29 unified interaction states across all themes and layouts; no calculation-engine changes.',
+  'architecture':{
+   'themes':['modern','retro-2bit','ivory-brass'],'presentation_modes':['sections','canvas'],
+   'desktop_ivory':'spatial canvas with persistent analytical rail','mobile_model':'sequential sections with text-first group overview',
+   'view_model_contract':'NutritionUIViewModel.v1','nutrient_group_overview_contract':'NutrientGroupOverview.v1',
+   'nutrient_group_overview_source':'NutritionAnalysisWorkspaceHF7','nutrient_group_overview_role':'navigation-summary','nutrient_group_overview_not_a_score':True,
+   'status_semantics':['target','below','review','above','unknown'],'stable_interactive_dom':True,'safe_ui_query':'?safe-ui=1',
+   'product_count':1105,'protected_files_byte_identical':protected['unchanged_files'],'runtime_files':runtime['file_count'],
+   'profile_storage_contract':'NutritionProfilePersistenceV1 / nutritionCalculator.profile.v1','analysis_feature_contract':'NutritionFeatureContinuityV1',
+   'interaction_state_contract':'NutritionInteractionStatesV1','interaction_state_release':'HOTFIX29 completed','interaction_states':['idle','hover','pressed','focused','selected','loading','success','error','disabled','recording'],'future_work':{'HOTFIX30':'final profile progressive disclosure and field hierarchy'},
+   'server_credentials':'Existing primary and backup Gemini keys are intentionally included only in protected server-side api/gemini-secret.php.'},
+  'acceptance':{
+   'interaction_states':{'ok':interaction['ok'],'assertions':interaction['assertions']},'release_audit':{'ok':audit['ok'],'assertions':audit['assertions']},'group_overview':{'ok':group['ok'],'assertions':group['assertions']},
+   'profile':{'ok':profile['ok'],'assertions':profile['assertions']},'analysis':{'ok':analysis['ok'],'assertions':analysis['assertions']},
+   'ui':{'ok':ui['ok'],'assertions':ui['assertions']},'extended_ux':{'ok':ux['ok'],'assertions':ux['assertions']},
+   'gemini_browser':{'ok':media['ok'],'assertions':media['assertions']},'syntax':{'ok':syntax['ok'],'assertions':syntax['assertions']},
+   'runtime_closure_ok':runtime['ok'],'protected_core_changes':len(protected['changed']),
+   'ui_increment_bytes':budget['increment'],'http_contract':{'ok':http['ok'],'assertions':http['assertions']},
+   'packaged_secret_http':{'ok':secret_http['ok'],'assertions':secret_http['assertions']},
+   'extracted_hosting_browser':{'ok':extracted['ok'],'assertions':extracted['assertions']},
+   'live_provider_response_verified':live.get('provider_response_verified',False),'live_transport_status':live.get('http_status')},
+  'limitations':[
+   'External Gemini response was not received in the isolated build container because DNS access to Google API was unavailable; response handling was verified with a controlled mock.',
+   'Physical Android, iPhone, Safari, Samsung Internet and Qt WebEngine remain deployment acceptance checks.',
+   'Human usability testing has not yet been performed; release status remains beta 3.',
+   'The private archives intentionally contain protected server-side Gemini credentials; remove the uploaded ZIP from public web storage after extraction.',
+   'HOTFIX29 is completed in this release; HOTFIX30 remains the next separate stage.'],
+  'files':rows}
+def spdx(name,files):
+ fs=[]
+ for rel,data,_ in files:
+  sid='SPDXRef-File-'+hashlib.sha1(rel.encode()).hexdigest();fs.append({'SPDXID':sid,'fileName':'./'+rel,'checksums':[{'algorithm':'SHA256','checksumValue':sha(data)}],'licenseConcluded':'NOASSERTION','copyrightText':'NOASSERTION'})
+ return {'spdxVersion':'SPDX-2.3','dataLicense':'CC0-1.0','SPDXID':'SPDXRef-DOCUMENT','name':name,'documentNamespace':f'https://example.invalid/nutrition-calculator/{VERSION}/{name}','creationInfo':{'created':CREATED,'creators':['Tool: build_v6_beta3.py']},'packages':[{'SPDXID':'SPDXRef-Package-NutritionCalculator','name':'nutrition-calculator','versionInfo':VERSION,'downloadLocation':'NOASSERTION','filesAnalyzed':True,'licenseConcluded':'NOASSERTION','licenseDeclared':'NOASSERTION','copyrightText':'NOASSERTION'}],'files':fs,'relationships':[{'spdxElementId':'SPDXRef-Package-NutritionCalculator','relationshipType':'CONTAINS','relatedSpdxElement':x['SPDXID']} for x in fs]}
+def add(zf,rel,data,md):
+ info=zipfile.ZipInfo(rel,FIXED_DT);info.compress_type=zipfile.ZIP_DEFLATED;info.create_system=3;info.external_attr=(stat.S_IFREG|md)<<16;zf.writestr(info,data,compress_type=zipfile.ZIP_DEFLATED,compresslevel=9)
+def build(path,kind,files):
+ man=manifest(kind,files);sb=spdx(path.name,files);path.unlink(missing_ok=True)
+ with zipfile.ZipFile(path,'w') as z:
+  for rel,data,md in files:add(z,rel,data,md)
+  add(z,'release-manifest.json',(json.dumps(man,ensure_ascii=False,indent=2)+'\n').encode(),0o644);add(z,'release-sbom.spdx.json',(json.dumps(sb,ensure_ascii=False,indent=2)+'\n').encode(),0o644)
+ return man,sb
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--out-dir',default=str(OUT));ns=ap.parse_args();out=Path(ns.out_dir);out.mkdir(parents=True,exist_ok=True)
+ clean_caches();os.chmod(ROOT/SECRET,0o600);env=dict(os.environ);env['PYTHONDONTWRITEBYTECODE']='1'
+ r=subprocess.run([sys.executable,str(ROOT/'tools/generate_v6_beta3_runtime.py')],cwd=ROOT,env=env,capture_output=True,text=True)
+ if r.returncode:raise SystemExit('runtime generation failed: '+r.stderr)
+ os.chmod(ROOT/SECRET,0o600)
+ for rel in REQUIRED_REPORTS:
+  d=read_json(rel)
+  if d.get('ok') is not True:raise SystemExit('required report failed: '+rel)
+ hosting=runtime_files();full=full_files();hp=out/HOSTING_NAME;fp=out/FULL_NAME;hm,_=build(hp,'hosting-private',hosting);fm,sb=build(fp,'full-private-audited',full)
+ (ROOT/'release-manifest.json').write_text(json.dumps(fm,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');(ROOT/'release-sbom.spdx.json').write_text(json.dumps(sb,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+ result={'ok':True,'release_version':VERSION,'artifacts':[{'path':str(hp),'sha256':sha(hp.read_bytes()),'zip_bytes':hp.stat().st_size,'payload_files':len(hosting),'manifest_files':hm['file_count']},{'path':str(fp),'sha256':sha(fp.read_bytes()),'zip_bytes':fp.stat().st_size,'payload_files':len(full),'manifest_files':fm['file_count']}]}
+ (ROOT/'reports/v6-beta3-build.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print(json.dumps(result,ensure_ascii=False,indent=2))
+if __name__=='__main__':main()

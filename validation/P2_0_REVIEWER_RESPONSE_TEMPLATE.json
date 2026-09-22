@@ -1,0 +1,294 @@
+{
+  "blind_pack_sha256": "58f09a6980c69cfdf56e4a48fd2d1191755d9dbfcfbd595d7fb57a30b5a3a711",
+  "case_response_schema": {
+    "case_id": "Must match one blind-pack case ID.",
+    "comment_ru": "Required for FAIL, NOT_REVIEWED or material limitation.",
+    "result": "PASS | ACCEPT | ACCEPT_WITH_COMMENT | FAIL | NOT_REVIEWED"
+  },
+  "case_responses": [
+    {
+      "case_id": "P2-Q-001",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-002",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-003",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-004",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-005",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-006",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-007",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-008",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-009",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-010",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-011",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-012",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-013",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-014",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-015",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-016",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-017",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-018",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-019",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-020",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-021",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-022",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-023",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-024",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-025",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-026",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-027",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-028",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-029",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-030",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-Q-031",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-001",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-002",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-003",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-004",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-005",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-006",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-007",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-008",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-009",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-010",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-011",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-S-012",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-001",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-002",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-003",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-004",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-005",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-006",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-007",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    },
+    {
+      "case_id": "P2-U-008",
+      "comment_ru": "",
+      "result": "NOT_REVIEWED"
+    }
+  ],
+  "overall_assessment": {
+    "clarity": "NOT_REVIEWED",
+    "clinical_relevance": "NOT_REVIEWED",
+    "decision": "PENDING",
+    "limitations_ru": "",
+    "safety": "NOT_REVIEWED",
+    "scientific_validity": "NOT_REVIEWED"
+  },
+  "pack_id": "nutrition-calculator-p2-domain-review-blind",
+  "professional_scope": {
+    "conflicts_of_interest": "",
+    "country_or_jurisdiction": "",
+    "medical_protected_modes": false,
+    "nutrition_domain": false,
+    "role": "",
+    "years_experience_band": ""
+  },
+  "release_version": "v5.3.210-pc2",
+  "review_id": "",
+  "review_locked_at": "",
+  "review_started_at": "",
+  "reviewer_independence_attestation": false,
+  "reviewer_pseudonym": "",
+  "schema_version": 1,
+  "signature": {
+    "method": "typed_attestation_or_external_signature",
+    "signed_at": "",
+    "signed_by": ""
+  }
+}
