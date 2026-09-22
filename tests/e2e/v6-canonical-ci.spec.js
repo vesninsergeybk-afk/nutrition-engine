@@ -179,7 +179,7 @@ test('mobile interface keeps secondary display controls behind one settings acti
   await waitForCheckpoint(page);
   await waitForInterfacePass1(page);
 
-  const settings = page.locator('#interfaceSettingsHF2');
+  const settings = page.locator('#interfaceSettingsPass1');
   await expect(settings).toBeVisible();
   await expect(settings).toHaveText('Настройки');
   await expect(settings).toHaveAttribute('aria-expanded', 'false');
