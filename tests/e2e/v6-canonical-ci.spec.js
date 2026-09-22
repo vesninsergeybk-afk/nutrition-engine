@@ -296,8 +296,6 @@ test('UX audit captures completed profile, ration and analysis states', async ({
     await action.click();
     await page.waitForFunction(() => window.__lastNeedsMeta && window.__lastNeedsMeta.ok === true, null, { timeout: 30000 });
     await saveUxAudit(page, browserName + '-' + vp.name + '-profile-calculated');
-
-    if (window) {}
     await page.evaluate(() => {
       if (window.NavigationShellV1 && typeof window.NavigationShellV1.navigate === 'function') {
         window.NavigationShellV1.navigate('ration');
