@@ -294,7 +294,7 @@ test('mobile workspace removes duplicate profile chrome without losing profile a
   await expect(page.locator('#navigationShellContext .navigation-shell-context__copy p')).toBeHidden();
 
   await page.evaluate(() => window.NavigationShellV1.navigate('profile'));
-  await expect(page.locator('#navigationShellContext .navigation-shell-context__copy p')).toBeVisible();
+  await expect(page.locator('#needs .section-title-row h1')).toBeVisible();
 });
 
 
