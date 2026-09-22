@@ -193,6 +193,35 @@ html[data-interface-simplification="1"] .workspace-alt-entry__buttons button{
     width:calc(100vw - 16px)!important;
     max-width:calc(100vw - 16px)!important;
   }
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"] #workspaceProfileBackAction{
+    display:none!important;
+  }
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"] #workspacePersonContext{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:5px 8px!important;
+    margin-top:8px!important;
+    padding:8px 10px!important;
+  }
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"] #workspacePersonContext .workspace-person-context__targets{
+    display:none!important;
+  }
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"] #workspacePersonContext .workspace-person-context__copy small{
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"] .navigation-shell-context__copy p,
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/overview"] .navigation-shell-context__copy p,
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/nutrients"] .navigation-shell-context__copy p,
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"] .navigation-shell-context__copy p,
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="correction"] .navigation-shell-context__copy p,
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="report"] .navigation-shell-context__copy p{
+    display:none!important;
+  }
+  html[data-interface-simplification="1"][data-navigation-shell="workspace"] .navigation-shell-context{
+    padding:10px 12px!important;
+    margin-bottom:8px!important;
+  }
   html[data-interface-simplification="1"] .workspace-alt-entry__buttons{
     grid-template-columns:1fr!important;
   }
