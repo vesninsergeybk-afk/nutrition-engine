@@ -1,0 +1,10 @@
+{
+  "name": "nutrition-engine",
+  "compatibility_date": "2026-09-22",
+  "build": {
+    "command": "python3 tools/build_cloudflare_static.py"
+  },
+  "assets": {
+    "directory": "./.cloudflare/dist"
+  }
+}
