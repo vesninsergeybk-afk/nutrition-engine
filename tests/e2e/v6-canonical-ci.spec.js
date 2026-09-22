@@ -255,7 +255,7 @@ test('mobile search results and help dialog stay inside their usable viewport', 
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
 
   await page.evaluate(() => window.NavigationShellV1.navigate('profile'));
-  const help = page.locator('#needsHelpNeedsBtn');
+  const help = page.locator('#needsHelpBtn');
   await expect(help).toBeVisible();
   await help.click();
   const dialog = page.locator('dialog[open]').last();
