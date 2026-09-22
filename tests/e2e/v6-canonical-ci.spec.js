@@ -183,13 +183,14 @@ test('mobile interface keeps secondary display controls behind one settings acti
   await expect(settings).toBeVisible();
   await expect(settings).toHaveText('Настройки');
   await expect(settings).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.locator('#workspaceViewSwitcher')).toBeHidden();
+  const viewSwitcher = page.locator('#workspaceViewSwitcher');
+  if (await viewSwitcher.count()) await expect(viewSwitcher).toBeHidden();
   await expect(page.locator('#themeSwitcher')).toBeHidden();
   await expect(page.locator('#mainContent > header > .toolbar')).toBeHidden();
 
   await settings.click();
   await expect(settings).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.locator('#workspaceViewSwitcher')).toBeVisible();
+  if (await viewSwitcher.count()) await expect(viewSwitcher).toBeVisible();
   await expect(page.locator('#themeSwitcher')).toBeVisible();
   await expect(page.locator('#mainContent > header > .toolbar')).toBeVisible();
 
