@@ -7,7 +7,7 @@
   'use strict';
 
   var VERSION='v6.0.0-alpha1-responsive-layout';
-  var LAYOUT_KEY='nutritionCalculator.workspaceLayout.v1';
+  var LAYOUT_KEY='nutritionCalculator.workspaceLayout.v2';
   var initialized=false;
   var syncTimer=0;
 
