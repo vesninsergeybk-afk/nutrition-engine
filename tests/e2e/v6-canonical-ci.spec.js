@@ -4,92 +4,88 @@ function captureRuntimeFailures(page) {
   const failures = [];
   page.on('pageerror', error => failures.push(`pageerror: ${error.message}`));
   page.on('console', msg => {
-    if (msg.type() === 'error') failures.push(`console: ${msg.text()}`);
+    if (msg.type() !== 'error') return;
+    const text = msg.text();
+    // WebKit reports this standards limitation as a console error even though it
+    // does not represent an application failure.
+    if (text.includes("frame-ancestors") && text.includes("HTML meta element")) return;
+    failures.push(`console: ${text}`);
   });
   page.on('requestfailed', request => failures.push(`requestfailed: ${request.url()} ${request.failure()?.errorText || ''}`));
   return failures;
 }
 
-async function waitForCurrentV6(page) {
-  await page.waitForFunction(() =>
-    window.NutritionThemeParityHotfix &&
-    window.NutritionThemeParityHotfix.version === 'v6.0.0-beta6-hotfix4-theme-parity'
-  );
+async function waitForCheckpoint(page) {
+  await page.waitForFunction(() => {
+    const html = document.documentElement;
+    const ids = ['needs_sex', 'needs_age', 'needs_h', 'needs_w', 'needs_activity'];
+    const visible = id => {
+      const node = document.getElementById(id);
+      if (!node) return false;
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      return !node.hidden && style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+    };
+    return Boolean(
+      window.NutritionThemeParityHotfix &&
+      window.NutritionThemeParityHotfix.version === 'v6.0.0-beta6-hotfix4-theme-parity' &&
+      window.NutritionNeedsCheckpointV1 &&
+      window.__NEEDS_CHECKPOINT_MOUNTED__ &&
+      html.getAttribute('data-navigation-shell') === 'long' &&
+      ids.every(visible)
+    );
+  }, null, { timeout: 25000 });
 }
 
-test('canonical V6 Hotfix 4 boots with current navigation and design controls', async ({ page, loadApp }) => {
+test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ page, loadApp }) => {
   const failures = captureRuntimeFailures(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await loadApp();
-  await waitForCurrentV6(page);
+  await waitForCheckpoint(page);
 
   await expect(page.locator('html')).toHaveAttribute('data-ui-version', '6.0.0-beta6-hotfix4');
   await expect(page.locator('html')).toHaveAttribute('data-theme-parity-hotfix', '4');
-  await expect(page.locator('#interfaceControlsBarHF2')).toBeVisible();
-  await expect(page.locator('#workspaceViewSwitcher')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'long');
+  await expect(page.locator('#navigationShellLongReturn')).toBeVisible();
+
+  const workflow = page.locator('.workflow-steps a');
+  await expect(workflow).toHaveCount(5);
+  await expect(workflow.nth(0)).toContainText('Потребности');
+  await expect(workflow.nth(1)).toContainText('Рацион');
+  await expect(workflow.nth(2)).toContainText('Анализ');
+  await expect(workflow.nth(3)).toContainText('Улучшить');
+  await expect(workflow.nth(4)).toContainText('Отчёт');
+
   await expect(page.locator('#themeSwitcher')).toBeVisible();
   await expect(page.locator('#themeSwitcher [data-theme-value]')).toHaveCount(3);
-  await expect(page.locator('#workspaceViewSwitcher [data-workspace-view-mode]')).toHaveCount(2);
-
-  const routes = await page.locator('#navigationShell .navigation-shell__items [data-navshell-route]').evaluateAll(nodes =>
-    nodes.filter(node => {
-      const style = getComputedStyle(node);
-      const rect = node.getBoundingClientRect();
-      return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
-    }).map(node => node.getAttribute('data-navshell-route'))
-  );
-  expect(routes[0]).toBe('profile');
-  expect(routes).toContain('ration');
-  expect(routes).toContain('analysis/overview');
-  expect(routes).toContain('correction');
-  expect(routes).toContain('report');
-
   await page.waitForTimeout(250);
   expect(failures).toEqual([]);
 });
 
-test('mobile Sections and Canvas remain reversible without horizontal overflow', async ({ page, loadApp }) => {
+test('mobile checkpoint opens at the beginning without horizontal overflow', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
-  await waitForCurrentV6(page);
+  await waitForCheckpoint(page);
 
-  const canvas = page.locator('#workspaceViewSwitcher [data-workspace-view-mode="long"]');
-  const sections = page.locator('#workspaceViewSwitcher [data-workspace-view-mode="workspace"]');
-  await expect(canvas).toBeVisible();
-  await expect(canvas).toBeEnabled();
-  await expect(sections).toBeVisible();
-
-  await canvas.click();
   await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'long');
-  await expect(page.locator('#navigationShellLongReturn')).toBeVisible();
+  await expect(page.locator('#needsCompact')).toBeVisible();
+  await expect(page.locator('.workflow-steps')).toBeVisible();
 
-  const longMetrics = await page.evaluate(() => ({
+  const state = await page.evaluate(() => ({
     scroll: document.documentElement.scrollWidth,
-    client: document.documentElement.clientWidth
+    client: document.documentElement.clientWidth,
+    y: window.scrollY,
+    hash: window.location.hash
   }));
-  expect(longMetrics.scroll).toBeLessThanOrEqual(longMetrics.client + 1);
-
-  const returnButton = page.locator('[data-navshell-return-workspace]');
-  if (await returnButton.isVisible()) await returnButton.click();
-  else await sections.click();
-
-  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
-  const workspaceMetrics = await page.evaluate(() => ({
-    scroll: document.documentElement.scrollWidth,
-    client: document.documentElement.clientWidth
-  }));
-  expect(workspaceMetrics.scroll).toBeLessThanOrEqual(workspaceMetrics.client + 1);
+  expect(state.scroll).toBeLessThanOrEqual(state.client + 1);
+  expect(state.y).toBeLessThanOrEqual(2);
+  expect(state.hash).toBe('');
 });
 
-test('current needs flow calculates in profile, then allows explicit ration transition and return', async ({ page, loadApp }) => {
+test('current needs checkpoint calculates and preserves the profile across steps', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
-  await waitForCurrentV6(page);
-
-  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'profile');
-  for (const selector of ['#needs_sex', '#needs_age', '#needs_h', '#needs_w', '#needs_activity']) {
-    await expect(page.locator(selector)).toBeVisible();
-  }
+  await waitForCheckpoint(page);
 
   await page.selectOption('#needs_sex', 'female');
   await page.fill('#needs_age', '42');
@@ -98,23 +94,29 @@ test('current needs flow calculates in profile, then allows explicit ration tran
   await page.selectOption('#needs_activity', 'moderate');
 
   const action = page.locator('#profileCalculateContinue');
+  await expect(action).toBeVisible();
   await expect(action).toBeEnabled();
   await expect(action).toContainText(/Рассчитать|Пересчитать/i);
   await action.click();
 
-  await page.waitForFunction(() => document.documentElement.getAttribute('data-profile-calculation-state') === 'current');
-  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'profile');
+  await page.waitForFunction(() =>
+    window.__lastNeedsMeta &&
+    window.__lastNeedsMeta.ok === true &&
+    window.__lastNeedsMeta.personalProfile &&
+    window.__lastNeedsMeta.personalProfile.mode === 'adult_nasem_checkpoint'
+  );
+
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'long');
+  await expect(page.locator('#consultationNeedsSummary')).toBeVisible();
   await expect(page.locator('#normInput-kcal')).not.toHaveValue('');
   await expect(page.locator('#needs_print_btn')).toBeEnabled();
   await expect(page.locator('#needs_pdf_btn')).toBeEnabled();
 
-  const next = page.locator('#workspaceProfileNext');
-  await expect(next).toBeVisible();
-  await next.click();
-  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'ration');
+  await page.locator('.workflow-steps a[href="#globalSearchSection"]').click();
+  await expect(page.locator('#globalSearchSection')).toBeVisible();
+  await page.locator('.workflow-steps a[href="#needsCompact"]').click();
+  await expect(page.locator('#needsCompact')).toBeVisible();
 
-  await page.locator('#navigationShell [data-navshell-route="profile"]').first().click();
-  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'profile');
   await expect(page.locator('#needs_age')).toHaveValue('42');
   await expect(page.locator('#needs_h')).toHaveValue('168');
   await expect(page.locator('#needs_w')).toHaveValue('64');
@@ -122,10 +124,10 @@ test('current needs flow calculates in profile, then allows explicit ration tran
   await expect(page.locator('#needs_activity')).toHaveValue('moderate');
 });
 
-test('all three current themes remain user-selectable', async ({ page, loadApp }) => {
+test('all three current themes remain user-selectable in the checkpoint canvas', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await loadApp();
-  await waitForCurrentV6(page);
+  await waitForCheckpoint(page);
 
   for (const theme of ['modern', 'retro-2bit', 'ivory-brass']) {
     const button = page.locator(`#themeSwitcher [data-theme-value="${theme}"]`);
@@ -133,5 +135,6 @@ test('all three current themes remain user-selectable', async ({ page, loadApp }
     await button.click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
     await expect(button).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'long');
   }
 });
