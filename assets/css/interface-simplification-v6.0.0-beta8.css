@@ -355,3 +355,14 @@ html[data-theme-parity-hotfix="4"] .hei-group-hf4__head span{
 html[data-interface-simplification="1"] #mainContent>header .version-badge{
   display:none!important;
 }
+
+/* Clipping fix (Beta 8 UI pass 5), measured before and after.
+   The switch buttons inside the ration parity cards had no flex-shrink guard, so the
+   card title squeezed them below their own label width: "Подробнее" overflowed by
+   20px, "Тарелка" by 13px, and both labels were cut.
+   The profile disclosure summary also reports 7px of overflow, but measurement shows
+   its label sits on one line ending 106px short of the edge — that overflow comes from
+   the 18px arrow pseudo-element, not from clipped text, so it is left alone. */
+html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
+  flex:0 0 auto;
+}
