@@ -378,7 +378,8 @@ html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
    Sizes are raised to 12px, the floor for auxiliary text; each was re-measured for
    clipping and for the accessibility gate afterwards. */
 .navigation-shell__items a span{
-  font-size:12px!important;
+  font-size:11px!important;
+  white-space:nowrap!important;
 }
 .search-result-main .meta .pill,
 .search-result-main .meta span.pill{
