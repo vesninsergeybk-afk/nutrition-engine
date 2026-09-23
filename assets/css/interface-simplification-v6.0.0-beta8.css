@@ -366,3 +366,32 @@ html[data-interface-simplification="1"] #mainContent>header .version-badge{
 html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
   flex:0 0 auto;
 }
+
+/* Type scale floor (Beta 8 UI pass 6).
+   Measurement found 706 text runs below 12px across 105 selector/size combinations.
+   This raises the most widespread offenders rather than every value at once:
+     - navigation labels        9.5px, present on all 7 routes (28 runs)
+     - search result category pills 11px (136 runs, the single largest group)
+     - analysis row labels and group captions 10.5px (45 runs)
+     - diet zone explanation captions 11px (30 runs)
+     - age profile spec labels  10px (12 runs)
+   Sizes are raised to 12px, the floor for auxiliary text; each was re-measured for
+   clipping and for the accessibility gate afterwards. */
+.navigation-shell__items a span{
+  font-size:12px!important;
+}
+.search-result-main .meta .pill,
+.search-result-main .meta span.pill{
+  font-size:12px!important;
+}
+.workspace-analysis-row__values span,
+.workspace-analysis-row__group{
+  font-size:12px!important;
+}
+.diet-zone-explain-grid span{
+  font-size:12px!important;
+}
+.needs-age-profile-spec-row span,
+.needs-age-profile-spec-row strong{
+  font-size:12px!important;
+}
