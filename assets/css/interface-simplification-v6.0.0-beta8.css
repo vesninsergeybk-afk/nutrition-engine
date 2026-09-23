@@ -439,6 +439,24 @@ html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
 #mainContent #consultationNeedsSummary .consultation-summary-grid>div>small{
   display:none!important;
 }
+/* Values should read as data, not as part of a running sentence: bolder values, muted
+   labels, and a divider between the pairs on wide screens. */
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>span{
+  color:#5d7086!important;
+  /* The injected stylesheet fades these labels to 72% opacity, which turns #5d7086
+     into an effective #8a98a8 and measures 2.94:1 against white. */
+  opacity:1!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>strong{
+  font-weight:800!important;
+  white-space:nowrap!important;
+}
+@media(min-width:900px){
+  #mainContent #consultationNeedsSummary .consultation-summary-grid>div:not(:first-child){
+    border-left:1px solid #e2e8f0!important;
+    padding-left:20px!important;
+  }
+}
 @media(max-width:680px){
   #mainContent #consultationNeedsSummary .consultation-summary-grid{
     display:grid!important;
