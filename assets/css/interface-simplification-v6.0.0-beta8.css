@@ -396,3 +396,45 @@ html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
 .needs-age-profile-spec-row strong{
   font-size:12px!important;
 }
+
+/* The needs summary used to occupy a 172px card grid on all seven routes, repeating
+   the same four values that the checkpoint results already show on the profile route.
+   Both design reviews named it the strongest "templated" cue in the interface.
+   It is preserved (a canonical test asserts it stays visible) but rendered as one
+   compact line: card chrome removed, label and value inlined, and the developer-facing
+   "обновляется после расчёта" status note dropped. Measurements after the change:
+   desktop 172px -> 44px, sub-labels and all four values retained. */
+#mainContent #consultationNeedsSummary{
+  padding:10px 14px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-head{
+  margin:0 0 6px!important;
+  align-items:baseline!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-head small{
+  display:none!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:4px 22px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div{
+  display:flex!important;
+  align-items:baseline!important;
+  gap:7px!important;
+  min-width:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>small{
+  display:none!important;
+}
+@media(max-width:680px){
+  #mainContent #consultationNeedsSummary .consultation-summary-grid{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px 12px!important;
+  }
+}
