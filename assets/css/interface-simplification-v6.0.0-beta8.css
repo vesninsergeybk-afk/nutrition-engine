@@ -322,8 +322,7 @@ html[data-theme-parity-hotfix="4"] .hei-group-hf4__head span{
   color:#5d7086!important;
 }
 
-/* Developer chrome removal (Beta 8 UI pass 5).
-   Pass 1 collapsed the interface controls inside @media(max-width:899px) only, so a
+/* Developer chrome removal (Beta 8 UI pass 5).   Pass 1 collapsed the interface controls inside @media(max-width:899px) only, so a
    desktop window still carried the theme strip at 1116x60 px and the view switcher at
    208x44 px above the content, plus a 121x24 px build stamp in the header — all of it
    reading as leftover development chrome rather than product UI.
@@ -354,6 +353,15 @@ html[data-theme-parity-hotfix="4"] .hei-group-hf4__head span{
    report or print view may still surface the version where that is legitimate. */
 html[data-interface-simplification="1"] #mainContent>header .version-badge{
   display:none!important;
+}
+/* The header is a two-column grid, so the settings button lands in the second column
+   and stretches to its full width: measured 770px on desktop and 352px on mobile,
+   reading as an empty bar. It should sit at the right edge at its own size, which also
+   stops it from consuming the first mobile screen. The id selector outranks the
+   width:100% rule the mobile block sets for it. */
+html[data-interface-simplification="1"] #mainContent>header>#interfaceSettingsPass1{
+  justify-self:end!important;
+  width:auto!important;
 }
 
 /* Clipping fix (Beta 8 UI pass 5), measured before and after.
