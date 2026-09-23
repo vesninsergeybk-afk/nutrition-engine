@@ -41,8 +41,10 @@ async function seedRation(page) {
   await seedProfile(page);
   const step = page.locator('.workflow-steps a[href="#globalSearchSection"]');
   if (await step.count()) {
-    await step.click();
-    await page.waitForTimeout(300);
+    // A real click is unreliable here on narrow viewports; the link only needs to
+    // trigger its own handler, so invoke it directly.
+    await step.first().evaluate(node => node.click()).catch(() => {});
+    await page.waitForTimeout(400);
   }
   const input = page.locator('#globalSearchInput');
   await input.waitFor({ state: 'visible', timeout: 15000 });

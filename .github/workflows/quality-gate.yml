@@ -86,6 +86,16 @@ jobs:
             --timeout=90000 \
             --reporter=line
 
+      # The accessibility contract audits both the empty and the filled state and
+      # covers the report route, which the empty-state scenarios never reach.
+      - name: Run WCAG accessibility gate
+        run: |
+          npx playwright test tests/e2e/accessibility.spec.js \
+            --project=${{ matrix.browser }} \
+            --retries=1 \
+            --timeout=90000 \
+            --reporter=line
+
       - name: Upload browser diagnostics
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -95,5 +105,6 @@ jobs:
             reports/playwright-artifacts/
             reports/playwright-results.json
             reports/playwright-html/
+            reports/axe/
           if-no-files-found: warn
           retention-days: 14
