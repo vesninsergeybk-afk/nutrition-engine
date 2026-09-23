@@ -528,7 +528,7 @@ dialog::backdrop{background:rgba(0,0,0,0.35);}
 
 
 /* ===== extracted style block 10 from v3.6 ===== */
-:root { --primary:#0b61d6; --primary-600:#0a55bd; --muted:#e7f0ff;--muted-text:#64748b; }
+:root { --primary:#0b61d6; --primary-600:#0a55bd; --muted:#e7f0ff;--muted-text:#5d7086; }
   button { background:#0b61d6; border-color:#0b61d6; }
   button.secondary, .btn.secondary { background:#fff; color:#0b61d6; border-color:#0b61d6; }
   button.ghost { color:#0b61d6; }

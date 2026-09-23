@@ -240,3 +240,84 @@ html[data-interface-simplification="1"] .workspace-alt-entry__buttons button{
     grid-template-columns:1fr!important;
   }
 }
+
+/* Contrast corrections (Beta 8 UI pass 4).
+   Root cause: the legacy global rule
+     button:not(.secondary):not(.danger):not(.icon-btn):not(.close-btn)
+   carries specificity (0,4,1) and repaints component buttons blue, overriding the
+   white background those components declare for themselves. Their nested muted text
+   then lands on #145ec7 and measures 1.35:1 (ration entry methods) and 1.27:1
+   (analysis command cards).
+
+   The fix restores the designed appearance of those components rather than forcing
+   their text light: forcing light text would break their own light hover state
+   (.workspace-ration-entry-methods__grid button:hover is #f5f9fd).
+   Scoping by the #mainContent id is deliberate — an id outranks the four pseudo-class
+   selectors of the legacy rule without touching that shared rule.
+
+   Verified contrast: #5d7086 on #ffffff = 5.05:1, #5d7086 on #f6f9fc = 4.82:1,
+   #12805c on #f7f9fc = 4.67:1 (WCAG AA needs 4.5:1 for normal text). */
+#mainContent .workspace-ration-entry-methods__grid button{
+  background:#fff!important;
+  border-color:#ceddea!important;
+  color:#284964!important;
+}
+#mainContent .workspace-ration-entry-methods__grid button:hover{
+  background:#f5f9fd!important;
+  border-color:#8eb6df!important;
+}
+#mainContent .workspace-ration-entry-methods__grid button small{
+  color:#5d7086!important;
+}
+#mainContent .analysis-command-center-hf3__card{
+  background:var(--surface,#fff)!important;
+  border-color:var(--border,#d8e1eb)!important;
+  color:inherit!important;
+}
+#mainContent .analysis-command-center-hf3__card>span,
+#mainContent .analysis-command-center-hf3__card>small,
+#mainContent #analysisCommandMatrixNoteHF3{
+  color:#5d7086!important;
+}
+#mainContent .workspace-analysis-row__values span{
+  color:#5d7086!important;
+}
+#mainContent .analysis-command-center-hf3__head>div>span{
+  color:#12805c!important;
+}
+#mainContent #dietAnalysisPoint{
+  min-width:24px!important;
+  min-height:24px!important;
+}
+/* Same class of failure in neighbouring components, measured by the same gate:
+   .workspace-correction-ai > small 4.48:1, .workspace-contributors>summary small
+   3.75:1 on the ivory surface, the command card <em> 2.99:1 and the theme-parity
+   eyebrow 2.81:1 (green accent used as text). */
+#mainContent .workspace-correction-ai>small{
+  color:#5d7086!important;
+}
+#mainContent .workspace-contributors>summary small{
+  color:#5d7086!important;
+}
+#mainContent .analysis-command-center-hf3__card>em{
+  color:#12805c!important;
+}
+html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__head span,
+html[data-theme-parity-hotfix="4"] .hei-executive-hf4__eyebrow,
+html[data-theme-parity-hotfix="4"] .hei-group-hf4__head span{
+  color:#12805c!important;
+}
+/* The theme-parity group buttons declare no background of their own, so the legacy
+   global rule paints them blue; only their nested <small> needs to follow suit
+   (#dbe7f8 on #145ec7 = 4.86:1) rather than being repainted. */
+#mainContent button[data-hf4-group]>small{
+  color:#dbe7f8!important;
+}
+/* Ration table header labels measured 4.26:1 on #f4f8ff. */
+#mainContent #rationTable>thead>tr>th{
+  color:#5d7086!important;
+}
+/* BMI readout measured 4.43:1 on #f5f7f9 — the last remaining contrast failure. */
+#mainContent #needs_bmi{
+  color:#5d7086!important;
+}

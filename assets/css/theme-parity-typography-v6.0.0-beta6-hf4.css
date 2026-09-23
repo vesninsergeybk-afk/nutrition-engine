@@ -11,7 +11,7 @@ html[data-theme-parity-hotfix="4"]{
   --hf4-soft-bg:var(--surface-soft,#f6f8fb);
   --hf4-line:var(--border,#d7e0ea);
   --hf4-ink:var(--text,#172033);
-  --hf4-muted:var(--muted,#5d6d7e);
+  --hf4-muted:var(--muted-text,#5d6d7e);
   --hf4-accent:var(--accent,var(--primary-600,#2469bd));
   --hf4-good:#2f7a5d;
   --hf4-warn:#9a6c18;
