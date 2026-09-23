@@ -57,6 +57,7 @@ test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ pa
   await page.setViewportSize({ width: 1440, height: 1000 });
   await loadApp();
   await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
 
   await expect(page.locator('html')).toHaveAttribute('data-ui-version', '6.0.0-beta6-hotfix4');
   await expect(page.locator('html')).toHaveAttribute('data-theme-parity-hotfix', '4');
@@ -71,6 +72,9 @@ test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ pa
   await expect(workflow.nth(3)).toContainText('Улучшить');
   await expect(workflow.nth(4)).toContainText('Отчёт');
 
+  await expect(page.locator('#themeSwitcher')).toBeHidden();
+  await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+  await page.locator('#interfaceSettingsPass1').click();
   await expect(page.locator('#themeSwitcher')).toBeVisible();
   await expect(page.locator('#themeSwitcher [data-theme-value]')).toHaveCount(3);
   await page.waitForTimeout(250);
@@ -150,6 +154,13 @@ test('all three current themes remain user-selectable in the checkpoint canvas',
   await page.setViewportSize({ width: 1440, height: 1000 });
   await loadApp();
   await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  // The switcher is reachable through the settings action rather than always on screen.
+  const settingsToggle = page.locator('#interfaceSettingsPass1');
+  await expect(settingsToggle).toBeVisible();
+  if ((await settingsToggle.getAttribute('aria-expanded')) !== 'true') await settingsToggle.click();
+  await expect(page.locator('#themeSwitcher')).toBeVisible();
 
   for (const theme of ['modern', 'retro-2bit', 'ivory-brass']) {
     const button = page.locator(`#themeSwitcher [data-theme-value="${theme}"]`);

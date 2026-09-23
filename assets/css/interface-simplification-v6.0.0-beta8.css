@@ -321,3 +321,37 @@ html[data-theme-parity-hotfix="4"] .hei-group-hf4__head span{
 #mainContent #needs_bmi{
   color:#5d7086!important;
 }
+
+/* Developer chrome removal (Beta 8 UI pass 5).
+   Pass 1 collapsed the interface controls inside @media(max-width:899px) only, so a
+   desktop window still carried the theme strip at 1116x60 px and the view switcher at
+   208x44 px above the content, plus a 121x24 px build stamp in the header — all of it
+   reading as leftover development chrome rather than product UI.
+   The collapse now applies above the mobile breakpoint as well; the controls stay one
+   click away behind the existing settings action (#interfaceSettingsPass1), and the
+   build stamp remains available as data-ui-version / __APP_DEPLOY_VERSION__. */
+@media(min-width:900px){
+  html[data-interface-simplification="1"] #interfaceSettingsPass1{
+    display:inline-flex!important;
+  }
+  html[data-interface-simplification="1"] #mainContent>header #workspaceViewSwitcher,
+  html[data-interface-simplification="1"] #mainContent>header #themeSwitcher,
+  html[data-interface-simplification="1"] #mainContent>header>.toolbar{
+    display:none!important;
+  }
+  html[data-interface-simplification="1"] #mainContent>header.interface-settings-pass1-open #workspaceViewSwitcher,
+  html[data-interface-simplification="1"] #mainContent>header.interface-settings-pass1-open #themeSwitcher{
+    display:grid!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  html[data-interface-simplification="1"] #mainContent>header.interface-settings-pass1-open>.toolbar{
+    display:flex!important;
+  }
+}
+/* The build stamp is diagnostic metadata, not product copy. Scoped to the header so a
+   report or print view may still surface the version where that is legitimate. */
+html[data-interface-simplification="1"] #mainContent>header .version-badge{
+  display:none!important;
+}
