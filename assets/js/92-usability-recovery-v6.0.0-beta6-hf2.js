@@ -25,7 +25,7 @@
     var header=d.querySelector('#mainContent>header'),title=header&&header.querySelector('.title'),toolbar=header&&header.querySelector('.toolbar'),view=byId('workspaceViewSwitcher'),theme=byId('themeSwitcher'),bar=byId('interfaceControlsBarHF2');
     if(!header||!view||!theme)return;
     if(!bar){
-      bar=d.createElement('div');bar.id='interfaceControlsBarHF2';bar.className='interface-controls-hf2';bar.setAttribute('aria-label','Вид и дизайн калькулятора');
+      bar=d.createElement('div');bar.id='interfaceControlsBarHF2';bar.className='interface-controls-hf2';bar.setAttribute('role','group');bar.setAttribute('aria-label','Вид и дизайн калькулятора');
       if(toolbar&&toolbar.parentNode===header)header.insertBefore(bar,toolbar);else if(title&&title.nextSibling)header.insertBefore(bar,title.nextSibling);else header.appendChild(bar);
     }
     if(view.parentNode!==bar)bar.appendChild(view);

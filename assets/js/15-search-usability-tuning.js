@@ -36,7 +36,9 @@
     if (!head) {
       head = document.createElement('div');
       head.className = 'v45-search-panel-head';
-      head.setAttribute('role','status');
+      // role="status" is not an allowed child of the results container, which
+      // declares role="list"; keep the live region behaviour and list validity.
+      head.setAttribute('role','listitem');
       head.setAttribute('aria-live','polite');
       root.insertBefore(head, root.firstChild);
     }

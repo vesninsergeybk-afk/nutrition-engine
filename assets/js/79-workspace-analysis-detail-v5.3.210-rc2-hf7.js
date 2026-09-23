@@ -223,7 +223,7 @@
     return '<article class="workspace-analysis-row is-'+esc(row.status.code)+'" id="workspaceNutrientRow-'+esc(row.key)+'" data-analysis-key="'+esc(row.key)+'">'+
       '<div class="workspace-analysis-row__top"><div><span class="workspace-analysis-row__group">'+esc(NUTRIENT_GROUPS[row.group]?NUTRIENT_GROUPS[row.group].label:'Прочее')+'</span><h4>'+esc(row.title)+'</h4></div><span class="workspace-status">'+esc(row.status.label)+'</span></div>'+
       '<div class="workspace-analysis-row__values"><div><span>Фактическое значение</span><strong>'+esc(fmtAmount(row.actual,row.unit))+'</strong></div><div><span>Ориентир</span><strong>'+esc(target)+'</strong></div></div>'+
-      (row.mode!=='informational'&&row.target>0?'<div class="workspace-analysis-progress" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(clamp(row.progress,0,100),1)+'%"></i><b style="left:'+fmt(clamp(row.progress,0,100),1)+'%"></b></div>':'')+
+      (row.mode!=='informational'&&row.target>0?'<div class="workspace-analysis-progress" role="img" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(clamp(row.progress,0,100),1)+'%"></i><b style="left:'+fmt(clamp(row.progress,0,100),1)+'%"></b></div>':'')+
       '<p class="workspace-analysis-row__note">'+esc(row.status.note)+'</p>'+
       '<details class="workspace-contributors" data-contributor-key="'+esc(row.key)+'"><summary><span>Основные вкладчики</span><small>'+esc(coverage)+'</small></summary><div class="workspace-contributors__body">'+contributorHtml(row.coverage,row.unit,row.coverage.covered===0?'В карточках текущих продуктов нет данных для этого показателя.':'Продукты с положительным вкладом не найдены.')+'<p class="workspace-contributors__quality">Достоверность: '+esc(row.quality.label)+'.</p></div></details>'+
       '</article>';
@@ -272,7 +272,7 @@
     return '<article class="workspace-analysis-row workspace-hei-row is-'+esc(row.status.code)+'" id="workspaceHeiRow-'+esc(row.key)+'" data-analysis-key="'+esc(row.key)+'">'+
       '<div class="workspace-analysis-row__top"><div><span class="workspace-analysis-row__group">'+esc(HEI_GROUP_LABELS[row.group]||'Компонент HEI')+'</span><h4>'+esc(row.title)+'</h4></div><span class="workspace-status">'+esc(row.status.label)+'</span></div>'+
       '<div class="workspace-hei-scoreline"><strong>'+fmt(row.points,1)+' из '+fmt(row.maxPoints,0)+' баллов</strong><span>'+fmt(row.pct,0)+'% собственного максимума</span></div>'+
-      '<div class="workspace-analysis-progress" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(row.pct,1)+'%"></i><b style="left:'+fmt(row.pct,1)+'%"></b></div>'+
+      '<div class="workspace-analysis-progress" role="img" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(row.pct,1)+'%"></i><b style="left:'+fmt(row.pct,1)+'%"></b></div>'+
       '<div class="workspace-analysis-row__values"><div><span>Фактическое значение</span><strong>'+esc(row.actual)+'</strong></div><div><span>Ориентир HEI</span><strong>'+esc(row.norm)+'</strong></div></div>'+
       (row.action?'<p class="workspace-analysis-row__note">'+esc(row.action)+'</p>':'')+
       '<details class="workspace-contributors" data-hei-contributor-key="'+esc(row.key)+'"><summary><span>Основные вкладчики</span><small>достоверность: '+esc(row.confidence)+'</small></summary><div class="workspace-contributors__body">'+heiContributorHtml(row)+'</div></details>'+
