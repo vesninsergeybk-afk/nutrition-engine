@@ -379,24 +379,25 @@ function cleanSkeletonGeometry(sourceGeometry, matrixWorld) {
 }
 
 function mergeSkeletonGeometries(geometries) {
-  if (!geometries.length) return null;
+  if (!geometries.length) return { merged: null, temporaries: [] };
 
   const allIndexed = geometries.every((g) => Boolean(g.index));
   const allNonIndexed = geometries.every((g) => !g.index);
 
   if (!allIndexed && !allNonIndexed) {
-    return mergeGeometries(
-      geometries.map((geometry) => {
-        if (!geometry.index) return geometry;
-        const converted = geometry.toNonIndexed();
-        geometry.dispose();
-        return converted;
-      }),
-      false
+    const temporaries = geometries.map((geometry) =>
+      geometry.index ? geometry.toNonIndexed() : geometry.clone()
     );
+    return {
+      merged: mergeGeometries(temporaries, false),
+      temporaries,
+    };
   }
 
-  return mergeGeometries(geometries, false);
+  return {
+    merged: mergeGeometries(geometries, false),
+    temporaries: [],
+  };
 }
 
 async function loadSkeletonLayer(loader) {
@@ -410,12 +411,11 @@ async function loadSkeletonLayer(loader) {
       geometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
     });
 
-    const merged = mergeSkeletonGeometries(geometries);
+    const { merged, temporaries } = mergeSkeletonGeometries(geometries);
     if (!merged) throw new Error("Не удалось объединить геометрию скелета.");
 
-    for (const geometry of geometries) {
-      if (geometry !== merged) geometry.dispose();
-    }
+    for (const geometry of geometries) geometry.dispose();
+    for (const geometry of temporaries) geometry.dispose();
 
     const material = new THREE.MeshBasicMaterial({
       color: 0xfff0c9,
