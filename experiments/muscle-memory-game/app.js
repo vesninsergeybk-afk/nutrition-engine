@@ -5,18 +5,20 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 const MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/main/systems/kas.glb";
 
+// Первый MVP проверяет только структуры, которые можно реально выбрать
+// на полной поверхностной модели. Глубокие мышцы (например, subscapularis,
+// supraspinatus) требуют отдельного режима снятия слоёв.
 const TARGETS = [
   { ru: "дельтовидную мышцу", latin: "m. deltoideus", re: /deltoid/i },
-  { ru: "надостную мышцу", latin: "m. supraspinatus", re: /supraspin/i },
-  { ru: "подостную мышцу", latin: "m. infraspinatus", re: /infraspin/i },
-  { ru: "подлопаточную мышцу", latin: "m. subscapularis", re: /subscap/i },
-  { ru: "малую круглую мышцу", latin: "m. teres minor", re: /teres.?minor/i },
-  { ru: "большую круглую мышцу", latin: "m. teres major", re: /teres.?major/i },
   { ru: "большую грудную мышцу", latin: "m. pectoralis major", re: /pectoralis.?major/i },
   { ru: "широчайшую мышцу спины", latin: "m. latissimus dorsi", re: /latissimus/i },
   { ru: "двуглавую мышцу плеча", latin: "m. biceps brachii", re: /biceps.?brach/i },
   { ru: "трёхглавую мышцу плеча", latin: "m. triceps brachii", re: /triceps.?brach/i },
+  { ru: "трапециевидную мышцу", latin: "m. trapezius", re: /trapezius/i },
 ];
+
+const COVER_RE =
+  /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
 
 const canvas = document.querySelector("#viewer");
 const loadingEl = document.querySelector("#loading");
@@ -155,7 +157,7 @@ function discoverTargets() {
   });
 
   targetStatusEl.textContent =
-    `Распознано учебных целей: ${availableTargets.length} из ${TARGETS.length}.`;
+    `Поверхностный режим: распознано целей ${availableTargets.length} из ${TARGETS.length}. Глубокие мышцы будут в режиме снятия слоёв.`;
 
   diagnosticsEl.textContent =
     `В GLB найдено mesh-объектов: ${meshes.length}. Учебных целей: ${availableTargets.length}.`;
@@ -280,10 +282,31 @@ async function loadModel() {
     root = gltf.scene;
     scene.add(root);
 
+    // GLTFLoader нормализует имена node-объектов. Для учебной проверки
+    // сохраняем исходные имена из glTF JSON, как это делает источник модели.
+    const json = gltf.parser.json;
+    const assoc = gltf.parser.associations;
+    const originalName = (obj) => {
+      const a = assoc.get(obj);
+      if (a && a.nodes !== undefined && json.nodes?.[a.nodes]) {
+        return json.nodes[a.nodes].name || obj.name;
+      }
+      return obj.name;
+    };
+
     root.traverse((child) => {
       if (!child.isMesh) return;
+
       child.frustumCulled = true;
-      child.userData.originalName = child.name;
+      child.userData.originalName = originalName(child);
+
+      // Фасции и апоневрозы могут закрывать мышцы и превращать задание
+      // в технически невыполнимое. В первом игровом режиме их не показываем.
+      if (COVER_RE.test(child.userData.originalName || "")) {
+        child.visible = false;
+        return;
+      }
+
       rememberMaterial(child);
       meshes.push(child);
     });
