@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
 
@@ -10,9 +9,8 @@ const MUSCLE_MODEL_URL =
 const SKELETON_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb";
 
-const BODYPARTS3_ROOT =
-  "https://raw.githubusercontent.com/Kevin-Mattheus-Moerman/BodyParts3D/f0eeb6e843380cfe6b83797cf8c3e1af74de5e61/assets/BodyParts3D_data/stl";
-const BODYPARTS3_LIST = "./benchmarks/bodyparts3d-3.0-95-shoulder.tsv";
+const BODYPARTS3_GLB =
+  "https://github.com/vesninsergeybk-afk/nutrition-engine/releases/download/muscle-memory-assets-v1/bodyparts3d-3.0-95-right-shoulder.glb";
 
 const BODYPARTS4_ROOT =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
@@ -1086,49 +1084,44 @@ async function loadZAnatomyModel() {
   finalizeModel(muscleGeometries, vertexCounts, boneGeometries);
 }
 
-async function fetchBodyParts3List() {
-  const response = await fetch(BODYPARTS3_LIST);
-  if (!response.ok) throw new Error("Не удалось получить список структур BodyParts3D 3.0.");
-
-  const rows = (await response.text())
-    .trim()
-    .split(/\\r?\\n/)
-    .slice(1)
-    .map((line) => {
-      const tab = line.indexOf("\\t");
-      return { id: line.slice(0, tab), name: line.slice(tab + 1) };
-    })
-    .filter((row) => /\\bright\\b/i.test(row.name));
-
-  return rows;
+function bodyParts3StructureName(rawName) {
+  return String(rawName || "")
+    .replace(/^FMA\d+__/, "")
+    .replaceAll("_", " ")
+    .trim();
 }
 
 async function loadBodyParts3Model() {
-  const rows = await fetchBodyParts3List();
-  const loader = new STLLoader();
+  const loader = new GLTFLoader();
+  loadingEl.textContent = "BodyParts3D 3.0: загружаю модель плечевого пояса…";
+  const gltf = await loader.loadAsync(BODYPARTS3_GLB);
+  gltf.scene.updateMatrixWorld(true);
+
   const muscleGeometries = [];
   const boneGeometries = [];
   const vertexCounts = [];
 
-  for (let i = 0; i < rows.length; i += 1) {
-    const row = rows[i];
-    loadingEl.textContent =
-      "BodyParts3D 3.0: загружаю структуру " + (i + 1) + " из " + rows.length + "…";
+  gltf.scene.traverse((child) => {
+    if (!child.isMesh) return;
 
-    const geometry = await loader.loadAsync(BODYPARTS3_ROOT + "/" + row.id + ".stl");
-    if (SHOULDER_BONE_RE.test(row.name)) {
-      boneGeometries.push(cleanSkeletonGeometry(geometry, new THREE.Matrix4()));
+    const name = bodyParts3StructureName(child.name || child.parent?.name);
+    if (!name) return;
+
+    if (SHOULDER_BONE_RE.test(name)) {
+      boneGeometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
     } else {
       appendMuscleGeometry(
-        row.name,
-        geometry,
-        new THREE.Matrix4(),
+        name,
+        child.geometry,
+        child.matrixWorld,
         muscleGeometries,
         vertexCounts
       );
     }
-    geometry.dispose();
-    await new Promise(requestAnimationFrame);
+  });
+
+  if (!muscleGeometries.length) {
+    throw new Error("В BodyParts3D 3.0 не найдены мышечные структуры.");
   }
 
   finalizeModel(muscleGeometries, vertexCounts, boneGeometries);
