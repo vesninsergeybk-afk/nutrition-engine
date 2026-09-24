@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "region": "shoulder_girdle",
+  "policy": {
+    "teaching_status_required": "verified_for_teaching",
+    "current_default_geometry": "z_anatomy_web_prototype",
+    "candidate_primary_geometry": "bodyparts3d_4_0",
+    "terminology": "fipat_ta2",
+    "independent_regional_validation": [
+      "anatomytool_open3dmodel",
+      "visible_human_nih3d",
+      "open_anatomy_project"
+    ]
+  },
+  "sources": {
+    "bodyparts3d_4_0": {
+      "role": "candidate_primary_geometry",
+      "license": "CC BY 4.0",
+      "url": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/",
+      "status": "available"
+    },
+    "anatomytool_open3dmodel": {
+      "role": "regional_expert_validation",
+      "url": "https://anatomytool.org/content/open3dmodel-rotator-cuff-muscles-english-labels",
+      "status": "reference_available_license_per_item"
+    },
+    "visible_human_nih3d": {
+      "role": "imaging_derived_validation",
+      "url": "https://3d.nih.gov/entries/3DPX-012628",
+      "status": "reference_available_check_entry_license"
+    },
+    "fipat_ta2": {
+      "role": "terminology",
+      "url": "https://fipat.library.dal.ca/",
+      "status": "available"
+    }
+  },
+  "structures": [
+    {
+      "canonical_key": "deltoid",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "supraspinatus",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "infraspinatus",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "subscapularis",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "teres minor",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "teres major",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "pectoralis major",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "latissimus dorsi",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "biceps brachii",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "triceps brachii",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "trapezius",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "levator scapulae",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "rhomboid major",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "rhomboid minor",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "serratus anterior",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "coracobrachialis",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "scapula",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "clavicle",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    },
+    {
+      "canonical_key": "humerus",
+      "status": "pending_geometry_review",
+      "terminology_review": "pending",
+      "geometry_review": "pending",
+      "relation_review": "pending",
+      "notes": []
+    }
+  ]
+}
