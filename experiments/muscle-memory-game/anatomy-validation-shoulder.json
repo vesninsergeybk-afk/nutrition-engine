@@ -33,6 +33,21 @@
       "role": "terminology",
       "url": "https://fipat.library.dal.ca/",
       "status": "available"
+    },
+    "bodyparts3d_4_3_fullres_candidate": {
+      "role": "candidate_high_detail_geometry",
+      "url": "https://github.com/olivercase/body_parts_3d_api",
+      "version": "4.3",
+      "mesh_count_claimed": 3210,
+      "status": "pending_provenance_and_license_review",
+      "note": "Undocumented Anatomography endpoints; do not publish as production dependency until license/provenance is resolved."
+    },
+    "human_atlas_conversion": {
+      "role": "browser_conversion_for_quality_lab",
+      "url": "https://github.com/ashemag/human-atlas",
+      "pinned_commit": "1c38bf35c254a891200d3cedecfd57abebe83d8d",
+      "source_geometry": "BodyParts3D 4.0",
+      "status": "pinned"
     }
   },
   "structures": [
