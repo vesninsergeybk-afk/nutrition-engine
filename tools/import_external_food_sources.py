@@ -82,6 +82,8 @@ CNF_TAG_MAP = {
     "SE": "selenium_ug",
     "VITA_RAE": "vitamin_a_mcg",
     "TOCPHA": "vitamin_e_mg",
+    "VITAA": "vitamin_a_mcg",
+    "VITE": "vitamin_e_mg",
     "VITD": "vitamin_d_mcg",
     "VITC": "vitamin_c_mg",
     "THIA": "vitamin_b1_mg",
@@ -127,7 +129,7 @@ BLS_CODE_MAP = {
     "PANTAC": "vitamin_b5_mg",
     "VITB6": "vitamin_b6_mg",
     "VITB6A": "vitamin_b6_mg",
-    "FOL": "vitamin_b9_mcg",
+    "FOLFD": "vitamin_b9_mcg",
     "VITB12": "vitamin_b12_mcg",
     "CHOLN": "choline_mg",
     "VITK": "vitamin_k_mcg",
@@ -380,6 +382,17 @@ def parse_cnf(path: Path, existing_names: set[str]):
     return out, catalog
 
 
+def convert_bls_value(value, field: str, unit: str):
+    """Convert BLS component units to this project's canonical field units."""
+    if value is None:
+        return None
+    u = norm(unit)
+    if field.endswith("_mg") and ("ug" in u or "microgram" in u):
+        return value / 1000.0
+    if (field.endswith("_mcg") or field.endswith("_ug")) and ("mg" in u or "milligram" in u):
+        return value * 1000.0
+    return value
+
 def bls_component_field(code: str, name: str, unit: str):
     code = str(code or "").strip().upper()
     if code in BLS_CODE_MAP:
@@ -550,6 +563,8 @@ def parse_bls(path: Path, existing_names: set[str]):
                 continue
             # Never overwrite one canonical concept with a second component.
             if rec.get(field) is None:
+                meta = component_meta.get(component_code, {})
+                val = convert_bls_value(val, field, meta.get("unit", ""))
                 rec[field] = val
                 provenance[field] = {
                     "component_code": component_code,
