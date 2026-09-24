@@ -15,6 +15,7 @@ const selectedEl = document.querySelector("#quality-selected");
 const metaEl = document.querySelector("#quality-meta");
 const statsEl = document.querySelector("#quality-stats");
 const structuresEl = document.querySelector("#quality-structures");
+const modelSource = document.querySelector("#quality-model-source");
 const sideFilter = document.querySelector("#side-filter");
 const musclesToggle = document.querySelector("#muscles-toggle");
 const bonesToggle = document.querySelector("#bones-toggle");
@@ -393,6 +394,12 @@ function resize() {
     camera.updateProjectionMatrix();
   }
 }
+
+modelSource.addEventListener("change", () => {
+  if (modelSource.value === "z-anatomy") {
+    window.location.href = "./?mode=explore&region=shoulder&compare=1";
+  }
+});
 
 sideFilter.addEventListener("change", applyFilters);
 musclesToggle.addEventListener("change", applyFilters);
