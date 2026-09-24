@@ -334,3 +334,43 @@ test('mobile profile uses one heading surface and removes the orphaned name wrap
   await page.setViewportSize({ width: 1024, height: 900 });
   await expect(page.locator('#navigationShellContext')).toBeVisible();
 });
+
+
+test('empty ration prioritizes adding the first product and restores analytics after data appears', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('html')).toHaveAttribute('data-ivory-ration', 'empty');
+
+  await expect(page.locator('#workspaceFocusSearch')).toBeVisible();
+  await expect(page.locator('#workspaceRationAttention')).toBeHidden();
+  await expect(page.locator('.workspace-ration-inline__metrics')).toBeHidden();
+  await expect(page.locator('#workspaceOpenRation')).toBeHidden();
+  const rationAnalytics = page.locator('.theme-parity-ration-hf4');
+  if (await rationAnalytics.count()) await expect(rationAnalytics).toBeHidden();
+
+  const geometry = await page.evaluate(() => {
+    const search = document.getElementById('globalSearchInput').getBoundingClientRect();
+    return { searchTop: Math.round(search.top), viewportHeight: window.innerHeight };
+  });
+  expect(geometry.searchTop).toBeLessThan(geometry.viewportHeight * 1.5);
+
+  const search = page.locator('#globalSearchInput');
+  await search.fill('банан');
+  await page.waitForFunction(() => {
+    const el = document.getElementById('globalResults');
+    return el && el.classList.contains('has-query') && el.getBoundingClientRect().height > 0;
+  }, null, { timeout: 10000 });
+  const add = page.locator('#globalResults button[data-role="add-search"]:not([disabled]), #globalResults button[data-role="add"]:not([disabled])').first();
+  await expect(add).toBeVisible();
+  await add.click();
+
+  await expect(page.locator('html')).toHaveAttribute('data-ivory-ration', 'filled', { timeout: 10000 });
+  await expect(page.locator('#workspaceRationAttention')).toBeVisible();
+  await expect(page.locator('.workspace-ration-inline__metrics')).toBeVisible();
+  await expect(page.locator('#workspaceOpenRation')).toBeVisible();
+  if (await rationAnalytics.count()) await expect(rationAnalytics).toBeVisible();
+});
