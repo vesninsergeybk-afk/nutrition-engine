@@ -132,7 +132,6 @@ BLS_CODE_MAP = {
     "FOLFD": "vitamin_b9_mcg",
     "VITB12": "vitamin_b12_mcg",
     "CHOLN": "choline_mg",
-    "VITK": "vitamin_k_mcg",
     "VITK1": "vitamin_k_mcg",
 }
 BLS_MUFA_CODES = {"FAMS"}
@@ -432,7 +431,7 @@ def bls_component_field(code: str, name: str, unit: str):
         return "manganese_mg"
     if n == "selenium":
         return "selenium_ug"
-    if "vitamin d" in n and ("ug" in u or "microgram" in u):
+    if n == "vitamin d" and ("ug" in u or "microgram" in u):
         return "vitamin_d_mcg"
     if n in {"vitamin c", "ascorbic acid"}:
         return "vitamin_c_mg"
@@ -452,7 +451,7 @@ def bls_component_field(code: str, name: str, unit: str):
         return "vitamin_b12_mcg"
     if n in {"choline", "choline total"}:
         return "choline_mg"
-    if n in {"vitamin k", "phylloquinone"}:
+    if n in {"phylloquinone", "vitamin k1 phylloquinone"}:
         return "vitamin_k_mcg"
     return None
 
