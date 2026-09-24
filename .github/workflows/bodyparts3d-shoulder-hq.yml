@@ -1,0 +1,60 @@
+name: BodyParts3D shoulder HQ benchmark
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - .github/workflows/bodyparts3d-shoulder-hq.yml
+      - experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-95-shoulder.tsv
+
+permissions:
+  contents: read
+
+jobs:
+  build-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download shoulder high-polygon STL and previews
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIST="experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-95-shoulder.tsv"
+          OUT="/tmp/bodyparts3d-shoulder-hq"
+          mkdir -p "$OUT/stl" "$OUT/png"
+
+          tail -n +2 "$LIST" | while IFS=$'\t' read -r id name; do
+            echo "==> $id $name"
+            curl -fsSL --retry 3               "https://raw.githubusercontent.com/Kevin-Mattheus-Moerman/BodyParts3D/main/assets/BodyParts3D_data/stl/$id.stl"               -o "$OUT/stl/$id.stl"
+            curl -fsSL --retry 3               "https://raw.githubusercontent.com/Kevin-Mattheus-Moerman/BodyParts3D/main/assets/BodyParts3D_data/png/$id.png"               -o "$OUT/png/$id.png"
+          done
+
+          cp "$LIST" "$OUT/structures.tsv"
+          cp experiments/muscle-memory-game/THIRD_PARTY_NOTICES.md "$OUT/PROJECT_THIRD_PARTY_NOTICES.md"
+
+          find "$OUT" -type f -print0 | sort -z | xargs -0 sha256sum > "$OUT/SHA256SUMS.txt"
+
+          python3 - "$OUT" <<'PY'
+import os, pathlib, sys
+root = pathlib.Path(sys.argv[1])
+stls = list((root / "stl").glob("*.stl"))
+pngs = list((root / "png").glob("*.png"))
+print(f"STL count: {len(stls)}")
+print(f"PNG count: {len(pngs)}")
+print(f"STL bytes: {sum(p.stat().st_size for p in stls)}")
+print(f"PNG bytes: {sum(p.stat().st_size for p in pngs)}")
+if len(stls) != 56 or len(pngs) != 56:
+    raise SystemExit("Expected 56 STL and 56 PNG files")
+PY
+
+      - name: Upload shoulder benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bodyparts3d-3.0-95-shoulder-hq
+          path: /tmp/bodyparts3d-shoulder-hq/
+          retention-days: 30
+          compression-level: 6
