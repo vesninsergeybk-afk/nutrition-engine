@@ -534,3 +534,21 @@ span.pill{
     gap:6px 12px!important;
   }
 }
+
+
+/* First-use ration polish.
+   No capability is removed: the analytical controls return automatically as soon
+   as the ration contains a product. Until then, keep the screen focused on the
+   only meaningful next action — adding the first product. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"][data-ration-empty="1"] #workspaceRationAttention,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"][data-ration-empty="1"] .workspace-ration-inline__metrics,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"][data-ration-empty="1"] #workspaceOpenRation,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"][data-ration-empty="1"] .theme-parity-ration-hf4{
+  display:none!important;
+}
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"][data-ration-empty="1"] .workspace-ration-inline__actions{
+  margin-top:10px!important;
+}
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"][data-ration-empty="1"] #workspaceFocusSearch{
+  min-width:180px!important;
+}
