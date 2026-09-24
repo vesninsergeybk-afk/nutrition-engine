@@ -48,18 +48,20 @@
       "role": "imaging_derived_regional_reference",
       "format": "NIH3D processed GLB endpoint",
       "landing_page": "https://3d.nih.gov/entries/3DPX-012629?version=2",
-      "direct_url": "https://3d.nih.gov/api/submissions/16028/runs/949001c5-c322-4a6e-bfd5-c89b02264de6/output-files/355370",
-      "commit_to_git": "pending_size_check",
-      "note": "Cryo + CT; segmented in 3D Slicer; optimized/remeshed in ZBrush."
+      "direct_url": null,
+      "commit_to_git": false,
+      "note": "NIH entry is verified and processed version has GLB, but a previously guessed output-files URL returned a PNG preview (37793 bytes, PNG magic) rather than GLB. Do not use that guessed endpoint.",
+      "status": "landing_page_verified_direct_glb_url_unresolved"
     },
     {
       "id": "visible_human_male_left_arm_muscles_nih3d",
       "role": "imaging_derived_regional_reference",
       "format": "NIH3D processed GLB endpoint",
       "landing_page": "https://3d.nih.gov/entries/3DPX-012628?version=2",
-      "direct_url": "https://3d.nih.gov/api/submissions/16026/runs/89f05a36-4f00-4a5c-99a0-2d8c2c2bdc47/output-files/355423",
-      "commit_to_git": "pending_size_check",
-      "note": "Cryo + CT; segmented in 3D Slicer; optimized/remeshed in ZBrush."
+      "direct_url": null,
+      "commit_to_git": false,
+      "note": "NIH entry is verified and processed version has GLB, but a previously guessed output-files URL returned a PNG preview (34973 bytes, PNG magic) rather than GLB. Do not use that guessed endpoint.",
+      "status": "landing_page_verified_direct_glb_url_unresolved"
     },
     {
       "id": "open3dmodel_shouldergirdle",
@@ -87,6 +89,32 @@
       "direct_url": null,
       "commit_to_git": false,
       "note": "Reference/test evidence, not a source mesh package for our app."
+    }
+  ],
+  "benchmark_artifacts": [
+    {
+      "id": "bodyparts3d_3_0_95_shoulder_hq",
+      "github_actions_run_id": 36035596800,
+      "artifact_id": 10825175882,
+      "artifact_name": "bodyparts3d-3.0-95-shoulder-hq",
+      "artifact_zip_bytes": 47208813,
+      "source_stl_count": 56,
+      "preview_png_count": 56,
+      "source_stl_bytes": 129267104,
+      "preview_png_bytes": 3489856,
+      "expires_at": "2026-10-24T17:38:15Z",
+      "digest": "sha256:5b7aa38201580b0c6df754c7b23d1a93cc4f97cabb13ab7593713c756d4a6bd8",
+      "status": "downloaded_and_verified_in_github_actions_artifact",
+      "note": "High-polygon shoulder benchmark cached as an artifact rather than normal Git history."
+    },
+    {
+      "id": "z_anatomy_probe",
+      "github_actions_run_id": 36035001323,
+      "artifact_id": 10823834862,
+      "artifact_name": "anatomy-model-probe",
+      "artifact_zip_bytes": 13422918,
+      "status": "partial_probe",
+      "note": "Contains valid Z-Anatomy muscle/skeleton GLBs plus two NIH PNG previews that were initially mislabeled as GLB; do not treat the NIH files in this artifact as models."
     }
   ]
 }
