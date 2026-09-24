@@ -1,3 +1,5 @@
+import { bodyPartsMuscleNameRu } from "./bodyparts4-muscles-ru.js";
+
 const TERMS = [
   { re: /clavicular part of (right|left) deltoid/i, ru: (m) => `Ключичная часть ${m[1] === "right" ? "правой" : "левой"} дельтовидной мышцы`, latin: "pars clavicularis m. deltoidei", aliases: ["дельтовидная", "дельта", "deltoid"] },
   { re: /acromial part of (right|left) deltoid/i, ru: (m) => `Акромиальная часть ${m[1] === "right" ? "правой" : "левой"} дельтовидной мышцы`, latin: "pars acromialis m. deltoidei", aliases: ["дельтовидная", "дельта", "deltoid"] },
@@ -68,6 +70,16 @@ export function structureTerm(sourceName) {
       aliases: item.aliases || [],
     };
   }
+  const muscleNameRu = bodyPartsMuscleNameRu(source);
+  if (muscleNameRu) {
+    return {
+      source,
+      nameRu: muscleNameRu,
+      latin: "",
+      aliases: [source],
+    };
+  }
+
   return { source, nameRu: source || "Неизвестная структура", latin: "", aliases: [] };
 }
 
