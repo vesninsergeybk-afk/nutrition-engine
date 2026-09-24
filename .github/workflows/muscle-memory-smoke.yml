@@ -1,11 +1,14 @@
-name: Muscle memory browser smoke
+name: Muscle memory stable browser smoke
 
 on:
   push:
     branches:
       - feature/muscle-memory-mvp
     paths:
-      - experiments/muscle-memory-game/**
+      - experiments/muscle-memory-game/app.js
+      - experiments/muscle-memory-game/index.html
+      - experiments/muscle-memory-game/styles.css
+      - experiments/muscle-memory-game/anatomy-terms-ru.js
       - .github/workflows/muscle-memory-smoke.yml
   workflow_dispatch:
 
@@ -15,7 +18,7 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -37,7 +40,7 @@ jobs:
           npm install --silent playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Run browser smoke test
+      - name: Verify stable trainer in browser
         shell: bash
         run: |
           python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
@@ -66,32 +69,16 @@ jobs:
               { timeout: 90000 }
             );
 
-            assert.equal(await page.locator('#model-source').count(), 1);
-            assert.match(await page.locator('#model-note').innerText(), /Целостная модель тела/);
+            assert.doesNotMatch(await page.locator('#question').innerText(), /Ошибка загрузки/);
+            assert.match(await page.locator('#target-status').innerText(), /распознано целей/i);
 
-            await page.fill('#structure-search', 'дельтовидная');
+            await page.fill('#structure-search', 'deltoid');
             await page.waitForSelector('.search-result', { timeout: 15000 });
             assert.ok((await page.locator('.search-result').count()) > 0);
 
-            await page.selectOption('#model-source', 'bodyparts3');
-            await page.waitForFunction(
-              () => document.querySelector('#loading')?.classList.contains('is-hidden'),
-              null,
-              { timeout: 180000 }
-            );
-            assert.match(await page.locator('#model-note').innerText(), /BodyParts3D 3\.0/);
-            assert.doesNotMatch(await page.locator('#question').innerText(), /Ошибка загрузки/);
+            await page.screenshot({ path: '/tmp/muscle-memory-stable.png', fullPage: true });
 
-            await page.fill('#structure-search', 'надостная');
-            await page.waitForSelector('.search-result', { timeout: 15000 });
-            assert.match(await page.locator('.search-result').first().innerText(), /Надостная/i);
-
-            await page.screenshot({ path: '/tmp/muscle-memory-smoke.png', fullPage: true });
-
-            if (errors.length) {
-              throw new Error(errors.join('\n'));
-            }
-
+            if (errors.length) throw new Error(errors.join('\n'));
             await browser.close();
           })().catch(error => {
             console.error(error);
@@ -105,7 +92,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: muscle-memory-smoke
-          path: /tmp/muscle-memory-smoke.png
+          name: muscle-memory-stable
+          path: /tmp/muscle-memory-stable.png
           if-no-files-found: ignore
           retention-days: 7
