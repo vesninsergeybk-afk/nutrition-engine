@@ -1,12 +1,25 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
 const SKELETON_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb";
+
+const BODYPARTS3_ROOT =
+  "https://raw.githubusercontent.com/Kevin-Mattheus-Moerman/BodyParts3D/f0eeb6e843380cfe6b83797cf8c3e1af74de5e61/assets/BodyParts3D_data/stl";
+const BODYPARTS3_LIST = "./benchmarks/bodyparts3d-3.0-95-shoulder.tsv";
+
+const BODYPARTS4_ROOT =
+  "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
+const BODYPARTS4_ATLAS_URL = BODYPARTS4_ROOT + "/models/atlas.json";
+const SHOULDER_MUSCLE_RE =
+  /deltoid|supraspinatus|infraspinatus|subscapularis|teres minor|teres major|pectoralis major|latissimus dorsi|biceps brachii|triceps brachii|trapezius|levator scapulae|rhomboid|serratus anterior|coracobrachialis/i;
+const SHOULDER_BONE_RE = /scapula|clavicle|humerus/i;
 
 // Первый игровой набор намеренно ограничен поверхностными структурами.
 // Глубокие мышцы появятся после отдельного режима снятия слоёв.
@@ -38,6 +51,7 @@ const targetStatusEl = document.querySelector("#target-status");
 const boneMode = document.querySelector("#bone-mode");
 const boneOpacity = document.querySelector("#bone-opacity");
 const modelSource = document.querySelector("#model-source");
+const modelNote = document.querySelector("#model-note");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
 const focusSelectedButton = document.querySelector("#focus-selected");
@@ -118,6 +132,8 @@ const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
+let currentModelId = "z-anatomy";
+let loadGeneration = 0;
 
 function hashString(value) {
   let hash = 2166136261;
@@ -142,8 +158,8 @@ function targetForName(name) {
 
 function displayStructureName(sid) {
   const sourceName = structureNames[sid] || "Неизвестная структура";
-  const target = targetForName(sourceName);
-  return target ? `${target.nameRu} · ${sourceName}` : sourceName;
+  const term = structureTerm(sourceName);
+  return term.latin ? `${term.nameRu} · ${term.latin}` : term.nameRu;
 }
 
 const navPoint = new THREE.Vector3();
@@ -583,7 +599,7 @@ function setMode(mode) {
     questionEl.textContent = "Выберите мышцу";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Коснитесь структуры на модели или найдите её по исходному названию. Ответы здесь не оцениваются.";
+      "Коснитесь структуры на модели или найдите её по русскому, латинскому или исходному названию. Ответы здесь не оцениваются.";
     searchInput.focus({ preventScroll: true });
   }
 
@@ -599,9 +615,7 @@ function renderSearchResults(query) {
   const matches = [];
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
     const source = structureNames[sid];
-    const target = targetForName(source);
-    const haystack = `${source} ${target?.nameRu || ""} ${target?.latin || ""}`.toLowerCase();
-    if (haystack.includes(q)) matches.push(sid);
+    if (structureSearchText(source).includes(q)) matches.push(sid);
   }
 
   if (!matches.length) {
@@ -628,7 +642,7 @@ function renderSearchResults(query) {
       selectExploreStructure(sid);
       focusSelectedStructures();
       searchResults.replaceChildren();
-      searchInput.value = structureNames[sid];
+      searchInput.value = structureTerm(structureNames[sid]).nameRu;
     });
     searchResults.appendChild(button);
   }
