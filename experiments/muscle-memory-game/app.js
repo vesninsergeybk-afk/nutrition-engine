@@ -36,6 +36,7 @@ const targetStatusEl = document.querySelector("#target-status");
 const boneToggle = document.querySelector("#bone-toggle");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
+const focusSelectedButton = document.querySelector("#focus-selected");
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdedbd4);
@@ -56,7 +57,14 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.dampingFactor = 0.07;
+controls.dampingFactor = 0.075;
+controls.enablePan = true;
+controls.screenSpacePanning = true;
+controls.zoomToCursor = true;
+controls.zoomSpeed = 0.72;
+controls.panSpeed = 0.72;
+controls.rotateSpeed = 0.78;
+controls.maxPolarAngle = Math.PI * 0.98;
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x777777, 2.2));
 
@@ -85,7 +93,9 @@ let locked = false;
 let correct = 0;
 let wrong = 0;
 let lastTargetIndex = -1;
-let pointerStart = null;
+const activePointers = new Map();
+let tapBlocked = false;
+let focusedStructureIds = [];
 let bonesVisible = true;
 
 function hashString(value) {
@@ -105,26 +115,86 @@ function baseColorFor(name) {
   return new THREE.Color().setHSL(hue % 1, saturation, lightness);
 }
 
-function setFullBodyView() {
-  const maxDim = Math.max(bodySize.x, bodySize.y, bodySize.z);
-  const fov = THREE.MathUtils.degToRad(camera.fov);
-  const distance = (maxDim / 2) / Math.tan(fov / 2);
+const navPoint = new THREE.Vector3();
 
-  camera.position.set(0, maxDim * 0.02, distance * 1.18);
-  controls.target.set(0, 0, 0);
+function currentViewDirection() {
+  const direction = camera.position.clone().sub(controls.target);
+  if (direction.lengthSq() < 1e-8) direction.set(0.28, 0.04, 1);
+  return direction.normalize();
+}
+
+function focusBox(box, padding = 1.22, direction = currentViewDirection()) {
+  if (!box || box.isEmpty()) return;
+
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+  const fitHeight = size.y / (2 * Math.tan(verticalFov / 2));
+  const fitWidth = size.x / (2 * Math.tan(verticalFov / 2) * Math.max(camera.aspect, 0.2));
+  const distance = Math.max(fitHeight, fitWidth, size.z * 1.25, controls.minDistance) * padding;
+
+  controls.target.copy(center);
+  camera.position.copy(center).addScaledVector(direction, distance);
   controls.update();
 }
 
-function setShoulderView() {
-  const h = bodySize.y;
-  const targetY = h * 0.27;
-  const fov = THREE.MathUtils.degToRad(camera.fov);
-  const viewHeight = h * 0.47;
-  const distance = (viewHeight / 2) / Math.tan(fov / 2);
+function worldBodyBox() {
+  if (!anatomyMesh) return new THREE.Box3();
+  anatomyMesh.updateMatrixWorld(true);
+  return new THREE.Box3().setFromObject(anatomyMesh);
+}
 
-  camera.position.set(0, targetY, distance * 1.05);
-  controls.target.set(0, targetY, 0);
-  controls.update();
+function setFullBodyView() {
+  const box = worldBodyBox();
+  if (box.isEmpty()) return;
+  focusBox(box, 1.12, new THREE.Vector3(0.22, 0.035, 1).normalize());
+}
+
+function setShoulderView() {
+  const body = worldBodyBox();
+  if (body.isEmpty()) return;
+
+  const size = body.getSize(new THREE.Vector3());
+  const region = new THREE.Box3(
+    new THREE.Vector3(
+      body.min.x - size.x * 0.03,
+      body.max.y - size.y * 0.43,
+      body.min.z - size.z * 0.06
+    ),
+    new THREE.Vector3(
+      body.max.x + size.x * 0.03,
+      body.max.y - size.y * 0.08,
+      body.max.z + size.z * 0.06
+    )
+  );
+
+  focusBox(region, 1.12);
+}
+
+function boxForStructures(ids) {
+  const box = new THREE.Box3().makeEmpty();
+  if (!anatomyMesh || !ids.length) return box;
+
+  anatomyMesh.updateMatrixWorld(true);
+  const position = anatomyMesh.geometry.getAttribute("position");
+
+  for (const sid of ids) {
+    const range = structureRanges[sid];
+    if (!range) continue;
+
+    for (let i = range.start; i < range.start + range.count; i += 1) {
+      navPoint.fromBufferAttribute(position, i).applyMatrix4(anatomyMesh.matrixWorld);
+      box.expandByPoint(navPoint);
+    }
+  }
+
+  return box;
+}
+
+function focusSelectedStructures() {
+  if (!focusedStructureIds.length) return;
+  const box = boxForStructures(focusedStructureIds);
+  if (!box.isEmpty()) focusBox(box, 1.65);
 }
 
 function fitCamera(object) {
@@ -133,14 +203,20 @@ function fitCamera(object) {
   const center = box.getCenter(new THREE.Vector3());
 
   object.position.sub(center);
+  object.updateMatrixWorld(true);
 
   const maxDim = Math.max(bodySize.x, bodySize.y, bodySize.z);
-  camera.near = Math.max(maxDim / 10000, 0.001);
-  camera.far = maxDim * 20;
+  camera.near = Math.max(maxDim / 12000, 0.001);
+  camera.far = maxDim * 16;
   camera.updateProjectionMatrix();
 
-  controls.minDistance = maxDim * 0.12;
-  controls.maxDistance = maxDim * 4;
+  // Жёсткие пределы не дают "проваливаться" внутрь модели или улетать далеко.
+  controls.minDistance = Math.max(maxDim * 0.055, 0.035);
+  controls.maxDistance = maxDim * 2.7;
+  controls.cursor.set(0, 0, 0);
+  controls.minTargetRadius = 0;
+  controls.maxTargetRadius = maxDim * 0.82;
+
   setFullBodyView();
 }
 
@@ -234,6 +310,8 @@ function nextQuestion() {
 
   lastTargetIndex = index;
   currentTarget = availableTargets[index];
+  focusedStructureIds = [];
+  focusSelectedButton.disabled = true;
 
   questionEl.textContent = `Найдите ${currentTarget.ru}`;
   nextButton.textContent = "Пропустить";
@@ -245,6 +323,8 @@ function revealAnswer() {
   restoreHighlights();
   const ids = targetStructureIds(currentTarget);
   highlightStructures(ids, "answer");
+  focusedStructureIds = ids;
+  focusSelectedButton.disabled = false;
 
   feedbackEl.className = "feedback correct";
   feedbackEl.textContent =
@@ -264,6 +344,8 @@ function choose(sid) {
     correct += 1;
     correctEl.textContent = String(correct);
     highlightStructures([sid], "answer");
+    focusedStructureIds = [sid];
+    focusSelectedButton.disabled = false;
     feedbackEl.className = "feedback correct";
     feedbackEl.textContent = `Верно. Вы выбрали: ${name}.`;
     locked = true;
@@ -278,20 +360,39 @@ function choose(sid) {
 }
 
 function onPointerDown(event) {
-  pointerStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+  if (activePointers.size === 0) tapBlocked = false;
+
+  activePointers.set(event.pointerId, {
+    x: event.clientX,
+    y: event.clientY,
+    threshold: event.pointerType === "touch" ? 12 : 5,
+  });
+
+  // Любой второй палец означает жест навигации, а не ответ.
+  if (activePointers.size > 1) tapBlocked = true;
+}
+
+function onPointerMove(event) {
+  const start = activePointers.get(event.pointerId);
+  if (!start) return;
+
+  if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > start.threshold) {
+    tapBlocked = true;
+  }
 }
 
 function onPointerUp(event) {
-  if (!pointerStart || pointerStart.pointerId !== event.pointerId) return;
+  const start = activePointers.get(event.pointerId);
+  if (!start) return;
 
-  const moved = Math.hypot(
-    event.clientX - pointerStart.x,
-    event.clientY - pointerStart.y
-  );
-  pointerStart = null;
+  if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > start.threshold) {
+    tapBlocked = true;
+  }
 
-  // Поворот модели не должен засчитываться как ответ.
-  if (moved > 8 || !anatomyMesh || !currentTarget || locked) return;
+  const validTap = activePointers.size === 1 && !tapBlocked;
+  activePointers.delete(event.pointerId);
+
+  if (!validTap || !anatomyMesh || !currentTarget || locked) return;
 
   const rect = renderer.domElement.getBoundingClientRect();
   pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -307,6 +408,11 @@ function onPointerUp(event) {
   const sid = Math.round(structureId.getX(vertexIndex));
 
   choose(sid);
+}
+
+function onPointerCancel(event) {
+  activePointers.delete(event.pointerId);
+  tapBlocked = true;
 }
 
 function resize() {
@@ -535,13 +641,13 @@ boneToggle.addEventListener("click", () => {
 
 focusShoulderButton.addEventListener("click", setShoulderView);
 focusFullButton.addEventListener("click", setFullBodyView);
+focusSelectedButton.addEventListener("click", focusSelectedStructures);
 nextButton.addEventListener("click", nextQuestion);
 answerButton.addEventListener("click", revealAnswer);
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
+renderer.domElement.addEventListener("pointermove", onPointerMove);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
-renderer.domElement.addEventListener("pointercancel", () => {
-  pointerStart = null;
-});
+renderer.domElement.addEventListener("pointercancel", onPointerCancel);
 
 function animate() {
   resize();
