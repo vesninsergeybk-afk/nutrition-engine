@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const SOURCE_ROOT =
-  "https://raw.githubusercontent.com/ashemag/human-atlas/main/public";
+  "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
 const ATLAS_URL = SOURCE_ROOT + "/models/atlas.json";
 
 const MUSCLE_RE =
