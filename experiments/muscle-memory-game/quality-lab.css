@@ -1,0 +1,32 @@
+.quality-page { background: #f3f2ef; }
+.quality-shell { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(330px, .7fr); }
+.quality-stage { min-width: 0; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.quality-header { display: flex; align-items: start; justify-content: space-between; gap: 24px; }
+.quality-header h1 { max-width: 900px; }
+.quality-lead { max-width: 850px; margin: 12px 0 0; line-height: 1.5; opacity: .72; }
+.back-link { flex: 0 0 auto; color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,.12); border-radius: 999px; padding: 9px 13px; background: rgba(255,255,255,.75); }
+.quality-toolbar { display: flex; flex-wrap: wrap; gap: 9px; align-items: end; }
+.quality-toolbar label { display: flex; gap: 7px; align-items: center; font-size: 13px; }
+.quality-toolbar label:not(.toggle-control) { display: grid; }
+.quality-toolbar select, .quality-toolbar button { min-height: 40px; }
+.quality-toolbar select { border: 1px solid rgba(0,0,0,.14); border-radius: 12px; padding: 8px 11px; background: #fff; }
+.toggle-control { min-height: 40px; padding: 0 11px; border: 1px solid rgba(0,0,0,.12); border-radius: 12px; background: #fff; }
+.quality-viewer { position: relative; flex: 1; min-height: 650px; overflow: hidden; border-radius: 26px; background: #dedbd4; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+#quality-canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
+.quality-loading { z-index: 4; }
+.quality-panel { border-left: 1px solid rgba(0,0,0,.08); background: #fff; padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+.quality-stats { font-size: 14px; line-height: 1.5; }
+.quality-panel details { margin-top: 12px; }
+.quality-panel pre { max-height: 300px; overflow: auto; white-space: pre-wrap; font-size: 11px; }
+.quality-warning { background: #faf7ef; }
+.quality-panel a { color: inherit; }
+@media (max-width: 920px) {
+  .quality-shell { grid-template-columns: 1fr; }
+  .quality-panel { border-left: 0; border-top: 1px solid rgba(0,0,0,.08); }
+  .quality-viewer { min-height: 68vh; }
+}
+@media (max-width: 560px) {
+  .quality-stage, .quality-panel { padding: 14px; }
+  .quality-header { flex-direction: column; }
+  .quality-viewer { min-height: 66vh; border-radius: 18px; }
+}
