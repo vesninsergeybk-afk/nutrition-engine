@@ -8,15 +8,15 @@ const MUSCLE_MODEL_URL =
 const SKELETON_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/main/systems/iskelet.glb";
 
-// Первый MVP спрашивает только структуры, которые реально доступны
-// на поверхностной модели. Глубокие мышцы появятся после режима снятия слоёв.
+// Первый игровой набор намеренно ограничен поверхностными структурами.
+// Глубокие мышцы появятся после отдельного режима снятия слоёв.
 const TARGETS = [
-  { ru: "дельтовидную мышцу", latin: "m. deltoideus", re: /deltoid/i },
-  { ru: "большую грудную мышцу", latin: "m. pectoralis major", re: /pectoralis.?major/i },
-  { ru: "широчайшую мышцу спины", latin: "m. latissimus dorsi", re: /latissimus/i },
-  { ru: "двуглавую мышцу плеча", latin: "m. biceps brachii", re: /biceps.?brach/i },
-  { ru: "трёхглавую мышцу плеча", latin: "m. triceps brachii", re: /triceps.?brach/i },
-  { ru: "трапециевидную мышцу", latin: "m. trapezius", re: /trapezius/i },
+  { nameRu: "Дельтовидная мышца", ru: "дельтовидную мышцу", latin: "m. deltoideus", re: /deltoid/i },
+  { nameRu: "Большая грудная мышца", ru: "большую грудную мышцу", latin: "m. pectoralis major", re: /pectoralis.?major/i },
+  { nameRu: "Широчайшая мышца спины", ru: "широчайшую мышцу спины", latin: "m. latissimus dorsi", re: /latissimus/i },
+  { nameRu: "Двуглавая мышца плеча", ru: "двуглавую мышцу плеча", latin: "m. biceps brachii", re: /biceps.?brach/i },
+  { nameRu: "Трёхглавая мышца плеча", ru: "трёхглавую мышцу плеча", latin: "m. triceps brachii", re: /triceps.?brach/i },
+  { nameRu: "Трапециевидная мышца", ru: "трапециевидную мышцу", latin: "m. trapezius", re: /trapezius/i },
 ];
 
 const COVER_RE =
@@ -24,19 +24,31 @@ const COVER_RE =
 
 const canvas = document.querySelector("#viewer");
 const loadingEl = document.querySelector("#loading");
+const questionLabelEl = document.querySelector("#question-label");
 const questionEl = document.querySelector("#question");
 const feedbackEl = document.querySelector("#feedback");
 const nextButton = document.querySelector("#next-question");
 const answerButton = document.querySelector("#show-answer");
 const correctEl = document.querySelector("#score-correct");
 const wrongEl = document.querySelector("#score-wrong");
+const scoreEl = document.querySelector("#score");
 const diagnosticsEl = document.querySelector("#diagnostics");
 const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
 const boneToggle = document.querySelector("#bone-toggle");
+const boneOpacity = document.querySelector("#bone-opacity");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
 const focusSelectedButton = document.querySelector("#focus-selected");
+const viewPreset = document.querySelector("#view-preset");
+const modeQuizButton = document.querySelector("#mode-quiz");
+const modeExploreButton = document.querySelector("#mode-explore");
+const quizActions = document.querySelector("#quiz-actions");
+const exploreControls = document.querySelector("#explore-controls");
+const searchInput = document.querySelector("#structure-search");
+const searchResults = document.querySelector("#search-results");
+const isolateButton = document.querySelector("#isolate-selected");
+const showAllButton = document.querySelector("#show-all");
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdedbd4);
@@ -83,16 +95,21 @@ let anatomyMesh = null;
 let skeletonMesh = null;
 let structureNames = [];
 let structureRanges = [];
+let structureVisibility = [];
 let baseColors = [];
 let highlightedIds = new Set();
 let bodySize = new THREE.Vector3(1, 1, 1);
 
+let appMode = "quiz";
 let availableTargets = [];
 let currentTarget = null;
+let selectedExploreSid = null;
+let isolated = false;
 let locked = false;
 let correct = 0;
 let wrong = 0;
 let lastTargetIndex = -1;
+const sessionDifficulty = new Map();
 const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
@@ -113,6 +130,16 @@ function baseColorFor(name) {
   const saturation = 0.43 + ((hash >>> 5) % 10) / 100;
   const lightness = 0.47 + ((hash >>> 9) % 8) / 100;
   return new THREE.Color().setHSL(hue % 1, saturation, lightness);
+}
+
+function targetForName(name) {
+  return TARGETS.find((target) => target.re.test(name)) || null;
+}
+
+function displayStructureName(sid) {
+  const sourceName = structureNames[sid] || "Неизвестная структура";
+  const target = targetForName(sourceName);
+  return target ? `${target.nameRu} · ${sourceName}` : sourceName;
 }
 
 const navPoint = new THREE.Vector3();
@@ -144,10 +171,21 @@ function worldBodyBox() {
   return new THREE.Box3().setFromObject(anatomyMesh);
 }
 
-function setFullBodyView() {
+function setFullBodyView(direction = new THREE.Vector3(0.22, 0.035, 1).normalize()) {
   const box = worldBodyBox();
   if (box.isEmpty()) return;
-  focusBox(box, 1.12, new THREE.Vector3(0.22, 0.035, 1).normalize());
+  focusBox(box, 1.12, direction);
+}
+
+function setViewPreset(value) {
+  const directions = {
+    threeQuarter: new THREE.Vector3(0.35, 0.04, 1).normalize(),
+    front: new THREE.Vector3(0, 0.02, 1).normalize(),
+    back: new THREE.Vector3(0, 0.02, -1).normalize(),
+    left: new THREE.Vector3(-1, 0.02, 0).normalize(),
+    right: new THREE.Vector3(1, 0.02, 0).normalize(),
+  };
+  setFullBodyView(directions[value] || directions.threeQuarter);
 }
 
 function setShoulderView() {
@@ -210,7 +248,6 @@ function fitCamera(object) {
   camera.far = maxDim * 16;
   camera.updateProjectionMatrix();
 
-  // Жёсткие пределы не дают "проваливаться" внутрь модели или улетать далеко.
   controls.minDistance = Math.max(maxDim * 0.055, 0.035);
   controls.maxDistance = maxDim * 2.7;
   controls.cursor.set(0, 0, 0);
@@ -252,12 +289,50 @@ function restoreHighlights() {
 function highlightStructures(ids, kind = "answer") {
   if (!anatomyMesh) return;
 
-  const color = new THREE.Color(kind === "wrong" ? 0x751d28 : 0x168148);
+  const colors = {
+    answer: 0x168148,
+    wrong: 0x751d28,
+    selected: 0x245da8,
+  };
+  const color = new THREE.Color(colors[kind] || colors.answer);
+
   for (const sid of ids) {
     paintStructure(sid, color);
     highlightedIds.add(sid);
   }
   anatomyMesh.geometry.getAttribute("color").needsUpdate = true;
+}
+
+function setVisibleStructures(ids = null) {
+  if (!anatomyMesh) return;
+
+  const attr = anatomyMesh.geometry.getAttribute("structureVisible");
+  if (!attr) return;
+
+  if (ids === null) {
+    attr.array.fill(1);
+    structureVisibility = structureNames.map(() => true);
+    isolated = false;
+  } else {
+    attr.array.fill(0);
+    structureVisibility = structureNames.map(() => false);
+
+    for (const sid of ids) {
+      const range = structureRanges[sid];
+      if (!range) continue;
+      attr.array.fill(1, range.start, range.start + range.count);
+      structureVisibility[sid] = true;
+    }
+    isolated = true;
+  }
+
+  attr.needsUpdate = true;
+  isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
+}
+
+function showAllStructures() {
+  setVisibleStructures(null);
+  showAllButton.disabled = false;
 }
 
 function discoverTargets() {
@@ -269,7 +344,7 @@ function discoverTargets() {
   });
 
   targetStatusEl.textContent =
-    `Поверхностный режим: распознано целей ${availableTargets.length} из ${TARGETS.length}. Глубокие мышцы будут в режиме снятия слоёв.`;
+    `Поверхностный режим: распознано целей ${availableTargets.length} из ${TARGETS.length}. Ошибочные ответы чаще возвращаются в этой сессии.`;
 
   updateDiagnostics();
   meshNamesEl.textContent = lines.join("\n") || structureNames.slice(0, 120).join("\n");
@@ -295,30 +370,58 @@ function updateDiagnostics(extra = "") {
     `Мышечных структур после исключения фасциальных покрытий: ${structureNames.length}. Для рендера они объединены в один mesh; ${skeletonState}.${extra ? " " + extra : ""}`;
 }
 
+function pickNextTargetIndex() {
+  if (!availableTargets.length) return -1;
+
+  const weights = availableTargets.map((target) => {
+    const difficulty = sessionDifficulty.get(target.latin) || 0;
+    return 1 + Math.min(4, difficulty * 1.5);
+  });
+
+  let total = weights.reduce((sum, weight) => sum + weight, 0);
+  let roll = Math.random() * total;
+  let index = 0;
+
+  for (; index < weights.length; index += 1) {
+    roll -= weights[index];
+    if (roll <= 0) break;
+  }
+
+  index = Math.min(index, availableTargets.length - 1);
+  if (availableTargets.length > 1 && index === lastTargetIndex) {
+    index = (index + 1) % availableTargets.length;
+  }
+  return index;
+}
+
+function recordDifficulty(target, wasCorrect) {
+  if (!target) return;
+  const current = sessionDifficulty.get(target.latin) || 0;
+  sessionDifficulty.set(target.latin, wasCorrect ? Math.max(0, current - 0.5) : current + 1);
+}
+
 function nextQuestion() {
-  if (!availableTargets.length) return;
+  if (!availableTargets.length || appMode !== "quiz") return;
 
   restoreHighlights();
+  showAllStructures();
   locked = false;
   feedbackEl.className = "feedback";
   feedbackEl.textContent = "Нажмите на нужную мышцу прямо на модели.";
 
-  let index = Math.floor(Math.random() * availableTargets.length);
-  if (availableTargets.length > 1 && index === lastTargetIndex) {
-    index = (index + 1) % availableTargets.length;
-  }
-
+  const index = pickNextTargetIndex();
   lastTargetIndex = index;
   currentTarget = availableTargets[index];
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
 
+  questionLabelEl.textContent = "Задание";
   questionEl.textContent = `Найдите ${currentTarget.ru}`;
   nextButton.textContent = "Пропустить";
 }
 
 function revealAnswer() {
-  if (!currentTarget) return;
+  if (!currentTarget || appMode !== "quiz") return;
 
   restoreHighlights();
   const ids = targetStructureIds(currentTarget);
@@ -330,11 +433,12 @@ function revealAnswer() {
   feedbackEl.textContent =
     `${currentTarget.latin}. Подсвечены найденные варианты этой структуры, включая правую и левую стороны.`;
 
+  recordDifficulty(currentTarget, false);
   locked = true;
   nextButton.textContent = "Следующая";
 }
 
-function choose(sid) {
+function chooseQuiz(sid) {
   if (!currentTarget || locked || sid == null || !structureNames[sid]) return;
 
   restoreHighlights();
@@ -347,7 +451,8 @@ function choose(sid) {
     focusedStructureIds = [sid];
     focusSelectedButton.disabled = false;
     feedbackEl.className = "feedback correct";
-    feedbackEl.textContent = `Верно. Вы выбрали: ${name}.`;
+    feedbackEl.textContent = `Верно. Вы выбрали: ${displayStructureName(sid)}.`;
+    recordDifficulty(currentTarget, true);
     locked = true;
     nextButton.textContent = "Следующая";
   } else {
@@ -355,8 +460,105 @@ function choose(sid) {
     wrongEl.textContent = String(wrong);
     highlightStructures([sid], "wrong");
     feedbackEl.className = "feedback wrong";
-    feedbackEl.textContent = `Это «${name}». Попробуйте ещё раз.`;
+    feedbackEl.textContent = `Это «${displayStructureName(sid)}». Попробуйте ещё раз.`;
+    recordDifficulty(currentTarget, false);
   }
+}
+
+function selectExploreStructure(sid) {
+  if (sid == null || !structureNames[sid]) return;
+
+  restoreHighlights();
+  selectedExploreSid = sid;
+  focusedStructureIds = [sid];
+  highlightStructures([sid], "selected");
+
+  questionLabelEl.textContent = "Выбрана структура";
+  questionEl.textContent = displayStructureName(sid);
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
+
+  focusSelectedButton.disabled = false;
+  isolateButton.disabled = false;
+}
+
+function setMode(mode) {
+  if (mode !== "quiz" && mode !== "explore") return;
+
+  appMode = mode;
+  restoreHighlights();
+  showAllStructures();
+  selectedExploreSid = null;
+  focusedStructureIds = [];
+  focusSelectedButton.disabled = true;
+  isolateButton.disabled = true;
+  isolateButton.textContent = "Изолировать";
+
+  modeQuizButton.classList.toggle("active", mode === "quiz");
+  modeExploreButton.classList.toggle("active", mode === "explore");
+  modeQuizButton.setAttribute("aria-pressed", String(mode === "quiz"));
+  modeExploreButton.setAttribute("aria-pressed", String(mode === "explore"));
+
+  quizActions.hidden = mode !== "quiz";
+  exploreControls.hidden = mode !== "explore";
+  scoreEl.hidden = mode !== "quiz";
+
+  if (mode === "quiz") {
+    nextQuestion();
+  } else {
+    locked = true;
+    questionLabelEl.textContent = "Исследование";
+    questionEl.textContent = "Выберите мышцу";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent =
+      "Коснитесь структуры на модели или найдите её по исходному названию. Ответы здесь не оцениваются.";
+    searchInput.focus({ preventScroll: true });
+  }
+}
+
+function renderSearchResults(query) {
+  searchResults.replaceChildren();
+  const q = query.trim().toLowerCase();
+
+  if (q.length < 2 || !structureNames.length) return;
+
+  const matches = [];
+  for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
+    const source = structureNames[sid];
+    const target = targetForName(source);
+    const haystack = `${source} ${target?.nameRu || ""} ${target?.latin || ""}`.toLowerCase();
+    if (haystack.includes(q)) matches.push(sid);
+  }
+
+  if (!matches.length) {
+    const empty = document.createElement("p");
+    empty.className = "search-empty";
+    empty.textContent = "Совпадений не найдено.";
+    searchResults.appendChild(empty);
+    return;
+  }
+
+  for (const sid of matches) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "search-result";
+    button.textContent = displayStructureName(sid);
+    button.addEventListener("click", () => {
+      selectExploreStructure(sid);
+      focusSelectedStructures();
+      searchResults.replaceChildren();
+      searchInput.value = structureNames[sid];
+    });
+    searchResults.appendChild(button);
+  }
+}
+
+function structureIdFromHit(hit) {
+  if (!hit || hit.faceIndex == null || !anatomyMesh) return null;
+  const vertexIndex = hit.faceIndex * 3;
+  const structureId = anatomyMesh.geometry.getAttribute("structureId");
+  return Math.round(structureId.getX(vertexIndex));
 }
 
 function onPointerDown(event) {
@@ -368,7 +570,6 @@ function onPointerDown(event) {
     threshold: event.pointerType === "touch" ? 12 : 5,
   });
 
-  // Любой второй палец означает жест навигации, а не ответ.
   if (activePointers.size > 1) tapBlocked = true;
 }
 
@@ -392,22 +593,28 @@ function onPointerUp(event) {
   const validTap = activePointers.size === 1 && !tapBlocked;
   activePointers.delete(event.pointerId);
 
-  if (!validTap || !anatomyMesh || !currentTarget || locked) return;
+  if (!validTap || !anatomyMesh) return;
+  if (appMode === "quiz" && (!currentTarget || locked)) return;
 
   const rect = renderer.domElement.getBoundingClientRect();
   pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
   raycaster.setFromCamera(pointer, camera);
-  const hit = raycaster.intersectObject(anatomyMesh, false)[0];
-  if (!hit || hit.faceIndex == null) return;
+  const hits = raycaster.intersectObject(anatomyMesh, false);
+  let sid = null;
 
-  // Геометрия намеренно non-indexed: три последовательные вершины = один треугольник.
-  const vertexIndex = hit.faceIndex * 3;
-  const structureId = anatomyMesh.geometry.getAttribute("structureId");
-  const sid = Math.round(structureId.getX(vertexIndex));
+  for (const hit of hits) {
+    const candidate = structureIdFromHit(hit);
+    if (candidate != null && structureVisibility[candidate] !== false) {
+      sid = candidate;
+      break;
+    }
+  }
 
-  choose(sid);
+  if (sid == null) return;
+  if (appMode === "quiz") chooseQuiz(sid);
+  else selectExploreStructure(sid);
 }
 
 function onPointerCancel(event) {
@@ -455,6 +662,10 @@ function cleanMuscleGeometry(sourceGeometry, matrixWorld, sid, color) {
   const vertexCount = geometry.getAttribute("position").count;
   const ids = new Float32Array(vertexCount).fill(sid);
   geometry.setAttribute("structureId", new THREE.BufferAttribute(ids, 1));
+  geometry.setAttribute(
+    "structureVisible",
+    new THREE.BufferAttribute(new Float32Array(vertexCount).fill(1), 1)
+  );
 
   const colors = new Float32Array(vertexCount * 3);
   for (let i = 0; i < vertexCount; i += 1) {
@@ -526,7 +737,7 @@ async function loadSkeletonLayer(loader) {
     const material = new THREE.MeshBasicMaterial({
       color: 0xfff0c9,
       transparent: true,
-      opacity: 0.28,
+      opacity: Number(boneOpacity.value),
       depthTest: false,
       depthWrite: false,
       side: THREE.DoubleSide,
@@ -538,6 +749,7 @@ async function loadSkeletonLayer(loader) {
     modelGroup.add(skeletonMesh);
 
     boneToggle.disabled = false;
+    boneOpacity.disabled = false;
     boneToggle.textContent = bonesVisible
       ? "Костные ориентиры: вкл"
       : "Костные ориентиры: выкл";
@@ -546,6 +758,7 @@ async function loadSkeletonLayer(loader) {
   } catch (error) {
     console.error(error);
     boneToggle.disabled = true;
+    boneOpacity.disabled = true;
     boneToggle.textContent = "Костные ориентиры: ошибка";
     updateDiagnostics(`Ошибка загрузки костных ориентиров: ${String(error?.message || error)}`);
   }
@@ -556,8 +769,6 @@ async function loadMuscleModel() {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(MUSCLE_MODEL_URL);
 
-    // GLTFLoader нормализует имена node-объектов. Для учебной логики
-    // восстанавливаем исходные имена из glTF JSON.
     const json = gltf.parser.json;
     const assoc = gltf.parser.associations;
     const originalName = (obj) => {
@@ -577,8 +788,6 @@ async function loadMuscleModel() {
       if (!child.isMesh) return;
 
       const name = originalName(child) || `Структура ${structureNames.length}`;
-
-      // Фасции/апоневрозы могут перекрывать мышцы и делать задание невыполнимым.
       if (COVER_RE.test(name)) return;
 
       const sid = structureNames.length;
@@ -600,6 +809,7 @@ async function loadMuscleModel() {
       start += count;
       return range;
     });
+    structureVisibility = structureNames.map(() => true);
 
     for (const geometry of geometries) geometry.dispose();
 
@@ -609,6 +819,23 @@ async function loadMuscleModel() {
       metalness: 0,
     });
 
+    material.onBeforeCompile = (shader) => {
+      shader.vertexShader =
+        "attribute float structureVisible; varying float vStructureVisible;\n" +
+        shader.vertexShader;
+      shader.vertexShader = shader.vertexShader.replace(
+        "#include <begin_vertex>",
+        "#include <begin_vertex>\nvStructureVisible = structureVisible;"
+      );
+      shader.fragmentShader =
+        "varying float vStructureVisible;\n" + shader.fragmentShader;
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <clipping_planes_fragment>",
+        "#include <clipping_planes_fragment>\nif (vStructureVisible < 0.5) discard;"
+      );
+    };
+    material.customProgramCacheKey = () => "muscle-visibility-v1";
+
     anatomyMesh = new THREE.Mesh(merged, material);
     anatomyMesh.renderOrder = 1;
     modelGroup.add(anatomyMesh);
@@ -617,7 +844,6 @@ async function loadMuscleModel() {
     discoverTargets();
     loadingEl.classList.add("is-hidden");
 
-    // Костные ориентиры подгружаются после мышц, чтобы не задерживать первый экран.
     boneToggle.textContent = "Костные ориентиры: загрузка…";
     void loadSkeletonLayer(loader);
   } catch (error) {
@@ -639,11 +865,49 @@ boneToggle.addEventListener("click", () => {
     : "Костные ориентиры: выкл";
 });
 
+boneOpacity.addEventListener("input", () => {
+  if (!skeletonMesh) return;
+  skeletonMesh.material.opacity = Number(boneOpacity.value);
+  skeletonMesh.material.needsUpdate = true;
+});
+
 focusShoulderButton.addEventListener("click", setShoulderView);
-focusFullButton.addEventListener("click", setFullBodyView);
+focusFullButton.addEventListener("click", () => setFullBodyView());
 focusSelectedButton.addEventListener("click", focusSelectedStructures);
+viewPreset.addEventListener("change", () => setViewPreset(viewPreset.value));
+modeQuizButton.addEventListener("click", () => setMode("quiz"));
+modeExploreButton.addEventListener("click", () => setMode("explore"));
 nextButton.addEventListener("click", nextQuestion);
 answerButton.addEventListener("click", revealAnswer);
+
+searchInput.addEventListener("input", () => renderSearchResults(searchInput.value));
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    searchInput.value = "";
+    searchResults.replaceChildren();
+    renderer.domElement.focus?.();
+  }
+});
+
+isolateButton.addEventListener("click", () => {
+  if (selectedExploreSid == null) return;
+
+  if (isolated) {
+    showAllStructures();
+  } else {
+    setVisibleStructures([selectedExploreSid]);
+    focusSelectedStructures();
+  }
+});
+
+showAllButton.addEventListener("click", () => {
+  showAllStructures();
+  if (selectedExploreSid != null) {
+    restoreHighlights();
+    highlightStructures([selectedExploreSid], "selected");
+  }
+});
+
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointermove", onPointerMove);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
