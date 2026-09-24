@@ -98,6 +98,44 @@ CNF_TAG_MAP = {
 CNF_MUFA_TAGS = {"FAMS"}
 CNF_PUFA_TAGS = {"FAPU"}
 
+# BLS 4.0 uses EuroFIR-style component codes. Only conceptually equivalent
+# fields are mapped here; ambiguous vitamin A/E equivalents are deliberately
+# left unmapped until their component definitions are reviewed.
+BLS_CODE_MAP = {
+    "ENERCC": "kcal",
+    "PROT625": "protein_per_100g",
+    "FAT": "fat_per_100g",
+    "CHO": "carbs_per_100g",
+    "FIBT": "fiber_per_100g",
+    "SUGAR": "sugar_per_100g",
+    "FASAT": "sfa",
+    "CA": "calcium_mg",
+    "FE": "iron_mg",
+    "MG": "magnesium_mg",
+    "P": "phosphorus_mg",
+    "K": "potassium_mg",
+    "NA": "sodium_mg",
+    "ZN": "zinc_mg",
+    "CU": "copper_mg",
+    "MN": "manganese_mg",
+    "SE": "selenium_ug",
+    "VITD": "vitamin_d_mcg",
+    "VITC": "vitamin_c_mg",
+    "THIA": "vitamin_b1_mg",
+    "RIBF": "vitamin_b2_mg",
+    "NIA": "vitamin_b3_mg",
+    "PANTAC": "vitamin_b5_mg",
+    "VITB6": "vitamin_b6_mg",
+    "VITB6A": "vitamin_b6_mg",
+    "FOL": "vitamin_b9_mcg",
+    "VITB12": "vitamin_b12_mcg",
+    "CHOLN": "choline_mg",
+    "VITK": "vitamin_k_mcg",
+    "VITK1": "vitamin_k_mcg",
+}
+BLS_MUFA_CODES = {"FAMS"}
+BLS_PUFA_CODES = {"FAPU"}
+
 def norm(s: str) -> str:
     s = (s or "").lower().replace("µ", "u").replace("μ", "u")
     s = re.sub(r"[^a-z0-9]+", " ", s)
@@ -143,8 +181,8 @@ def sha256(path: Path) -> str:
 def canonical_field(nutrient_name: str, unit: str | None = None):
     n = norm(nutrient_name)
     u = norm(unit or "")
-    if n == "energy" and u and "kcal" not in u:
-        return None
+    if n.startswith("energy"):
+        return "kcal" if "kcal" in u or "kilocalorie" in u else None
     for field, aliases in ALIASES.items():
         if n in aliases:
             if field == "vitamin_d_mcg" and u and not any(x in u for x in ("ug","mcg")):
@@ -341,6 +379,202 @@ def parse_cnf(path: Path, existing_names: set[str]):
     catalog = [{"id": k, **v, "normalized_name": norm(v["name"])} for k, v in nutrient_meta.items()]
     return out, catalog
 
+
+def bls_component_field(code: str, name: str, unit: str):
+    code = str(code or "").strip().upper()
+    if code in BLS_CODE_MAP:
+        return BLS_CODE_MAP[code]
+    n = norm(name)
+    u = norm(unit)
+    # Conservative fallbacks for unambiguous component names.
+    if n.startswith("protein ") or n == "protein":
+        return "protein_per_100g"
+    if n in {"fat", "total fat"}:
+        return "fat_per_100g"
+    if n in {"carbohydrates available", "available carbohydrates"}:
+        return "carbs_per_100g"
+    if n in {"dietary fibre total", "dietary fiber total", "fibre total", "fiber total"}:
+        return "fiber_per_100g"
+    if n in {"sugars total", "total sugars"}:
+        return "sugar_per_100g"
+    if n in {"saturated fatty acids total", "fatty acids saturated total"}:
+        return "sfa"
+    if n == "calcium":
+        return "calcium_mg"
+    if n == "iron":
+        return "iron_mg"
+    if n == "magnesium":
+        return "magnesium_mg"
+    if n == "phosphorus":
+        return "phosphorus_mg"
+    if n == "potassium":
+        return "potassium_mg"
+    if n == "sodium":
+        return "sodium_mg"
+    if n == "zinc":
+        return "zinc_mg"
+    if n == "copper":
+        return "copper_mg"
+    if n == "manganese":
+        return "manganese_mg"
+    if n == "selenium":
+        return "selenium_ug"
+    if "vitamin d" in n and ("ug" in u or "microgram" in u):
+        return "vitamin_d_mcg"
+    if n in {"vitamin c", "ascorbic acid"}:
+        return "vitamin_c_mg"
+    if n in {"thiamin", "thiamine"}:
+        return "vitamin_b1_mg"
+    if n == "riboflavin":
+        return "vitamin_b2_mg"
+    if n == "niacin":
+        return "vitamin_b3_mg"
+    if n == "pantothenic acid":
+        return "vitamin_b5_mg"
+    if n in {"vitamin b6", "vitamin b 6"}:
+        return "vitamin_b6_mg"
+    if n in {"folate", "folate total"}:
+        return "vitamin_b9_mcg"
+    if n in {"vitamin b12", "vitamin b 12"}:
+        return "vitamin_b12_mcg"
+    if n in {"choline", "choline total"}:
+        return "choline_mg"
+    if n in {"vitamin k", "phylloquinone"}:
+        return "vitamin_k_mcg"
+    return None
+
+def parse_bls(path: Path, existing_names: set[str]):
+    try:
+        import openpyxl
+    except ImportError as exc:
+        raise RuntimeError("openpyxl is required for BLS 4.0 import") from exc
+
+    with zipfile.ZipFile(path) as z:
+        components_member = next(
+            n for n in z.namelist()
+            if n.lower().endswith("components_de_en.xlsx")
+        )
+        data_member = next(
+            n for n in z.namelist()
+            if n.lower().endswith("daten_2025_de.xlsx")
+        )
+        components_bytes = z.read(components_member)
+        data_bytes = z.read(data_member)
+
+    cwb = openpyxl.load_workbook(io.BytesIO(components_bytes), read_only=True, data_only=True)
+    cws = cwb[cwb.sheetnames[0]]
+    crows = cws.iter_rows(values_only=True)
+    next(crows, None)
+    component_meta = {}
+    catalog = []
+    for row in crows:
+        if not row or row[1] is None:
+            continue
+        code = str(row[1]).strip().upper()
+        meta = {
+            "code": code,
+            "name_de": "" if row[2] is None else str(row[2]),
+            "name": "" if row[3] is None else str(row[3]),
+            "unit": "" if row[4] is None else str(row[4]),
+            "group_de": "" if row[5] is None else str(row[5]),
+            "group": "" if row[6] is None else str(row[6]),
+            "formula": "" if row[7] is None else str(row[7]),
+            "formula_application": "" if row[8] is None else str(row[8]),
+        }
+        meta["canonical_field"] = bls_component_field(code, meta["name"], meta["unit"])
+        component_meta[code] = meta
+        catalog.append(meta)
+
+    dwb = openpyxl.load_workbook(io.BytesIO(data_bytes), read_only=True, data_only=True)
+    dws = dwb[dwb.sheetnames[0]]
+    rows = dws.iter_rows(values_only=True)
+    headers = next(rows)
+
+    columns = []
+    for idx in range(3, len(headers), 3):
+        header = headers[idx]
+        if header is None:
+            continue
+        code = str(header).split()[0].strip().upper()
+        meta = component_meta.get(code, {})
+        field = meta.get("canonical_field")
+        role = None
+        if code in BLS_MUFA_CODES:
+            role = "mufa"
+        elif code in BLS_PUFA_CODES:
+            role = "pufa"
+        elif field:
+            role = "field"
+        if role:
+            columns.append((idx, code, role, field))
+
+    records = []
+    for row in rows:
+        if not row or row[0] is None:
+            continue
+        bls_code = str(row[0]).strip()
+        name_de = "" if row[1] is None else str(row[1])
+        name = "" if row[2] is None else str(row[2])
+        rec = blank_record("GERMANY_BLS", bls_code, name or name_de)
+        rec["source_dataset"] = "BLS 4.0 (2025)"
+        rec["bls_code"] = bls_code
+        rec["name_de"] = name_de
+        rec["already_in_current_db"] = norm(name or name_de) in existing_names
+        provenance = {}
+        mufa = None
+        pufa = None
+
+        for idx, component_code, role, field in columns:
+            if idx >= len(row):
+                continue
+            val = number(row[idx])
+            if val is None:
+                continue
+            origin = row[idx + 1] if idx + 1 < len(row) else None
+            reference = row[idx + 2] if idx + 2 < len(row) else None
+            if role == "mufa":
+                mufa = val
+                provenance["mufa_component"] = {
+                    "component_code": component_code,
+                    "origin": origin,
+                    "reference": reference,
+                }
+                continue
+            if role == "pufa":
+                pufa = val
+                provenance["pufa_component"] = {
+                    "component_code": component_code,
+                    "origin": origin,
+                    "reference": reference,
+                }
+                continue
+            # Never overwrite one canonical concept with a second component.
+            if rec.get(field) is None:
+                rec[field] = val
+                provenance[field] = {
+                    "component_code": component_code,
+                    "origin": origin,
+                    "reference": reference,
+                }
+
+        rec = finalize_record(rec, mufa, pufa)
+        if rec.get("salt") is not None and "sodium_mg" in provenance:
+            provenance["salt"] = {
+                "method": "derived_from_sodium",
+                "factor": 2.54,
+                "source_component": provenance["sodium_mg"],
+            }
+        if rec.get("unsat") is not None:
+            provenance["unsat"] = {
+                "method": "mufa_plus_pufa",
+                "mufa_component": provenance.get("mufa_component"),
+                "pufa_component": provenance.get("pufa_component"),
+            }
+        rec["source_value_provenance"] = provenance
+        records.append(rec)
+
+    return records, catalog
+
 def source_summary(records):
     field_coverage = {}
     for f in CANONICAL_FIELDS:
@@ -413,6 +647,10 @@ def main():
                 "filename": p.name, "bytes": p.stat().st_size, "sha256": sha256(p),
                 "zip_members": members,
             }
+            bls, cat_bls = parse_bls(p, existing_names)
+            summaries["German BLS 4.0 (2025)"] = source_summary(bls)
+            all_records.extend(bls)
+            catalogs["BLS 4.0 component catalog"] = cat_bls
 
     report = {
         "schema_version": 1,
