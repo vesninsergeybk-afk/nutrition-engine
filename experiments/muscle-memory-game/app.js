@@ -836,31 +836,18 @@ function applyBoneDisplayMode() {
   skeletonMesh.visible = true;
 
   if (mode === "anatomical") {
-    // BodyParts3D contains several bone surfaces that geometrically intersect the
-    // muscle shell. A depth test alone therefore cannot guarantee a correct
-    // "muscle above bone" teaching view. Visible muscles write stencil=1 first;
-    // bones are then allowed only in pixels not occupied by muscle.
     material.transparent = false;
     material.opacity = 1;
     material.depthTest = true;
     material.depthWrite = true;
-    material.stencilWrite = true;
-    material.stencilRef = 1;
-    material.stencilFunc = THREE.NotEqualStencilFunc;
-    material.stencilFail = THREE.KeepStencilOp;
-    material.stencilZFail = THREE.KeepStencilOp;
-    material.stencilZPass = THREE.KeepStencilOp;
     anatomyMesh.renderOrder = 0;
     skeletonMesh.renderOrder = 1;
     boneOpacity.disabled = true;
   } else {
-    if (anatomicalOccluderMesh) anatomicalOccluderMesh.visible = false;
-    // Deliberate x-ray reference mode ignores the muscle stencil.
     material.transparent = true;
     material.opacity = Number(boneOpacity.value);
     material.depthTest = false;
     material.depthWrite = false;
-    material.stencilWrite = false;
     skeletonMesh.renderOrder = 10;
     boneOpacity.disabled = false;
   }
@@ -868,7 +855,7 @@ function applyBoneDisplayMode() {
   material.needsUpdate = true;
   canvas.dataset.boneMode = mode;
   canvas.dataset.boneTransparent = String(Boolean(material.transparent));
-  canvas.dataset.boneStencil = mode === "anatomical" ? "muscle-mask" : "off";
+  canvas.dataset.boneStencil = "off";
 }
 
 function notifyEmbedHeight() {
@@ -977,12 +964,6 @@ function createMuscleMaterial() {
     transparent: false,
     depthTest: true,
     depthWrite: true,
-    stencilWrite: true,
-    stencilRef: 1,
-    stencilFunc: THREE.AlwaysStencilFunc,
-    stencilFail: THREE.KeepStencilOp,
-    stencilZFail: THREE.KeepStencilOp,
-    stencilZPass: THREE.ReplaceStencilOp,
   });
 
   material.onBeforeCompile = (shader) => {
@@ -1014,12 +995,6 @@ function createBoneMaterial() {
     opacity: 1,
     depthTest: true,
     depthWrite: true,
-    stencilWrite: true,
-    stencilRef: 1,
-    stencilFunc: THREE.NotEqualStencilFunc,
-    stencilFail: THREE.KeepStencilOp,
-    stencilZFail: THREE.KeepStencilOp,
-    stencilZPass: THREE.KeepStencilOp,
   });
 }
 
