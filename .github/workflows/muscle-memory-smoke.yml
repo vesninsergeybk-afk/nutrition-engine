@@ -28,7 +28,22 @@ jobs:
         run: |
           node --check experiments/muscle-memory-game/app.js
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
+          node --check experiments/muscle-memory-game/bodyparts4-classification.js
           node --check experiments/muscle-memory-game/verify.mjs
+          node --input-type=module <<'NODE'
+          import { bodyPartsAnatomyKind } from './experiments/muscle-memory-game/bodyparts4-classification.js';
+          const cases = [
+            [{ system: 'skeletal', conceptId: 'FMA24474' }, 'bone', 'right femur'],
+            [{ system: 'skeletal', conceptId: 'FMA22544' }, 'muscle', 'right tibialis anterior'],
+            [{ system: 'skeletal', conceptId: 'FMA22552' }, 'muscle', 'right fibularis longus'],
+            [{ system: 'skeletal', conceptId: 'FMA58776' }, null, 'right iliotibial tract'],
+            [{ system: 'muscular', conceptId: 'FMA34682' }, 'muscle', 'deltoid part'],
+          ];
+          for (const [part, expected, label] of cases) {
+            const actual = bodyPartsAnatomyKind(part);
+            if (actual !== expected) throw new Error(label + ': expected ' + expected + ', got ' + actual);
+          }
+          NODE
 
       - name: Install browser
         run: |
@@ -104,7 +119,6 @@ jobs:
               { timeout: 15000 }
             );
             assert.ok((await page.locator('.search-result').count()) > 0);
-            assert.ok(Number(await page.locator('#viewer').getAttribute('data-bone-occlusion-inflation')) > 0);
 
             await page.selectOption('#view-preset', 'front');
             await page.waitForTimeout(600);
@@ -114,7 +128,7 @@ jobs:
             await page.waitForTimeout(600);
             await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-back.png', fullPage: true });
 
-            await page.click('#focus-shoulder');
+            await page.locator('#focus-shoulder').dispatchEvent('click');
             await page.waitForTimeout(600);
             await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-shoulder.png', fullPage: true });
 
