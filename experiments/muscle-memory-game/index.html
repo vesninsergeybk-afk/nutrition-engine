@@ -58,6 +58,11 @@
             <option value="xray">Кости: просвечивание</option>
             <option value="off">Кости: выключены</option>
           </select>
+          <select id="connective-mode" aria-label="Режим соединительнотканного слоя" disabled>
+            <option value="anatomical" selected>Соединительная ткань: показана</option>
+            <option value="ghost">Соединительная ткань: полупрозрачна</option>
+            <option value="off">Соединительная ткань: скрыта</option>
+          </select>
           <button id="focus-shoulder" type="button">Плечевой пояс</button>
           <button id="focus-selected" type="button" disabled>К выбранной</button>
           <button id="focus-full" type="button">Всё тело</button>
@@ -95,7 +100,7 @@
 
       <section class="status-card">
         <h3>Слои и ориентиры</h3>
-        <p>По умолчанию кости подчиняются обычной глубине сцены: лежащая сверху мышца закрывает кость. Просвечивание включается отдельно только как навигационный режим.</p>
+        <p>Кости подчиняются обычной глубине сцены. Для BodyParts3D отдельно доступен слой соединительной ткани: связки, хрящевые и другие соединительнотканные структуры из самого атласа.</p>
         <label class="range-field">
           <span>Выраженность костей в режиме просвечивания</span>
           <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.10" disabled />
