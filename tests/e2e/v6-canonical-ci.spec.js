@@ -343,7 +343,7 @@ test('empty ration prioritizes adding the first product and restores analytics a
   await waitForInterfacePass1(page);
 
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
-  await expect(page.locator('html')).toHaveAttribute('data-ration-empty', '1');
+  await expect(page.locator('html')).toHaveAttribute('data-ivory-ration', 'empty');
 
   await expect(page.locator('#workspaceFocusSearch')).toBeVisible();
   await expect(page.locator('#workspaceRationAttention')).toBeHidden();
@@ -368,7 +368,7 @@ test('empty ration prioritizes adding the first product and restores analytics a
   await expect(add).toBeVisible();
   await add.click();
 
-  await expect(page.locator('html')).toHaveAttribute('data-ration-empty', '0', { timeout: 10000 });
+  await expect(page.locator('html')).toHaveAttribute('data-ivory-ration', 'filled', { timeout: 10000 });
   await expect(page.locator('#workspaceRationAttention')).toBeVisible();
   await expect(page.locator('.workspace-ration-inline__metrics')).toBeVisible();
   await expect(page.locator('#workspaceOpenRation')).toBeVisible();
