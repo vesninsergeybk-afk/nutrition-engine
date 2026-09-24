@@ -38,18 +38,7 @@ jobs:
 
           find "$OUT" -type f -print0 | sort -z | xargs -0 sha256sum > "$OUT/SHA256SUMS.txt"
 
-          python3 - "$OUT" <<'PY'
-import os, pathlib, sys
-root = pathlib.Path(sys.argv[1])
-stls = list((root / "stl").glob("*.stl"))
-pngs = list((root / "png").glob("*.png"))
-print(f"STL count: {len(stls)}")
-print(f"PNG count: {len(pngs)}")
-print(f"STL bytes: {sum(p.stat().st_size for p in stls)}")
-print(f"PNG bytes: {sum(p.stat().st_size for p in pngs)}")
-if len(stls) != 56 or len(pngs) != 56:
-    raise SystemExit("Expected 56 STL and 56 PNG files")
-PY
+          python3 -c 'import pathlib,sys; r=pathlib.Path(sys.argv[1]); s=list((r/"stl").glob("*.stl")); p=list((r/"png").glob("*.png")); print("STL count:",len(s)); print("PNG count:",len(p)); print("STL bytes:",sum(x.stat().st_size for x in s)); print("PNG bytes:",sum(x.stat().st_size for x in p)); assert len(s)==56 and len(p)==56, "Expected 56 STL and 56 PNG files"' "$OUT"
 
       - name: Upload shoulder benchmark artifact
         uses: actions/upload-artifact@v4
