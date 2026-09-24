@@ -22,17 +22,32 @@
           <p class="eyebrow">Прототип тренажёра</p>
           <h1>Мышцы в движении</h1>
         </div>
-        <div class="score" aria-live="polite">
-          <span>Верно: <strong id="score-correct">0</strong></span>
-          <span>Ошибок: <strong id="score-wrong">0</strong></span>
+
+        <div class="topbar-tools">
+          <div class="mode-switch" role="group" aria-label="Режим работы">
+            <button id="mode-quiz" type="button" class="active" aria-pressed="true">Тренажёр</button>
+            <button id="mode-explore" type="button" aria-pressed="false">Исследование</button>
+          </div>
+
+          <div id="score" class="score" aria-live="polite">
+            <span>Верно: <strong id="score-correct">0</strong></span>
+            <span>Ошибок: <strong id="score-wrong">0</strong></span>
+          </div>
         </div>
       </div>
 
       <div class="viewer-wrap">
-        <canvas id="viewer" aria-label="Интерактивная трёхмерная модель мышц"></canvas>
+        <canvas id="viewer" aria-label="Интерактивная трёхмерная модель мышц" tabindex="0"></canvas>
         <div id="loading" class="loading">Загружаю мышечную модель…</div>
 
         <div class="viewer-tools" aria-label="Управление отображением модели">
+          <select id="view-preset" aria-label="Анатомический ракурс">
+            <option value="threeQuarter">Вид: ¾</option>
+            <option value="front">Спереди</option>
+            <option value="back">Сзади</option>
+            <option value="left">Слева</option>
+            <option value="right">Справа</option>
+          </select>
           <button id="bone-toggle" type="button" disabled>Костные ориентиры: загрузка…</button>
           <button id="focus-shoulder" type="button">Плечевой пояс</button>
           <button id="focus-selected" type="button" disabled>К выбранной</button>
@@ -45,19 +60,35 @@
 
     <aside class="panel">
       <section class="question-card">
-        <p class="question-label">Задание</p>
+        <p id="question-label" class="question-label">Задание</p>
         <h2 id="question">После загрузки появится первая мышца</h2>
         <p id="feedback" class="feedback">Нажмите на нужную мышцу прямо на модели.</p>
 
-        <div class="actions">
+        <div id="quiz-actions" class="actions">
           <button id="show-answer" type="button" disabled>Показать ответ</button>
           <button id="next-question" type="button" class="primary" disabled>Следующая</button>
+        </div>
+
+        <div id="explore-controls" class="explore-controls" hidden>
+          <label class="search-field">
+            <span>Поиск по названию</span>
+            <input id="structure-search" type="search" autocomplete="off" placeholder="deltoid, trapezius, biceps…" />
+          </label>
+          <div id="search-results" class="search-results" aria-live="polite"></div>
+          <div class="actions">
+            <button id="isolate-selected" type="button" disabled>Изолировать</button>
+            <button id="show-all" type="button">Показать все мышцы</button>
+          </div>
         </div>
       </section>
 
       <section class="status-card">
-        <h3>Что проверяем в этом прототипе</h3>
-        <p>Может ли студент вращать модель, опираться на костные ориентиры, найти нужную мышцу и получить мгновенную обратную связь. Пока без анимации движения сустава.</p>
+        <h3>Слои и ориентиры</h3>
+        <p>Кости служат пространственным ориентиром и не участвуют в проверке ответа.</p>
+        <label class="range-field">
+          <span>Выраженность костного слоя</span>
+          <input id="bone-opacity" type="range" min="0.05" max="0.65" step="0.05" value="0.28" disabled />
+        </label>
         <div id="target-status" class="target-status">Ожидаю модель…</div>
       </section>
 
