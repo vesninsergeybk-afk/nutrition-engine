@@ -70,6 +70,7 @@ camera.position.set(0, 0, 4);
 const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
+  stencil: true,
   powerPreference: "high-performance",
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -822,25 +823,39 @@ function applyBoneDisplayMode() {
   if (mode === "off") {
     skeletonMesh.visible = false;
     boneOpacity.disabled = true;
+    canvas.dataset.boneMode = mode;
+    canvas.dataset.boneTransparent = "false";
+    canvas.dataset.boneStencil = "off";
     return;
   }
 
   skeletonMesh.visible = true;
 
   if (mode === "anatomical") {
-    // Normal depth relationship: muscles can occlude deeper bone.
+    // BodyParts3D contains several bone surfaces that geometrically intersect the
+    // muscle shell. A depth test alone therefore cannot guarantee a correct
+    // "muscle above bone" teaching view. Visible muscles write stencil=1 first;
+    // bones are then allowed only in pixels not occupied by muscle.
     material.transparent = false;
     material.opacity = 1;
     material.depthTest = true;
     material.depthWrite = true;
-    skeletonMesh.renderOrder = 0;
+    material.stencilWrite = true;
+    material.stencilRef = 1;
+    material.stencilFunc = THREE.NotEqualStencilFunc;
+    material.stencilFail = THREE.KeepStencilOp;
+    material.stencilZFail = THREE.KeepStencilOp;
+    material.stencilZPass = THREE.KeepStencilOp;
+    anatomyMesh.renderOrder = 0;
+    skeletonMesh.renderOrder = 1;
     boneOpacity.disabled = true;
   } else {
-    // Deliberate x-ray reference mode. It is visually useful, but not topographic.
+    // Deliberate x-ray reference mode ignores the muscle stencil.
     material.transparent = true;
     material.opacity = Number(boneOpacity.value);
     material.depthTest = false;
     material.depthWrite = false;
+    material.stencilWrite = false;
     skeletonMesh.renderOrder = 10;
     boneOpacity.disabled = false;
   }
@@ -848,6 +863,7 @@ function applyBoneDisplayMode() {
   material.needsUpdate = true;
   canvas.dataset.boneMode = mode;
   canvas.dataset.boneTransparent = String(Boolean(material.transparent));
+  canvas.dataset.boneStencil = mode === "anatomical" ? "muscle-mask" : "off";
 }
 
 function notifyEmbedHeight() {
@@ -944,6 +960,7 @@ function resetLoadedModel() {
   boneOpacity.disabled = true;
   canvas.dataset.boneMode = "";
   canvas.dataset.boneTransparent = "";
+  canvas.dataset.boneStencil = "";
 }
 
 function createMuscleMaterial() {
@@ -955,6 +972,12 @@ function createMuscleMaterial() {
     transparent: false,
     depthTest: true,
     depthWrite: true,
+    stencilWrite: true,
+    stencilRef: 1,
+    stencilFunc: THREE.AlwaysStencilFunc,
+    stencilFail: THREE.KeepStencilOp,
+    stencilZFail: THREE.KeepStencilOp,
+    stencilZPass: THREE.ReplaceStencilOp,
   });
 
   material.onBeforeCompile = (shader) => {
@@ -986,9 +1009,12 @@ function createBoneMaterial() {
     opacity: 1,
     depthTest: true,
     depthWrite: true,
-    polygonOffset: true,
-    polygonOffsetFactor: 1.25,
-    polygonOffsetUnits: 2,
+    stencilWrite: true,
+    stencilRef: 1,
+    stencilFunc: THREE.NotEqualStencilFunc,
+    stencilFail: THREE.KeepStencilOp,
+    stencilZFail: THREE.KeepStencilOp,
+    stencilZPass: THREE.KeepStencilOp,
   });
 }
 
@@ -1150,7 +1176,7 @@ async function loadZAnatomyModel() {
     for (const geometry of geometries) geometry.dispose();
 
     anatomyMesh = new THREE.Mesh(merged, createMuscleMaterial());
-    anatomyMesh.renderOrder = 1;
+    anatomyMesh.renderOrder = 0;
     modelGroup.add(anatomyMesh);
 
     fitCamera(modelGroup);
@@ -1240,14 +1266,14 @@ async function loadBodyParts4Model() {
   structureVisibility = structureNames.map(() => true);
 
   anatomyMesh = new THREE.Mesh(mergedMuscles, createMuscleMaterial());
-  anatomyMesh.renderOrder = 1;
+  anatomyMesh.renderOrder = 0;
   modelGroup.add(anatomyMesh);
 
   const mergedBones = mergeGeometries(boneChunks, false);
   for (const geometry of boneChunks) geometry.dispose();
   if (mergedBones) {
     skeletonMesh = new THREE.Mesh(mergedBones, createBoneMaterial());
-    skeletonMesh.renderOrder = 0;
+    skeletonMesh.renderOrder = 1;
     modelGroup.add(skeletonMesh);
     boneMode.disabled = false;
     applyBoneDisplayMode();
