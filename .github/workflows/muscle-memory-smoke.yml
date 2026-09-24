@@ -91,12 +91,23 @@ jobs:
             assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'muscle-mask');
 
             await page.fill('#structure-search', 'дельтовидная');
             await page.waitForSelector('.search-result', { timeout: 15000 });
             assert.ok((await page.locator('.search-result').count()) > 0);
 
-            await page.screenshot({ path: '/tmp/muscle-memory-bodyparts.png', fullPage: true });
+            await page.selectOption('#view-preset', 'front');
+            await page.waitForTimeout(600);
+            await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-front.png', fullPage: true });
+
+            await page.selectOption('#view-preset', 'back');
+            await page.waitForTimeout(600);
+            await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-back.png', fullPage: true });
+
+            await page.click('#focus-shoulder');
+            await page.waitForTimeout(600);
+            await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-shoulder.png', fullPage: true });
 
             if (errors.length) throw new Error(errors.join('\n'));
             await browser.close();
@@ -113,6 +124,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: muscle-memory-bodyparts-smoke
-          path: /tmp/muscle-memory-bodyparts.png
+          path: /tmp/muscle-memory-bodyparts-*.png
           if-no-files-found: ignore
           retention-days: 7
