@@ -428,15 +428,17 @@ function discoverTargets() {
   availableTargets = TARGETS.filter((target) => targetStructureIds(target).length > 0);
 
   const lines = availableTargets.map((target) => {
-    const matches = targetStructureIds(target).map((sid) => structureNames[sid]);
-    return `${target.latin}: ${matches.join(", ")}`;
+    const matches = targetStructureIds(target).map((sid) => displayStructureName(sid));
+    return `${target.nameRu}: ${matches.join(", ")}`;
   });
 
   targetStatusEl.textContent =
     `Поверхностный режим: распознано целей ${availableTargets.length} из ${TARGETS.length}. Ошибочные ответы чаще возвращаются в этой сессии.`;
 
   updateDiagnostics();
-  meshNamesEl.textContent = lines.join("\n") || structureNames.slice(0, 120).join("\n");
+  meshNamesEl.textContent =
+    lines.join("\n") ||
+    structureNames.slice(0, 120).map((_, sid) => displayStructureName(sid)).join("\n");
 
   if (!availableTargets.length) {
     questionEl.textContent = "Не удалось сопоставить названия мышц";
