@@ -305,6 +305,18 @@ async function loadAtlas() {
     0
   );
 
+  const atlasOptimization = atlas.optimized
+    ? " Web-конверсия дополнительно упрощена: " +
+      atlas.optimized.method +
+      "; весь атлас после оптимизации — " +
+      Number(atlas.triangles || 0).toLocaleString("ru-RU") +
+      " треугольников" +
+      (atlas.sourceTriangles
+        ? " против " + Number(atlas.sourceTriangles).toLocaleString("ru-RU") +
+          " до этой дополнительной оптимизации."
+        : ".")
+    : " Дополнительная web-оптимизация в manifest не указана.";
+
   statsEl.textContent =
     "Версия: " + atlas.version +
     ". Найдено структур: " + visibleMeshes.length +
@@ -312,7 +324,8 @@ async function loadAtlas() {
     "Треугольников в выбранном регионе: " +
     triangles.toLocaleString("ru-RU") +
     ". По сети загружено около " +
-    (totalDownloaded / 1024 / 1024).toFixed(1) + " МБ.";
+    (totalDownloaded / 1024 / 1024).toFixed(1) + " МБ." +
+    atlasOptimization;
 
   structuresEl.textContent = visibleMeshes
     .map((mesh) => (mesh.userData.kind === "muscle" ? "М · " : "К · ") + mesh.name)
