@@ -19,6 +19,11 @@ function captureRuntimeFailures(page) {
     // completed, so this transport-level abort is not an application failure.
     if (url.includes('/assets/runtime/deferred-runtime-') && url.includes('.js.gz') &&
         /ERR_ABORTED|NS_BINDING_ABORTED|cancelled|canceled/i.test(reason)) return;
+    // Product loading has the same intentional recovery chain: compressed JSON
+    // -> reviewed bundle -> script chunks -> JSON chunks -> embedded fallback.
+    // Chromium can abort the gzip request even though the next source succeeds.
+    if (url.includes('/assets/data/products.') && url.includes('.compact.json.gz') &&
+        /ERR_ABORTED|NS_BINDING_ABORTED|cancelled|canceled/i.test(reason)) return;
     failures.push(`requestfailed: ${url} ${reason}`);
   });
   return failures;
