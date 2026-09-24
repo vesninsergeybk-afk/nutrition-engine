@@ -48,6 +48,8 @@ const exploreControls = document.querySelector("#explore-controls");
 const searchInput = document.querySelector("#structure-search");
 const searchResults = document.querySelector("#search-results");
 const isolateButton = document.querySelector("#isolate-selected");
+const hideSelectedButton = document.querySelector("#hide-selected");
+const undoHideButton = document.querySelector("#undo-hide");
 const showAllButton = document.querySelector("#show-all");
 
 const scene = new THREE.Scene();
@@ -105,6 +107,7 @@ let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
 let isolated = false;
+const hiddenStack = [];
 let locked = false;
 let correct = 0;
 let wrong = 0;
@@ -303,6 +306,27 @@ function highlightStructures(ids, kind = "answer") {
   anatomyMesh.geometry.getAttribute("color").needsUpdate = true;
 }
 
+function updateLayerButtons() {
+  isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
+  undoHideButton.disabled = hiddenStack.length === 0;
+  hideSelectedButton.disabled =
+    selectedExploreSid == null ||
+    isolated ||
+    structureVisibility[selectedExploreSid] === false;
+}
+
+function setStructureVisible(sid, visible) {
+  if (!anatomyMesh || sid == null || !structureRanges[sid]) return;
+
+  const attr = anatomyMesh.geometry.getAttribute("structureVisible");
+  if (!attr) return;
+
+  const range = structureRanges[sid];
+  attr.array.fill(visible ? 1 : 0, range.start, range.start + range.count);
+  attr.needsUpdate = true;
+  structureVisibility[sid] = visible;
+}
+
 function setVisibleStructures(ids = null) {
   if (!anatomyMesh) return;
 
@@ -327,12 +351,58 @@ function setVisibleStructures(ids = null) {
   }
 
   attr.needsUpdate = true;
-  isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
+  updateLayerButtons();
 }
 
 function showAllStructures() {
   setVisibleStructures(null);
-  showAllButton.disabled = false;
+  hiddenStack.length = 0;
+  updateLayerButtons();
+}
+
+function hideSelectedStructure() {
+  if (
+    appMode !== "explore" ||
+    selectedExploreSid == null ||
+    isolated ||
+    structureVisibility[selectedExploreSid] === false
+  ) return;
+
+  const sid = selectedExploreSid;
+  hiddenStack.push(sid);
+  setStructureVisible(sid, false);
+  restoreHighlights();
+
+  selectedExploreSid = null;
+  focusedStructureIds = [];
+  focusSelectedButton.disabled = true;
+  isolateButton.disabled = true;
+  questionLabelEl.textContent = "Слой скрыт";
+  questionEl.textContent = displayStructureName(sid);
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    "Поверхностная структура скрыта. Теперь можно выбрать лежащую глубже мышцу.";
+  updateLayerButtons();
+}
+
+function undoLastHide() {
+  const sid = hiddenStack.pop();
+  if (sid == null) return;
+
+  setStructureVisible(sid, true);
+  selectedExploreSid = sid;
+  focusedStructureIds = [sid];
+  restoreHighlights();
+  highlightStructures([sid], "selected");
+
+  questionLabelEl.textContent = "Возвращена структура";
+  questionEl.textContent = displayStructureName(sid);
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent = "Последняя скрытая структура снова показана.";
+  focusSelectedButton.disabled = false;
+  isolateButton.disabled = false;
+  updateLayerButtons();
+  updateLayerButtons();
 }
 
 function discoverTargets() {
@@ -494,6 +564,7 @@ function setMode(mode) {
   focusSelectedButton.disabled = true;
   isolateButton.disabled = true;
   isolateButton.textContent = "Изолировать";
+  updateLayerButtons();
 
   modeQuizButton.classList.toggle("active", mode === "quiz");
   modeExploreButton.classList.toggle("active", mode === "explore");
@@ -545,6 +616,7 @@ function renderSearchResults(query) {
     button.className = "search-result";
     button.textContent = displayStructureName(sid);
     button.addEventListener("click", () => {
+      if (structureVisibility[sid] === false) setStructureVisible(sid, true);
       selectExploreStructure(sid);
       focusSelectedStructures();
       searchResults.replaceChildren();
@@ -894,11 +966,17 @@ isolateButton.addEventListener("click", () => {
 
   if (isolated) {
     showAllStructures();
+    if (selectedExploreSid != null) {
+      highlightStructures([selectedExploreSid], "selected");
+    }
   } else {
     setVisibleStructures([selectedExploreSid]);
     focusSelectedStructures();
   }
 });
+
+hideSelectedButton.addEventListener("click", hideSelectedStructure);
+undoHideButton.addEventListener("click", undoLastHide);
 
 showAllButton.addEventListener("click", () => {
   showAllStructures();
@@ -912,6 +990,11 @@ renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointermove", onPointerMove);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
 renderer.domElement.addEventListener("pointercancel", onPointerCancel);
+renderer.domElement.addEventListener("webglcontextlost", (event) => {
+  event.preventDefault();
+  loadingEl.classList.remove("is-hidden");
+  loadingEl.textContent = "3D-сессия была приостановлена устройством. Обновите страницу, чтобы продолжить.";
+});
 
 function animate() {
   resize();
