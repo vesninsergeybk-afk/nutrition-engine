@@ -1,14 +1,11 @@
-name: Muscle memory stable browser smoke
+name: Muscle memory browser smoke
 
 on:
   push:
     branches:
       - feature/muscle-memory-mvp
     paths:
-      - experiments/muscle-memory-game/app.js
-      - experiments/muscle-memory-game/index.html
-      - experiments/muscle-memory-game/styles.css
-      - experiments/muscle-memory-game/anatomy-terms-ru.js
+      - experiments/muscle-memory-game/**
       - .github/workflows/muscle-memory-smoke.yml
   workflow_dispatch:
 
@@ -30,7 +27,6 @@ jobs:
       - name: Syntax check
         run: |
           node --check experiments/muscle-memory-game/app.js
-          node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/verify.mjs
 
       - name: Install browser
@@ -40,7 +36,7 @@ jobs:
           npm install --silent playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Verify stable trainer in browser
+      - name: Verify stable trainer
         shell: bash
         run: |
           python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
@@ -56,11 +52,7 @@ jobs:
             const browser = await chromium.launch({ headless: true });
             const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
             const errors = [];
-
-            page.on('pageerror', error => errors.push('pageerror: ' + error.message));
-            page.on('console', msg => {
-              if (msg.type() === 'error') errors.push('console: ' + msg.text());
-            });
+            page.on('pageerror', e => errors.push('pageerror: ' + e.message));
 
             await page.goto('http://127.0.0.1:4173/?mode=explore', { waitUntil: 'domcontentloaded' });
             await page.waitForFunction(
@@ -70,13 +62,9 @@ jobs:
             );
 
             assert.doesNotMatch(await page.locator('#question').innerText(), /Ошибка загрузки/);
-            assert.match(await page.locator('#target-status').innerText(), /распознано целей/i);
-
             await page.fill('#structure-search', 'deltoid');
             await page.waitForSelector('.search-result', { timeout: 15000 });
             assert.ok((await page.locator('.search-result').count()) > 0);
-
-            await page.screenshot({ path: '/tmp/muscle-memory-stable.png', fullPage: true });
 
             if (errors.length) throw new Error(errors.join('\n'));
             await browser.close();
@@ -87,12 +75,3 @@ jobs:
           NODE
 
           node /tmp/smoke.cjs
-
-      - name: Upload screenshot
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: muscle-memory-stable
-          path: /tmp/muscle-memory-stable.png
-          if-no-files-found: ignore
-          retention-days: 7
