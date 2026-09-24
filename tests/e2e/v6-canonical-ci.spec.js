@@ -155,6 +155,35 @@ test('current needs checkpoint calculates and preserves the profile across steps
   await expect(page.locator('#needs_activity')).toHaveValue('moderate');
 });
 
+test('immediate move to ration after needs calculation is not undone by delayed profile recovery', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await openNeeds(page);
+
+  await page.selectOption('#needs_sex', 'female');
+  await page.fill('#needs_age', '42');
+  await page.fill('#needs_h', '168');
+  await page.fill('#needs_w', '64');
+  await page.selectOption('#needs_activity', 'moderate');
+
+  await page.evaluate(() => {
+    window.__needsImmediateRationProbe = false;
+    document.addEventListener('needs:computed', () => {
+      window.NavigationShellV1.navigate('ration');
+      window.__needsImmediateRationProbe = true;
+    }, { once: true });
+  });
+
+  await page.locator('#profileCalculateContinue').click();
+  await page.waitForFunction(() => window.__needsImmediateRationProbe === true);
+  await page.waitForTimeout(250);
+
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'ration');
+  await expect(page.locator('#globalSearchInput')).toBeVisible();
+});
+
 test('all three current themes remain user-selectable in the checkpoint canvas', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await loadApp();
