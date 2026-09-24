@@ -2,11 +2,16 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
 const SKELETON_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb";
+
+const BODYPARTS_SOURCE_ROOT =
+  "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
+const BODYPARTS_ATLAS_URL = BODYPARTS_SOURCE_ROOT + "/models/atlas.json";
 
 // Первый игровой набор намеренно ограничен поверхностными структурами.
 // Глубокие мышцы появятся после отдельного режима снятия слоёв.
@@ -118,6 +123,8 @@ const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
+let currentModelSource = "z-anatomy";
+let initialQueryApplied = false;
 
 function hashString(value) {
   let hash = 2166136261;
@@ -142,6 +149,10 @@ function targetForName(name) {
 
 function displayStructureName(sid) {
   const sourceName = structureNames[sid] || "Неизвестная структура";
+  const term = structureTerm(sourceName);
+  if (term.nameRu !== sourceName) {
+    return term.latin ? `${term.nameRu} · ${term.latin}` : term.nameRu;
+  }
   const target = targetForName(sourceName);
   return target ? `${target.nameRu} · ${sourceName}` : sourceName;
 }
@@ -600,8 +611,11 @@ function renderSearchResults(query) {
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
     const source = structureNames[sid];
     const target = targetForName(source);
-    const haystack = `${source} ${target?.nameRu || ""} ${target?.latin || ""}`.toLowerCase();
-    if (haystack.includes(q)) matches.push(sid);
+    const haystack =
+      structureSearchText(source) +
+      " " +
+      `${target?.nameRu || ""} ${target?.latin || ""}`.toLocaleLowerCase("ru-RU");
+    if (haystack.includes(q.toLocaleLowerCase("ru-RU"))) matches.push(sid);
   }
 
   if (!matches.length) {
@@ -628,7 +642,7 @@ function renderSearchResults(query) {
       selectExploreStructure(sid);
       focusSelectedStructures();
       searchResults.replaceChildren();
-      searchInput.value = structureNames[sid];
+      searchInput.value = structureTerm(structureNames[sid]).nameRu;
     });
     searchResults.appendChild(button);
   }
@@ -636,8 +650,10 @@ function renderSearchResults(query) {
 
 function structureIdFromHit(hit) {
   if (!hit || hit.faceIndex == null || !anatomyMesh) return null;
-  const vertexIndex = hit.faceIndex * 3;
-  const structureId = anatomyMesh.geometry.getAttribute("structureId");
+  const geometry = anatomyMesh.geometry;
+  const corner = hit.faceIndex * 3;
+  const vertexIndex = geometry.index ? geometry.index.getX(corner) : corner;
+  const structureId = geometry.getAttribute("structureId");
   return Math.round(structureId.getX(vertexIndex));
 }
 
@@ -830,6 +846,8 @@ function applyBoneDisplayMode() {
   }
 
   material.needsUpdate = true;
+  canvas.dataset.boneMode = mode;
+  canvas.dataset.boneTransparent = String(Boolean(material.transparent));
 }
 
 function notifyEmbedHeight() {
@@ -849,6 +867,8 @@ function notifyEmbedHeight() {
 }
 
 function applyInitialQueryState() {
+  if (initialQueryApplied) return;
+  initialQueryApplied = true;
   const params = new URLSearchParams(window.location.search);
 
   if (params.get("mode") === "explore") setMode("explore");
