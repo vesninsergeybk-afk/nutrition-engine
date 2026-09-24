@@ -1,0 +1,111 @@
+name: Muscle memory browser smoke
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - experiments/muscle-memory-game/**
+      - .github/workflows/muscle-memory-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax check
+        run: |
+          node --check experiments/muscle-memory-game/app.js
+          node --check experiments/muscle-memory-game/anatomy-terms-ru.js
+          node --check experiments/muscle-memory-game/verify.mjs
+
+      - name: Install browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run browser smoke test
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+
+          cat >/tmp/smoke.cjs <<'NODE'
+          const { chromium } = require('/tmp/node_modules/playwright');
+          const assert = require('node:assert/strict');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+            const errors = [];
+
+            page.on('pageerror', error => errors.push('pageerror: ' + error.message));
+            page.on('console', msg => {
+              if (msg.type() === 'error') errors.push('console: ' + msg.text());
+            });
+
+            await page.goto('http://127.0.0.1:4173/?mode=explore', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(
+              () => document.querySelector('#loading')?.classList.contains('is-hidden'),
+              null,
+              { timeout: 90000 }
+            );
+
+            assert.equal(await page.locator('#model-source').count(), 1);
+            assert.match(await page.locator('#model-note').innerText(), /Целостная модель тела/);
+
+            await page.fill('#structure-search', 'дельтовидная');
+            await page.waitForSelector('.search-result', { timeout: 15000 });
+            assert.ok((await page.locator('.search-result').count()) > 0);
+
+            await page.selectOption('#model-source', 'bodyparts3');
+            await page.waitForFunction(
+              () => document.querySelector('#loading')?.classList.contains('is-hidden'),
+              null,
+              { timeout: 180000 }
+            );
+            assert.match(await page.locator('#model-note').innerText(), /BodyParts3D 3\.0/);
+            assert.doesNotMatch(await page.locator('#question').innerText(), /Ошибка загрузки/);
+
+            await page.fill('#structure-search', 'надостная');
+            await page.waitForSelector('.search-result', { timeout: 15000 });
+            assert.match(await page.locator('.search-result').first().innerText(), /Надостная/i);
+
+            await page.screenshot({ path: '/tmp/muscle-memory-smoke.png', fullPage: true });
+
+            if (errors.length) {
+              throw new Error(errors.join('\n'));
+            }
+
+            await browser.close();
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+          node /tmp/smoke.cjs
+
+      - name: Upload screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muscle-memory-smoke
+          path: /tmp/muscle-memory-smoke.png
+          if-no-files-found: ignore
+          retention-days: 7
