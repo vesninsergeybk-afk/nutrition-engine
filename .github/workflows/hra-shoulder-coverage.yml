@@ -53,3 +53,34 @@ jobs:
               for name in found[:30]:
                   print("  ", name)
           PY
+
+      - name: Inspect HRA master ontology crosswalk for shoulder structures
+        shell: bash
+        run: |
+          set -euo pipefail
+          CROSSWALK="/tmp/hra-crosswalk.csv"
+          curl -fL --retry 3 --retry-delay 2             "https://cdn.humanatlas.io/digital-objects/ref-organ/asct-b-3d-models-crosswalk/v1.10/assets/asct-b-3d-models-crosswalk.csv"             -o "$CROSSWALK"
+          echo "crosswalk_bytes=$(stat -c%s "$CROSSWALK")"
+          python3 - "$CROSSWALK" <<'PY'
+          import csv, pathlib, sys
+          p = pathlib.Path(sys.argv[1])
+          terms = [
+              "deltoid", "supraspinatus", "infraspinatus", "subscapularis",
+              "teres minor", "teres major", "trapezius", "pectoralis",
+              "latissimus", "biceps", "triceps", "serratus anterior",
+              "rhomboid", "levator scapulae", "coracobrachialis",
+              "scapula", "clavicle", "humerus"
+          ]
+          rows = list(csv.DictReader(p.open(encoding="utf-8-sig", newline="")))
+          print("crosswalk_rows=", len(rows))
+          print("columns=", list(rows[0].keys()) if rows else [])
+          for term in terms:
+              found = []
+              for row in rows:
+                  hay = " | ".join(str(v or "") for v in row.values())
+                  if term.lower() in hay.lower():
+                      found.append(hay)
+              print(f"CROSSWALK {term}: {len(found)}")
+              for item in found[:12]:
+                  print("  ", item[:500])
+          PY
