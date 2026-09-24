@@ -80,3 +80,23 @@ For the same shoulder structures compare:
 - deep-layer accessibility;
 - naming/provenance;
 - mobile render cost.
+
+
+## HRA united-male v1.10 — direct technical audit
+
+The HRA male united GLB was downloaded and inspected inside our GitHub Actions workflow.
+
+Verified:
+- file size: 241,633,636 bytes;
+- GLB 2.0 magic/header valid;
+- 1 scene;
+- 1,129 nodes;
+- 918 meshes;
+- SHA-256: `fae3ac193835e9e24cd13a0d0f11e6788183b290b0691b9b83ec81d907d94581`;
+- cached as GitHub Actions artifact `hra-united-male-v1.10`.
+
+Shoulder coverage check:
+- searching all named GLB nodes/meshes found no deltoid, supraspinatus, infraspinatus, subscapularis, teres, trapezius, pectoralis, latissimus, biceps, triceps, serratus, rhomboid, levator scapulae, coracobrachialis, scapula, clavicle, or humerus names;
+- the HRA v1.10 master ASCT+B ↔ 3D-model crosswalk also contained zero raw-text matches for the tested shoulder muscle/bone terms.
+
+Interpretation: this confirms the **united HRA reference-organ body is not a detailed musculoskeletal shoulder atlas**. HRA remains valuable because of its formal expert-review and provenance workflow, not because it solves our muscle geometry problem.
