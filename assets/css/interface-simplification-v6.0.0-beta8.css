@@ -389,6 +389,52 @@ html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
   font-size:11px!important;
   white-space:nowrap!important;
 }
+/* Desktop navigation has room for the 12px floor; the 11px value is only needed on
+   the narrow bottom bar, where "Потребности" would otherwise wrap to two lines. */
+@media(min-width:900px){
+  .navigation-shell__items a span{
+    font-size:12px!important;
+  }
+}
+/* Type scale pass 2: the remaining groups sit one step below the floor — content
+   labels that carry meaning, all measured at 11px or 10.5px. Chrome with fixed
+   width (the mobile bottom bar) is deliberately excluded. */
+.diet-acc-chip,
+.diet-acc-kicker{
+  font-size:12px!important;
+}
+.diet-gram-action span,
+.diet-zone-explain-head span,
+.diet-personal-item span{
+  font-size:12px!important;
+}
+.workspace-ration-inline__metrics span,
+.workspace-hei-scoreline span,
+.workspace-overview__metrics span,
+.workspace-analysis-section-head span,
+.workspace-status{
+  font-size:12px!important;
+}
+.workspace-contributors__empty{
+  font-size:12px!important;
+}
+.profile-hierarchy__purpose{
+  font-size:12px!important;
+}
+.navigation-shell-context__copy span{
+  font-size:12px!important;
+}
+/* Type scale pass 3: the next groups, still content rather than fixed-width chrome.
+   The header subtitle is included because both design reviews flagged it as faint. */
+.workspace-correction-summary span,
+.diet-point-passport span,
+.diet-point-passport em{
+  font-size:12px!important;
+}
+.app-subtitle,
+.ivory-brand-copy span{
+  font-size:12px!important;
+}
 .search-result-main .meta .pill,
 .search-result-main .meta span.pill{
   font-size:12px!important;
