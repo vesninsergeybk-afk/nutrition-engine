@@ -31,6 +31,13 @@
       <div class="viewer-wrap">
         <canvas id="viewer" aria-label="Интерактивная трёхмерная модель мышц"></canvas>
         <div id="loading" class="loading">Загружаю мышечную модель…</div>
+
+        <div class="viewer-tools" aria-label="Управление отображением модели">
+          <button id="bone-toggle" type="button" disabled>Костные ориентиры: загрузка…</button>
+          <button id="focus-shoulder" type="button">Плечевой пояс</button>
+          <button id="focus-full" type="button">Всё тело</button>
+        </div>
+
         <div class="viewer-hint">Повернуть: провести пальцем · Масштаб: щипок/колесо</div>
       </div>
     </section>
@@ -49,7 +56,7 @@
 
       <section class="status-card">
         <h3>Что проверяем в этом прототипе</h3>
-        <p>Может ли студент вращать модель, найти нужную мышцу и получить мгновенную обратную связь. Пока без анимации движения сустава.</p>
+        <p>Может ли студент вращать модель, опираться на костные ориентиры, найти нужную мышцу и получить мгновенную обратную связь. Пока без анимации движения сустава.</p>
         <div id="target-status" class="target-status">Ожидаю модель…</div>
       </section>
 
