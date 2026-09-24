@@ -62,6 +62,42 @@ ALIASES = {
 MUFA_NAMES = {"fatty acids total monounsaturated", "monounsaturated fatty acids total"}
 PUFA_NAMES = {"fatty acids total polyunsaturated", "polyunsaturated fatty acids total"}
 
+CNF_TAG_MAP = {
+    "ENERC_KCAL": "kcal",
+    "PROCNT": "protein_per_100g",
+    "FAT": "fat_per_100g",
+    "CHOCDF": "carbs_per_100g",
+    "SUGAR": "sugar_per_100g",
+    "FIBTG": "fiber_per_100g",
+    "FASAT": "sfa",
+    "CA": "calcium_mg",
+    "FE": "iron_mg",
+    "MG": "magnesium_mg",
+    "P": "phosphorus_mg",
+    "K": "potassium_mg",
+    "NA": "sodium_mg",
+    "ZN": "zinc_mg",
+    "CU": "copper_mg",
+    "MN": "manganese_mg",
+    "SE": "selenium_ug",
+    "VITA_RAE": "vitamin_a_mcg",
+    "TOCPHA": "vitamin_e_mg",
+    "VITD": "vitamin_d_mcg",
+    "VITC": "vitamin_c_mg",
+    "THIA": "vitamin_b1_mg",
+    "RIBF": "vitamin_b2_mg",
+    "NIA": "vitamin_b3_mg",
+    "PANTAC": "vitamin_b5_mg",
+    "VITB6A": "vitamin_b6_mg",
+    "FOL": "vitamin_b9_mcg",
+    "FOLDFE": "vitamin_b9_mcg",
+    "VITB12": "vitamin_b12_mcg",
+    "CHOLN": "choline_mg",
+    "VITK1": "vitamin_k_mcg",
+}
+CNF_MUFA_TAGS = {"FAMS"}
+CNF_PUFA_TAGS = {"FAPU"}
+
 def norm(s: str) -> str:
     s = (s or "").lower().replace("µ", "u").replace("μ", "u")
     s = re.sub(r"[^a-z0-9]+", " ", s)
@@ -90,6 +126,12 @@ def csv_rows_from_zip(path: Path, basename: str):
         raw = z.read(member)
     text = raw.decode("utf-8-sig", errors="replace")
     return list(csv.DictReader(io.StringIO(text)))
+
+def optional_csv_rows_from_zip(path: Path, basename: str):
+    try:
+        return csv_rows_from_zip(path, basename)
+    except FileNotFoundError:
+        return None
 
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
@@ -165,6 +207,21 @@ def parse_usda(path: Path, source_label: str, existing_fdc: set[str]):
     nutrients = csv_rows_from_zip(path, "nutrient.csv")
     amounts = csv_rows_from_zip(path, "food_nutrient.csv")
 
+    # FoodData Central ZIPs include shared lookup/support rows in food.csv.
+    # Foundation exports must be restricted to IDs explicitly listed in
+    # foundation_food.csv; otherwise tens of thousands of unrelated records
+    # appear as false "Foundation Foods".
+    allowed_ids = None
+    if source_label.startswith("Foundation"):
+        foundation_rows = optional_csv_rows_from_zip(path, "foundation_food.csv")
+        if foundation_rows is None:
+            raise RuntimeError("Foundation ZIP has no foundation_food.csv; refusing unsafe broad import")
+        allowed_ids = {
+            str(r.get("fdc_id") or r.get("id") or "")
+            for r in foundation_rows
+            if (r.get("fdc_id") or r.get("id"))
+        }
+
     nutrient_meta = {}
     for r in nutrients:
         nid = str(r.get("id") or r.get("nutrient_id") or "")
@@ -177,6 +234,8 @@ def parse_usda(path: Path, source_label: str, existing_fdc: set[str]):
     for f in foods:
         fid = str(f.get("fdc_id") or f.get("id") or "")
         if not fid:
+            continue
+        if allowed_ids is not None and fid not in allowed_ids:
             continue
         rec = blank_record("USDA_FDC", fid, f.get("description") or "")
         rec["source_dataset"] = source_label
@@ -267,13 +326,14 @@ def parse_cnf(path: Path, existing_names: set[str]):
             continue
         name = meta.get("name", "")
         n = norm(name)
-        if n in MUFA_NAMES:
+        tag = str(meta.get("tagname") or "").strip().upper()
+        if tag in CNF_MUFA_TAGS or n in MUFA_NAMES:
             mufa[code] = val
             continue
-        if n in PUFA_NAMES:
+        if tag in CNF_PUFA_TAGS or n in PUFA_NAMES:
             pufa[code] = val
             continue
-        field = canonical_field(name, meta.get("unit"))
+        field = CNF_TAG_MAP.get(tag) or canonical_field(name, meta.get("unit"))
         if field:
             apply_value(rec, field, val)
 
