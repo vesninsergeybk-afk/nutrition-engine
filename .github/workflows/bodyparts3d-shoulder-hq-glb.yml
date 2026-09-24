@@ -1,0 +1,93 @@
+name: BodyParts3D shoulder HQ web model
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - .github/workflows/bodyparts3d-shoulder-hq-glb.yml
+      - experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-95-shoulder.tsv
+
+permissions:
+  contents: read
+
+jobs:
+  build-glb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build right-shoulder high-polygon GLB
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet "trimesh>=4.0" numpy
+          OUT="/tmp/bodyparts3d-right-shoulder-hq"
+          mkdir -p "$OUT/stl"
+          LIST="experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-95-shoulder.tsv"
+
+          tail -n +2 "$LIST" | while IFS=$'\t' read -r id name; do
+            case "$name" in
+              *right*)
+                curl -fsSL --retry 3                   "https://raw.githubusercontent.com/Kevin-Mattheus-Moerman/BodyParts3D/main/assets/BodyParts3D_data/stl/$id.stl"                   -o "$OUT/stl/$id.stl"
+                printf '%s\t%s\n' "$id" "$name" >> "$OUT/structures.tsv"
+                ;;
+            esac
+          done
+
+          python3 - "$OUT" <<'PY'
+          import json, pathlib, sys
+          import numpy as np
+          import trimesh
+
+          root = pathlib.Path(sys.argv[1])
+          names = {}
+          for line in (root / "structures.tsv").read_text().splitlines():
+              fma, name = line.split("\t", 1)
+              names[fma] = name
+
+          scene = trimesh.Scene()
+          stats = []
+
+          for path in sorted((root / "stl").glob("*.stl")):
+              fma = path.stem
+              name = names[fma]
+              mesh = trimesh.load_mesh(path, file_type="stl", process=False)
+              if not isinstance(mesh, trimesh.Trimesh):
+                  raise RuntimeError(f"Unexpected mesh type for {path}")
+              node = f"{fma}__{name.replace(' ', '_')}"
+              scene.add_geometry(mesh, node_name=node, geom_name=node)
+              stats.append({
+                  "fma_id": fma,
+                  "name": name,
+                  "vertices": int(len(mesh.vertices)),
+                  "faces": int(len(mesh.faces)),
+                  "watertight": bool(mesh.is_watertight),
+                  "bounds": np.asarray(mesh.bounds).tolist(),
+              })
+
+          glb = scene.export(file_type="glb")
+          (root / "bodyparts3d-3.0-95-right-shoulder-hq.glb").write_bytes(glb)
+          (root / "mesh-stats.json").write_text(json.dumps(stats, indent=2))
+          print("structures=", len(stats))
+          print("vertices=", sum(x["vertices"] for x in stats))
+          print("triangles=", sum(x["faces"] for x in stats))
+          print("watertight=", sum(x["watertight"] for x in stats))
+          print("glb_bytes=", len(glb))
+          PY
+
+          sha256sum "$OUT/bodyparts3d-3.0-95-right-shoulder-hq.glb"
+          ls -lh "$OUT/bodyparts3d-3.0-95-right-shoulder-hq.glb"
+
+      - name: Upload web-model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bodyparts3d-3.0-95-right-shoulder-hq-glb
+          path: |
+            /tmp/bodyparts3d-right-shoulder-hq/bodyparts3d-3.0-95-right-shoulder-hq.glb
+            /tmp/bodyparts3d-right-shoulder-hq/structures.tsv
+            /tmp/bodyparts3d-right-shoulder-hq/mesh-stats.json
+          retention-days: 30
+          compression-level: 0
