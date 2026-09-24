@@ -84,3 +84,15 @@ jobs:
               for item in found[:12]:
                   print("  ", item[:500])
           PY
+
+      - name: Raw-text shoulder term check in HRA crosswalk
+        shell: bash
+        run: |
+          set -euo pipefail
+          CROSSWALK="/tmp/hra-crosswalk.csv"
+          echo "First 12 lines:"
+          head -n 12 "$CROSSWALK"
+          for term in deltoid supraspinatus infraspinatus subscapularis trapezius pectoralis latissimus biceps triceps scapula clavicle humerus; do
+            count=$(grep -io "$term" "$CROSSWALK" | wc -l || true)
+            echo "RAW $term: $count"
+          done
