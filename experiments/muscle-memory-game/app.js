@@ -133,7 +133,7 @@ let tapBlocked = false;
 let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
 let currentModelId = "z-anatomy";
-let loadGeneration = 0;
+let initialQueryApplied = false;
 
 function hashString(value) {
   let hash = 2166136261;
@@ -211,6 +211,11 @@ function setViewPreset(value) {
 function setShoulderView() {
   const body = worldBodyBox();
   if (body.isEmpty()) return;
+
+  if (currentModelId !== "z-anatomy") {
+    setFullBodyView();
+    return;
+  }
 
   const size = body.getSize(new THREE.Vector3());
   const region = new THREE.Box3(
@@ -863,10 +868,16 @@ function notifyEmbedHeight() {
 }
 
 function applyInitialQueryState() {
+  if (initialQueryApplied) return;
+  initialQueryApplied = true;
+
   const params = new URLSearchParams(window.location.search);
 
   if (params.get("mode") === "explore") setMode("explore");
   if (params.get("region") === "shoulder") setShoulderView();
+  if (params.get("debug") === "1") {
+    document.querySelector(".debug")?.removeAttribute("hidden");
+  }
 
   if (params.get("embed") === "1") {
     document.body.classList.add("embed-mode");
@@ -1274,9 +1285,7 @@ boneOpacity.addEventListener("input", () => {
 });
 
 modelSource.addEventListener("change", () => {
-  if (modelSource.value === "bodyparts4") {
-    window.location.href = "./quality-lab.html";
-  }
+  void loadSelectedModel(modelSource.value);
 });
 
 focusShoulderButton.addEventListener("click", setShoulderView);
@@ -1340,4 +1349,4 @@ function animate() {
 }
 
 animate();
-loadMuscleModel();
+void loadSelectedModel(modelSource.value);
