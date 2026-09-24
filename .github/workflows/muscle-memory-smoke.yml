@@ -29,6 +29,7 @@ jobs:
           node --check experiments/muscle-memory-game/app.js
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/bodyparts4-classification.js
+          node --check experiments/muscle-memory-game/bodyparts4-muscles-ru.js
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
           import { bodyPartsAnatomyKind } from './experiments/muscle-memory-game/bodyparts4-classification.js';
@@ -43,6 +44,24 @@ jobs:
             const actual = bodyPartsAnatomyKind(part);
             if (actual !== expected) throw new Error(label + ': expected ' + expected + ', got ' + actual);
           }
+          NODE
+
+          node --input-type=module <<'NODE'
+          import { bodyPartsAnatomyKind } from './experiments/muscle-memory-game/bodyparts4-classification.js';
+          import { bodyPartsMuscleNameRu } from './experiments/muscle-memory-game/bodyparts4-muscles-ru.js';
+
+          const response = await fetch('https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public/models/atlas.json');
+          if (!response.ok) throw new Error('Could not fetch pinned BodyParts3D atlas');
+          const atlas = await response.json();
+          const muscles = atlas.parts.filter(part => bodyPartsAnatomyKind(part) === 'muscle');
+          const missing = muscles.filter(part => !bodyPartsMuscleNameRu(part.name));
+          if (missing.length) {
+            throw new Error('Missing Russian muscle names: ' + missing.map(part => part.name).join(', '));
+          }
+          if (muscles.length !== 416) {
+            throw new Error('Unexpected BodyParts3D muscle count: ' + muscles.length);
+          }
+          console.log('Russian muscle names:', muscles.length + '/' + muscles.length);
           NODE
 
       - name: Install browser
@@ -131,6 +150,16 @@ jobs:
             await page.selectOption('#bone-mode', 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
+
+            await page.fill('#structure-search', 'передняя большеберцовая');
+            await page.waitForFunction(
+              () => document.querySelectorAll('.search-result').length > 0,
+              null,
+              { timeout: 15000 }
+            );
+            const tibialisLabel = await page.locator('.search-result').first().innerText();
+            assert.match(tibialisLabel, /Передняя большеберцовая/i);
+            assert.doesNotMatch(tibialisLabel, /tibialis anterior/i);
 
             await page.fill('#structure-search', 'дельтовидная');
             await page.waitForFunction(
