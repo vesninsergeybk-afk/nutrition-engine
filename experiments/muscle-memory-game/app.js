@@ -35,8 +35,9 @@ const scoreEl = document.querySelector("#score");
 const diagnosticsEl = document.querySelector("#diagnostics");
 const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
-const boneToggle = document.querySelector("#bone-toggle");
+const boneMode = document.querySelector("#bone-mode");
 const boneOpacity = document.querySelector("#bone-opacity");
+const modelSource = document.querySelector("#model-source");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
 const focusSelectedButton = document.querySelector("#focus-selected");
@@ -116,7 +117,7 @@ const sessionDifficulty = new Map();
 const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
-let bonesVisible = true;
+let boneDisplayMode = "anatomical";
 
 function hashString(value) {
   let hash = 2166136261;
@@ -794,6 +795,52 @@ function mergeSkeletonGeometries(geometries) {
   };
 }
 
+function applyBoneDisplayMode() {
+  if (!skeletonMesh) return;
+
+  const mode = boneDisplayMode;
+  const material = skeletonMesh.material;
+
+  if (mode === "off") {
+    skeletonMesh.visible = false;
+    boneOpacity.disabled = true;
+    return;
+  }
+
+  skeletonMesh.visible = true;
+
+  if (mode === "anatomical") {
+    // Normal depth relationship: muscles can occlude deeper bone.
+    material.transparent = false;
+    material.opacity = 1;
+    material.depthTest = true;
+    material.depthWrite = true;
+    skeletonMesh.renderOrder = 0;
+    boneOpacity.disabled = true;
+  } else {
+    // Deliberate x-ray reference mode. It is visually useful, but not topographic.
+    material.transparent = true;
+    material.opacity = Number(boneOpacity.value);
+    material.depthTest = false;
+    material.depthWrite = false;
+    skeletonMesh.renderOrder = 10;
+    boneOpacity.disabled = false;
+  }
+
+  material.needsUpdate = true;
+}
+
+function applyInitialQueryState() {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("mode") === "explore") setMode("explore");
+  if (params.get("region") === "shoulder") setShoulderView();
+
+  if (params.get("embed") === "1") {
+    document.body.classList.add("embed-mode");
+  }
+}
+
 async function loadSkeletonLayer(loader) {
   try {
     const gltf = await loader.loadAsync(SKELETON_MODEL_URL);
@@ -811,32 +858,25 @@ async function loadSkeletonLayer(loader) {
     for (const geometry of geometries) geometry.dispose();
     for (const geometry of temporaries) geometry.dispose();
 
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xfff0c9,
-      transparent: true,
-      opacity: Number(boneOpacity.value),
-      depthTest: false,
-      depthWrite: false,
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xe7d8b7,
+      roughness: 0.72,
+      metalness: 0,
       side: THREE.DoubleSide,
     });
 
     skeletonMesh = new THREE.Mesh(merged, material);
-    skeletonMesh.renderOrder = 10;
-    skeletonMesh.visible = bonesVisible;
     modelGroup.add(skeletonMesh);
 
-    boneToggle.disabled = false;
-    boneOpacity.disabled = false;
-    boneToggle.textContent = bonesVisible
-      ? "Костные ориентиры (просвечивание): вкл"
-      : "Костные ориентиры (просвечивание): выкл";
+    boneMode.disabled = false;
+    boneOpacity.disabled = boneDisplayMode !== "xray";
+    applyBoneDisplayMode();
 
-    updateDiagnostics("Скелет показан в режиме условного просвечивания поверх мышц; это навигационный слой, а не анатомическая окклюзия. В проверке клика он не участвует.");
+    updateDiagnostics("Костный слой по умолчанию использует нормальную проверку глубины. Режим просвечивания включается отдельно и не должен трактоваться как топографически точный.");
   } catch (error) {
     console.error(error);
-    boneToggle.disabled = true;
+    boneMode.disabled = true;
     boneOpacity.disabled = true;
-    boneToggle.textContent = "Костные ориентиры (просвечивание): ошибка";
     updateDiagnostics(`Ошибка загрузки костных ориентиров: ${String(error?.message || error)}`);
   }
 }
@@ -921,8 +961,9 @@ async function loadMuscleModel() {
     discoverTargets();
     loadingEl.classList.add("is-hidden");
 
-    boneToggle.textContent = "Костные ориентиры (просвечивание): загрузка…";
+    boneMode.disabled = true;
     void loadSkeletonLayer(loader);
+    applyInitialQueryState();
   } catch (error) {
     console.error(error);
     loadingEl.textContent = "Не удалось загрузить 3D-модель.";
@@ -933,19 +974,21 @@ async function loadMuscleModel() {
   }
 }
 
-boneToggle.addEventListener("click", () => {
-  if (!skeletonMesh) return;
-  bonesVisible = !bonesVisible;
-  skeletonMesh.visible = bonesVisible;
-  boneToggle.textContent = bonesVisible
-    ? "Костные ориентиры (просвечивание): вкл"
-    : "Костные ориентиры (просвечивание): выкл";
+boneMode.addEventListener("change", () => {
+  boneDisplayMode = boneMode.value;
+  applyBoneDisplayMode();
 });
 
 boneOpacity.addEventListener("input", () => {
-  if (!skeletonMesh) return;
+  if (!skeletonMesh || boneDisplayMode !== "xray") return;
   skeletonMesh.material.opacity = Number(boneOpacity.value);
   skeletonMesh.material.needsUpdate = true;
+});
+
+modelSource.addEventListener("change", () => {
+  if (modelSource.value === "bodyparts4") {
+    window.location.href = "./quality-lab.html";
+  }
 });
 
 focusShoulderButton.addEventListener("click", setShoulderView);
