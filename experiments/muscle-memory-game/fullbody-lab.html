@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Полнотельная модель — лаборатория</title>
+  <link rel="stylesheet" href="./fullbody-lab.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main class="lab-shell">
+    <section class="stage">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Лаборатория моделей</p>
+          <h1>BodyParts3D 4.0 · всё тело</h1>
+        </div>
+        <a class="back-link" href="./index.html">Вернуться к тренажёру</a>
+      </header>
+
+      <div class="viewer-wrap">
+        <canvas id="fullbody-canvas" aria-label="Полнотельная анатомическая модель"></canvas>
+        <div id="fullbody-loading" class="loading">Получаю каталог анатомии…</div>
+        <div class="viewer-tools">
+          <button id="view-front" type="button">Спереди</button>
+          <button id="view-back" type="button">Сзади</button>
+          <button id="view-reset" type="button">Всё тело</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <section class="card">
+        <h2>Структуры</h2>
+        <label class="search-field">
+          <span>Найти мышцу или кость</span>
+          <input id="fullbody-search" type="search" autocomplete="off"
+                 placeholder="Например: дельтовидная, deltoid, scapula" />
+        </label>
+        <div id="fullbody-results" class="search-results"></div>
+      </section>
+
+      <section class="card">
+        <h2>Отображение</h2>
+        <label class="toggle"><input id="muscles-toggle" type="checkbox" checked /> Мышцы</label>
+        <label class="toggle"><input id="bones-toggle" type="checkbox" checked /> Кости</label>
+      </section>
+
+      <section class="card">
+        <p class="label">Выбрано</p>
+        <h2 id="selected-name">Ничего</h2>
+        <p id="selected-source" class="muted">Коснитесь структуры на модели или найдите её по названию.</p>
+        <button id="focus-selected" type="button" disabled>Приблизить</button>
+      </section>
+
+      <section class="card">
+        <p id="fullbody-status" class="status">Ожидаю загрузку…</p>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="./fullbody-lab.js"></script>
+</body>
+</html>
