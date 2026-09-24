@@ -90,8 +90,9 @@ def automatic_brand_signal(name: str) -> bool:
     return len(tokens) >= 2
 
 def normalize_name(name: str) -> str:
+    # Keep parenthetical content: "(raw)" / "(cooked)" / flavour or cut
+    # can materially distinguish nutrient profiles. Normalize punctuation only.
     s = (name or "").lower()
-    s = re.sub(r"\([^)]*\)", " ", s)
     s = re.sub(r"[^a-z0-9]+", " ", s)
     return re.sub(r"\s+", " ", s).strip()
 
