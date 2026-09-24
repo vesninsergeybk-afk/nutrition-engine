@@ -299,13 +299,18 @@ const Z_KEY_ALIASES = new Map([
   ["opponens digiti minimi of hand", "opponens digiti minimi of hand"],
   ["flexor digiti minimi of foot", "flexor digiti minimi brevis of foot"],
   ["flexor digiti minimi of hand", "flexor digiti minimi brevis of hand"],
+  ["external intercostal", "external intercostal muscle"],
+  ["innermost intercostal", "innermost intercostal muscle"],
+  ["internal intercostal", "internal intercostal muscle"],
+  ["lumbrical of foot", "lumbrical muscles of foot"],
+  ["lumbrical of hand", "lumbrical muscles of hand"],
 ]);
 
 function zNormalizedMuscleKey(sourceName) {
   const cleaned = String(sourceName || "")
     .trim()
-    .replace(/^\((.*)\)$/u, "$1")
     .replace(/\.(l|r)$/i, "")
+    .replace(/^\((.*)\)$/u, "$1")
     .replace(/\bmuscles?\b/gi, "")
     .replace(/\s+/g, " ")
     .trim()
