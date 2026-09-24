@@ -389,6 +389,7 @@ test('empty analysis overview stays concise and restores the full dashboard afte
 
   const commandCenter = page.locator('#analysisCommandCenterHF3');
   if (await commandCenter.count()) await expect(commandCenter).toBeHidden();
+  await expect(page.locator('#dietAnalysisProfilePanel')).toBeHidden();
   await expect(page.locator('#workspaceOverviewPanel .workspace-overview__metrics')).toBeHidden();
   await expect(page.locator('#workspaceOverviewPanel .workspace-overview__issues')).toBeHidden();
   await expect(page.locator('#workspaceOverviewPanel .workspace-overview__quality')).toBeHidden();
@@ -411,6 +412,7 @@ test('empty analysis overview stays concise and restores the full dashboard afte
 
   await page.evaluate(() => window.NavigationShellV1.navigate('analysis/overview'));
   if (await commandCenter.count()) await expect(commandCenter).toBeVisible();
+  await expect(page.locator('#dietAnalysisProfilePanel')).toBeVisible();
   await expect(page.locator('#workspaceOverviewPanel .workspace-overview__metrics')).toBeVisible();
   await expect(page.locator('#workspaceOverviewPanel .workspace-overview__issues')).toBeVisible();
   await expect(page.locator('#workspaceOverviewPanel .workspace-overview__actions')).toBeVisible();
