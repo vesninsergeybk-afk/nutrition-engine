@@ -127,18 +127,6 @@
       "note": "Contains valid Z-Anatomy muscle/skeleton GLBs plus two NIH PNG previews that were initially mislabeled as GLB; do not treat the NIH files in this artifact as models."
     },
     {
-      "id": "hra_united_male_v1_10",
-      "github_actions_run_id": 36036064493,
-      "artifact_id": 10824986438,
-      "artifact_name": "hra-united-male-v1.10",
-      "source_glb_bytes": 241633636,
-      "artifact_zip_bytes": 241633800,
-      "sha256": "fae3ac193835e9e24cd13a0d0f11e6788183b290b0691b9b83ec81d907d94581",
-      "expires_at": "2026-10-24T17:41:37Z",
-      "status": "downloaded_and_verified_glb",
-      "note": "Valid GLB 2.0; 1129 nodes, 918 meshes, one scene. Retained for provenance/quality benchmark, not primary shoulder anatomy."
-    },
-    {
       "id": "bodyparts3d_3_0_95_right_shoulder_hq_glb",
       "github_actions_run_id": 36036525498,
       "artifact_id": 10825346816,
@@ -153,6 +141,22 @@
       "expires_at": "2026-10-24T17:45:54Z",
       "status": "web_ready_benchmark_built",
       "note": "Right-side high-polygon shoulder benchmark exported to GLB with separate named structures. None of the 28 STL source meshes reports as watertight in trimesh; acceptable for display testing but must be considered in anatomy/topology review."
+    },
+    {
+      "id": "hra_united_male_v1_10",
+      "github_actions_run_id": 36036064493,
+      "artifact_id": 10824986438,
+      "artifact_name": "hra-united-male-v1.10",
+      "artifact_zip_bytes": 241633800,
+      "source_glb_bytes": 241633636,
+      "source_sha256": "fae3ac193835e9e24cd13a0d0f11e6788183b290b0691b9b83ec81d907d94581",
+      "glb_version": 2,
+      "nodes": 1129,
+      "meshes": 918,
+      "scenes": 1,
+      "expires_at": "2026-10-24T17:41:37Z",
+      "status": "downloaded_and_verified_in_github_actions_artifact",
+      "shoulder_audit": "No direct shoulder-muscle/bone English terms were found in GLB node/mesh names or the checked v1.10 ASCT+B crosswalk; treat HRA as process/provenance benchmark, not a confirmed shoulder-muscle source."
     }
   ]
 }
