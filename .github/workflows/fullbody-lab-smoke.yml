@@ -1,0 +1,101 @@
+name: Full-body anatomy lab smoke
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - experiments/muscle-memory-game/fullbody-lab.html
+      - experiments/muscle-memory-game/fullbody-lab.css
+      - experiments/muscle-memory-game/fullbody-lab.js
+      - experiments/muscle-memory-game/anatomy-terms-ru.js
+      - .github/workflows/fullbody-lab-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax check
+        run: |
+          node --check experiments/muscle-memory-game/fullbody-lab.js
+          node --check experiments/muscle-memory-game/anatomy-terms-ru.js
+
+      - name: Install browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Verify full-body atlas in browser
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/fullbody-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+
+          cat >/tmp/fullbody-smoke.cjs <<'NODE'
+          const { chromium } = require('/tmp/node_modules/playwright');
+          const assert = require('node:assert/strict');
+
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+            const errors = [];
+
+            page.on('pageerror', error => errors.push('pageerror: ' + error.message));
+            page.on('console', msg => {
+              if (msg.type() === 'error') errors.push('console: ' + msg.text());
+            });
+
+            await page.goto('http://127.0.0.1:4173/fullbody-lab.html', { waitUntil: 'domcontentloaded' });
+            await page.waitForFunction(
+              () => document.querySelector('#fullbody-loading')?.classList.contains('is-hidden'),
+              null,
+              { timeout: 120000 }
+            );
+
+            const status = await page.locator('#fullbody-status').innerText();
+            assert.match(status, /698/);
+            assert.match(status, /994[\s\u00a0]?176/);
+
+            await page.fill('#fullbody-search', 'дельтовидная');
+            await page.waitForSelector('.search-result', { timeout: 15000 });
+            assert.ok((await page.locator('.search-result').count()) > 0);
+
+            await page.locator('.search-result').first().click();
+            assert.doesNotMatch(await page.locator('#selected-name').innerText(), /Ничего/);
+
+            await page.screenshot({ path: '/tmp/fullbody-lab.png', fullPage: true });
+
+            if (errors.length) throw new Error(errors.join('\n'));
+            await browser.close();
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+          node /tmp/fullbody-smoke.cjs
+
+      - name: Upload screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fullbody-lab-smoke
+          path: /tmp/fullbody-lab.png
+          if-no-files-found: ignore
+          retention-days: 7
