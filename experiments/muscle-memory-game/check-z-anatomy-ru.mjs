@@ -6,6 +6,9 @@ const MUSCLE_MODEL_URL =
 const COVER_RE =
   /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
 
+const NON_MUSCLE_RE =
+  /bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|fibrous sheath|iliopectineal arch|common tendinous ring/i;
+
 function parseGlbJson(arrayBuffer) {
   const view = new DataView(arrayBuffer);
   if (view.getUint32(0, true) !== 0x46546c67) {
@@ -32,7 +35,13 @@ const json = parseGlbJson(await response.arrayBuffer());
 
 const names = [...new Set(
   (json.nodes || [])
-    .filter(node => node.mesh !== undefined && node.name && !COVER_RE.test(node.name))
+    .filter(
+      node =>
+        node.mesh !== undefined &&
+        node.name &&
+        !COVER_RE.test(node.name) &&
+        !NON_MUSCLE_RE.test(node.name)
+    )
     .map(node => node.name.trim())
 )].sort((a, b) => a.localeCompare(b));
 
