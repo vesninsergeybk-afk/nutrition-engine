@@ -586,6 +586,8 @@ function setMode(mode) {
       "Коснитесь структуры на модели или найдите её по исходному названию. Ответы здесь не оцениваются.";
     searchInput.focus({ preventScroll: true });
   }
+
+  notifyEmbedHeight();
 }
 
 function renderSearchResults(query) {
@@ -830,6 +832,22 @@ function applyBoneDisplayMode() {
   material.needsUpdate = true;
 }
 
+function notifyEmbedHeight() {
+  if (!document.body.classList.contains("embed-mode") || window.parent === window) return;
+
+  const height = Math.ceil(
+    Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight
+    )
+  );
+
+  window.parent.postMessage(
+    { type: "muscle-memory-resize", height },
+    "*"
+  );
+}
+
 function applyInitialQueryState() {
   const params = new URLSearchParams(window.location.search);
 
@@ -838,6 +856,14 @@ function applyInitialQueryState() {
 
   if (params.get("embed") === "1") {
     document.body.classList.add("embed-mode");
+
+    if ("ResizeObserver" in window) {
+      const observer = new ResizeObserver(() => notifyEmbedHeight());
+      observer.observe(document.documentElement);
+    }
+
+    window.addEventListener("load", notifyEmbedHeight, { once: true });
+    setTimeout(notifyEmbedHeight, 250);
   }
 }
 
@@ -873,6 +899,7 @@ async function loadSkeletonLayer(loader) {
     applyBoneDisplayMode();
 
     updateDiagnostics("Костный слой по умолчанию использует нормальную проверку глубины. Режим просвечивания включается отдельно и не должен трактоваться как топографически точный.");
+    notifyEmbedHeight();
   } catch (error) {
     console.error(error);
     boneMode.disabled = true;
