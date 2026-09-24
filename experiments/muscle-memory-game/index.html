@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мышцы в движении — прототип</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="stage">
+      <div class="topbar">
+        <div>
+          <p class="eyebrow">Прототип тренажёра</p>
+          <h1>Мышцы в движении</h1>
+        </div>
+        <div class="score" aria-live="polite">
+          <span>Верно: <strong id="score-correct">0</strong></span>
+          <span>Ошибок: <strong id="score-wrong">0</strong></span>
+        </div>
+      </div>
+
+      <div class="viewer-wrap">
+        <canvas id="viewer" aria-label="Интерактивная трёхмерная модель мышц"></canvas>
+        <div id="loading" class="loading">Загружаю мышечную модель…</div>
+        <div class="viewer-hint">Повернуть: провести пальцем · Масштаб: щипок/колесо</div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <section class="question-card">
+        <p class="question-label">Задание</p>
+        <h2 id="question">После загрузки появится первая мышца</h2>
+        <p id="feedback" class="feedback">Нажмите на нужную мышцу прямо на модели.</p>
+
+        <div class="actions">
+          <button id="show-answer" type="button" disabled>Показать ответ</button>
+          <button id="next-question" type="button" class="primary" disabled>Следующая</button>
+        </div>
+      </section>
+
+      <section class="status-card">
+        <h3>Что проверяем в этом прототипе</h3>
+        <p>Может ли студент вращать модель, найти нужную мышцу и получить мгновенную обратную связь. Пока без анимации движения сустава.</p>
+        <div id="target-status" class="target-status">Ожидаю модель…</div>
+      </section>
+
+      <details class="debug">
+        <summary>Техническая диагностика</summary>
+        <p id="diagnostics">Модель ещё не загружена.</p>
+        <pre id="mesh-names"></pre>
+      </details>
+
+      <p class="attribution">
+        3D-данные: BodyParts3D / Z-Anatomy, CC BY-SA. Для прототипа модель загружается из открытого проекта
+        <a href="https://github.com/DrMuratAltun/anatomi-simulatoru" target="_blank" rel="noreferrer">Anatomi Simülatörü</a>.
+      </p>
+    </aside>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
