@@ -46,6 +46,7 @@ const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
 const boneMode = document.querySelector("#bone-mode");
 const boneOpacity = document.querySelector("#bone-opacity");
+const connectiveMode = document.querySelector("#connective-mode");
 const modelSource = document.querySelector("#model-source");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
@@ -106,6 +107,7 @@ const pointer = new THREE.Vector2();
 
 let anatomyMesh = null;
 let skeletonMesh = null;
+let connectiveMesh = null;
 let structureNames = [];
 let structureRanges = [];
 let structureVisibility = [];
@@ -128,6 +130,7 @@ const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
+let connectiveDisplayMode = "anatomical";
 let currentModelSource = "z-anatomy";
 let initialQueryApplied = false;
 
@@ -920,6 +923,7 @@ function resetLoadedModel() {
 
   anatomyMesh = null;
   skeletonMesh = null;
+  connectiveMesh = null;
   structureNames = [];
   structureRanges = [];
   structureVisibility = [];
@@ -950,6 +954,9 @@ function resetLoadedModel() {
 
   boneMode.disabled = true;
   boneOpacity.disabled = true;
+  connectiveMode.disabled = true;
+  canvas.dataset.connectiveMode = "";
+  canvas.dataset.connectiveCount = "";
   canvas.dataset.boneMode = "";
   canvas.dataset.boneTransparent = "";
   canvas.dataset.boneStencil = "";
@@ -998,6 +1005,82 @@ function createBoneMaterial() {
   });
 }
 
+
+
+function createConnectiveMaterial() {
+  return new THREE.MeshStandardMaterial({
+    color: 0xd5cfb8,
+    roughness: 0.68,
+    metalness: 0,
+    side: THREE.DoubleSide,
+    transparent: false,
+    opacity: 1,
+    depthTest: true,
+    depthWrite: true,
+  });
+}
+
+function applyConnectiveDisplayMode() {
+  if (!connectiveMesh) {
+    connectiveMode.disabled = true;
+    canvas.dataset.connectiveMode = "unavailable";
+    return;
+  }
+
+  connectiveMode.disabled = false;
+  const mode = connectiveDisplayMode;
+  const material = connectiveMesh.material;
+
+  if (mode === "off") {
+    connectiveMesh.visible = false;
+    canvas.dataset.connectiveMode = "off";
+    return;
+  }
+
+  connectiveMesh.visible = true;
+  material.depthTest = true;
+
+  if (mode === "ghost") {
+    material.transparent = true;
+    material.opacity = 0.28;
+    material.depthWrite = false;
+    connectiveMesh.renderOrder = 3;
+  } else {
+    material.transparent = false;
+    material.opacity = 1;
+    material.depthWrite = true;
+    connectiveMesh.renderOrder = 2;
+  }
+
+  material.needsUpdate = true;
+  canvas.dataset.connectiveMode = mode;
+}
+
+function connectiveSubtype(name) {
+  const value = String(name || "").toLowerCase();
+  if (/ligament/.test(value)) return "ligament";
+  if (/fascia/.test(value)) return "fascia";
+  if (/tendon/.test(value)) return "tendon";
+  if (/aponeuros/.test(value)) return "aponeurosis";
+  if (/retinacul/.test(value)) return "retinaculum";
+  if (/cartilage/.test(value)) return "cartilage";
+  return "other";
+}
+
+function connectiveStats(parts) {
+  const stats = {
+    total: parts.length,
+    ligament: 0,
+    fascia: 0,
+    tendon: 0,
+    aponeurosis: 0,
+    retinaculum: 0,
+    cartilage: 0,
+    other: 0,
+  };
+  for (const part of parts) stats[connectiveSubtype(part.name)] += 1;
+  return stats;
+}
 
 function bodyPartsSourceUrl(path) {
   if (!path) return null;
@@ -1164,6 +1247,9 @@ async function loadZAnatomyModel() {
     fitCamera(modelGroup);
     discoverTargets();
 
+    connectiveMode.disabled = true;
+    canvas.dataset.connectiveMode = "unavailable";
+    canvas.dataset.connectiveCount = "0";
     boneMode.disabled = true;
     await loadSkeletonLayer(loader);
   } catch (error) {
@@ -1177,13 +1263,19 @@ async function loadBodyParts4Model() {
   if (!response.ok) throw new Error("Не удалось получить каталог BodyParts3D 4.0.");
   const atlas = await response.json();
 
-  const parts = atlas.parts.filter((part) => bodyPartsAnatomyKind(part));
+  const anatomyParts = atlas.parts.filter((part) => bodyPartsAnatomyKind(part));
+  const connectiveParts = atlas.parts.filter(
+    (part) => part.system === "connective" && !bodyPartsAnatomyKind(part)
+  );
+  const parts = [...anatomyParts, ...connectiveParts];
   const chunkIds = [...new Set(parts.map((part) => part.chunk))].sort((a, b) => a - b);
 
   const muscleChunks = [];
   const boneChunks = [];
+  const connectiveChunks = [];
   const vertexCounts = [];
   let triangleCount = 0;
+  let connectiveTriangleCount = 0;
 
   for (let chunkPosition = 0; chunkPosition < chunkIds.length; chunkPosition += 1) {
     const chunkId = chunkIds[chunkPosition];
@@ -1230,6 +1322,20 @@ async function loadBodyParts4Model() {
       boneChunks.push(mergedChunk);
     }
 
+    const connectiveInChunk = chunkParts.filter(
+      (part) => part.system === "connective" && !bodyPartsAnatomyKind(part)
+    );
+    if (connectiveInChunk.length) {
+      const geometries = connectiveInChunk.map((part) => {
+        connectiveTriangleCount += Math.floor(part.indexCount / 3);
+        return bodyPartsGeometry(part, buffer);
+      });
+      const mergedChunk = mergeGeometries(geometries, false);
+      for (const geometry of geometries) geometry.dispose();
+      if (!mergedChunk) throw new Error("Не удалось объединить соединительнотканный блок BodyParts3D.");
+      connectiveChunks.push(mergedChunk);
+    }
+
     await new Promise(requestAnimationFrame);
   }
 
@@ -1257,25 +1363,55 @@ async function loadBodyParts4Model() {
     modelGroup.add(skeletonMesh);
   }
 
+  const mergedConnective = connectiveChunks.length
+    ? mergeGeometries(connectiveChunks, false)
+    : null;
+  for (const geometry of connectiveChunks) geometry.dispose();
+  if (mergedConnective) {
+    connectiveMesh = new THREE.Mesh(mergedConnective, createConnectiveMaterial());
+    connectiveMesh.renderOrder = 2;
+    modelGroup.add(connectiveMesh);
+  }
+
   fitCamera(modelGroup);
 
   if (skeletonMesh) {
     boneMode.disabled = false;
     applyBoneDisplayMode();
   }
+  applyConnectiveDisplayMode();
 
   discoverTargets();
   const classification = bodyPartsClassificationStats(atlas.parts);
+  const connective = connectiveStats(connectiveParts);
+  canvas.dataset.connectiveCount = String(connective.total);
   updateDiagnostics(
     "BodyParts3D 4.0: всё тело, " +
     classification.muscles +
-    " мышечных и " +
+    " мышечных, " +
     classification.bones +
-    " костных структур; исключено " +
+    " костных и " +
+    connective.total +
+    " соединительнотканных структур. " +
+    "В соединительнотканном слое по названиям: связки " +
+    connective.ligament +
+    ", фасции " +
+    connective.fascia +
+    ", сухожилия " +
+    connective.tendon +
+    ", апоневрозы " +
+    connective.aponeurosis +
+    ", удерживатели " +
+    connective.retinaculum +
+    ", хрящевые структуры " +
+    connective.cartilage +
+    "; остальные " +
+    connective.other +
+    ". Исключено " +
     classification.excludedSkeletal +
-    " структур, которые atlas помечает как skeletal, но FMA не относит к костям. " +
-    triangleCount.toLocaleString("ru-RU") +
-    " треугольников."
+    " структур, ошибочно помеченных atlas как skeletal. " +
+    (triangleCount + connectiveTriangleCount).toLocaleString("ru-RU") +
+    " треугольников загруженных слоёв."
   );
 }
 
@@ -1327,6 +1463,11 @@ async function loadSelectedModel(source) {
 boneMode.addEventListener("change", () => {
   boneDisplayMode = boneMode.value;
   applyBoneDisplayMode();
+});
+
+connectiveMode.addEventListener("change", () => {
+  connectiveDisplayMode = connectiveMode.value;
+  applyConnectiveDisplayMode();
 });
 
 boneOpacity.addEventListener("input", () => {
