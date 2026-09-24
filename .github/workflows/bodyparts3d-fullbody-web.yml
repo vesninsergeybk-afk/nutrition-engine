@@ -1,0 +1,188 @@
+name: Build BodyParts3D 3.0 full-body web model
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-fullbody.tsv
+      - .github/workflows/bodyparts3d-fullbody-web.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mesh tools
+        run: |
+          python3 -m pip install --quiet "trimesh>=4.0" numpy fast-simplification
+
+      - name: Download pinned BodyParts3D 3.0 structures
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="/tmp/bodyparts3d-fullbody"
+          mkdir -p "$OUT/stl"
+          SOURCE_COMMIT="f0eeb6e843380cfe6b83797cf8c3e1af74de5e61"
+          LIST="experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-fullbody.tsv"
+
+          tail -n +2 "$LIST" | cut -f1 | \
+            xargs -P 20 -I{} sh -c '
+              id="$1"
+              curl -fsSL --retry 3 --retry-delay 1 \
+                "https://raw.githubusercontent.com/Kevin-Mattheus-Moerman/BodyParts3D/'"$SOURCE_COMMIT"'/assets/BodyParts3D_data/stl/$id.stl" \
+                -o "'"$OUT"'/stl/$id.stl"
+            ' _ {}
+
+          test "$(find "$OUT/stl" -name '*.stl' | wc -l)" -eq 602
+
+      - name: Build web-optimized named GLB
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import csv
+          import json
+          import pathlib
+          import numpy as np
+          import trimesh
+
+          root = pathlib.Path("/tmp/bodyparts3d-fullbody")
+          manifest_path = pathlib.Path(
+              "experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-fullbody.tsv"
+          )
+
+          rows = []
+          with manifest_path.open(encoding="utf-8") as f:
+              for row in csv.DictReader(f, delimiter="\t"):
+                  rows.append(row)
+
+          source_faces = {}
+          total_source_faces = 0
+          for row in rows:
+              path = root / "stl" / f"{row['fma_id']}.stl"
+              mesh = trimesh.load_mesh(path, file_type="stl", process=False)
+              if not isinstance(mesh, trimesh.Trimesh):
+                  raise RuntimeError(f"Unexpected mesh type: {path}")
+              faces = int(len(mesh.faces))
+              source_faces[row["fma_id"]] = faces
+              total_source_faces += faces
+
+          target_budget = 1_800_000
+          floor_faces = 80
+          cap_faces = 24_000
+
+          # Reserve a small minimum for tiny structures, then distribute the
+          # remaining budget proportionally. Never increase a source mesh.
+          floor_total = sum(min(source_faces[r["fma_id"]], floor_faces) for r in rows)
+          scalable_total = sum(
+              max(0, source_faces[r["fma_id"]] - min(source_faces[r["fma_id"]], floor_faces))
+              for r in rows
+          )
+          remaining = max(0, target_budget - floor_total)
+          scale = min(1.0, remaining / scalable_total) if scalable_total else 1.0
+
+          scene = trimesh.Scene()
+          stats = []
+          total_web_faces = 0
+
+          for index, row in enumerate(rows, start=1):
+              fma = row["fma_id"]
+              path = root / "stl" / f"{fma}.stl"
+              mesh = trimesh.load_mesh(path, file_type="stl", process=False)
+              faces = int(len(mesh.faces))
+
+              base = min(faces, floor_faces)
+              target = base + int(max(0, faces - base) * scale)
+              target = min(faces, max(4, min(target, cap_faces)))
+
+              simplified = mesh
+              if target < faces:
+                  try:
+                      simplified = mesh.simplify_quadric_decimation(face_count=target)
+                  except Exception as exc:
+                      print(f"WARN simplify failed {fma}: {exc}")
+                      simplified = mesh
+
+              if not isinstance(simplified, trimesh.Trimesh):
+                  raise RuntimeError(f"Unexpected simplified type: {fma}")
+
+              web_faces = int(len(simplified.faces))
+              total_web_faces += web_faces
+
+              safe_name = row["name"].replace(" ", "_").replace("/", "_")
+              node = f"{fma}__{row['system']}__{safe_name}"
+              scene.add_geometry(simplified, node_name=node, geom_name=node)
+
+              stats.append({
+                  "fma_id": fma,
+                  "system": row["system"],
+                  "name": row["name"],
+                  "source_faces": faces,
+                  "web_faces": web_faces,
+                  "source_vertices": int(len(mesh.vertices)),
+                  "web_vertices": int(len(simplified.vertices)),
+                  "watertight": bool(simplified.is_watertight),
+                  "bounds": np.asarray(simplified.bounds).tolist(),
+              })
+
+              if index % 50 == 0:
+                  print(f"processed={index}/{len(rows)}")
+
+          glb = scene.export(file_type="glb")
+          glb_path = root / "bodyparts3d-3.0-fullbody-web.glb"
+          stats_path = root / "bodyparts3d-3.0-fullbody-web.json"
+          glb_path.write_bytes(glb)
+          stats_path.write_text(
+              json.dumps({
+                  "schema_version": 1,
+                  "source": "BodyParts3D 3.0 95%",
+                  "source_commit": "f0eeb6e843380cfe6b83797cf8c3e1af74de5e61",
+                  "structures": len(stats),
+                  "muscular": sum(x["system"] == "muscular" for x in stats),
+                  "skeletal": sum(x["system"] == "skeletal" for x in stats),
+                  "source_triangles": total_source_faces,
+                  "web_triangles": total_web_faces,
+                  "target_budget": target_budget,
+                  "glb_bytes": len(glb),
+                  "items": stats,
+              }, ensure_ascii=False, indent=2),
+              encoding="utf-8",
+          )
+
+          print("structures=", len(stats))
+          print("source_triangles=", total_source_faces)
+          print("web_triangles=", total_web_faces)
+          print("glb_bytes=", len(glb))
+          PY
+
+          sha256sum /tmp/bodyparts3d-fullbody/bodyparts3d-3.0-fullbody-web.glb
+          ls -lh /tmp/bodyparts3d-fullbody/bodyparts3d-3.0-fullbody-web.glb
+
+      - name: Publish release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="muscle-memory-assets-v2"
+          OUT="/tmp/bodyparts3d-fullbody"
+
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "Muscle Memory full-body anatomy assets v2" \
+              --notes "Full-body web-optimized BodyParts3D 3.0 muscular and skeletal model. Source mapping and provenance are stored in the repository."
+          fi
+
+          gh release upload "$TAG" \
+            "$OUT/bodyparts3d-3.0-fullbody-web.glb" \
+            "$OUT/bodyparts3d-3.0-fullbody-web.json" \
+            --clobber
