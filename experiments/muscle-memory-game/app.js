@@ -69,6 +69,7 @@ let locked = false;
 let correct = 0;
 let wrong = 0;
 let lastTargetIndex = -1;
+let pointerStart = null;
 
 const originalMaterials = new WeakMap();
 
@@ -230,8 +231,21 @@ function choose(mesh) {
   }
 }
 
+function onPointerDown(event) {
+  pointerStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+}
+
 function onPointerUp(event) {
-  if (!meshes.length || !currentTarget || locked) return;
+  if (!pointerStart || pointerStart.pointerId !== event.pointerId) return;
+
+  const moved = Math.hypot(
+    event.clientX - pointerStart.x,
+    event.clientY - pointerStart.y
+  );
+  pointerStart = null;
+
+  // Поворот модели не должен засчитываться как ответ.
+  if (moved > 8 || !meshes.length || !currentTarget || locked) return;
 
   const rect = renderer.domElement.getBoundingClientRect();
   pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -289,7 +303,9 @@ async function loadModel() {
 
 nextButton.addEventListener("click", nextQuestion);
 answerButton.addEventListener("click", revealAnswer);
+renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
+renderer.domElement.addEventListener("pointercancel", () => { pointerStart = null; });
 
 function animate() {
   resize();
