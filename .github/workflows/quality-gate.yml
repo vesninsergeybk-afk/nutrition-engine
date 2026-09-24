@@ -75,9 +75,6 @@ jobs:
       - name: Install locked JavaScript dependencies
         run: npm ci --ignore-scripts
 
-      - name: Regenerate runtime bundles from canonical sources
-        run: python3 tools/generate_runtime_assets.py --json-out reports/runtime-regeneration.json
-
       - name: Install selected browser
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
@@ -134,10 +131,5 @@ jobs:
             reports/axe/
             reports/ui-audit/
             reports/real-run/
-            reports/runtime-regeneration.json
-            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js
-            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js.gz
-            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js
-            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js.gz
           if-no-files-found: warn
           retention-days: 14
