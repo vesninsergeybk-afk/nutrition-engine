@@ -84,3 +84,26 @@ The learner receives a structure prompt and selects it on the body. Incorrect ta
 The learner can tap any muscle without being graded, search by source name, focus the camera on it, isolate it, restore surrounding anatomy, change standard views, and adjust the skeletal landmark layer.
 
 The next mode to add should be “layers / depth” rather than another quiz format, because deep shoulder structures are currently not physically accessible on the intact model.
+
+
+## Layer peeling added
+
+The exploration mode now supports a reversible superficial-to-deep workflow:
+
+- hide the currently selected muscle;
+- continue selecting structures underneath it;
+- restore the most recently hidden structure;
+- restore the full muscular layer;
+- isolate a selected structure when context is no longer needed.
+
+This is intentionally preferred over a fixed “layer 1 / layer 2 / layer 3” hierarchy. Muscular depth varies by region, and a rigid global layer numbering would teach an artificial rule. The learner removes only the structures that actually obstruct the current view.
+
+## Additional repository review
+
+### thebuggeddev/anatomy
+
+Interesting UX reference with hotspots, labelling quiz, compare, layers, cross-section, animation surfaces, and Russian UI strings. GitHub does not currently expose a repository license, so its code is treated as **reference only**, not a source for direct code reuse.
+
+### Jiro75/3D-Anatomy-Organs-Puzzle
+
+MIT Unity project. Useful pedagogical idea: spatial reassembly with immediate alignment feedback. Not integrated now because our immediate learning goal is identification and depth relationships rather than rebuilding organ geometry. A constrained puzzle may become useful later for origin/insertion or regional spatial-relationship exercises.
