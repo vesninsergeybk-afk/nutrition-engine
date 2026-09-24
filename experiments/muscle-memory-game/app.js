@@ -3,8 +3,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
-const MODEL_URL =
+const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/main/systems/kas.glb";
+const SKELETON_MODEL_URL =
+  "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/main/systems/iskelet.glb";
 
 // Первый MVP спрашивает только структуры, которые реально доступны
 // на поверхностной модели. Глубокие мышцы появятся после режима снятия слоёв.
@@ -31,9 +33,15 @@ const wrongEl = document.querySelector("#score-wrong");
 const diagnosticsEl = document.querySelector("#diagnostics");
 const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
+const boneToggle = document.querySelector("#bone-toggle");
+const focusShoulderButton = document.querySelector("#focus-shoulder");
+const focusFullButton = document.querySelector("#focus-full");
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdedbd4);
+
+const modelGroup = new THREE.Group();
+scene.add(modelGroup);
 
 const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 5000);
 camera.position.set(0, 0, 4);
@@ -64,10 +72,12 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 let anatomyMesh = null;
+let skeletonMesh = null;
 let structureNames = [];
 let structureRanges = [];
 let baseColors = [];
 let highlightedIds = new Set();
+let bodySize = new THREE.Vector3(1, 1, 1);
 
 let availableTargets = [];
 let currentTarget = null;
@@ -76,6 +86,7 @@ let correct = 0;
 let wrong = 0;
 let lastTargetIndex = -1;
 let pointerStart = null;
+let bonesVisible = true;
 
 function hashString(value) {
   let hash = 2166136261;
@@ -94,26 +105,43 @@ function baseColorFor(name) {
   return new THREE.Color().setHSL(hue % 1, saturation, lightness);
 }
 
-function fitCamera(object) {
-  const box = new THREE.Box3().setFromObject(object);
-  const size = box.getSize(new THREE.Vector3());
-  const center = box.getCenter(new THREE.Vector3());
-
-  object.position.sub(center);
-
-  const maxDim = Math.max(size.x, size.y, size.z);
+function setFullBodyView() {
+  const maxDim = Math.max(bodySize.x, bodySize.y, bodySize.z);
   const fov = THREE.MathUtils.degToRad(camera.fov);
   const distance = (maxDim / 2) / Math.tan(fov / 2);
 
   camera.position.set(0, maxDim * 0.02, distance * 1.18);
+  controls.target.set(0, 0, 0);
+  controls.update();
+}
+
+function setShoulderView() {
+  const h = bodySize.y;
+  const targetY = h * 0.27;
+  const fov = THREE.MathUtils.degToRad(camera.fov);
+  const viewHeight = h * 0.47;
+  const distance = (viewHeight / 2) / Math.tan(fov / 2);
+
+  camera.position.set(0, targetY, distance * 1.05);
+  controls.target.set(0, targetY, 0);
+  controls.update();
+}
+
+function fitCamera(object) {
+  const box = new THREE.Box3().setFromObject(object);
+  bodySize.copy(box.getSize(new THREE.Vector3()));
+  const center = box.getCenter(new THREE.Vector3());
+
+  object.position.sub(center);
+
+  const maxDim = Math.max(bodySize.x, bodySize.y, bodySize.z);
   camera.near = Math.max(maxDim / 10000, 0.001);
   camera.far = maxDim * 20;
   camera.updateProjectionMatrix();
 
-  controls.target.set(0, 0, 0);
-  controls.minDistance = maxDim * 0.15;
+  controls.minDistance = maxDim * 0.12;
   controls.maxDistance = maxDim * 4;
-  controls.update();
+  setFullBodyView();
 }
 
 function targetStructureIds(target) {
@@ -167,8 +195,7 @@ function discoverTargets() {
   targetStatusEl.textContent =
     `Поверхностный режим: распознано целей ${availableTargets.length} из ${TARGETS.length}. Глубокие мышцы будут в режиме снятия слоёв.`;
 
-  diagnosticsEl.textContent =
-    `В GLB после исключения фасциальных покрытий найдено структур: ${structureNames.length}. Для рендера они объединены в один mesh; учебных целей: ${availableTargets.length}.`;
+  updateDiagnostics();
   meshNamesEl.textContent = lines.join("\n") || structureNames.slice(0, 120).join("\n");
 
   if (!availableTargets.length) {
@@ -181,6 +208,15 @@ function discoverTargets() {
   nextButton.disabled = false;
   answerButton.disabled = false;
   nextQuestion();
+}
+
+function updateDiagnostics(extra = "") {
+  const skeletonState = skeletonMesh
+    ? "костные ориентиры загружены"
+    : "костные ориентиры ещё не загружены";
+
+  diagnosticsEl.textContent =
+    `Мышечных структур после исключения фасциальных покрытий: ${structureNames.length}. Для рендера они объединены в один mesh; ${skeletonState}.${extra ? " " + extra : ""}`;
 }
 
 function nextQuestion() {
@@ -290,7 +326,7 @@ function resize() {
   }
 }
 
-function cleanGeometry(sourceGeometry, matrixWorld, sid, color) {
+function cleanMuscleGeometry(sourceGeometry, matrixWorld, sid, color) {
   let geometry = sourceGeometry.clone();
   geometry.applyMatrix4(matrixWorld);
 
@@ -325,10 +361,94 @@ function cleanGeometry(sourceGeometry, matrixWorld, sid, color) {
   return geometry;
 }
 
-async function loadModel() {
+function cleanSkeletonGeometry(sourceGeometry, matrixWorld) {
+  let geometry = sourceGeometry.clone();
+  geometry.applyMatrix4(matrixWorld);
+
+  for (const attribute of Object.keys(geometry.attributes)) {
+    if (attribute !== "position" && attribute !== "normal") {
+      geometry.deleteAttribute(attribute);
+    }
+  }
+
+  if (!geometry.getAttribute("normal")) {
+    geometry.computeVertexNormals();
+  }
+
+  return geometry;
+}
+
+function mergeSkeletonGeometries(geometries) {
+  if (!geometries.length) return null;
+
+  const allIndexed = geometries.every((g) => Boolean(g.index));
+  const allNonIndexed = geometries.every((g) => !g.index);
+
+  if (!allIndexed && !allNonIndexed) {
+    return mergeGeometries(
+      geometries.map((geometry) => {
+        if (!geometry.index) return geometry;
+        const converted = geometry.toNonIndexed();
+        geometry.dispose();
+        return converted;
+      }),
+      false
+    );
+  }
+
+  return mergeGeometries(geometries, false);
+}
+
+async function loadSkeletonLayer(loader) {
+  try {
+    const gltf = await loader.loadAsync(SKELETON_MODEL_URL);
+    gltf.scene.updateMatrixWorld(true);
+
+    const geometries = [];
+    gltf.scene.traverse((child) => {
+      if (!child.isMesh) return;
+      geometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
+    });
+
+    const merged = mergeSkeletonGeometries(geometries);
+    if (!merged) throw new Error("Не удалось объединить геометрию скелета.");
+
+    for (const geometry of geometries) {
+      if (geometry !== merged) geometry.dispose();
+    }
+
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xfff0c9,
+      transparent: true,
+      opacity: 0.28,
+      depthTest: false,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+
+    skeletonMesh = new THREE.Mesh(merged, material);
+    skeletonMesh.renderOrder = 10;
+    skeletonMesh.visible = bonesVisible;
+    modelGroup.add(skeletonMesh);
+
+    boneToggle.disabled = false;
+    boneToggle.textContent = bonesVisible
+      ? "Костные ориентиры: вкл"
+      : "Костные ориентиры: выкл";
+
+    updateDiagnostics("Скелет используется только как визуальный ориентир и не участвует в проверке клика.");
+  } catch (error) {
+    console.error(error);
+    boneToggle.disabled = true;
+    boneToggle.textContent = "Костные ориентиры: ошибка";
+    updateDiagnostics(`Ошибка загрузки костных ориентиров: ${String(error?.message || error)}`);
+  }
+}
+
+async function loadMuscleModel() {
   try {
     const loader = new GLTFLoader();
-    const gltf = await loader.loadAsync(MODEL_URL);
+    const gltf = await loader.loadAsync(MUSCLE_MODEL_URL);
 
     // GLTFLoader нормализует имена node-объектов. Для учебной логики
     // восстанавливаем исходные имена из glTF JSON.
@@ -357,7 +477,7 @@ async function loadModel() {
 
       const sid = structureNames.length;
       const color = baseColorFor(name);
-      const geometry = cleanGeometry(child.geometry, child.matrixWorld, sid, color);
+      const geometry = cleanMuscleGeometry(child.geometry, child.matrixWorld, sid, color);
 
       structureNames.push(name);
       baseColors.push(color);
@@ -384,11 +504,16 @@ async function loadModel() {
     });
 
     anatomyMesh = new THREE.Mesh(merged, material);
-    scene.add(anatomyMesh);
+    anatomyMesh.renderOrder = 1;
+    modelGroup.add(anatomyMesh);
 
-    fitCamera(anatomyMesh);
+    fitCamera(modelGroup);
     discoverTargets();
     loadingEl.classList.add("is-hidden");
+
+    // Костные ориентиры подгружаются после мышц, чтобы не задерживать первый экран.
+    boneToggle.textContent = "Костные ориентиры: загрузка…";
+    void loadSkeletonLayer(loader);
   } catch (error) {
     console.error(error);
     loadingEl.textContent = "Не удалось загрузить 3D-модель.";
@@ -399,6 +524,17 @@ async function loadModel() {
   }
 }
 
+boneToggle.addEventListener("click", () => {
+  if (!skeletonMesh) return;
+  bonesVisible = !bonesVisible;
+  skeletonMesh.visible = bonesVisible;
+  boneToggle.textContent = bonesVisible
+    ? "Костные ориентиры: вкл"
+    : "Костные ориентиры: выкл";
+});
+
+focusShoulderButton.addEventListener("click", setShoulderView);
+focusFullButton.addEventListener("click", setFullBodyView);
 nextButton.addEventListener("click", nextQuestion);
 answerButton.addEventListener("click", revealAnswer);
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
@@ -415,4 +551,4 @@ function animate() {
 }
 
 animate();
-loadModel();
+loadMuscleModel();
