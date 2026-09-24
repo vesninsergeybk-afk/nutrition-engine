@@ -58,3 +58,25 @@ The prototype loads three.js r185 and its GLTFLoader / OrbitControls modules fro
 
 three.js is distributed under the MIT License:
 https://github.com/mrdoob/three.js/blob/dev/LICENSE
+
+
+## Human Atlas interaction patterns
+
+The project studies and adapts interaction patterns from:
+
+- **Human Atlas** — ashemag/human-atlas
+- application code: MIT License
+- anatomy data used by that project: BodyParts3D 4.0, CC BY 4.0
+
+Repository:
+https://github.com/ashemag/human-atlas
+
+Relevant patterns include tap-versus-drag handling, structure isolation, camera fitting, mobile controls, search, and merged-geometry interaction. The current MVP does not redistribute Human Atlas model binaries.
+
+## Optional libraries under evaluation
+
+- **camera-controls** — yomotsu/camera-controls — MIT
+- **three-mesh-bvh** — gkjohnson/three-mesh-bvh — MIT
+- **ts-fsrs** — open-spaced-repetition/ts-fsrs — MIT
+
+These are documented as evaluated candidates. They are not automatically dependencies of the current MVP unless explicitly imported by the application code.
