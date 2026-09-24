@@ -1,0 +1,105 @@
+name: Publish muscle memory anatomy assets
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - .github/workflows/publish-muscle-memory-assets.yml
+      - experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-95-shoulder.tsv
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build pinned BodyParts3D 3.0 right shoulder GLB
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet "trimesh>=4.0" numpy
+          OUT="/tmp/muscle-memory-assets"
+          mkdir -p "$OUT/stl"
+          LIST="experiments/muscle-memory-game/benchmarks/bodyparts3d-3.0-95-shoulder.tsv"
+          SOURCE_COMMIT="f0eeb6e843380cfe6b83797cf8c3e1af74de5e61"
+
+          tail -n +2 "$LIST" | while IFS=$'\t' read -r id name; do
+            case "$name" in
+              *right*)
+                curl -fsSL --retry 3 \
+                  "https://raw.githubusercontent.com/Kevin-Mattheus-Moerman/BodyParts3D/$SOURCE_COMMIT/assets/BodyParts3D_data/stl/$id.stl" \
+                  -o "$OUT/stl/$id.stl"
+                printf '%s\t%s\n' "$id" "$name" >> "$OUT/structures.tsv"
+                ;;
+            esac
+          done
+
+          python3 - "$OUT" <<'PY'
+          import json, pathlib, sys
+          import numpy as np
+          import trimesh
+
+          root = pathlib.Path(sys.argv[1])
+          names = {}
+          for line in (root / "structures.tsv").read_text().splitlines():
+              fma, name = line.split("\t", 1)
+              names[fma] = name
+
+          scene = trimesh.Scene()
+          stats = []
+          for path in sorted((root / "stl").glob("*.stl")):
+              fma = path.stem
+              name = names[fma]
+              mesh = trimesh.load_mesh(path, file_type="stl", process=False)
+              if not isinstance(mesh, trimesh.Trimesh):
+                  raise RuntimeError(f"Unexpected mesh type for {path}")
+              node = f"{fma}__{name.replace(' ', '_')}"
+              scene.add_geometry(mesh, node_name=node, geom_name=node)
+              stats.append({
+                  "fma_id": fma,
+                  "name": name,
+                  "vertices": int(len(mesh.vertices)),
+                  "faces": int(len(mesh.faces)),
+                  "watertight": bool(mesh.is_watertight),
+                  "bounds": np.asarray(mesh.bounds).tolist(),
+              })
+
+          glb = scene.export(file_type="glb")
+          (root / "bodyparts3d-3.0-95-right-shoulder.glb").write_bytes(glb)
+          (root / "bodyparts3d-3.0-95-right-shoulder.json").write_text(
+              json.dumps(stats, ensure_ascii=False, indent=2)
+          )
+          print("structures=", len(stats))
+          print("triangles=", sum(x["faces"] for x in stats))
+          print("glb_bytes=", len(glb))
+          PY
+
+          sha256sum "$OUT/bodyparts3d-3.0-95-right-shoulder.glb"
+
+      - name: Publish versioned release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="muscle-memory-assets-v1"
+          OUT="/tmp/muscle-memory-assets"
+
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "Muscle Memory anatomy assets v1" \
+              --notes "Browser-ready anatomy assets for the muscle-memory prototype. Source provenance is recorded in MODEL_ASSETS.json."
+          fi
+
+          gh release upload "$TAG" \
+            "$OUT/bodyparts3d-3.0-95-right-shoulder.glb" \
+            "$OUT/bodyparts3d-3.0-95-right-shoulder.json" \
+            --clobber
