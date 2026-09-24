@@ -27,6 +27,7 @@ jobs:
       - name: Syntax check
         run: |
           node --check experiments/muscle-memory-game/app.js
+          node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/verify.mjs
 
       - name: Install browser
@@ -36,7 +37,7 @@ jobs:
           npm install --silent playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Verify stable trainer
+      - name: Verify one interface for both anatomy sources
         shell: bash
         run: |
           python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
@@ -52,7 +53,11 @@ jobs:
             const browser = await chromium.launch({ headless: true });
             const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
             const errors = [];
+
             page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+            page.on('console', msg => {
+              if (msg.type() === 'error') errors.push('console: ' + msg.text());
+            });
 
             await page.goto('http://127.0.0.1:4173/?mode=explore', { waitUntil: 'domcontentloaded' });
             await page.waitForFunction(
@@ -61,10 +66,37 @@ jobs:
               { timeout: 90000 }
             );
 
-            assert.doesNotMatch(await page.locator('#question').innerText(), /Ошибка загрузки/);
+            assert.equal(new URL(page.url()).pathname, '/');
+            assert.equal(await page.locator('#model-source').inputValue(), 'z-anatomy');
+            assert.equal(await page.locator('#viewer').getAttribute('data-model-source'), 'z-anatomy');
+
             await page.fill('#structure-search', 'deltoid');
             await page.waitForSelector('.search-result', { timeout: 15000 });
             assert.ok((await page.locator('.search-result').count()) > 0);
+
+            const pathnameBefore = new URL(page.url()).pathname;
+            await page.selectOption('#model-source', 'bodyparts4');
+
+            await page.waitForFunction(
+              () =>
+                document.querySelector('#loading')?.classList.contains('is-hidden') &&
+                document.querySelector('#viewer')?.dataset.modelSource === 'bodyparts4',
+              null,
+              { timeout: 150000 }
+            );
+
+            assert.equal(new URL(page.url()).pathname, pathnameBefore, 'Model switch must not navigate away');
+            assert.equal(await page.locator('#model-source').inputValue(), 'bodyparts4');
+            assert.equal(await page.locator('#mode-explore').getAttribute('aria-pressed'), 'true');
+            assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
+
+            await page.fill('#structure-search', 'дельтовидная');
+            await page.waitForSelector('.search-result', { timeout: 15000 });
+            assert.ok((await page.locator('.search-result').count()) > 0);
+
+            await page.screenshot({ path: '/tmp/muscle-memory-bodyparts.png', fullPage: true });
 
             if (errors.length) throw new Error(errors.join('\n'));
             await browser.close();
@@ -75,3 +107,12 @@ jobs:
           NODE
 
           node /tmp/smoke.cjs
+
+      - name: Upload screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muscle-memory-bodyparts-smoke
+          path: /tmp/muscle-memory-bodyparts.png
+          if-no-files-found: ignore
+          retention-days: 7
