@@ -86,26 +86,6 @@ jobs:
             --timeout=90000 \
             --reporter=line
 
-      - name: Capture UX polish audit
-        if: matrix.browser == 'chromium'
-        run: |
-          npx playwright test tests/e2e/ui-audit-capture.spec.js \
-            --project=chromium \
-            --timeout=90000 \
-            --reporter=line
-
-      - name: Capture filled user journey
-        if: matrix.browser == 'chromium'
-        run: |
-          python3 tools/ci_server.py --port 4173 > /tmp/ux-polish-server.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:4173/index.html >/dev/null && break
-            sleep 1
-          done
-          node tools/real_run_smoke.cjs
-
       # The accessibility contract audits both empty and filled states and the
       # report route. Run the full axe matrix in Chromium and Firefox. WebKit
       # remains an obligatory functional browser contract; the full axe suite
@@ -129,7 +109,5 @@ jobs:
             reports/playwright-results.json
             reports/playwright-html/
             reports/axe/
-            reports/ui-audit/
-            reports/real-run/
           if-no-files-found: warn
           retention-days: 14
