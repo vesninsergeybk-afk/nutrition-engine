@@ -53,7 +53,7 @@ ALIASES = {
     "vitamin_b3_mg": {"niacin"},
     "vitamin_b5_mg": {"pantothenic acid"},
     "vitamin_b6_mg": {"vitamin b 6", "vitamin b6"},
-    "vitamin_b9_mcg": {"folate total", "folate"},
+    "vitamin_b9_mcg": {"folate dfe", "dietary folate equivalents", "folate equivalent"},
     "vitamin_b12_mcg": {"vitamin b 12", "vitamin b12"},
     "choline_mg": {"choline total", "choline"},
     "vitamin_k_mcg": {"vitamin k phylloquinone", "phylloquinone"},
@@ -82,8 +82,6 @@ CNF_TAG_MAP = {
     "SE": "selenium_ug",
     "VITA_RAE": "vitamin_a_mcg",
     "TOCPHA": "vitamin_e_mg",
-    "VITAA": "vitamin_a_mcg",
-    "VITE": "vitamin_e_mg",
     "VITD": "vitamin_d_mcg",
     "VITC": "vitamin_c_mg",
     "THIA": "vitamin_b1_mg",
@@ -91,7 +89,6 @@ CNF_TAG_MAP = {
     "NIA": "vitamin_b3_mg",
     "PANTAC": "vitamin_b5_mg",
     "VITB6A": "vitamin_b6_mg",
-    "FOL": "vitamin_b9_mcg",
     "FOLDFE": "vitamin_b9_mcg",
     "VITB12": "vitamin_b12_mcg",
     "CHOLN": "choline_mg",
@@ -121,6 +118,8 @@ BLS_CODE_MAP = {
     "CU": "copper_mg",
     "MN": "manganese_mg",
     "SE": "selenium_ug",
+    "VITAA": "vitamin_a_mcg",
+    "VITE": "vitamin_e_mg",
     "VITD": "vitamin_d_mcg",
     "VITC": "vitamin_c_mg",
     "THIA": "vitamin_b1_mg",
@@ -129,7 +128,7 @@ BLS_CODE_MAP = {
     "PANTAC": "vitamin_b5_mg",
     "VITB6": "vitamin_b6_mg",
     "VITB6A": "vitamin_b6_mg",
-    "FOLFD": "vitamin_b9_mcg",
+    "FOL": "vitamin_b9_mcg",
     "VITB12": "vitamin_b12_mcg",
     "CHOLN": "choline_mg",
     "VITK1": "vitamin_k_mcg",
@@ -445,7 +444,7 @@ def bls_component_field(code: str, name: str, unit: str):
         return "vitamin_b5_mg"
     if n in {"vitamin b6", "vitamin b 6"}:
         return "vitamin_b6_mg"
-    if n in {"folate", "folate total"}:
+    if n in {"folate equivalent", "dietary folate equivalents"}:
         return "vitamin_b9_mcg"
     if n in {"vitamin b12", "vitamin b 12"}:
         return "vitamin_b12_mcg"
