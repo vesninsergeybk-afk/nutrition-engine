@@ -28,7 +28,7 @@ download() {
 case "${1:-small}" in
   small)
     download "z-anatomy muscles"       "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb"       "$CACHE/z-anatomy-kas.glb"
-    download "z-anatomy skeleton"       "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c59a3a32966f25ce59165c/systems/iskelet.glb"       "$CACHE/z-anatomy-iskelet.glb"
+    download "z-anatomy skeleton"       "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb"       "$CACHE/z-anatomy-iskelet.glb"
     ;;
 
   nih-arms)
