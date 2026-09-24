@@ -101,3 +101,35 @@ Open Anatomy содержит MRI/CT-derived региональные атлас
 `quality-lab.html` загружает каталог и только выбранные структуры плечевого региона из browser-ready BodyParts3D 4.0 pipeline проекта `ashemag/human-atlas`.
 
 Цель страницы — сравнение и аудит. Она не заменяет основной тренажёр автоматически.
+
+
+## Кандидат максимальной геометрической детализации: BodyParts3D/Anatomography 4.3 full-resolution
+
+Репозиторий `olivercase/body_parts_3d_api` предоставляет проверяемый manifest из 3 210 mesh-компонентов версии 4.3 и downloader к внутренним endpoint Anatomography.
+
+Для плечевого региона manifest показывает, среди прочего:
+
+- дельтовидную как три отдельных компонента: clavicular / acromial / spinal;
+- трапециевидную как descending / transverse / ascending;
+- большую грудную как clavicular / sternocostal / abdominal;
+- biceps brachii как long / short head;
+- triceps brachii как long / lateral / medial head;
+- отдельные supraspinatus, infraspinatus, subscapularis, teres minor, teres major;
+- отдельные levator scapulae, rhomboid major/minor, serratus anterior, coracobrachialis;
+- отдельные scapula, clavicle и humerus.
+
+Это существенно полезнее для функциональной анатомии, чем единый объект мышцы.
+
+Однако источник 4.3 не является официальным bulk-download DBCLS: геометрия извлекается через недокументированные endpoint Anatomography. Репозиторий маркирует данные старой лицензией CC BY-SA 2.1 Japan, тогда как официальный DBCLS с 2025-02-27 указывает для базы CC BY 4.0.
+
+Поэтому статус 4.3: `candidate_high_detail_pending_provenance_and_license_review`.
+
+До разрешения этого вопроса 4.3 можно использовать для внутреннего сравнения геометрии, но не делать зависимостью опубликованного учебного продукта.
+
+## Воспроизводимость Quality Lab
+
+Quality Lab не использует плавающий `main` внешнего репозитория. Данные Human Atlas закреплены на commit:
+
+`1c38bf35c254a891200d3cedecfd57abebe83d8d`
+
+Это гарантирует, что повторная проверка будет выполняться на тех же binary chunks и atlas manifest.
