@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
+import { bodyPartsAnatomyKind } from "./bodyparts4-classification.js";
 
 const SOURCE_ROOT =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
@@ -72,9 +73,7 @@ function sourceUrl(path) {
 }
 
 function kindOf(part) {
-  if (part.system === "muscular") return "muscle";
-  if (part.system === "skeletal") return "bone";
-  return null;
+  return bodyPartsAnatomyKind(part);
 }
 
 async function fetchBuffer(chunk) {
