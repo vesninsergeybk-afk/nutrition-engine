@@ -1014,7 +1014,7 @@ boneOpacity.addEventListener("input", () => {
 
 modelSource.addEventListener("change", () => {
   if (modelSource.value === "bodyparts4") {
-    window.location.href = "./quality-lab.html";
+    window.location.href = "./fullbody-lab.html";
   }
 });
 
