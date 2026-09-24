@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Лаборатория анатомического качества — плечевой пояс</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./quality-lab.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="quality-page">
+  <main class="quality-shell">
+    <section class="quality-stage">
+      <header class="quality-header">
+        <div>
+          <p class="eyebrow">Экспериментальный режим</p>
+          <h1>Плечевой пояс: контроль геометрии</h1>
+          <p class="quality-lead">
+            BodyParts3D 4.0 загружается отдельно от основного тренажёра. Здесь мы проверяем форму,
+            взаимное расположение и дробление структур до того, как использовать модель в обучении.
+          </p>
+        </div>
+        <a class="back-link" href="./">← К тренажёру</a>
+      </header>
+
+      <div class="quality-toolbar">
+        <label>
+          <span>Сторона</span>
+          <select id="side-filter">
+            <option value="both">Обе</option>
+            <option value="right">Правая</option>
+            <option value="left">Левая</option>
+          </select>
+        </label>
+
+        <label class="toggle-control">
+          <input id="muscles-toggle" type="checkbox" checked />
+          <span>Мышцы</span>
+        </label>
+
+        <label class="toggle-control">
+          <input id="bones-toggle" type="checkbox" checked />
+          <span>Кости</span>
+        </label>
+
+        <button id="reset-view" type="button">Весь регион</button>
+        <button id="focus-selected-quality" type="button" disabled>К выбранной</button>
+      </div>
+
+      <div class="quality-viewer">
+        <canvas id="quality-canvas" aria-label="Высокодетализированная модель плечевого пояса" tabindex="0"></canvas>
+        <div id="quality-loading" class="loading quality-loading">Читаю каталог BodyParts3D 4.0…</div>
+        <div class="viewer-hint">1 палец — вращать · 2 пальца — масштаб и сдвиг · колесо — к курсору</div>
+      </div>
+    </section>
+
+    <aside class="quality-panel">
+      <section class="question-card">
+        <p class="question-label">Выбрана структура</p>
+        <h2 id="quality-selected">Нажмите на мышцу или кость</h2>
+        <p id="quality-meta" class="feedback">
+          Отображаются только структуры плечевого комплекса, найденные в каталоге BodyParts3D.
+        </p>
+      </section>
+
+      <section class="status-card">
+        <h3>Что загружено</h3>
+        <div id="quality-stats" class="quality-stats">Каталог ещё не загружен.</div>
+        <details>
+          <summary>Найденные структуры</summary>
+          <pre id="quality-structures"></pre>
+        </details>
+      </section>
+
+      <section class="status-card quality-warning">
+        <h3>Как трактовать результат</h3>
+        <p>
+          Более плотная сетка сама по себе не доказывает анатомическую правильность.
+          Этот режим нужен для сравнительной проверки. Структура становится учебной только после
+          сверки формы, положения и названия по независимым источникам.
+        </p>
+      </section>
+
+      <section class="status-card">
+        <h3>Источники сверки</h3>
+        <p><a href="https://anatomytool.org/content/open3dmodel-rotator-cuff-muscles-english-labels" target="_blank" rel="noreferrer">AnatomyTOOL — Open3DModel: rotator cuff</a></p>
+        <p><a href="https://3d.nih.gov/entries/3DPX-012628" target="_blank" rel="noreferrer">NIH 3D — Visible Human: мышцы левой руки</a></p>
+        <p><a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/" target="_blank" rel="noreferrer">DBCLS — BodyParts3D</a></p>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="./quality-lab.js"></script>
+</body>
+</html>
