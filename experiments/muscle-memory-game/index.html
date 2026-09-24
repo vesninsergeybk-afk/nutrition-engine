@@ -41,6 +41,11 @@
         <div id="loading" class="loading">Загружаю мышечную модель…</div>
 
         <div class="viewer-tools" aria-label="Управление отображением модели">
+          <select id="model-source" aria-label="Источник 3D-модели">
+            <option value="z-anatomy" selected>Модель: Z-Anatomy web</option>
+            <option value="bodyparts4">Модель: BodyParts3D 4.0 (контроль)</option>
+            <option value="bodyparts43" disabled>BodyParts3D 4.3 full-res — кандидат</option>
+          </select>
           <select id="view-preset" aria-label="Анатомический ракурс">
             <option value="threeQuarter">Вид: ¾</option>
             <option value="front">Спереди</option>
@@ -48,7 +53,11 @@
             <option value="left">Слева</option>
             <option value="right">Справа</option>
           </select>
-          <button id="bone-toggle" type="button" disabled>Костные ориентиры (просвечивание): загрузка…</button>
+          <select id="bone-mode" aria-label="Режим костного слоя" disabled>
+            <option value="anatomical" selected>Кости: анатомически</option>
+            <option value="xray">Кости: просвечивание</option>
+            <option value="off">Кости: выключены</option>
+          </select>
           <button id="focus-shoulder" type="button">Плечевой пояс</button>
           <button id="focus-selected" type="button" disabled>К выбранной</button>
           <button id="focus-full" type="button">Всё тело</button>
@@ -86,12 +95,13 @@
 
       <section class="status-card">
         <h3>Слои и ориентиры</h3>
-        <p>Кости показаны как условное просвечивание для ориентации и не участвуют в проверке ответа. Это не режим анатомической окклюзии.</p>
+        <p>По умолчанию кости подчиняются обычной глубине сцены: лежащая сверху мышца закрывает кость. Просвечивание включается отдельно только как навигационный режим.</p>
         <label class="range-field">
-          <span>Выраженность просвечивания костей</span>
-          <input id="bone-opacity" type="range" min="0.05" max="0.65" step="0.05" value="0.28" disabled />
+          <span>Выраженность костей в режиме просвечивания</span>
+          <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.10" disabled />
         </label>
-        <div id="target-status" class="target-status">Ожидаю модель…</div>\n        <p class="quality-entry"><a href="./quality-lab.html">Открыть лабораторию анатомического качества →</a></p>
+        <div id="target-status" class="target-status">Ожидаю модель…</div>
+        <p class="quality-entry"><a href="./quality-lab.html">Сравнить с BodyParts3D 4.0 →</a></p>
       </section>
 
       <details class="debug">
