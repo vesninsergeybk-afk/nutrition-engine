@@ -194,3 +194,17 @@ NIH 3D содержит отдельные right/left arm muscle модели и
 6. **HRA** — benchmark качества происхождения и экспертного review, но не primary shoulder-muscle atlas.
 
 Ни один кандидат не получает статус «лучший» до одинакового A/B-сравнения плечевых структур.
+
+
+## HRA shoulder coverage — empirical check completed
+
+We downloaded the HRA `united-male v1.10` GLB and inspected both its GLB structure names and the HRA v1.10 master 3D crosswalk.
+
+Result: none of our tested shoulder muscle/bone terms appeared. This is consistent with HRA's organ-reference purpose and means HRA should **not** be placed in the shoulder model switcher as if it were a competing muscle atlas.
+
+Use HRA as:
+- a benchmark for expert-review workflow;
+- a benchmark for provenance, ontology mapping and versioned 3D objects;
+- a source for organ models when relevant.
+
+Do not use it as the primary shoulder-muscle geometry source.
