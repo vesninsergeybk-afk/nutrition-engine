@@ -75,6 +75,30 @@
     setText(button,compact?(ready?'Изменить':'Профиль'):(ready?'Изменить профиль':'Рассчитать'));
   }
 
+  function rationItemCount(){
+    var items;
+    try{
+      if(w.State&&typeof w.State.get==='function'){
+        items=w.State.get();
+        if(Array.isArray(items))return items.filter(function(item){return item&&isFinite(Number(item.grams))&&Number(item.grams)>0;}).length;
+      }
+    }catch(_){}
+    try{
+      var api=w.NutritionWorkspaceDailyCycleHF15;
+      if(api&&typeof api.getSummary==='function'){
+        var summary=api.getSummary();
+        if(summary&&summary.items!=null)return Math.max(0,Number(summary.items)||0);
+      }
+    }catch(_){}
+    return null;
+  }
+
+  function syncEmptyRationState(){
+    var count=rationItemCount();
+    if(count===null)return;
+    d.documentElement.setAttribute('data-ration-empty',count>0?'0':'1');
+  }
+
   function simplifyEntryMethods(){
     var panel=byId('workspaceRationEntryMethods');
     var search=byId('globalSearchSection');
@@ -162,6 +186,7 @@
     syncSettingsVisibility();
     simplifyEntryMethods();
     simplifyPersonContext();
+    syncEmptyRationState();
   }
   function schedule(){
     w.clearTimeout(timer);
@@ -171,7 +196,7 @@
   function init(){
     d.addEventListener('click',handleClick,false);
     w.addEventListener('resize',schedule,false);
-    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','navigation-shell:mode-changed','workspace-entry-ux:ready','needs:computed','ration:changed'].forEach(function(name){
+    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','navigation-shell:mode-changed','workspace-entry-ux:ready','workspace-slice:ready','needs:computed','ration:changed'].forEach(function(name){
       w.addEventListener(name,schedule,false);
     });
     if(w.MutationObserver){
