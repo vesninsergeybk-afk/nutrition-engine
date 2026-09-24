@@ -12,36 +12,125 @@ async function runAxe(page) {
   }), { tags });
 }
 
-for (const viewport of [
+async function openNeeds(page) {
+  const toggle = page.locator('#v40NeedsToggle');
+  if (!(await toggle.count())) return;
+  if (await toggle.getAttribute('aria-expanded') === 'false') await toggle.click();
+}
+
+// Most measured violations only exist once the app holds data, which the original
+// scenarios never produced. These helpers seed a realistic filled state.
+async function seedProfile(page) {
+  await openNeeds(page);
+  await page.selectOption('#needs_sex', 'female');
+  await page.fill('#needs_age', '42');
+  await page.fill('#needs_h', '168');
+  await page.fill('#needs_w', '64');
+  await page.selectOption('#needs_activity', 'moderate');
+  await page.locator('#profileCalculateContinue').click();
+  await page.waitForFunction(
+    () => window.__lastNeedsMeta && window.__lastNeedsMeta.ok === true,
+    null,
+    { timeout: 30000 }
+  );
+}
+
+// After the calculation the app stays in the long canvas, where the search is
+// revealed by a link in the workflow steps rather than being visible already.
+async function seedRation(page) {
+  await seedProfile(page);
+  const step = page.locator('.workflow-steps a[href="#globalSearchSection"]');
+  if (await step.count()) {
+    // A real click is unreliable here on narrow viewports; the link only needs to
+    // trigger its own handler, so invoke it directly.
+    await step.first().evaluate(node => node.click()).catch(() => {});
+    await page.waitForTimeout(400);
+  }
+  const input = page.locator('#globalSearchInput');
+  await input.waitFor({ state: 'visible', timeout: 15000 });
+  await input.fill('банан');
+  await page.waitForFunction(() => {
+    const el = document.getElementById('globalResults');
+    return el && el.classList.contains('has-query') && el.getBoundingClientRect().height > 0;
+  }, null, { timeout: 15000 });
+  const add = page.locator('#globalResults button[data-role="add"], #globalResults button[data-role="add-search"]').first();
+  await expect(add).toBeVisible();
+  await add.click();
+  await page.waitForTimeout(700);
+}
+
+async function openRoute(page, route) {
+  await page.evaluate(name => {
+    window.NavigationShellV1.setMode('workspace');
+    window.NavigationShellV1.navigate(name);
+  }, route);
+  await page.waitForTimeout(400);
+}
+
+async function audit(page, label, testInfo) {
+  const results = await runAxe(page);
+  const outDir = path.resolve('reports/axe');
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(outDir, `${testInfo.project.name}-${label}.json`),
+    JSON.stringify(results, null, 2)
+  );
+  const blocking = results.violations.filter(v => ['critical', 'serious'].includes(v.impact));
+  expect(blocking.map(v => ({
+    id: v.id,
+    impact: v.impact,
+    help: v.help,
+    nodes: v.nodes.length,
+    sample: v.nodes[0] && v.nodes[0].target
+  }))).toEqual([]);
+}
+
+const VIEWPORTS = [
   { name: 'desktop', width: 1440, height: 1000 },
   { name: 'mobile', width: 390, height: 844 }
-]) {
-  for (const scenario of [
-    { name: 'long', route: '' },
-    { name: 'workspace-ration', route: 'ration' },
-    { name: 'workspace-overview', route: 'analysis/overview' },
-    { name: 'workspace-nutrients', route: 'analysis/nutrients' },
-    { name: 'workspace-hei', route: 'analysis/hei' },
-    { name: 'workspace-correction', route: 'correction' }
-  ]) {
+];
+
+const EMPTY_SCENARIOS = [
+  { name: 'long', route: '' },
+  { name: 'workspace-ration', route: 'ration' },
+  { name: 'workspace-overview', route: 'analysis/overview' },
+  { name: 'workspace-nutrients', route: 'analysis/nutrients' },
+  { name: 'workspace-hei', route: 'analysis/hei' },
+  { name: 'workspace-correction', route: 'correction' },
+  { name: 'workspace-report', route: 'report' }
+];
+
+const FILLED_SCENARIOS = [
+  { name: 'filled-ration', route: 'ration' },
+  { name: 'filled-overview', route: 'analysis/overview' },
+  { name: 'filled-hei', route: 'analysis/hei' },
+  { name: 'filled-correction', route: 'correction' },
+  { name: 'filled-report', route: 'report' }
+];
+
+for (const viewport of VIEWPORTS) {
+  for (const scenario of EMPTY_SCENARIOS) {
     test(`WCAG 2.2 automated audit has no serious or critical violations (${viewport.name}, ${scenario.name})`, async ({ page, loadApp }, testInfo) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await loadApp();
       if (scenario.route) {
-        await page.evaluate(route => {
-          window.NavigationShellV1.setMode('workspace');
-          window.NavigationShellV1.navigate(route);
-        }, scenario.route);
+        await openRoute(page, scenario.route);
       } else {
         await page.evaluate(() => window.NavigationShellV1.setMode('long'));
       }
       await page.waitForTimeout(120);
-      const results = await runAxe(page);
-      const blocking = results.violations.filter(v => ['critical', 'serious'].includes(v.impact));
-      const outDir = path.resolve('reports/axe');
-      fs.mkdirSync(outDir, { recursive: true });
-      fs.writeFileSync(path.join(outDir, `${testInfo.project.name}-${viewport.name}-${scenario.name}.json`), JSON.stringify(results, null, 2));
-      expect(blocking.map(v => ({ id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.length }))).toEqual([]);
+      await audit(page, `${viewport.name}-${scenario.name}`, testInfo);
+    });
+  }
+
+  for (const scenario of FILLED_SCENARIOS) {
+    test(`WCAG 2.2 automated audit has no serious or critical violations (${viewport.name}, ${scenario.name})`, async ({ page, loadApp }, testInfo) => {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await loadApp();
+      await seedRation(page);
+      await openRoute(page, scenario.route);
+      await page.waitForTimeout(120);
+      await audit(page, `${viewport.name}-${scenario.name}`, testInfo);
     });
   }
 }

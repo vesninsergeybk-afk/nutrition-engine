@@ -106,7 +106,7 @@
       toggleClass(step,'is-current',isCurrent);toggleClass(step,'is-complete',isComplete);
       if(isCurrent)setAttr(step,'aria-current','step');else removeAttr(step,'aria-current');
     }
-    setText(statusTitle,m?(name||'Профиль без имени'):'Профиль не заполнен');
+    setText(statusTitle,m?(name || 'Профиль'):'Профиль не заполнен');
     setText(statusText,m?(profileLine(m)+' · '+targetsLine(m)):'Заполните основные поля и нажмите «Рассчитать».');
     setText(action,m?'Перейти к рациону':'Перейти к данным');setAttr(action,'data-profile-action',m?'ration':'focus');
     var next=byId('workspaceProfileNext');setHidden(next,!m);
@@ -118,7 +118,7 @@
     var m=meta(),name=personName(),box=byId('workspacePersonContext');
     if(!box)return;
     toggleClass(box,'is-pending',!m);setHidden(box,!workspace()||route()==='profile');
-    setText(byId('workspacePersonName'),m?(name||'Профиль без имени'):'Потребности не рассчитаны');
+    setText(byId('workspacePersonName'),m?(name || 'Профиль'):'Потребности не рассчитаны');
     setText(byId('workspacePersonDetails'),m?profileLine(m):'Рацион пока не привязан к рассчитанному профилю');
     setText(byId('workspacePersonTargets'),m?targetsLine(m):'Сначала введите рост, массу, возраст и активность');
     setText(byId('workspacePersonEdit'),m?'Изменить профиль':'Рассчитать');

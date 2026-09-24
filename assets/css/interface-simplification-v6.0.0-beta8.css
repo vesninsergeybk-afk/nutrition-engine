@@ -240,3 +240,297 @@ html[data-interface-simplification="1"] .workspace-alt-entry__buttons button{
     grid-template-columns:1fr!important;
   }
 }
+
+/* Contrast corrections (Beta 8 UI pass 4).
+   Root cause: the legacy global rule
+     button:not(.secondary):not(.danger):not(.icon-btn):not(.close-btn)
+   carries specificity (0,4,1) and repaints component buttons blue, overriding the
+   white background those components declare for themselves. Their nested muted text
+   then lands on #145ec7 and measures 1.35:1 (ration entry methods) and 1.27:1
+   (analysis command cards).
+
+   The fix restores the designed appearance of those components rather than forcing
+   their text light: forcing light text would break their own light hover state
+   (.workspace-ration-entry-methods__grid button:hover is #f5f9fd).
+   Scoping by the #mainContent id is deliberate — an id outranks the four pseudo-class
+   selectors of the legacy rule without touching that shared rule.
+
+   Verified contrast: #5d7086 on #ffffff = 5.05:1, #5d7086 on #f6f9fc = 4.82:1,
+   #12805c on #f7f9fc = 4.67:1 (WCAG AA needs 4.5:1 for normal text). */
+#mainContent .workspace-ration-entry-methods__grid button{
+  background:#fff!important;
+  border-color:#ceddea!important;
+  color:#284964!important;
+}
+#mainContent .workspace-ration-entry-methods__grid button:hover{
+  background:#f5f9fd!important;
+  border-color:#8eb6df!important;
+}
+#mainContent .workspace-ration-entry-methods__grid button small{
+  color:#5d7086!important;
+}
+#mainContent .analysis-command-center-hf3__card{
+  background:var(--surface,#fff)!important;
+  border-color:var(--border,#d8e1eb)!important;
+  color:inherit!important;
+}
+#mainContent .analysis-command-center-hf3__card>span,
+#mainContent .analysis-command-center-hf3__card>small,
+#mainContent #analysisCommandMatrixNoteHF3{
+  color:#5d7086!important;
+}
+#mainContent .workspace-analysis-row__values span{
+  color:#5d7086!important;
+}
+#mainContent .analysis-command-center-hf3__head>div>span{
+  color:#12805c!important;
+}
+#mainContent #dietAnalysisPoint{
+  min-width:24px!important;
+  min-height:24px!important;
+}
+/* Same class of failure in neighbouring components, measured by the same gate:
+   .workspace-correction-ai > small 4.48:1, .workspace-contributors>summary small
+   3.75:1 on the ivory surface, the command card <em> 2.99:1 and the theme-parity
+   eyebrow 2.81:1 (green accent used as text). */
+#mainContent .workspace-correction-ai>small{
+  color:#5d7086!important;
+}
+#mainContent .workspace-contributors>summary small{
+  color:#5d7086!important;
+}
+#mainContent .analysis-command-center-hf3__card>em{
+  color:#12805c!important;
+}
+html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__head span,
+html[data-theme-parity-hotfix="4"] .hei-executive-hf4__eyebrow,
+html[data-theme-parity-hotfix="4"] .hei-group-hf4__head span{
+  color:#12805c!important;
+}
+/* The theme-parity group buttons declare no background of their own, so the legacy
+   global rule paints them blue; only their nested <small> needs to follow suit
+   (#dbe7f8 on #145ec7 = 4.86:1) rather than being repainted. */
+#mainContent button[data-hf4-group]>small{
+  color:#dbe7f8!important;
+}
+/* Ration table header labels measured 4.26:1 on #f4f8ff. */
+#mainContent #rationTable>thead>tr>th{
+  color:#5d7086!important;
+}
+/* BMI readout measured 4.43:1 on #f5f7f9 — the last remaining contrast failure. */
+#mainContent #needs_bmi{
+  color:#5d7086!important;
+}
+
+/* Developer chrome removal (Beta 8 UI pass 5).   Pass 1 collapsed the interface controls inside @media(max-width:899px) only, so a
+   desktop window still carried the theme strip at 1116x60 px and the view switcher at
+   208x44 px above the content, plus a 121x24 px build stamp in the header — all of it
+   reading as leftover development chrome rather than product UI.
+   The collapse now applies above the mobile breakpoint as well; the controls stay one
+   click away behind the existing settings action (#interfaceSettingsPass1), and the
+   build stamp remains available as data-ui-version / __APP_DEPLOY_VERSION__. */
+@media(min-width:900px){
+  html[data-interface-simplification="1"] #interfaceSettingsPass1{
+    display:inline-flex!important;
+  }
+  html[data-interface-simplification="1"] #mainContent>header #workspaceViewSwitcher,
+  html[data-interface-simplification="1"] #mainContent>header #themeSwitcher,
+  html[data-interface-simplification="1"] #mainContent>header>.toolbar{
+    display:none!important;
+  }
+  html[data-interface-simplification="1"] #mainContent>header.interface-settings-pass1-open #workspaceViewSwitcher,
+  html[data-interface-simplification="1"] #mainContent>header.interface-settings-pass1-open #themeSwitcher{
+    display:grid!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  html[data-interface-simplification="1"] #mainContent>header.interface-settings-pass1-open>.toolbar{
+    display:flex!important;
+  }
+}
+/* The build stamp is diagnostic metadata, not product copy. Scoped to the header so a
+   report or print view may still surface the version where that is legitimate. */
+html[data-interface-simplification="1"] #mainContent>header .version-badge{
+  display:none!important;
+}
+/* The header is a two-column grid, so the settings button lands in the second column
+   and stretches to its full width: measured 770px on desktop and 352px on mobile,
+   reading as an empty bar. It should sit at the right edge at its own size, which also
+   stops it from consuming the first mobile screen. The id selector outranks the
+   width:100% rule the mobile block sets for it. */
+html[data-interface-simplification="1"] #mainContent>header>#interfaceSettingsPass1{
+  justify-self:end!important;
+  width:auto!important;
+}
+
+/* Clipping fix (Beta 8 UI pass 5), measured before and after.
+   The switch buttons inside the ration parity cards had no flex-shrink guard, so the
+   card title squeezed them below their own label width: "Подробнее" overflowed by
+   20px, "Тарелка" by 13px, and both labels were cut.
+   The profile disclosure summary also reports 7px of overflow, but measurement shows
+   its label sits on one line ending 106px short of the edge — that overflow comes from
+   the 18px arrow pseudo-element, not from clipped text, so it is left alone. */
+html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
+  flex:0 0 auto;
+}
+
+/* Type scale floor (Beta 8 UI pass 6).
+   Measurement found 706 text runs below 12px across 105 selector/size combinations.
+   This raises the most widespread offenders rather than every value at once:
+     - navigation labels        9.5px, present on all 7 routes (28 runs)
+     - search result category pills 11px (136 runs, the single largest group)
+     - analysis row labels and group captions 10.5px (45 runs)
+     - diet zone explanation captions 11px (30 runs)
+     - age profile spec labels  10px (12 runs)
+   Sizes are raised to 12px, the floor for auxiliary text; each was re-measured for
+   clipping and for the accessibility gate afterwards. */
+.navigation-shell__items a span{
+  font-size:11px!important;
+  white-space:nowrap!important;
+}
+/* Desktop navigation has room for the 12px floor; the 11px value is only needed on
+   the narrow bottom bar, where "Потребности" would otherwise wrap to two lines. */
+@media(min-width:900px){
+  .navigation-shell__items a span{
+    font-size:12px!important;
+  }
+}
+/* Type scale pass 2: the remaining groups sit one step below the floor — content
+   labels that carry meaning, all measured at 11px or 10.5px. Chrome with fixed
+   width (the mobile bottom bar) is deliberately excluded. */
+.diet-acc-chip,
+.diet-acc-kicker{
+  font-size:12px!important;
+}
+.diet-gram-action span,
+.diet-zone-explain-head span,
+.diet-personal-item span{
+  font-size:12px!important;
+}
+.workspace-ration-inline__metrics span,
+.workspace-hei-scoreline span,
+.workspace-overview__metrics span,
+.workspace-analysis-section-head span,
+.workspace-status{
+  font-size:12px!important;
+}
+.workspace-contributors__empty{
+  font-size:12px!important;
+}
+.profile-hierarchy__purpose{
+  font-size:12px!important;
+}
+.navigation-shell-context__copy span{
+  font-size:12px!important;
+}
+/* Type scale pass 3: the next groups, still content rather than fixed-width chrome.
+   The header subtitle is included because both design reviews flagged it as faint. */
+.workspace-correction-summary span,
+.diet-point-passport span,
+.diet-point-passport em{
+  font-size:12px!important;
+}
+.app-subtitle,
+.ivory-brand-copy span{
+  font-size:12px!important;
+}
+/* The labels grew to 12px but their containers did not, which the design review read as
+   cramped pills and a flattened hierarchy. Values step up, labels step back, and the
+   containers holding the enlarged text get matching breathing room. */
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>strong{
+  font-size:13px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid{
+  gap:6px 26px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div{
+  gap:8px!important;
+}
+.diet-acc-chip{
+  padding:3px 9px!important;
+}
+.workspace-analysis-row__values>div{
+  padding:10px 11px!important;
+}
+span.pill{
+  padding:2px 8px!important;
+}
+.workspace-ration-inline__metrics>div{
+  padding:9px 11px!important;
+}
+.search-result-main .meta .pill,
+.search-result-main .meta span.pill{
+  font-size:12px!important;
+}
+.workspace-analysis-row__values span,
+.workspace-analysis-row__group{
+  font-size:12px!important;
+}
+.diet-zone-explain-grid span{
+  font-size:12px!important;
+}
+.needs-age-profile-spec-row span,
+.needs-age-profile-spec-row strong{
+  font-size:12px!important;
+}
+
+/* The needs summary used to occupy a 172px card grid on all seven routes, repeating
+   the same four values that the checkpoint results already show on the profile route.
+   Both design reviews named it the strongest "templated" cue in the interface.
+   It is preserved (a canonical test asserts it stays visible) but rendered as one
+   compact line: card chrome removed, label and value inlined, and the developer-facing
+   "обновляется после расчёта" status note dropped. Measurements after the change:
+   desktop 172px -> 44px, sub-labels and all four values retained. */
+#mainContent #consultationNeedsSummary{
+  padding:10px 14px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-head{
+  margin:0 0 6px!important;
+  align-items:baseline!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-head small{
+  display:none!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:4px 22px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div{
+  display:flex!important;
+  align-items:baseline!important;
+  gap:7px!important;
+  min-width:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>small{
+  display:none!important;
+}
+/* Values should read as data, not as part of a running sentence: bolder values, muted
+   labels, and a divider between the pairs on wide screens. */
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>span{
+  color:#5d7086!important;
+  /* The injected stylesheet fades these labels to 72% opacity, which turns #5d7086
+     into an effective #8a98a8 and measures 2.94:1 against white. */
+  opacity:1!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>strong{
+  font-weight:800!important;
+  white-space:nowrap!important;
+}
+@media(min-width:900px){
+  #mainContent #consultationNeedsSummary .consultation-summary-grid>div:not(:first-child){
+    border-left:1px solid #e2e8f0!important;
+    padding-left:20px!important;
+  }
+}
+@media(max-width:680px){
+  #mainContent #consultationNeedsSummary .consultation-summary-grid{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:6px 12px!important;
+  }
+}

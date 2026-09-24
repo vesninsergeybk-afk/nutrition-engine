@@ -7620,7 +7620,7 @@ bindNeedsAgeProfileIndicator();
   var VERSION='v6-needs-checkpoint-2026-09-11';
   var STORAGE_KEY='nutritionCalculator.needsPolicy.v1';
   var REGIONS=['RU','EU','US','CUSTOM'];
-  var AUTHORITIES=['RU_MR_2021','EFSA','DGE_OEGE','US_DRI','CUSTOM'];
+  var AUTHORITIES=['RU_MR_2021','EFSA','DGE_OEGE','US_DRI','CUSTOM'];var AUTHORITY_LABELS={'RU_MR_2021':'РФ · МР 2.3.1.0253-21','EFSA':'EFSA','DGE_OEGE':'DGE / ÖGE','US_DRI':'US DRI','CUSTOM':'Вручную / другой источник'};var PROTEIN_PROFILE_LABELS={'none':'Без специальной цели','dga_2025_2030':'DGA 2025–2030','sport_aerobic_2025':'Аэробная нагрузка','sport_strength_2025':'Силовая / гипертрофия','older_function_preserving':'Старший возраст','older_illness_nutrition_risk':'Старший возраст + нутритивный риск','weight_loss_obesity_2025':'Снижение массы','older_obesity_easo_2026':'Ожирение (EASO)','manual':'Ручная рабочая цель'};function authorityLabel(code){return AUTHORITY_LABELS[code]||code||'—';}function proteinProfileLabel(code){return PROTEIN_PROFILE_LABELS[code]||String(code||'').replace(/_/g,' ');}
   var KFA=['unknown','kfa_1_4','kfa_1_6','kfa_1_9','kfa_2_2','desired_1_7'];
   var ENERGY_CONTEXTS=['general_stable','chronic_stable_estimate_only','extreme_training_estimate_only','protected_clinical'];
   var PROTEIN_PROFILES=['none','dga_2025_2030','sport_aerobic_2025','sport_strength_2025','older_function_preserving','older_illness_nutrition_risk','weight_loss_obesity_2025','older_obesity_easo_2026','manual'];
@@ -7849,7 +7849,7 @@ bindNeedsAgeProfileIndicator();
       '<div class="needs-checkpoint-result"><span>Энергия</span><strong>'+energyMain+'</strong><small>'+energyNote+' · NASEM 2023</small></div>'+
       '<div class="needs-checkpoint-result"><span>'+protTitle+'</span><strong>'+prot+'</strong><small>'+protNote+'</small></div>'+
       '<div class="needs-checkpoint-result"><span>Вода — референс</span><strong>'+waterDisplay(meta.waterReference)+'</strong><small>общая вода из пищи и напитков</small></div>'+
-      '<div class="needs-checkpoint-result"><span>Метод</span><strong>NASEM 2023</strong><small>'+meta.normativeRegion+' · '+meta.referenceAuthority+'</small></div>'+
+      '<div class="needs-checkpoint-result"><span>Метод</span><strong>NASEM 2023</strong><small>'+authorityLabel(meta.referenceAuthority)+'</small></div>'+
       '</div>'+warn+
       '<div class="small" style="margin-top:10px">Поддерживающая энергия: <b>'+fmt(meta.maintenanceEnergyKcal,0)+' ккал</b>. Расчёт является оценкой и требует калибровки по фактической динамике массы и контексту пациента.</div>'+
       '<span id="needs_kcal_low" hidden>'+(meta.energyLow==null?'':fmt(meta.energyLow,0))+'</span><span id="needs_kcal_high" hidden>'+(meta.energyHigh==null?'':fmt(meta.energyHigh,0))+'</span><span id="needs_protein_total" hidden>'+(meta.totalProtein==null?'':fmt(meta.totalProtein,1))+'</span><span id="needs_fat_g" hidden>'+(meta.fatGrams==null?'':fmt(meta.fatGrams,1))+'</span><span id="needs_carb_g" hidden>'+(meta.carbGrams==null?'':fmt(meta.carbGrams,1))+'</span>';
@@ -7860,9 +7860,9 @@ bindNeedsAgeProfileIndicator();
     box.hidden=false;
     box.innerHTML='<div class="consultation-summary-head"><div><span class="step-badge">Потребности</span><strong>Рабочая сводка</strong></div><small>обновляется после расчёта</small></div><div class="consultation-summary-grid">'+
       '<div><span>Энергия</span><strong>'+fmt(meta.maintenanceEnergyKcal,0)+' ккал</strong><small>'+(meta.workingEnergyTargetKcal==null?'рабочая цель не выбрана':'поддержание / рабочая цель')+'</small></div>'+
-      '<div><span>'+proteinHeading(meta)+'</span><strong>'+proteinDisplay(meta)+'</strong><small>'+meta.proteinTargetProfile.replace(/_/g,' ')+'</small></div>'+
+      '<div><span>'+proteinHeading(meta)+'</span><strong>'+proteinDisplay(meta)+'</strong><small>'+proteinProfileLabel(meta.proteinTargetProfile)+'</small></div>'+
       '<div><span>Вода</span><strong>'+waterDisplay(meta.waterReference)+'</strong><small>общая вода</small></div>'+
-      '<div><span>Контекст</span><strong>'+((ACTIVITY[val('needs_activity')]||{}).label||'—')+'</strong><small>'+meta.referenceAuthority+'</small></div></div>';
+      '<div><span>Контекст</span><strong>'+((ACTIVITY[val('needs_activity')]||{}).label||'—')+'</strong><small>'+authorityLabel(meta.referenceAuthority)+'</small></div></div>';
   }
   function safeClearAutoNorms(){
     var snap=w.__needsAutoNormSnapshotV53210||null;if(!snap)return;
@@ -10841,7 +10841,7 @@ window.runSmokeTests=function(){var ok=true;try{ok=prev?prev():true;}catch(e){ok
     if (!head) {
       head = document.createElement('div');
       head.className = 'v45-search-panel-head';
-      head.setAttribute('role','status');
+      head.setAttribute('role','listitem');
       head.setAttribute('aria-live','polite');
       root.insertBefore(head, root.firstChild);
     }
@@ -26620,7 +26620,7 @@ w.NutritionReleaseSupportRC2={version:VERSION,productBaseline:BASELINE,init:init
     return '<article class="workspace-analysis-row is-'+esc(row.status.code)+'" id="workspaceNutrientRow-'+esc(row.key)+'" data-analysis-key="'+esc(row.key)+'">'+
       '<div class="workspace-analysis-row__top"><div><span class="workspace-analysis-row__group">'+esc(NUTRIENT_GROUPS[row.group]?NUTRIENT_GROUPS[row.group].label:'Прочее')+'</span><h4>'+esc(row.title)+'</h4></div><span class="workspace-status">'+esc(row.status.label)+'</span></div>'+
       '<div class="workspace-analysis-row__values"><div><span>Фактическое значение</span><strong>'+esc(fmtAmount(row.actual,row.unit))+'</strong></div><div><span>Ориентир</span><strong>'+esc(target)+'</strong></div></div>'+
-      (row.mode!=='informational'&&row.target>0?'<div class="workspace-analysis-progress" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(clamp(row.progress,0,100),1)+'%"></i><b style="left:'+fmt(clamp(row.progress,0,100),1)+'%"></b></div>':'')+
+      (row.mode!=='informational'&&row.target>0?'<div class="workspace-analysis-progress" role="img" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(clamp(row.progress,0,100),1)+'%"></i><b style="left:'+fmt(clamp(row.progress,0,100),1)+'%"></b></div>':'')+
       '<p class="workspace-analysis-row__note">'+esc(row.status.note)+'</p>'+
       '<details class="workspace-contributors" data-contributor-key="'+esc(row.key)+'"><summary><span>Основные вкладчики</span><small>'+esc(coverage)+'</small></summary><div class="workspace-contributors__body">'+contributorHtml(row.coverage,row.unit,row.coverage.covered===0?'В карточках текущих продуктов нет данных для этого показателя.':'Продукты с положительным вкладом не найдены.')+'<p class="workspace-contributors__quality">Достоверность: '+esc(row.quality.label)+'.</p></div></details>'+
       '</article>';
@@ -26669,7 +26669,7 @@ w.NutritionReleaseSupportRC2={version:VERSION,productBaseline:BASELINE,init:init
     return '<article class="workspace-analysis-row workspace-hei-row is-'+esc(row.status.code)+'" id="workspaceHeiRow-'+esc(row.key)+'" data-analysis-key="'+esc(row.key)+'">'+
       '<div class="workspace-analysis-row__top"><div><span class="workspace-analysis-row__group">'+esc(HEI_GROUP_LABELS[row.group]||'Компонент HEI')+'</span><h4>'+esc(row.title)+'</h4></div><span class="workspace-status">'+esc(row.status.label)+'</span></div>'+
       '<div class="workspace-hei-scoreline"><strong>'+fmt(row.points,1)+' из '+fmt(row.maxPoints,0)+' баллов</strong><span>'+fmt(row.pct,0)+'% собственного максимума</span></div>'+
-      '<div class="workspace-analysis-progress" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(row.pct,1)+'%"></i><b style="left:'+fmt(row.pct,1)+'%"></b></div>'+
+      '<div class="workspace-analysis-progress" role="img" aria-label="'+esc(row.status.label)+'"><i style="width:'+fmt(row.pct,1)+'%"></i><b style="left:'+fmt(row.pct,1)+'%"></b></div>'+
       '<div class="workspace-analysis-row__values"><div><span>Фактическое значение</span><strong>'+esc(row.actual)+'</strong></div><div><span>Ориентир HEI</span><strong>'+esc(row.norm)+'</strong></div></div>'+
       (row.action?'<p class="workspace-analysis-row__note">'+esc(row.action)+'</p>':'')+
       '<details class="workspace-contributors" data-hei-contributor-key="'+esc(row.key)+'"><summary><span>Основные вкладчики</span><small>достоверность: '+esc(row.confidence)+'</small></summary><div class="workspace-contributors__body">'+heiContributorHtml(row)+'</div></details>'+

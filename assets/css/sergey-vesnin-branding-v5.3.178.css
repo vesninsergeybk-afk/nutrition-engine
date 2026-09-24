@@ -16,7 +16,7 @@
     line-height: 1.45;
   }
   #legal-note .sv-authorship strong { font-size: 14px; }
-  #legal-note .sv-build-date { color: var(--muted, #64748b); font-variant-numeric: tabular-nums; }
+  #legal-note .sv-build-date { color:var(--muted-text,#64748b); font-variant-numeric: tabular-nums; }
   html[data-theme="retro-2bit"] #legal-note .sv-authorship {
     border-top: 2px solid var(--retro-ink, #111);
     color: var(--retro-ink, #111);
