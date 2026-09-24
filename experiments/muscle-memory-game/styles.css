@@ -166,7 +166,6 @@ h1 {
   gap: 18px;
 }
 
-.model-card,
 .question-card,
 .status-card,
 .debug {
@@ -257,33 +256,9 @@ button:disabled {
   opacity: .64;
 }
 
-.model-card h3,
 .status-card h3 {
   margin: 0 0 8px;
   font-size: 16px;
-}
-
-.model-field {
-  display: grid;
-  gap: 7px;
-  font-size: 13px;
-  font-weight: 650;
-}
-
-.model-field select {
-  width: 100%;
-  border: 1px solid rgba(0,0,0,.15);
-  border-radius: 12px;
-  padding: 11px 12px;
-  background: #fff;
-  color: inherit;
-}
-
-.model-note {
-  margin: 10px 0 0;
-  font-size: 13px;
-  line-height: 1.45;
-  opacity: .72;
 }
 
 .status-card p,
