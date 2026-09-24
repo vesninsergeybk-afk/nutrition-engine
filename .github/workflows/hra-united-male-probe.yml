@@ -1,0 +1,39 @@
+name: HRA united male model probe
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - .github/workflows/hra-united-male-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe-hra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Download and inspect HRA united male GLB
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="/tmp/hra-united-male-v1.10.glb"
+          URL="https://cdn.humanatlas.io/digital-objects/ref-organ/united-male/v1.10/assets/3d-vh-m-united.glb"
+
+          curl -fL --retry 3 --retry-delay 3 "$URL" -o "$OUT"
+          ls -lh "$OUT"
+          stat --printf='bytes=%s\n' "$OUT"
+          sha256sum "$OUT"
+
+          python3 -c 'import json, pathlib, struct, sys; p=pathlib.Path(sys.argv[1]); b=p.read_bytes(); assert b[:4]==b"glTF", "not GLB"; ver,total=struct.unpack_from("<II",b,4); clen,ctype=struct.unpack_from("<II",b,12); assert ctype==0x4E4F534A, "missing JSON chunk"; j=json.loads(b[20:20+clen].decode("utf-8").rstrip("\x00 ")); print("glb_version=",ver); print("declared_bytes=",total); print("nodes=",len(j.get("nodes",[]))); print("meshes=",len(j.get("meshes",[]))); print("scenes=",len(j.get("scenes",[])))' "$OUT"
+
+      - name: Upload HRA benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hra-united-male-v1.10
+          path: /tmp/hra-united-male-v1.10.glb
+          retention-days: 30
+          compression-level: 0
