@@ -110,7 +110,7 @@ jobs:
             assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'muscle-mask');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'off');
 
             await page.fill('#structure-search', 'дельтовидная');
             await page.waitForFunction(
