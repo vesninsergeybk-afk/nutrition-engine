@@ -430,5 +430,5 @@ loadAtlas().catch((error) => {
   console.error(error);
   loadingEl.textContent = "Ошибка загрузки: " + String(error?.message || error);
   statsEl.textContent =
-    "Высокодетализированный источник не загрузился. Основной тренажёр при этом не затронут.";
+    "Контрольная модель BodyParts3D 4.0 не загрузилась. Основной тренажёр при этом не затронут.";
 });
