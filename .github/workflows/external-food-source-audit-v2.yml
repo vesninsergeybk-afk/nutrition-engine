@@ -1,0 +1,128 @@
+name: External Food Source Audit v2
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "tools/import_external_food_sources.py"
+      - ".github/workflows/external-food-source-audit-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download official datasets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/external-food-sources staging/external-food-sources
+
+          curl -L --fail --retry 3 --retry-delay 2             -o .cache/external-food-sources/usda_foundation_2026-04.zip             "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_csv_2026-04-30.zip"
+
+          curl -L --fail --retry 3 --retry-delay 2             -o .cache/external-food-sources/usda_sr_legacy_2018.zip             "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip"
+
+          curl -L --fail --retry 3 --retry-delay 2             -o .cache/external-food-sources/cnf_2026.zip             "https://open.canada.ca/data/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109/resource/019f2a90-e3a9-489d-b6e1-f74f4ba1d006/download/cnf_fcen_all-files-data_2026.zip"
+
+          # BLS is audited as a raw official archive first because its schema differs
+          # from USDA/CNF. Failure here must not block the three parsed sources.
+          curl -L --fail --retry 2 --retry-delay 2             -o .cache/external-food-sources/bls_4_0_2025.zip             "https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip?token=XZB4-P2AQ-9DM5-IP40-W5Y9-87HT-FMQG-Q3HQ"             || rm -f .cache/external-food-sources/bls_4_0_2025.zip
+
+          ls -lh .cache/external-food-sources
+
+      - name: Probe BLS workbook schema
+        if: ${{ hashFiles('.cache/external-food-sources/bls_4_0_2025.zip') != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet openpyxl
+          python3 - <<'PY'
+          import io, json, zipfile
+          from pathlib import Path
+          import openpyxl
+
+          archive = Path(".cache/external-food-sources/bls_4_0_2025.zip")
+          probe = {}
+          with zipfile.ZipFile(archive) as z:
+              for member in z.namelist():
+                  if not member.lower().endswith(".xlsx"):
+                      continue
+                  wb = openpyxl.load_workbook(io.BytesIO(z.read(member)), read_only=True, data_only=True)
+                  sheets = {}
+                  for ws in wb.worksheets:
+                      rows = []
+                      for i, row in enumerate(ws.iter_rows(values_only=True)):
+                          rows.append([None if v is None else str(v) for v in row[:25]])
+                          if i >= 5:
+                              break
+                      sheets[ws.title] = {
+                          "max_row": ws.max_row,
+                          "max_column": ws.max_column,
+                          "first_rows_first_25_columns": rows,
+                      }
+                  probe[member] = sheets
+
+          out = Path("staging/external-food-sources/bls_schema_probe.json")
+          out.write_text(json.dumps(probe, ensure_ascii=False, indent=2), encoding="utf-8")
+          print(json.dumps(probe, ensure_ascii=False, indent=2)[:20000])
+          PY
+
+      - name: Normalize into non-production staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            --repo .
+            --usda-foundation .cache/external-food-sources/usda_foundation_2026-04.zip
+            --usda-sr .cache/external-food-sources/usda_sr_legacy_2018.zip
+            --cnf .cache/external-food-sources/cnf_2026.zip
+            --out-dir staging/external-food-sources
+          )
+          if [[ -f .cache/external-food-sources/bls_4_0_2025.zip ]]; then
+            args+=(--bls .cache/external-food-sources/bls_4_0_2025.zip)
+          fi
+          python3 tools/import_external_food_sources.py "${args[@]}"             | tee staging/external-food-sources/audit-console.txt
+
+      - name: Publish concise audit summary
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("staging/external-food-sources/external_food_source_audit.json")
+          d = json.loads(p.read_text())
+          lines = [
+              "## External food-source audit",
+              "",
+              f"- Current products: {d['current_database']['products']}",
+              f"- Staged source records: {d['total_staged_records']}",
+              f"- New candidates before cross-source dedup: {d['total_new_candidates_before_cross_source_dedup']}",
+              "",
+              "| Source | Records | Existing exact/name matches | New candidates | Macro complete |",
+              "|---|---:|---:|---:|---:|",
+          ]
+          for name, s in d["sources"].items():
+              lines.append(
+                  f"| {name} | {s['records']} | {s['already_in_current_db']} | "
+                  f"{s['new_candidate_records']} | {s['macro_complete']} |"
+              )
+          Path("staging/external-food-sources/summary.md").write_text("\n".join(lines)+"\n")
+          print("\n".join(lines))
+          PY
+          cat staging/external-food-sources/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload audit and staged normalized data
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-source-audit
+          path: staging/external-food-sources/
+          if-no-files-found: error
+          retention-days: 14
