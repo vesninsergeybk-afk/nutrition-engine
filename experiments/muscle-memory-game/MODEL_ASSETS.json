@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "purpose": "Shoulder anatomy benchmark assets",
+  "storage_policy": {
+    "git_text_repo": "Store manifests, scripts, metadata and small assets only.",
+    "large_binary_policy": "Do not commit large reference anatomy archives directly to normal Git history. Cache them in object storage / build cache / release artifact and produce region-specific web assets.",
+    "production_goal": "Self-host all runtime assets; no browser-time dependency on GitHub/CDNs."
+  },
+  "assets": [
+    {
+      "id": "z_anatomy_web_muscles",
+      "role": "current_interaction_prototype",
+      "format": "glb",
+      "direct_url": "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb",
+      "expected_bytes": 8080656,
+      "commit_to_git": true,
+      "note": "Small enough to vendor later; currently remote."
+    },
+    {
+      "id": "z_anatomy_web_skeleton",
+      "role": "current_interaction_prototype",
+      "format": "glb",
+      "direct_url": "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb",
+      "expected_bytes": 5268924,
+      "commit_to_git": true,
+      "note": "Small enough to vendor later; currently remote."
+    },
+    {
+      "id": "bodyparts3d_3_0_obj_95",
+      "role": "official_high_polygon_historical_reference",
+      "format": "zip/obj",
+      "direct_url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/20110915/BodyParts3D_3.0_obj_95.zip",
+      "expected_size_mb": 522,
+      "commit_to_git": false,
+      "note": "Official DBCLS archive. Download to cache/object storage, then extract only shoulder benchmark structures."
+    },
+    {
+      "id": "hra_united_male_v1_10",
+      "role": "expert_review_process_benchmark",
+      "format": "glb",
+      "direct_url": "https://cdn.humanatlas.io/digital-objects/ref-organ/united-male/v1.10/assets/3d-vh-m-united.glb",
+      "expected_size_mb": 230,
+      "commit_to_git": false,
+      "note": "Large whole-body HRA assembly; not a complete shoulder-muscle atlas."
+    },
+    {
+      "id": "visible_human_male_right_arm_muscles_nih3d",
+      "role": "imaging_derived_regional_reference",
+      "format": "NIH3D processed GLB endpoint",
+      "landing_page": "https://3d.nih.gov/entries/3DPX-012629?version=2",
+      "direct_url": "https://3d.nih.gov/api/submissions/16028/runs/949001c5-c322-4a6e-bfd5-c89b02264de6/output-files/355370",
+      "commit_to_git": "pending_size_check",
+      "note": "Cryo + CT; segmented in 3D Slicer; optimized/remeshed in ZBrush."
+    },
+    {
+      "id": "visible_human_male_left_arm_muscles_nih3d",
+      "role": "imaging_derived_regional_reference",
+      "format": "NIH3D processed GLB endpoint",
+      "landing_page": "https://3d.nih.gov/entries/3DPX-012628?version=2",
+      "direct_url": "https://3d.nih.gov/api/submissions/16026/runs/89f05a36-4f00-4a5c-99a0-2d8c2c2bdc47/output-files/355423",
+      "commit_to_git": "pending_size_check",
+      "note": "Cryo + CT; segmented in 3D Slicer; optimized/remeshed in ZBrush."
+    },
+    {
+      "id": "open3dmodel_shouldergirdle",
+      "role": "regional_geometry_candidate_and_validation_source",
+      "format": "glb via LUMC open 3D viewer",
+      "landing_page": "https://caskanatomy.info/open3dviewer/?model=zone-shoulder",
+      "direct_url": null,
+      "commit_to_git": "pending_direct_asset_discovery",
+      "note": "AnatomyTOOL/Open3DModel shoulder region; direct GLB URL still to be resolved."
+    },
+    {
+      "id": "open3dmodel_upper_limb_muscles",
+      "role": "regional_geometry_candidate_and_validation_source",
+      "format": "glb via LUMC open 3D viewer",
+      "landing_page": "https://caskanatomy.info/open3dviewer/?model=upper-limb-arm-muscles&subset=ligament-parts-hidden",
+      "direct_url": null,
+      "commit_to_git": "pending_direct_asset_discovery",
+      "note": "Upper limb model; viewer supports per-structure visibility."
+    },
+    {
+      "id": "humanum_bodyparts3d_3_0_analysis",
+      "role": "independent_quality_analysis",
+      "format": "self-contained web point renderer",
+      "landing_page": "https://humanum.md/",
+      "direct_url": null,
+      "commit_to_git": false,
+      "note": "Reference/test evidence, not a source mesh package for our app."
+    }
+  ]
+}
