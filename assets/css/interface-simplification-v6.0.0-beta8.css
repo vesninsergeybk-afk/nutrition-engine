@@ -552,3 +552,19 @@ html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"][data-ivory-ration="empty"] #workspaceFocusSearch{
   min-width:180px!important;
 }
+
+
+/* Empty analysis overview.
+   Keep the analysis capability discoverable, but do not render dashboards before
+   there is anything to analyse. The complete overview returns automatically when
+   the canonical ration state becomes filled. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/overview"][data-ivory-ration="empty"] #analysisCommandCenterHF3,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/overview"][data-ivory-ration="empty"] .workspace-overview__metrics,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/overview"][data-ivory-ration="empty"] .workspace-overview__issues,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/overview"][data-ivory-ration="empty"] .workspace-overview__quality,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/overview"][data-ivory-ration="empty"] .workspace-overview__actions{
+  display:none!important;
+}
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/overview"][data-ivory-ration="empty"] .workspace-overview__head{
+  margin-bottom:0!important;
+}
