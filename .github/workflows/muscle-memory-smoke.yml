@@ -112,6 +112,14 @@ jobs:
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'off');
 
+            await page.selectOption('#bone-mode', 'xray');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'true');
+
+            await page.selectOption('#bone-mode', 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
+
             await page.fill('#structure-search', 'дельтовидная');
             await page.waitForFunction(
               () => document.querySelectorAll('.search-result').length > 0,
