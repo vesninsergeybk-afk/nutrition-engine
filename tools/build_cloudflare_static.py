@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import shutil
 from pathlib import Path, PurePosixPath
 
@@ -67,6 +69,56 @@ def is_blocked(rel: str) -> bool:
     return False
 
 
+VERSION_TOKEN_RE = re.compile(r"(\\?v=)[^\"'\\s)]+")
+
+
+def compute_deploy_token(paths: list[str]) -> str:
+    """Return a content-derived token for the complete public runtime closure."""
+    digest = hashlib.sha256()
+    for rel in sorted(set(paths)):
+        src = ROOT / rel
+        if not src.is_file() or is_blocked(rel):
+            continue
+        digest.update(rel.encode("utf-8"))
+        digest.update(b"\\0")
+        digest.update(hashlib.sha256(src.read_bytes()).digest())
+    return digest.hexdigest()[:16]
+
+
+def rewrite_version_tokens(path: Path, token: str) -> int:
+    text = path.read_text(encoding="utf-8")
+    rewritten, count = VERSION_TOKEN_RE.subn(lambda match: match.group(1) + token, text)
+    if count:
+        path.write_text(rewritten, encoding="utf-8")
+    return count
+
+
+def apply_deploy_cache_bust(token: str) -> int:
+    """Make every browser entry point refer to one content-derived asset version."""
+    targets = list(OUT.rglob("*.html"))
+    runtime_dir = OUT / "assets" / "runtime"
+    if runtime_dir.is_dir():
+        targets.extend(runtime_dir.glob("runtime-manifest-*.js"))
+
+    rewritten_refs = 0
+    for path in targets:
+        rewritten_refs += rewrite_version_tokens(path, token)
+
+    stale = []
+    for path in targets:
+        text = path.read_text(encoding="utf-8")
+        for match in VERSION_TOKEN_RE.finditer(text):
+            value = match.group(0).split("=", 1)[1]
+            if value != token:
+                stale.append(f"{path.relative_to(OUT).as_posix()}:{value}")
+    if stale:
+        raise SystemExit(
+            "Cloudflare build aborted: stale asset version tokens remain: "
+            + ", ".join(stale[:20])
+        )
+    return rewritten_refs
+
+
 def main() -> None:
     runtime_files, missing = compute_runtime()
 
@@ -105,6 +157,9 @@ def main() -> None:
         shutil.copy2(security_txt, dst)
         copied.append(".well-known/security.txt")
 
+    deploy_token = compute_deploy_token(runtime_files)
+    rewritten_version_refs = apply_deploy_cache_bust(deploy_token)
+
     missing_public = sorted(rel for rel in REQUIRED_PUBLIC if not (OUT / rel).is_file())
     if missing_public:
         raise SystemExit(
@@ -138,7 +193,9 @@ def main() -> None:
         "copied_files": len(set(copied)),
         "server_only_runtime_files_omitted": len(set(omitted) | set(missing)),
         "gemini_api_migrated": False,
-        "note": "Static calculator is deployable; PHP Gemini endpoints are intentionally not published.",
+        "deploy_cache_token": deploy_token,
+        "rewritten_version_refs": rewritten_version_refs,
+        "note": "Static calculator is deployable; browser asset URLs are content-versioned and PHP Gemini endpoints are intentionally not published.",
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
