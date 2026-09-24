@@ -158,11 +158,14 @@ function targetForName(name) {
 function displayStructureName(sid) {
   const sourceName = structureNames[sid] || "Неизвестная структура";
   const term = structureTerm(sourceName);
-  if (term.nameRu !== sourceName) {
-    return term.latin ? `${term.nameRu} · ${term.latin}` : term.nameRu;
-  }
+
+  // Пользовательский интерфейс — русскоязычный. Исходное английское и
+  // латинское название сохраняются в поисковом индексе и диагностике,
+  // но не дублируются в основной подписи структуры.
+  if (term.nameRu && term.nameRu !== sourceName) return term.nameRu;
+
   const target = targetForName(sourceName);
-  return target ? `${target.nameRu} · ${sourceName}` : sourceName;
+  return target ? target.nameRu : sourceName;
 }
 
 const navPoint = new THREE.Vector3();
