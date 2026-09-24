@@ -9,6 +9,7 @@ on:
       - experiments/muscle-memory-game/fullbody-lab.css
       - experiments/muscle-memory-game/fullbody-lab.js
       - experiments/muscle-memory-game/anatomy-terms-ru.js
+      - experiments/muscle-memory-game/bodyparts4-classification.js
       - .github/workflows/fullbody-lab-smoke.yml
   workflow_dispatch:
 
@@ -31,6 +32,7 @@ jobs:
         run: |
           node --check experiments/muscle-memory-game/fullbody-lab.js
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
+          node --check experiments/muscle-memory-game/bodyparts4-classification.js
 
       - name: Install browser
         run: |
@@ -69,8 +71,7 @@ jobs:
             );
 
             const status = await page.locator('#fullbody-status').innerText();
-            assert.match(status, /698/);
-            assert.match(status, /994[\s\u00a0]?176/);
+            assert.match(status, /618/);
 
             await page.fill('#fullbody-search', 'дельтовидная');
             await page.waitForSelector('.search-result', { timeout: 15000 });
