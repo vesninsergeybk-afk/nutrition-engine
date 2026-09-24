@@ -114,6 +114,9 @@ jobs:
               { timeout: 15000 }
             );
             assert.ok((await page.locator('.search-result').count()) > 0);
+            const zDeltoidLabel = await page.locator('.search-result').first().innerText();
+            assert.match(zDeltoidLabel, /Дельтовидн/i);
+            assert.doesNotMatch(zDeltoidLabel, /deltoid/i);
 
             const pathnameBefore = new URL(page.url()).pathname;
             await page.selectOption('#model-source', 'bodyparts4');
@@ -163,6 +166,24 @@ jobs:
             const tibialisLabel = await page.locator('.search-result').first().innerText();
             assert.match(tibialisLabel, /Передняя большеберцовая/i);
             assert.doesNotMatch(tibialisLabel, /tibialis anterior/i);
+
+            const translationCases = [
+              ['gluteus maximus', /Большая ягодичная/i],
+              ['supraspinatus', /Надостная/i],
+              ['biceps brachii', /двуглав/i],
+              ['sternocleidomastoid', /Грудино-ключично-сосцевидная/i],
+            ];
+            for (const [query, expected] of translationCases) {
+              await page.fill('#structure-search', query);
+              await page.waitForFunction(
+                () => document.querySelectorAll('.search-result').length > 0,
+                null,
+                { timeout: 15000 }
+              );
+              const label = await page.locator('.search-result').first().innerText();
+              assert.match(label, expected);
+              assert.doesNotMatch(label, new RegExp(query, 'i'));
+            }
 
             await page.fill('#structure-search', 'дельтовидная');
             await page.waitForFunction(
