@@ -4,9 +4,9 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
 const MUSCLE_MODEL_URL =
-  "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/main/systems/kas.glb";
+  "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
 const SKELETON_MODEL_URL =
-  "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/main/systems/iskelet.glb";
+  "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb";
 
 // Первый игровой набор намеренно ограничен поверхностными структурами.
 // Глубокие мышцы появятся после отдельного режима снятия слоёв.
@@ -402,7 +402,6 @@ function undoLastHide() {
   focusSelectedButton.disabled = false;
   isolateButton.disabled = false;
   updateLayerButtons();
-  updateLayerButtons();
 }
 
 function discoverTargets() {
@@ -616,7 +615,13 @@ function renderSearchResults(query) {
     button.className = "search-result";
     button.textContent = displayStructureName(sid);
     button.addEventListener("click", () => {
-      if (structureVisibility[sid] === false) setStructureVisible(sid, true);
+      if (structureVisibility[sid] === false) {
+        setStructureVisible(sid, true);
+        for (let i = hiddenStack.length - 1; i >= 0; i -= 1) {
+          if (hiddenStack[i] === sid) hiddenStack.splice(i, 1);
+        }
+        updateLayerButtons();
+      }
       selectExploreStructure(sid);
       focusSelectedStructures();
       searchResults.replaceChildren();
