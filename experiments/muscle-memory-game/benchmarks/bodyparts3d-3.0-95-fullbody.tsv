@@ -1,0 +1,689 @@
+fma_id	system	name	stl_bytes
+FMA45875	muscular	abdominal part of left pectoralis major	373484
+FMA45874	muscular	abdominal part of right pectoralis major	377384
+FMA37464	muscular	abductor digiti minimi of left foot	695384
+FMA37397	muscular	abductor digiti minimi of left hand	343584
+FMA37463	muscular	abductor digiti minimi of right foot	661584
+FMA37396	muscular	abductor digiti minimi of right hand	353784
+FMA34683	muscular	acromial part of left deltoid	1453884
+FMA34682	muscular	acromial part of right deltoid	1484184
+FMA46305	muscular	anterior belly of left digastric	191184
+FMA46304	muscular	anterior belly of right digastric	196484
+FMA46768	muscular	aponeurosis of epicranius	20283984
+FMA33583	muscular	ascending part of left trapezius	3402484
+FMA33581	muscular	ascending part of right trapezius	3481684
+FMA34681	muscular	clavicular part of left deltoid	1424384
+FMA34691	muscular	clavicular part of left pectoralis major	460684
+FMA34680	muscular	clavicular part of right deltoid	1454184
+FMA34690	muscular	clavicular part of right pectoralis major	466584
+FMA46111	muscular	deep head of left flexor pollicis brevis	195284
+FMA46110	muscular	deep head of right flexor pollicis brevis	197684
+FMA49005	muscular	deep part of left masseter	705784
+FMA49004	muscular	deep part of right masseter	707684
+FMA33587	muscular	descending part of left trapezius	2245184
+FMA33586	muscular	descending part of right trapezius	2322584
+FMA13295	muscular	diaphragm	10533384
+FMA21930	muscular	external anal sphincter	183484
+FMA9756	muscular	external intercostal muscle	40802884
+FMA37718	muscular	first lumbrical of left foot	238084
+FMA37717	muscular	first lumbrical of right foot	246284
+FMA37746	muscular	first plantar interosseous of left foot	219484
+FMA37745	muscular	first plantar interosseous of right foot	222184
+FMA37472	muscular	flexor digiti minimi brevis of left foot	256284
+FMA37399	muscular	flexor digiti minimi brevis of left hand	152284
+FMA37471	muscular	flexor digiti minimi brevis of right foot	250284
+FMA37398	muscular	flexor digiti minimi brevis of right hand	157284
+FMA40121	muscular	flexor retinaculum of left wrist	531784
+FMA40120	muscular	flexor retinaculum of right wrist	532484
+FMA37484	muscular	fourth lumbrical of left foot	161384
+FMA37483	muscular	fourth lumbrical of right foot	150884
+BP44	muscular	humeral head of left extensor carpi ulnaris	1585084
+FMA38618	muscular	humeral head of left flexor carpi ulnaris	2018384
+FMA38561	muscular	humeral head of left pronator teres	1268884
+BP45	muscular	humeral head of right extensor carpi ulnaris	1582284
+FMA38617	muscular	humeral head of right flexor carpi ulnaris	1956584
+FMA38560	muscular	humeral head of right pronator teres	1298984
+FMA38639	muscular	humeroulnar head of left flexor digitorum superficialis	6541184
+FMA38638	muscular	humeroulnar head of right flexor digitorum superficialis	6407584
+FMA46288	muscular	inferior oblique part of left longus colli	530984
+FMA46287	muscular	inferior oblique part of right longus colli	558684
+FMA9758	muscular	innermost intercostal muscle	33900784
+FMA9757	muscular	internal intercostal muscle	36157784
+FMA45974	muscular	lateral head of left flexor hallucis brevis	538684
+FMA45961	muscular	lateral head of left gastrocnemius	2435584
+FMA37698	muscular	lateral head of left triceps brachii	1798784
+FMA45973	muscular	lateral head of right flexor hallucis brevis	549684
+FMA45960	muscular	lateral head of right gastrocnemius	2455284
+FMA37697	muscular	lateral head of right triceps brachii	1815684
+FMA37460	muscular	left abductor hallucis	854984
+FMA37387	muscular	left abductor pollicis brevis	302084
+FMA38517	muscular	left abductor pollicis longus	1183384
+FMA22454	muscular	left adductor brevis	1086384
+FMA22457	muscular	left adductor longus	1893984
+FMA22460	muscular	left adductor magnus	4124584
+FMA43887	muscular	left adductor minimus	485184
+FMA37706	muscular	left anconeus	709184
+FMA37669	muscular	left brachialis	1734384
+FMA38487	muscular	left brachioradialis	3677984
+FMA46836	muscular	left buccinator	441884
+FMA264844	muscular	left calcaneal tendon	2361984
+FMA81753	muscular	left cervical rotator	715784
+FMA46444	muscular	left coccygeus	485184
+FMA37666	muscular	left coracobrachialis	555684
+FMA46797	muscular	left corrugator supercilii	138484
+FMA46830	muscular	left depressor anguli oris	268684
+FMA46818	muscular	left depressor labii inferioris	491684
+FMA55609	muscular	left depressor septi nasi	127284
+FMA38499	muscular	left extensor carpi radialis brevis	1694784
+FMA38496	muscular	left extensor carpi radialis longus	1913884
+FMA38505	muscular	left extensor digiti minimi	1075584
+FMA38502	muscular	left extensor digitorum	3182884
+FMA51143	muscular	left extensor digitorum brevis	1614084
+FMA22549	muscular	left extensor digitorum longus	3100484
+FMA51145	muscular	left extensor hallucis brevis	538984
+FMA22547	muscular	left extensor hallucis longus	1157384
+FMA38526	muscular	left extensor indicis	575984
+FMA38520	muscular	left extensor pollicis brevis	581284
+FMA38523	muscular	left extensor pollicis longus	803684
+FMA13337	muscular	left external oblique	27318584
+FMA22555	muscular	left fibularis brevis	1790784
+FMA22553	muscular	left fibularis longus	2915784
+FMA22551	muscular	left fibularis tertius	305884
+FMA37466	muscular	left flexor accessorius	625384
+FMA38461	muscular	left flexor carpi radialis	796584
+FMA37462	muscular	left flexor digitorum brevis	1706384
+FMA65017	muscular	left flexor digitorum longus	3568384
+FMA38480	muscular	left flexor digitorum profundus	3629784
+FMA65015	muscular	left flexor hallucis longus	2992984
+FMA38484	muscular	left flexor pollicis longus	934984
+FMA46760	muscular	left frontalis	2929684
+FMA22337	muscular	left gemellus inferior	471284
+FMA22335	muscular	left gemellus superior	215384
+FMA46327	muscular	left geniohyoid	259584
+FMA22329	muscular	left gluteus maximus	1650484
+FMA22331	muscular	left gluteus medius	2531584
+FMA22333	muscular	left gluteus minimus	3134384
+FMA43884	muscular	left gracilis	2459784
+FMA22323	muscular	left iliacus	2215384
+FMA45859	muscular	left iliococcygeus	917184
+FMA22745	muscular	left iliocostalis cervicis	992484
+FMA22741	muscular	left iliocostalis lumborum	5484684
+FMA22743	muscular	left iliocostalis thoracis	2812884
+FMA58777	muscular	left iliotibial tract	12244284
+FMA32548	muscular	left infraspinatus muscle	1594984
+FMA21965	muscular	left inguinal ligament	585284
+FMA264840	muscular	left intermediate tendon	115584
+FMA13893	muscular	left internal oblique	13209184
+FMA13359	muscular	left latissimus dorsi	11369584
+FMA46824	muscular	left levator anguli oris	199584
+FMA46807	muscular	left levator labii superioris	268784
+FMA46804	muscular	left levator labii superioris alaeque nasi	82384
+FMA32541	muscular	left levator scapulae	1519284
+FMA22756	muscular	left longissimus capitis	768784
+FMA22758	muscular	left longissimus cervicis	903584
+FMA22753	muscular	left longissimus thoracis	5259884
+FMA46310	muscular	left longus capitis	965084
+FMA23090	muscular	left lumbar rotator	1294784
+FMA49013	muscular	left medial pterygoid	368484
+FMA46827	muscular	left mentalis	92684
+FMA22879	muscular	left multifidus	3555284
+FMA46322	muscular	left mylohyoid	558184
+FMA55607	muscular	left nasalis	366384
+FMA32537	muscular	left obliquus capitis inferior	261484
+FMA32535	muscular	left obliquus capitis superior	356884
+FMA22327	muscular	left obturator externus	578184
+FMA22325	muscular	left obturator internus	1771284
+FMA46762	muscular	left occipitalis	1337884
+FMA13349	muscular	left omohyoid	1348084
+FMA37391	muscular	left opponens pollicis	379184
+FMA38464	muscular	left palmaris longus	2153184
+FMA22451	muscular	left pectineus	1030784
+FMA13376	muscular	left pectoralis minor	2239984
+FMA22341	muscular	left piriformis	712484
+FMA22561	muscular	left plantaris	2335184
+FMA45740	muscular	left platysma	3225884
+FMA22592	muscular	left popliteus	558984
+FMA55611	muscular	left procerus	274184
+FMA38455	muscular	left pronator quadratus	721884
+FMA22343	muscular	left psoas major	2788384
+FMA45855	muscular	left pubococcygeus	1168184
+FMA45857	muscular	left puborectalis	891984
+FMA22347	muscular	left pyramidalis	552284
+FMA22339	muscular	left quadratus femoris	838084
+FMA22349	muscular	left quadratus lumborum	1280184
+FMA13378	muscular	left rectus abdominis	9443184
+FMA46314	muscular	left rectus capitis anterior	199384
+FMA46318	muscular	left rectus capitis lateralis	179884
+FMA32531	muscular	left rectus capitis posterior major	391984
+FMA32533	muscular	left rectus capitis posterior minor	215184
+FMA38929	muscular	left rectus femoris	4102584
+FMA13382	muscular	left rhomboid major	2419984
+FMA13384	muscular	left rhomboid minor	753184
+FMA46840	muscular	left risorius	334284
+FMA22355	muscular	left sartorius	2573784
+FMA13393	muscular	left scalenus anterior	685084
+FMA13391	muscular	left scalenus medius	1060184
+FMA13389	muscular	left scalenus posterior	658784
+FMA22449	muscular	left semimembranosus	3606384
+FMA22877	muscular	left semispinalis capitis	1369184
+FMA22875	muscular	left semispinalis cervicis	1257884
+FMA22873	muscular	left semispinalis thoracis	2425284
+FMA22359	muscular	left semitendinosus	2126984
+FMA13399	muscular	left serratus anterior	12411784
+FMA13406	muscular	left serratus posterior inferior	4500784
+FMA13404	muscular	left serratus posterior superior	2915484
+FMA22559	muscular	left soleus	3468484
+FMA22782	muscular	left spinalis cervicis	296684
+FMA22780	muscular	left spinalis thoracis	2700484
+FMA22729	muscular	left splenius capitis	2662184
+FMA22727	muscular	left splenius cervicis	2227284
+FMA13409	muscular	left sternocleidomastoid	2514584
+FMA13347	muscular	left sternohyoid	688284
+FMA13351	muscular	left sternothyroid	545984
+FMA45827	muscular	left stylohyoid	356684
+FMA13411	muscular	left subclavius	407784
+FMA13415	muscular	left subscapularis	1533584
+FMA38514	muscular	left supinator	1303684
+FMA32545	muscular	left supraspinatus	741084
+FMA49008	muscular	left temporalis	5317884
+FMA46764	muscular	left temporoparietalis	6081084
+FMA22426	muscular	left tensor fasciae latae	925784
+FMA32552	muscular	left teres major	855684
+FMA32554	muscular	left teres minor	757584
+FMA13353	muscular	left thyrohyoid	362284
+FMA22545	muscular	left tibialis anterior	1726184
+FMA65019	muscular	left tibialis posterior	2903184
+FMA22345	muscular	left transversus abdominis	15643184
+FMA9762	muscular	left transversus thoracis	869884
+FMA38935	muscular	left vastus intermedius	3068784
+FMA38931	muscular	left vastus lateralis	4723784
+FMA38933	muscular	left vastus medialis	3249084
+FMA46813	muscular	left zygomaticus major	506084
+FMA46815	muscular	left zygomaticus minor	227584
+FMA11336	muscular	linea alba	475884
+FMA37687	muscular	long head of left biceps brachii	1645384
+FMA45889	muscular	long head of left biceps femoris	3709084
+FMA37700	muscular	long head of left triceps brachii	1906484
+FMA37686	muscular	long head of right biceps brachii	1613384
+FMA45888	muscular	long head of right biceps femoris	3654984
+FMA37699	muscular	long head of right triceps brachii	1975784
+FMA49023	muscular	lower head of left lateral pterygoid	119584
+FMA49022	muscular	lower head of right lateral pterygoid	121084
+FMA45972	muscular	medial head of left flexor hallucis brevis	371984
+FMA45958	muscular	medial head of left gastrocnemius	3256984
+FMA37696	muscular	medial head of left triceps brachii	1311384
+FMA45971	muscular	medial head of right flexor hallucis brevis	383684
+FMA45957	muscular	medial head of right gastrocnemius	3238684
+FMA37695	muscular	medial head of right triceps brachii	1344084
+FMA46019	muscular	oblique head of left adductor hallucis	489684
+FMA46122	muscular	oblique head of left adductor pollicis	216184
+FMA46018	muscular	oblique head of right adductor hallucis	474084
+FMA46121	muscular	oblique head of right adductor pollicis	234684
+FMA86035	muscular	opponens digiti minimi of left foot	126184
+FMA37401	muscular	opponens digiti minimi of left hand	228584
+FMA86034	muscular	opponens digiti minimi of right foot	121284
+FMA37400	muscular	opponens digiti minimi of right hand	233284
+FMA46841	muscular	orbicularis oris	1880784
+FMA46783	muscular	orbital part of left orbicularis oculi	414084
+FMA46782	muscular	orbital part of right orbicularis oculi	416584
+FMA46786	muscular	palpebral part of left orbicularis oculi	1152184
+FMA46785	muscular	palpebral part of right orbicularis oculi	1195384
+FMA46307	muscular	posterior belly of left digastric	645384
+FMA46306	muscular	posterior belly of right digastric	652884
+FMA38641	muscular	radial head of left flexor digitorum superficialis	638384
+FMA38640	muscular	radial head of right flexor digitorum superficialis	638484
+FMA37459	muscular	right abductor hallucis	857984
+FMA37386	muscular	right abductor pollicis brevis	317684
+FMA38516	muscular	right abductor pollicis longus	1238384
+FMA22452	muscular	right adductor brevis	1080484
+FMA22456	muscular	right adductor longus	1857184
+FMA22459	muscular	right adductor magnus	4098784
+FMA43886	muscular	right adductor minimus	474384
+FMA37705	muscular	right anconeus	721884
+FMA37668	muscular	right brachialis	1749484
+FMA38486	muscular	right brachioradialis	3658084
+FMA46835	muscular	right buccinator	442984
+FMA258847	muscular	right calcaneal tendon	2320584
+FMA81752	muscular	right cervical rotator	773184
+FMA46443	muscular	right coccygeus	486884
+FMA37665	muscular	right coracobrachialis	582484
+FMA46796	muscular	right corrugator supercilii	139284
+FMA46829	muscular	right depressor anguli oris	273184
+FMA46817	muscular	right depressor labii inferioris	498084
+FMA55608	muscular	right depressor septi nasi	129084
+FMA38498	muscular	right extensor carpi radialis brevis	1574884
+FMA38495	muscular	right extensor carpi radialis longus	1857084
+FMA38504	muscular	right extensor digiti minimi	1077084
+FMA38501	muscular	right extensor digitorum	3222284
+FMA51142	muscular	right extensor digitorum brevis	1610884
+FMA22548	muscular	right extensor digitorum longus	3128784
+FMA51144	muscular	right extensor hallucis brevis	561784
+FMA22546	muscular	right extensor hallucis longus	1190184
+FMA38525	muscular	right extensor indicis	583584
+FMA38519	muscular	right extensor pollicis brevis	586684
+FMA38522	muscular	right extensor pollicis longus	811784
+FMA13336	muscular	right external oblique	27464784
+FMA22554	muscular	right fibularis brevis	1786784
+FMA22552	muscular	right fibularis longus	2910784
+FMA22550	muscular	right fibularis tertius	316284
+FMA37465	muscular	right flexor accessorius	590384
+FMA38460	muscular	right flexor carpi radialis	836184
+FMA37461	muscular	right flexor digitorum brevis	1627484
+FMA65016	muscular	right flexor digitorum longus	3495784
+FMA38479	muscular	right flexor digitorum profundus	3564784
+FMA65014	muscular	right flexor hallucis longus	2943884
+FMA38482	muscular	right flexor pollicis longus	952484
+FMA46759	muscular	right frontalis	2944884
+FMA22336	muscular	right gemellus inferior	488984
+FMA22334	muscular	right gemellus superior	225684
+FMA46326	muscular	right geniohyoid	266084
+FMA22328	muscular	right gluteus maximus	1711384
+FMA22330	muscular	right gluteus medius	2590984
+FMA22332	muscular	right gluteus minimus	3155584
+FMA43883	muscular	right gracilis	2463184
+FMA22322	muscular	right iliacus	2220184
+FMA45858	muscular	right iliococcygeus	923984
+FMA22744	muscular	right iliocostalis cervicis	1036484
+FMA22740	muscular	right iliocostalis lumborum	5377484
+FMA22742	muscular	right iliocostalis thoracis	2896184
+FMA58776	muscular	right iliotibial tract	12165484
+FMA32547	muscular	right infraspinatus muscle	1584084
+FMA21964	muscular	right inguinal ligament	603484
+FMA258850	muscular	right intermediate tendon	125984
+FMA13892	muscular	right internal oblique	13320684
+FMA13358	muscular	right latissimus dorsi	11398984
+FMA46823	muscular	right levator anguli oris	202084
+FMA46806	muscular	right levator labii superioris	271984
+FMA46803	muscular	right levator labii superioris alaeque nasi	84484
+FMA32540	muscular	right levator scapulae	1566884
+FMA22754	muscular	right longissimus capitis	792684
+FMA22757	muscular	right longissimus cervicis	938284
+FMA22751	muscular	right longissimus thoracis	5358084
+FMA46309	muscular	right longus capitis	990084
+FMA23089	muscular	right lumbar rotator	1449584
+FMA49012	muscular	right medial pterygoid	372284
+FMA46826	muscular	right mentalis	94684
+FMA22878	muscular	right multifidus	3699384
+FMA46321	muscular	right mylohyoid	562984
+FMA55606	muscular	right nasalis	369184
+FMA32536	muscular	right obliquus capitis inferior	270684
+FMA32534	muscular	right obliquus capitis superior	359284
+FMA22326	muscular	right obturator externus	588084
+FMA22324	muscular	right obturator internus	1888584
+FMA46761	muscular	right occipitalis	1351284
+FMA13348	muscular	right omohyoid	1354884
+FMA37390	muscular	right opponens pollicis	395284
+FMA38463	muscular	right palmaris longus	2220584
+FMA22450	muscular	right pectineus	1007584
+FMA13375	muscular	right pectoralis minor	2268084
+FMA22340	muscular	right piriformis	755084
+FMA22560	muscular	right plantaris	2351084
+FMA45739	muscular	right platysma	3279084
+FMA22591	muscular	right popliteus	572384
+FMA55610	muscular	right procerus	274584
+FMA38454	muscular	right pronator quadratus	733384
+FMA22342	muscular	right psoas major	2830784
+FMA45854	muscular	right pubococcygeus	1154084
+FMA45856	muscular	right puborectalis	896284
+FMA22346	muscular	right pyramidalis	560784
+FMA22338	muscular	right quadratus femoris	838584
+FMA22348	muscular	right quadratus lumborum	1294884
+FMA13377	muscular	right rectus abdominis	9560384
+FMA46313	muscular	right rectus capitis anterior	201784
+FMA46317	muscular	right rectus capitis lateralis	180884
+FMA32530	muscular	right rectus capitis posterior major	394684
+FMA32532	muscular	right rectus capitis posterior minor	219884
+FMA38928	muscular	right rectus femoris	4149584
+FMA13381	muscular	right rhomboid major	2412784
+FMA13383	muscular	right rhomboid minor	754684
+FMA46839	muscular	right risorius	336884
+FMA22354	muscular	right sartorius	2620984
+FMA13392	muscular	right scalenus anterior	699284
+FMA13390	muscular	right scalenus medius	1061984
+FMA13388	muscular	right scalenus posterior	667484
+FMA22448	muscular	right semimembranosus	3728284
+FMA22876	muscular	right semispinalis capitis	1372784
+FMA22874	muscular	right semispinalis cervicis	1308384
+FMA22872	muscular	right semispinalis thoracis	2529984
+FMA22358	muscular	right semitendinosus	2177584
+FMA13398	muscular	right serratus anterior	12432084
+FMA13405	muscular	right serratus posterior inferior	4516884
+FMA13403	muscular	right serratus posterior superior	2946984
+FMA22558	muscular	right soleus	3428384
+FMA22781	muscular	right spinalis cervicis	300884
+FMA22779	muscular	right spinalis thoracis	2799084
+FMA22728	muscular	right splenius capitis	2663084
+FMA22726	muscular	right splenius cervicis	2227284
+FMA13408	muscular	right sternocleidomastoid	2565784
+FMA13346	muscular	right sternohyoid	697384
+FMA13350	muscular	right sternothyroid	555284
+FMA45826	muscular	right stylohyoid	368984
+FMA13412	muscular	right subclavius	407784
+FMA13414	muscular	right subscapularis	1531084
+FMA38513	muscular	right supinator	1382584
+FMA32544	muscular	right supraspinatus	715984
+FMA49007	muscular	right temporalis	5312684
+FMA46763	muscular	right temporoparietalis	6096384
+FMA22425	muscular	right tensor fasciae latae	934484
+FMA32551	muscular	right teres major	857484
+FMA32553	muscular	right teres minor	761284
+FMA13352	muscular	right thyrohyoid	364484
+FMA22544	muscular	right tibialis anterior	1795784
+FMA65018	muscular	right tibialis posterior	3022684
+FMA22344	muscular	right transversus abdominis	15663584
+FMA9761	muscular	right transversus thoracis	876484
+FMA38934	muscular	right vastus intermedius	3093384
+FMA38930	muscular	right vastus lateralis	4778284
+FMA38932	muscular	right vastus medialis	3290784
+FMA46812	muscular	right zygomaticus major	510984
+FMA46814	muscular	right zygomaticus minor	228484
+FMA37720	muscular	second lumbrical of left foot	165484
+FMA37719	muscular	second lumbrical of right foot	166684
+FMA37744	muscular	second plantar interosseous of left foot	216984
+FMA37743	muscular	second plantar interosseous of right foot	216184
+FMA71442	muscular	set of anterior cervical intertransversarii	416184
+FMA74141	muscular	set of dorsal interossei of left foot	811584
+FMA42405	muscular	set of dorsal interossei of left hand	849684
+FMA74140	muscular	set of dorsal interossei of right foot	859984
+FMA42404	muscular	set of dorsal interossei of right hand	866484
+FMA71309	muscular	set of interspinales cervicis	342584
+FMA71307	muscular	set of interspinales lumborum	541984
+FMA71308	muscular	set of interspinales thoracis	197884
+FMA71444	muscular	set of lateral lumbar intertransversarius muscles	554584
+FMA74078	muscular	set of left levatores costarum breves	1487084
+FMA74076	muscular	set of left levatores costarum longi	2912784
+FMA42399	muscular	set of lumbricals of left hand	746584
+FMA42398	muscular	set of lumbricals of right hand	761884
+FMA76775	muscular	set of medial lumbar intertransversarius muscles	1008384
+FMA42403	muscular	set of palmar interossei of left hand	268284
+FMA42402	muscular	set of palmar interossei of right hand	278284
+FMA71443	muscular	set of posterior cervical intertransversarii	439184
+FMA74077	muscular	set of right levatores costarum breves	1484784
+FMA74075	muscular	set of right levatores costarum longi	2946284
+FMA37685	muscular	short head of left biceps brachii	1435484
+FMA45892	muscular	short head of left biceps femoris	1234984
+FMA37684	muscular	short head of right biceps brachii	1392084
+FMA45891	muscular	short head of right biceps femoris	1273984
+FMA34685	muscular	spinal part of left deltoid	2231484
+FMA34684	muscular	spinal part of right deltoid	2200584
+FMA79980	muscular	sternocostal part of left pectoralis major	1789984
+FMA79979	muscular	sternocostal part of right pectoralis major	1800784
+FMA65199	muscular	superficial head of left flexor pollicis brevis	188284
+FMA65198	muscular	superficial head of right flexor pollicis brevis	213184
+FMA49002	muscular	superficial part of left masseter	501684
+FMA49001	muscular	superficial part of right masseter	504484
+FMA46284	muscular	superior oblique part of left longus colli	532484
+FMA46283	muscular	superior oblique part of right longus colli	583884
+FMA46442	muscular	tendinous arch of levator ani	342284
+FMA37486	muscular	third lumbrical of left foot	176184
+FMA37485	muscular	third lumbrical of right foot	172384
+FMA37742	muscular	third plantar interosseous of left foot	203384
+FMA37741	muscular	third plantar interosseous of right foot	197384
+FMA23083	muscular	thoracic rotator	4419784
+FMA46021	muscular	transverse head of left adductor hallucis	196884
+FMA46124	muscular	transverse head of left adductor pollicis	464184
+FMA46020	muscular	transverse head of right adductor hallucis	209084
+FMA46123	muscular	transverse head of right adductor pollicis	509684
+FMA33585	muscular	transverse part of left trapezius	1514784
+FMA33584	muscular	transverse part of right trapezius	1529284
+BP46	muscular	ulnar head of left extensor carpi ulnaris	871284
+FMA38620	muscular	ulnar head of left flexor carpi ulnaris	733884
+FMA38563	muscular	ulnar head of left pronator teres	570384
+BP47	muscular	ulnar head of right extensor carpi ulnaris	860484
+FMA38619	muscular	ulnar head of right flexor carpi ulnaris	760884
+FMA38562	muscular	ulnar head of right pronator teres	568784
+FMA49025	muscular	upper head of left lateral pterygoid	115584
+FMA49024	muscular	upper head of right lateral pterygoid	116484
+FMA46286	muscular	vertical intermediate part of left longus colli	847784
+FMA46285	muscular	vertical intermediate part of right longus colli	871684
+FMA12519	skeletal	atlas	308684
+FMA12520	skeletal	axis	343584
+FMA7487	skeletal	body of sternum	995884
+FMA32651	skeletal	distal phalanx of left big toe	79784
+FMA32657	skeletal	distal phalanx of left fourth toe	18284
+FMA23953	skeletal	distal phalanx of left index finger	32584
+FMA23959	skeletal	distal phalanx of left little finger	22784
+FMA32659	skeletal	distal phalanx of left little toe	14284
+FMA23955	skeletal	distal phalanx of left middle finger	31784
+FMA23957	skeletal	distal phalanx of left ring finger	22484
+FMA32653	skeletal	distal phalanx of left second toe	24184
+FMA32655	skeletal	distal phalanx of left third toe	17784
+FMA23951	skeletal	distal phalanx of left thumb	49484
+FMA32650	skeletal	distal phalanx of right big toe	80384
+FMA32656	skeletal	distal phalanx of right fourth toe	18184
+FMA24460	skeletal	distal phalanx of right index finger	32884
+FMA24463	skeletal	distal phalanx of right little finger	23384
+FMA32658	skeletal	distal phalanx of right little toe	13784
+FMA24461	skeletal	distal phalanx of right middle finger	32084
+FMA24462	skeletal	distal phalanx of right ring finger	22684
+FMA32652	skeletal	distal phalanx of right second toe	23384
+FMA32654	skeletal	distal phalanx of right third toe	16784
+FMA24459	skeletal	distal phalanx of right thumb	52084
+FMA9991	skeletal	eighth thoracic vertebra	260384
+FMA10059	skeletal	eleventh thoracic vertebra	282684
+FMA52740	skeletal	ethmoid	388784
+FMA12513	skeletal	eyeball	816584
+FMA12523	skeletal	fifth cervical vertebra	237784
+FMA13076	skeletal	fifth lumbar vertebra	864184
+FMA9922	skeletal	fifth thoracic vertebra	491784
+FMA13072	skeletal	first lumbar vertebra	647384
+FMA9165	skeletal	first thoracic vertebra	280784
+FMA12522	skeletal	fourth cervical vertebra	211284
+FMA13075	skeletal	fourth lumbar vertebra	771384
+FMA9248	skeletal	fourth thoracic vertebra	446584
+FMA52734	skeletal	frontal bone	1653184
+FMA59764	skeletal	gingiva of lower jaw	479884
+FMA59763	skeletal	gingiva of upper jaw	459684
+FMA52749	skeletal	hyoid bone	276784
+FMA23708	skeletal	interosseous membrane of left forearm	690484
+FMA35193	skeletal	interosseous membrane of left leg	3177384
+FMA23707	skeletal	interosseous membrane of right forearm	720784
+FMA35192	skeletal	interosseous membrane of right leg	3217884
+FMA25058	skeletal	intervertebral disk of axis	150784
+FMA13505	skeletal	intervertebral disk of eighth thoracic vertebra	510184
+FMA13508	skeletal	intervertebral disk of eleventh thoracic vertebra	714084
+FMA13898	skeletal	intervertebral disk of fifth cervical vertebra	172284
+FMA16037	skeletal	intervertebral disk of fifth lumbar vertebra	808984
+FMA13502	skeletal	intervertebral disk of fifth thoracic vertebra	366884
+FMA16033	skeletal	intervertebral disk of first lumbar vertebra	707684
+FMA10458	skeletal	intervertebral disk of first thoracic vertebra	214084
+FMA13897	skeletal	intervertebral disk of fourth cervical vertebra	175884
+FMA16036	skeletal	intervertebral disk of fourth lumbar vertebra	724584
+FMA13501	skeletal	intervertebral disk of fourth thoracic vertebra	315484
+FMA13506	skeletal	intervertebral disk of ninth thoracic vertebra	252084
+FMA16034	skeletal	intervertebral disk of second lumbar vertebra	680184
+FMA13495	skeletal	intervertebral disk of second thoracic vertebra	248584
+FMA13900	skeletal	intervertebral disk of seventh cervical vertebra	195684
+FMA13504	skeletal	intervertebral disk of seventh thoracic vertebra	519384
+FMA13899	skeletal	intervertebral disk of sixth cervical vertebra	161984
+FMA13503	skeletal	intervertebral disk of sixth thoracic vertebra	452984
+FMA13507	skeletal	intervertebral disk of tenth thoracic vertebra	576784
+FMA13896	skeletal	intervertebral disk of third cervical vertebra	151684
+FMA16035	skeletal	intervertebral disk of third lumbar vertebra	713584
+FMA13500	skeletal	intervertebral disk of third thoracic vertebra	258784
+FMA13509	skeletal	intervertebral disk of twelfth thoracic vertebra	726984
+FMA24498	skeletal	left calcaneus	282684
+FMA24447	skeletal	left capitate	63984
+FMA13323	skeletal	left clavicle	257084
+BP24	skeletal	left costal cartilage	947184
+FMA24529	skeletal	left cuboid bone	190284
+FMA8310	skeletal	left eighth rib	1856784
+FMA8532	skeletal	left eleventh rib	1141384
+FMA24475	skeletal	left femur	660184
+FMA24481	skeletal	left fibula	227284
+FMA8112	skeletal	left fifth costal cartilage	226884
+FMA24473	skeletal	left fifth metacarpal bone	107384
+FMA24516	skeletal	left fifth metatarsal bone	184484
+FMA8093	skeletal	left fifth rib	2078484
+FMA8005	skeletal	left first costal cartilage	110284
+FMA24465	skeletal	left first metacarpal bone	124084
+FMA24508	skeletal	left first metatarsal bone	243084
+FMA7987	skeletal	left first rib	773284
+FMA8167	skeletal	left fourth costal cartilage	161084
+FMA24471	skeletal	left fourth metacarpal bone	113584
+FMA24514	skeletal	left fourth metatarsal bone	155984
+FMA8148	skeletal	left fourth rib	1896184
+FMA24449	skeletal	left hamate	56584
+FMA16587	skeletal	left hip bone	473584
+FMA23131	skeletal	left humerus	824684
+FMA54738	skeletal	left inferior nasal concha	74284
+FMA24524	skeletal	left intermediate cuneiform bone	105384
+FMA53646	skeletal	left lacrimal bone	57684
+FMA24526	skeletal	left lateral cuneiform bone	148484
+FMA44250	skeletal	left long plantar ligament	1760584
+FMA24438	skeletal	left lunate	43384
+FMA53650	skeletal	left maxilla	725384
+FMA24522	skeletal	left medial cuneiform bone	210584
+FMA53648	skeletal	left nasal bone	56284
+FMA8391	skeletal	left ninth rib	1801084
+FMA53656	skeletal	left palatine bone	182184
+FMA52789	skeletal	left parietal bone	1512584
+FMA24487	skeletal	left patella	66984
+FMA24442	skeletal	left pisiform	19884
+FMA23465	skeletal	left radius	135784
+FMA24436	skeletal	left scaphoid	53584
+FMA13396	skeletal	left scapula	6090884
+FMA8031	skeletal	left second costal cartilage	117584
+FMA24467	skeletal	left second metacarpal bone	163284
+FMA24510	skeletal	left second metatarsal bone	169484
+FMA8012	skeletal	left second rib	1265284
+FMA8275	skeletal	left seventh costal cartilage	495184
+FMA8256	skeletal	left seventh rib	2203184
+FMA8221	skeletal	left sixth costal cartilage	298384
+FMA8202	skeletal	left sixth rib	2221784
+FMA24483	skeletal	left talus	296284
+FMA52739	skeletal	left temporal bone	560484
+FMA8472	skeletal	left tenth rib	1587984
+FMA8058	skeletal	left third costal cartilage	121484
+FMA24469	skeletal	left third metacarpal bone	152084
+FMA24512	skeletal	left third metatarsal bone	161484
+FMA8039	skeletal	left third rib	1560684
+FMA24478	skeletal	left tibia	341184
+FMA24444	skeletal	left trapezium	52984
+FMA24445	skeletal	left trapezoid	30684
+FMA24440	skeletal	left triquetral	34984
+FMA8534	skeletal	left twelfth rib	686384
+FMA23468	skeletal	left ulna	176984
+FMA52893	skeletal	left zygomatic bone	228084
+FMA52748	skeletal	mandible	1082984
+FMA7486	skeletal	manubrium	594184
+FMA32647	skeletal	middle phalanx of left fourth toe	27384
+FMA23938	skeletal	middle phalanx of left index finger	56984
+FMA23944	skeletal	middle phalanx of left little finger	44284
+FMA230988	skeletal	middle phalanx of left little toe	15184
+FMA23940	skeletal	middle phalanx of left middle finger	74884
+FMA23942	skeletal	middle phalanx of left ring finger	67284
+FMA32643	skeletal	middle phalanx of left second toe	34384
+FMA32645	skeletal	middle phalanx of left third toe	31984
+FMA32646	skeletal	middle phalanx of right fourth toe	26084
+FMA24455	skeletal	middle phalanx of right index finger	57084
+FMA24458	skeletal	middle phalanx of right little finger	45084
+FMA230986	skeletal	middle phalanx of right little toe	14784
+FMA24456	skeletal	middle phalanx of right middle finger	73884
+FMA24457	skeletal	middle phalanx of right ring finger	67584
+FMA32642	skeletal	middle phalanx of right second toe	32684
+FMA32644	skeletal	middle phalanx of right third toe	31784
+FMA24501	skeletal	navicular bone of left foot	154884
+FMA24500	skeletal	navicular bone of right foot	151184
+FMA10014	skeletal	ninth thoracic vertebra	564384
+FMA52735	skeletal	occipital bone	1390684
+FMA43254	skeletal	proximal phalanx of left big toe	109784
+FMA32639	skeletal	proximal phalanx of left fourth toe	58384
+FMA71915	skeletal	proximal phalanx of left index finger	84284
+FMA66791	skeletal	proximal phalanx of left little finger	58984
+FMA32641	skeletal	proximal phalanx of left little toe	60384
+FMA71908	skeletal	proximal phalanx of left middle finger	98784
+FMA71916	skeletal	proximal phalanx of left ring finger	80884
+FMA32635	skeletal	proximal phalanx of left second toe	70884
+FMA32637	skeletal	proximal phalanx of left third toe	62984
+FMA65470	skeletal	proximal phalanx of left thumb	65784
+FMA43253	skeletal	proximal phalanx of right big toe	105384
+FMA32638	skeletal	proximal phalanx of right fourth toe	54784
+FMA24451	skeletal	proximal phalanx of right index finger	83284
+FMA24454	skeletal	proximal phalanx of right little finger	60484
+FMA32640	skeletal	proximal phalanx of right little toe	57484
+FMA24452	skeletal	proximal phalanx of right middle finger	98484
+FMA24453	skeletal	proximal phalanx of right ring finger	81084
+FMA32634	skeletal	proximal phalanx of right second toe	68184
+FMA32636	skeletal	proximal phalanx of right third toe	61184
+FMA24450	skeletal	proximal phalanx of right thumb	68484
+FMA24497	skeletal	right calcaneus	272484
+FMA24446	skeletal	right capitate	64284
+FMA13322	skeletal	right clavicle	255684
+BP28	skeletal	right costal cartilage	957884
+FMA24528	skeletal	right cuboid bone	181784
+FMA8283	skeletal	right eighth rib	1832384
+FMA8531	skeletal	right eleventh rib	1121484
+FMA24474	skeletal	right femur	649584
+FMA24480	skeletal	right fibula	231184
+FMA8070	skeletal	right fifth costal cartilage	241584
+FMA24472	skeletal	right fifth metacarpal bone	108984
+FMA24515	skeletal	right fifth metatarsal bone	171684
+FMA8066	skeletal	right fifth rib	2081784
+FMA7875	skeletal	right first costal cartilage	117184
+FMA24464	skeletal	right first metacarpal bone	121784
+FMA24507	skeletal	right first metatarsal bone	244384
+FMA7857	skeletal	right first rib	709784
+FMA7976	skeletal	right fourth costal cartilage	174384
+FMA24470	skeletal	right fourth metacarpal bone	115384
+FMA24513	skeletal	right fourth metatarsal bone	145984
+FMA7957	skeletal	right fourth rib	1924484
+FMA24448	skeletal	right hamate	57584
+FMA16586	skeletal	right hip bone	485884
+FMA23130	skeletal	right humerus	813484
+FMA54737	skeletal	right inferior nasal concha	80884
+FMA24523	skeletal	right intermediate cuneiform bone	97484
+FMA53645	skeletal	right lacrimal bone	55784
+FMA24525	skeletal	right lateral cuneiform bone	135184
+FMA44249	skeletal	right long plantar ligament	1773284
+FMA24437	skeletal	right lunate	43284
+FMA53649	skeletal	right maxilla	707484
+FMA24521	skeletal	right medial cuneiform bone	205784
+FMA53647	skeletal	right nasal bone	51284
+FMA8364	skeletal	right ninth rib	1713984
+FMA53655	skeletal	right palatine bone	179684
+FMA52788	skeletal	right parietal bone	1486784
+FMA24486	skeletal	right patella	66784
+FMA24441	skeletal	right pisiform	19884
+FMA23464	skeletal	right radius	140284
+FMA24435	skeletal	right scaphoid	53784
+FMA13395	skeletal	right scapula	5662884
+FMA7886	skeletal	right second costal cartilage	127084
+FMA24466	skeletal	right second metacarpal bone	160984
+FMA24509	skeletal	right second metatarsal bone	162984
+FMA7882	skeletal	right second rib	1184784
+FMA8248	skeletal	right seventh costal cartilage	524684
+FMA8229	skeletal	right seventh rib	2157384
+FMA8194	skeletal	right sixth costal cartilage	303984
+FMA8175	skeletal	right sixth rib	2231784
+FMA24482	skeletal	right talus	298184
+FMA52738	skeletal	right temporal bone	563784
+FMA8445	skeletal	right tenth rib	1550584
+FMA7913	skeletal	right third costal cartilage	134784
+FMA24468	skeletal	right third metacarpal bone	150984
+FMA24511	skeletal	right third metatarsal bone	151584
+FMA7909	skeletal	right third rib	1543084
+FMA24477	skeletal	right tibia	342584
+FMA24443	skeletal	right trapezium	51384
+FMA23725	skeletal	right trapezoid	30884
+FMA24439	skeletal	right triquetral	35284
+FMA8533	skeletal	right twelfth rib	663184
+FMA23467	skeletal	right ulna	179684
+FMA52892	skeletal	right zygomatic bone	230684
+FMA16202	skeletal	sacrum	2220884
+FMA13073	skeletal	second lumbar vertebra	347384
+FMA9187	skeletal	second thoracic vertebra	418084
+FMA45098	skeletal	sesamoid bone of left foot	27884
+FMA45097	skeletal	sesamoid bone of right foot	28884
+FMA12525	skeletal	seventh cervical vertebra	261184
+FMA9968	skeletal	seventh thoracic vertebra	537084
+FMA12524	skeletal	sixth cervical vertebra	317584
+FMA9945	skeletal	sixth thoracic vertebra	244884
+FMA52736	skeletal	sphenoid bone	766184
+FMA10037	skeletal	tenth thoracic vertebra	596484
+FMA12521	skeletal	third cervical vertebra	263984
+FMA13074	skeletal	third lumbar vertebra	737584
+FMA9209	skeletal	third thoracic vertebra	445584
+FMA10081	skeletal	twelfth thoracic vertebra	301984
+FMA9710	skeletal	vomer	121184
+FMA7488	skeletal	xiphoid process	204384
