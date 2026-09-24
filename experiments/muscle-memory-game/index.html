@@ -41,11 +41,6 @@
         <div id="loading" class="loading">Загружаю мышечную модель…</div>
 
         <div class="viewer-tools" aria-label="Управление отображением модели">
-          <select id="model-source" aria-label="Источник 3D-модели">
-            <option value="z-anatomy" selected>Модель: Z-Anatomy web</option>
-            <option value="bodyparts4">Модель: BodyParts3D 4.0 (контроль)</option>
-            <option value="bodyparts43" disabled>BodyParts3D 4.3 full-res — кандидат</option>
-          </select>
           <select id="view-preset" aria-label="Анатомический ракурс">
             <option value="threeQuarter">Вид: ¾</option>
             <option value="front">Спереди</option>
@@ -68,6 +63,21 @@
     </section>
 
     <aside class="panel">
+      <section class="model-card">
+        <h3>3D-модель</h3>
+        <label class="model-field">
+          <span>Источник анатомии</span>
+          <select id="model-source" aria-label="Источник 3D-модели">
+            <option value="z-anatomy" selected>Z-Anatomy · всё тело</option>
+            <option value="bodyparts3">BodyParts3D 3.0 HQ · плечевой пояс</option>
+            <option value="bodyparts4">BodyParts3D 4.0 · плечевой пояс</option>
+            <option value="open3d" disabled>Open3DModel · подключается</option>
+            <option value="visible-human" disabled>Visible Human · подключается</option>
+          </select>
+        </label>
+        <p id="model-note" class="model-note">Целостная модель тела для тренировки распознавания мышц.</p>
+      </section>
+
       <section class="question-card">
         <p id="question-label" class="question-label">Задание</p>
         <h2 id="question">После загрузки появится первая мышца</h2>
@@ -81,7 +91,7 @@
         <div id="explore-controls" class="explore-controls" hidden>
           <label class="search-field">
             <span>Поиск по названию</span>
-            <input id="structure-search" type="search" autocomplete="off" placeholder="deltoid, trapezius, biceps…" />
+            <input id="structure-search" type="search" autocomplete="off" placeholder="Например: дельтовидная, надостная, бицепс" />
           </label>
           <div id="search-results" class="search-results" aria-live="polite"></div>
           <div class="layer-actions">
@@ -94,25 +104,23 @@
       </section>
 
       <section class="status-card">
-        <h3>Слои и ориентиры</h3>
-        <p>По умолчанию кости подчиняются обычной глубине сцены: лежащая сверху мышца закрывает кость. Просвечивание включается отдельно только как навигационный режим.</p>
+        <h3>Отображение</h3>
+        <p>В анатомическом режиме поверхностные мышцы закрывают лежащие глубже кости. Просвечивание можно включить отдельно для ориентации.</p>
         <label class="range-field">
           <span>Выраженность костей в режиме просвечивания</span>
           <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.10" disabled />
         </label>
         <div id="target-status" class="target-status">Ожидаю модель…</div>
-        <p class="quality-entry"><a href="./quality-lab.html">Сравнить с BodyParts3D 4.0 →</a></p>
       </section>
 
-      <details class="debug">
+      <details class="debug" hidden>
         <summary>Техническая диагностика</summary>
         <p id="diagnostics">Модель ещё не загружена.</p>
         <pre id="mesh-names"></pre>
       </details>
 
       <p class="attribution">
-        3D-данные: BodyParts3D / Z-Anatomy, CC BY-SA. Для прототипа модель загружается из открытого проекта
-        <a href="https://github.com/DrMuratAltun/anatomi-simulatoru" target="_blank" rel="noreferrer">Anatomi Simülatörü</a>.
+        Используются открытые анатомические данные Z-Anatomy и BodyParts3D. Источник и лицензия каждой модели сохраняются в проекте.
       </p>
     </aside>
   </main>
