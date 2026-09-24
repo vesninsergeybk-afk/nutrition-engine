@@ -4,20 +4,21 @@
   "policy": {
     "teaching_status_required": "verified_for_teaching",
     "current_default_geometry": "z_anatomy_web_prototype",
-    "candidate_primary_geometry": "bodyparts3d_4_0",
     "terminology": "fipat_ta2",
     "independent_regional_validation": [
       "anatomytool_open3dmodel",
       "visible_human_nih3d",
       "open_anatomy_project"
-    ]
+    ],
+    "candidate_reference_geometry": "bodyparts3d_4_0"
   },
   "sources": {
     "bodyparts3d_4_0": {
-      "role": "candidate_primary_geometry",
+      "role": "candidate_reference_geometry",
       "license": "CC BY 4.0",
       "url": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/",
-      "status": "available"
+      "status": "candidate_reference_pending_anatomical_review",
+      "note": "Official 4.0 downloadable mesh is published with polygon reduction rate 99%; do not treat as high-resolution ground truth."
     },
     "anatomytool_open3dmodel": {
       "role": "regional_expert_validation",
@@ -47,7 +48,15 @@
       "url": "https://github.com/ashemag/human-atlas",
       "pinned_commit": "1c38bf35c254a891200d3cedecfd57abebe83d8d",
       "source_geometry": "BodyParts3D 4.0",
-      "status": "pinned"
+      "status": "pinned_web_optimized_control",
+      "note": "Human Atlas applies additional meshoptimizer simplification (target about 22% of indices, maximum relative error 0.2%) to its converted BodyParts3D 4.0 meshes."
+    },
+    "z_anatomy_web_prototype": {
+      "role": "current_interaction_prototype_geometry",
+      "url": "https://github.com/DrMuratAltun/anatomi-simulatoru",
+      "pinned_commit": "37e85dfbbb398e11ba33c8f0e411f06f9bba592f",
+      "source_geometry": "Z-Anatomy / BodyParts3D-derived",
+      "status": "pinned_not_anatomically_verified_for_teaching"
     }
   },
   "structures": [
@@ -203,5 +212,11 @@
       "relation_review": "pending",
       "notes": []
     }
-  ]
+  ],
+  "audit_status": {
+    "verified_for_teaching": 0,
+    "total_structures": 19,
+    "state": "no_structure_verified_yet",
+    "note": "Sources and criteria are defined, but independent per-structure anatomical validation has not yet been completed."
+  }
 }
