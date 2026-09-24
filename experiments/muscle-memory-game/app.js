@@ -102,6 +102,7 @@ const pointer = new THREE.Vector2();
 
 let anatomyMesh = null;
 let skeletonMesh = null;
+let anatomicalOccluderMesh = null;
 let structureNames = [];
 let structureRanges = [];
 let structureVisibility = [];
@@ -822,6 +823,7 @@ function applyBoneDisplayMode() {
 
   if (mode === "off") {
     skeletonMesh.visible = false;
+    if (anatomicalOccluderMesh) anatomicalOccluderMesh.visible = false;
     boneOpacity.disabled = true;
     canvas.dataset.boneMode = mode;
     canvas.dataset.boneTransparent = "false";
@@ -832,6 +834,7 @@ function applyBoneDisplayMode() {
   skeletonMesh.visible = true;
 
   if (mode === "anatomical") {
+    if (anatomicalOccluderMesh) anatomicalOccluderMesh.visible = true;
     // BodyParts3D contains several bone surfaces that geometrically intersect the
     // muscle shell. A depth test alone therefore cannot guarantee a correct
     // "muscle above bone" teaching view. Visible muscles write stencil=1 first;
@@ -850,6 +853,7 @@ function applyBoneDisplayMode() {
     skeletonMesh.renderOrder = 1;
     boneOpacity.disabled = true;
   } else {
+    if (anatomicalOccluderMesh) anatomicalOccluderMesh.visible = false;
     // Deliberate x-ray reference mode ignores the muscle stencil.
     material.transparent = true;
     material.opacity = Number(boneOpacity.value);
@@ -916,6 +920,12 @@ function disposeMaterial(material) {
 function resetLoadedModel() {
   restoreHighlights();
 
+  if (anatomicalOccluderMesh) {
+    modelGroup.remove(anatomicalOccluderMesh);
+    disposeMaterial(anatomicalOccluderMesh.material);
+    anatomicalOccluderMesh = null;
+  }
+
   for (const child of [...modelGroup.children]) {
     modelGroup.remove(child);
     child.geometry?.dispose?.();
@@ -928,6 +938,7 @@ function resetLoadedModel() {
 
   anatomyMesh = null;
   skeletonMesh = null;
+  anatomicalOccluderMesh = null;
   structureNames = [];
   structureRanges = [];
   structureVisibility = [];
@@ -961,6 +972,7 @@ function resetLoadedModel() {
   canvas.dataset.boneMode = "";
   canvas.dataset.boneTransparent = "";
   canvas.dataset.boneStencil = "";
+  canvas.dataset.boneOcclusionInflation = "";
 }
 
 function createMuscleMaterial() {
@@ -1016,6 +1028,53 @@ function createBoneMaterial() {
     stencilZFail: THREE.KeepStencilOp,
     stencilZPass: THREE.KeepStencilOp,
   });
+}
+
+
+function createBodyPartsOccluder() {
+  if (!anatomyMesh || currentModelSource !== "bodyparts4") return;
+
+  const maxDim = Math.max(bodySize.x, bodySize.y, bodySize.z);
+  const inflation = Math.max(maxDim * 0.006, 0.0005);
+
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x000000,
+    side: THREE.DoubleSide,
+    colorWrite: false,
+    depthTest: false,
+    depthWrite: false,
+    transparent: false,
+    stencilWrite: true,
+    stencilRef: 1,
+    stencilFunc: THREE.AlwaysStencilFunc,
+    stencilFail: THREE.KeepStencilOp,
+    stencilZFail: THREE.KeepStencilOp,
+    stencilZPass: THREE.ReplaceStencilOp,
+  });
+
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uBoneOcclusionInflate = { value: inflation };
+    shader.vertexShader =
+      "uniform float uBoneOcclusionInflate; attribute float structureVisible; varying float vStructureVisible;\n" +
+      shader.vertexShader;
+    shader.vertexShader = shader.vertexShader.replace(
+      "#include <begin_vertex>",
+      "#include <begin_vertex>\ntransformed += normalize(objectNormal) * uBoneOcclusionInflate;\nvStructureVisible = structureVisible;"
+    );
+    shader.fragmentShader =
+      "varying float vStructureVisible;\n" + shader.fragmentShader;
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <clipping_planes_fragment>",
+      "#include <clipping_planes_fragment>\nif (vStructureVisible < 0.5) discard;"
+    );
+  };
+  material.customProgramCacheKey = () => "bodyparts-bone-occluder-v1";
+
+  anatomicalOccluderMesh = new THREE.Mesh(anatomyMesh.geometry, material);
+  anatomicalOccluderMesh.renderOrder = 1;
+  anatomicalOccluderMesh.frustumCulled = false;
+  modelGroup.add(anatomicalOccluderMesh);
+  canvas.dataset.boneOcclusionInflation = String(inflation);
 }
 
 function bodyPartsSourceUrl(path) {
@@ -1110,6 +1169,7 @@ async function loadSkeletonLayer(loader) {
     for (const geometry of temporaries) geometry.dispose();
 
     skeletonMesh = new THREE.Mesh(merged, createBoneMaterial());
+    skeletonMesh.renderOrder = 1;
     modelGroup.add(skeletonMesh);
 
     boneMode.disabled = false;
@@ -1273,13 +1333,18 @@ async function loadBodyParts4Model() {
   for (const geometry of boneChunks) geometry.dispose();
   if (mergedBones) {
     skeletonMesh = new THREE.Mesh(mergedBones, createBoneMaterial());
-    skeletonMesh.renderOrder = 1;
+    skeletonMesh.renderOrder = 2;
     modelGroup.add(skeletonMesh);
+  }
+
+  fitCamera(modelGroup);
+  createBodyPartsOccluder();
+
+  if (skeletonMesh) {
     boneMode.disabled = false;
     applyBoneDisplayMode();
   }
 
-  fitCamera(modelGroup);
   discoverTargets();
   updateDiagnostics(
     "BodyParts3D 4.0: всё тело, " +
