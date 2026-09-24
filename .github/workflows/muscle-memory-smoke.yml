@@ -30,6 +30,7 @@ jobs:
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/bodyparts4-classification.js
           node --check experiments/muscle-memory-game/bodyparts4-muscles-ru.js
+          node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
           import { bodyPartsAnatomyKind } from './experiments/muscle-memory-game/bodyparts4-classification.js';
@@ -63,6 +64,8 @@ jobs:
           }
           console.log('Russian muscle names:', muscles.length + '/' + muscles.length);
           NODE
+
+          node experiments/muscle-memory-game/check-z-anatomy-ru.mjs
 
       - name: Install browser
         run: |
