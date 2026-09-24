@@ -374,3 +374,46 @@ test('empty ration prioritizes adding the first product and restores analytics a
   await expect(page.locator('#workspaceOpenRation')).toBeVisible();
   if (await rationAnalytics.count()) await expect(rationAnalytics).toBeVisible();
 });
+
+
+test('empty analysis overview stays concise and restores the full dashboard after the first product', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('analysis/overview'));
+  await expect(page.locator('html')).toHaveAttribute('data-ivory-ration', 'empty');
+  await expect(page.locator('#workspaceOverviewPanel')).toBeVisible();
+  await expect(page.locator('#workspaceOverviewConclusion')).toContainText('Добавьте продукты');
+
+  const commandCenter = page.locator('#analysisCommandCenterHF3');
+  if (await commandCenter.count()) await expect(commandCenter).toBeHidden();
+  await expect(page.locator('#dietAnalysisProfilePanel')).toBeHidden();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__metrics')).toBeHidden();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__issues')).toBeHidden();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__quality')).toBeHidden();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__actions')).toBeHidden();
+
+  const rationAction = page.locator('#workspaceOverviewPanel .workspace-overview__head [data-workspace-route="ration"]');
+  await expect(rationAction).toBeVisible();
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  const search = page.locator('#globalSearchInput');
+  await search.fill('банан');
+  await page.waitForFunction(() => {
+    const el = document.getElementById('globalResults');
+    return el && el.classList.contains('has-query') && el.getBoundingClientRect().height > 0;
+  }, null, { timeout: 10000 });
+  const add = page.locator('#globalResults button[data-role="add-search"]:not([disabled]), #globalResults button[data-role="add"]:not([disabled])').first();
+  await expect(add).toBeVisible();
+  await add.click();
+  await expect(page.locator('html')).toHaveAttribute('data-ivory-ration', 'filled', { timeout: 10000 });
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('analysis/overview'));
+  if (await commandCenter.count()) await expect(commandCenter).toBeVisible();
+  await expect(page.locator('#dietAnalysisProfilePanel')).toBeVisible();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__metrics')).toBeVisible();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__issues')).toBeVisible();
+  await expect(page.locator('#workspaceOverviewPanel .workspace-overview__actions')).toBeVisible();
+});
