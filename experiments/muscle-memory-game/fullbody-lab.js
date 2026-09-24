@@ -144,8 +144,10 @@ function materialFor(kind) {
     roughness: kind === "bone" ? 0.76 : 0.58,
     metalness: 0,
     side: THREE.DoubleSide,
-    transparent: kind === "bone",
-    opacity: kind === "bone" ? 0.92 : 1,
+    transparent: false,
+    opacity: 1,
+    depthTest: true,
+    depthWrite: true,
   });
 }
 
