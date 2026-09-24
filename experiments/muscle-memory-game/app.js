@@ -2,22 +2,11 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
 const SKELETON_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb";
-
-const BODYPARTS3_GLB =
-  "https://github.com/vesninsergeybk-afk/nutrition-engine/releases/download/muscle-memory-assets-v1/bodyparts3d-3.0-95-right-shoulder.glb";
-
-const BODYPARTS4_ROOT =
-  "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
-const BODYPARTS4_ATLAS_URL = BODYPARTS4_ROOT + "/models/atlas.json";
-const SHOULDER_MUSCLE_RE =
-  /deltoid|supraspinatus|infraspinatus|subscapularis|teres minor|teres major|pectoralis major|latissimus dorsi|biceps brachii|triceps brachii|trapezius|levator scapulae|rhomboid|serratus anterior|coracobrachialis/i;
-const SHOULDER_BONE_RE = /scapula|clavicle|humerus/i;
 
 // Первый игровой набор намеренно ограничен поверхностными структурами.
 // Глубокие мышцы появятся после отдельного режима снятия слоёв.
@@ -49,7 +38,6 @@ const targetStatusEl = document.querySelector("#target-status");
 const boneMode = document.querySelector("#bone-mode");
 const boneOpacity = document.querySelector("#bone-opacity");
 const modelSource = document.querySelector("#model-source");
-const modelNote = document.querySelector("#model-note");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
 const focusSelectedButton = document.querySelector("#focus-selected");
@@ -130,8 +118,6 @@ const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
-let currentModelId = "z-anatomy";
-let initialQueryApplied = false;
 
 function hashString(value) {
   let hash = 2166136261;
@@ -156,8 +142,8 @@ function targetForName(name) {
 
 function displayStructureName(sid) {
   const sourceName = structureNames[sid] || "Неизвестная структура";
-  const term = structureTerm(sourceName);
-  return term.latin ? `${term.nameRu} · ${term.latin}` : term.nameRu;
+  const target = targetForName(sourceName);
+  return target ? `${target.nameRu} · ${sourceName}` : sourceName;
 }
 
 const navPoint = new THREE.Vector3();
@@ -209,11 +195,6 @@ function setViewPreset(value) {
 function setShoulderView() {
   const body = worldBodyBox();
   if (body.isEmpty()) return;
-
-  if (currentModelId !== "z-anatomy") {
-    setFullBodyView();
-    return;
-  }
 
   const size = body.getSize(new THREE.Vector3());
   const region = new THREE.Box3(
@@ -602,7 +583,7 @@ function setMode(mode) {
     questionEl.textContent = "Выберите мышцу";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Коснитесь структуры на модели или найдите её по русскому, латинскому или исходному названию. Ответы здесь не оцениваются.";
+      "Коснитесь структуры на модели или найдите её по исходному названию. Ответы здесь не оцениваются.";
     searchInput.focus({ preventScroll: true });
   }
 
@@ -618,7 +599,9 @@ function renderSearchResults(query) {
   const matches = [];
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
     const source = structureNames[sid];
-    if (structureSearchText(source).includes(q)) matches.push(sid);
+    const target = targetForName(source);
+    const haystack = `${source} ${target?.nameRu || ""} ${target?.latin || ""}`.toLowerCase();
+    if (haystack.includes(q)) matches.push(sid);
   }
 
   if (!matches.length) {
@@ -645,7 +628,7 @@ function renderSearchResults(query) {
       selectExploreStructure(sid);
       focusSelectedStructures();
       searchResults.replaceChildren();
-      searchInput.value = structureTerm(structureNames[sid]).nameRu;
+      searchInput.value = structureNames[sid];
     });
     searchResults.appendChild(button);
   }
@@ -866,16 +849,10 @@ function notifyEmbedHeight() {
 }
 
 function applyInitialQueryState() {
-  if (initialQueryApplied) return;
-  initialQueryApplied = true;
-
   const params = new URLSearchParams(window.location.search);
 
   if (params.get("mode") === "explore") setMode("explore");
   if (params.get("region") === "shoulder") setShoulderView();
-  if (params.get("debug") === "1") {
-    document.querySelector(".debug")?.removeAttribute("hidden");
-  }
 
   if (params.get("embed") === "1") {
     document.body.classList.add("embed-mode");
@@ -890,379 +867,137 @@ function applyInitialQueryState() {
   }
 }
 
-function disposeMaterial(material) {
-  if (!material) return;
-  if (Array.isArray(material)) {
-    for (const item of material) item?.dispose?.();
-  } else {
-    material.dispose?.();
-  }
-}
+async function loadSkeletonLayer(loader) {
+  try {
+    const gltf = await loader.loadAsync(SKELETON_MODEL_URL);
+    gltf.scene.updateMatrixWorld(true);
 
-function clearLoadedModel() {
-  restoreHighlights();
+    const geometries = [];
+    gltf.scene.traverse((child) => {
+      if (!child.isMesh) return;
+      geometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
+    });
 
-  for (const child of [...modelGroup.children]) {
-    modelGroup.remove(child);
-    child.geometry?.dispose?.();
-    disposeMaterial(child.material);
-  }
+    const { merged, temporaries } = mergeSkeletonGeometries(geometries);
+    if (!merged) throw new Error("Не удалось объединить геометрию скелета.");
 
-  anatomyMesh = null;
-  skeletonMesh = null;
-  structureNames = [];
-  structureRanges = [];
-  structureVisibility = [];
-  baseColors = [];
-  highlightedIds = new Set();
-  availableTargets = [];
-  currentTarget = null;
-  selectedExploreSid = null;
-  focusedStructureIds = [];
-  isolated = false;
-  hiddenStack.length = 0;
-  locked = false;
-  lastTargetIndex = -1;
-  sessionDifficulty.clear();
-
-  correct = 0;
-  wrong = 0;
-  correctEl.textContent = "0";
-  wrongEl.textContent = "0";
-
-  boneMode.disabled = true;
-  boneOpacity.disabled = true;
-  focusSelectedButton.disabled = true;
-  isolateButton.disabled = true;
-  hideSelectedButton.disabled = true;
-  undoHideButton.disabled = true;
-  searchResults.replaceChildren();
-}
-
-function createMuscleMaterial() {
-  const material = new THREE.MeshStandardMaterial({
-    vertexColors: true,
-    roughness: 0.62,
-    metalness: 0,
-    side: THREE.DoubleSide,
-  });
-
-  material.onBeforeCompile = (shader) => {
-    shader.vertexShader =
-      "attribute float structureVisible; varying float vStructureVisible;\\n" +
-      shader.vertexShader;
-    shader.vertexShader = shader.vertexShader.replace(
-      "#include <begin_vertex>",
-      "#include <begin_vertex>\\nvStructureVisible = structureVisible;"
-    );
-    shader.fragmentShader =
-      "varying float vStructureVisible;\\n" + shader.fragmentShader;
-    shader.fragmentShader = shader.fragmentShader.replace(
-      "#include <clipping_planes_fragment>",
-      "#include <clipping_planes_fragment>\\nif (vStructureVisible < 0.5) discard;"
-    );
-  };
-  material.customProgramCacheKey = () => "muscle-visibility-v2";
-  return material;
-}
-
-function createSkeletonMaterial() {
-  return new THREE.MeshStandardMaterial({
-    color: 0xe7d8b7,
-    roughness: 0.72,
-    metalness: 0,
-    side: THREE.DoubleSide,
-    polygonOffset: true,
-    polygonOffsetFactor: 1.2,
-    polygonOffsetUnits: 2,
-  });
-}
-
-function appendMuscleGeometry(name, sourceGeometry, matrixWorld, muscleGeometries, vertexCounts) {
-  const sid = structureNames.length;
-  const color = baseColorFor(name);
-  const geometry = cleanMuscleGeometry(
-    sourceGeometry,
-    matrixWorld || new THREE.Matrix4(),
-    sid,
-    color
-  );
-
-  structureNames.push(name);
-  baseColors.push(color);
-  vertexCounts.push(geometry.getAttribute("position").count);
-  muscleGeometries.push(geometry);
-}
-
-function finalizeModel(muscleGeometries, vertexCounts, boneGeometries) {
-  const merged = mergeGeometries(muscleGeometries, false);
-  if (!merged) throw new Error("Не удалось объединить геометрию мышц.");
-
-  let startVertex = 0;
-  structureRanges = vertexCounts.map((count) => {
-    const range = { start: startVertex, count };
-    startVertex += count;
-    return range;
-  });
-  structureVisibility = structureNames.map(() => true);
-
-  for (const geometry of muscleGeometries) geometry.dispose();
-
-  anatomyMesh = new THREE.Mesh(merged, createMuscleMaterial());
-  anatomyMesh.renderOrder = 1;
-  modelGroup.add(anatomyMesh);
-
-  if (boneGeometries.length) {
-    const { merged: mergedBones, temporaries } = mergeSkeletonGeometries(boneGeometries);
-    for (const geometry of boneGeometries) geometry.dispose();
+    for (const geometry of geometries) geometry.dispose();
     for (const geometry of temporaries) geometry.dispose();
 
-    if (mergedBones) {
-      skeletonMesh = new THREE.Mesh(mergedBones, createSkeletonMaterial());
-      skeletonMesh.renderOrder = 0;
-      modelGroup.add(skeletonMesh);
-      boneMode.disabled = false;
-      applyBoneDisplayMode();
-    }
-  }
-
-  fitCamera(modelGroup);
-  discoverTargets();
-
-  if (currentModelId !== "z-anatomy") {
-    focusFullButton.textContent = "Весь регион";
-    setFullBodyView();
-  } else {
-    focusFullButton.textContent = "Всё тело";
-  }
-
-  if (appMode === "explore") setMode("explore");
-
-  loadingEl.classList.add("is-hidden");
-  modelSource.disabled = false;
-  updateDiagnostics();
-  notifyEmbedHeight();
-}
-
-async function loadZAnatomyModel() {
-  const loader = new GLTFLoader();
-  const muscleGltf = await loader.loadAsync(MUSCLE_MODEL_URL);
-
-  const json = muscleGltf.parser.json;
-  const assoc = muscleGltf.parser.associations;
-  const originalName = (obj) => {
-    const a = assoc.get(obj);
-    if (a && a.nodes !== undefined && json.nodes?.[a.nodes]) {
-      return json.nodes[a.nodes].name || obj.name;
-    }
-    return obj.name;
-  };
-
-  muscleGltf.scene.updateMatrixWorld(true);
-
-  const muscleGeometries = [];
-  const vertexCounts = [];
-  muscleGltf.scene.traverse((child) => {
-    if (!child.isMesh) return;
-    const name = originalName(child) || "Структура " + structureNames.length;
-    if (COVER_RE.test(name)) return;
-    appendMuscleGeometry(name, child.geometry, child.matrixWorld, muscleGeometries, vertexCounts);
-  });
-
-  const boneGeometries = [];
-  try {
-    const skeletonGltf = await loader.loadAsync(SKELETON_MODEL_URL);
-    skeletonGltf.scene.updateMatrixWorld(true);
-    skeletonGltf.scene.traverse((child) => {
-      if (!child.isMesh) return;
-      boneGeometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xe7d8b7,
+      roughness: 0.72,
+      metalness: 0,
+      side: THREE.DoubleSide,
     });
+
+    skeletonMesh = new THREE.Mesh(merged, material);
+    modelGroup.add(skeletonMesh);
+
+    boneMode.disabled = false;
+    boneOpacity.disabled = boneDisplayMode !== "xray";
+    applyBoneDisplayMode();
+
+    updateDiagnostics("Костный слой по умолчанию использует нормальную проверку глубины. Режим просвечивания включается отдельно и не должен трактоваться как топографически точный.");
+    notifyEmbedHeight();
   } catch (error) {
-    console.warn("Z-Anatomy skeleton could not be loaded", error);
+    console.error(error);
+    boneMode.disabled = true;
+    boneOpacity.disabled = true;
+    updateDiagnostics(`Ошибка загрузки костных ориентиров: ${String(error?.message || error)}`);
   }
-
-  finalizeModel(muscleGeometries, vertexCounts, boneGeometries);
 }
 
-function bodyParts3StructureName(rawName) {
-  return String(rawName || "")
-    .replace(/^FMA\d+__/, "")
-    .replaceAll("_", " ")
-    .trim();
-}
-
-async function loadBodyParts3Model() {
-  const loader = new GLTFLoader();
-  loadingEl.textContent = "BodyParts3D 3.0: загружаю модель плечевого пояса…";
-  const gltf = await loader.loadAsync(BODYPARTS3_GLB);
-  gltf.scene.updateMatrixWorld(true);
-
-  const muscleGeometries = [];
-  const boneGeometries = [];
-  const vertexCounts = [];
-
-  gltf.scene.traverse((child) => {
-    if (!child.isMesh) return;
-
-    const name = bodyParts3StructureName(child.name || child.parent?.name);
-    if (!name) return;
-
-    if (SHOULDER_BONE_RE.test(name)) {
-      boneGeometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
-    } else {
-      appendMuscleGeometry(
-        name,
-        child.geometry,
-        child.matrixWorld,
-        muscleGeometries,
-        vertexCounts
-      );
-    }
-  });
-
-  if (!muscleGeometries.length) {
-    throw new Error("В BodyParts3D 3.0 не найдены мышечные структуры.");
-  }
-
-  finalizeModel(muscleGeometries, vertexCounts, boneGeometries);
-}
-
-function bodyParts4SourceUrl(path) {
-  if (!path) return null;
-  if (/^https?:/i.test(path)) return path;
-  return BODYPARTS4_ROOT + (path.startsWith("/") ? path : "/" + path);
-}
-
-async function fetchBodyParts4Buffer(chunk) {
-  const canInflate = typeof DecompressionStream !== "undefined";
-  const path = canInflate && chunk.gzip ? chunk.gzip : chunk.url;
-  const response = await fetch(bodyParts4SourceUrl(path));
-  if (!response.ok) throw new Error("Не удалось загрузить геометрию BodyParts3D 4.0.");
-
-  let payload = await response.arrayBuffer();
-  if (canInflate && chunk.gzip) {
-    const sig = new Uint8Array(payload, 0, Math.min(2, payload.byteLength));
-    if (sig[0] === 0x1f && sig[1] === 0x8b) {
-      payload = await new Response(
-        new Blob([payload]).stream().pipeThrough(new DecompressionStream("gzip"))
-      ).arrayBuffer();
-    }
-  }
-
-  if (payload.byteLength !== chunk.bytes) {
-    throw new Error("Получен неполный блок геометрии BodyParts3D 4.0.");
-  }
-  return payload;
-}
-
-function bodyParts4Geometry(part, buffer) {
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute(
-    "position",
-    new THREE.BufferAttribute(
-      new Float32Array(buffer, part.positions, part.vertexCount * 3),
-      3
-    )
-  );
-  geometry.setAttribute(
-    "normal",
-    new THREE.BufferAttribute(
-      new Int16Array(buffer, part.normals, part.vertexCount * 3),
-      3,
-      true
-    )
-  );
-  geometry.setIndex(
-    new THREE.BufferAttribute(
-      new Uint32Array(buffer, part.indices, part.indexCount),
-      1
-    )
-  );
-  return geometry;
-}
-
-async function loadBodyParts4Model() {
-  const response = await fetch(BODYPARTS4_ATLAS_URL);
-  if (!response.ok) throw new Error("Не удалось получить каталог BodyParts3D 4.0.");
-  const atlas = await response.json();
-
-  const parts = atlas.parts.filter((part) => {
-    const isMuscle = part.system === "muscular" && SHOULDER_MUSCLE_RE.test(part.name);
-    const isBone = part.system === "skeletal" && SHOULDER_BONE_RE.test(part.name);
-    return (isMuscle || isBone) && /\\bright\\b/i.test(part.name);
-  });
-
-  const chunkIds = [...new Set(parts.map((part) => part.chunk))].sort((a, b) => a - b);
-  const muscleGeometries = [];
-  const boneGeometries = [];
-  const vertexCounts = [];
-
-  for (let i = 0; i < chunkIds.length; i += 1) {
-    loadingEl.textContent =
-      "BodyParts3D 4.0: загружаю блок " + (i + 1) + " из " + chunkIds.length + "…";
-
-    const chunkId = chunkIds[i];
-    const buffer = await fetchBodyParts4Buffer(atlas.chunks[chunkId]);
-    const chunkParts = parts.filter((part) => part.chunk === chunkId);
-
-    for (const part of chunkParts) {
-      const geometry = bodyParts4Geometry(part, buffer);
-      if (part.system === "skeletal") {
-        boneGeometries.push(cleanSkeletonGeometry(geometry, new THREE.Matrix4()));
-      } else {
-        appendMuscleGeometry(
-          part.name,
-          geometry,
-          new THREE.Matrix4(),
-          muscleGeometries,
-          vertexCounts
-        );
-      }
-      geometry.dispose();
-    }
-
-    await new Promise(requestAnimationFrame);
-  }
-
-  finalizeModel(muscleGeometries, vertexCounts, boneGeometries);
-}
-
-const MODEL_NOTES = {
-  "z-anatomy": "Целостная модель тела. Удобна для общей навигации и тренировки распознавания мышц.",
-  bodyparts3: "Высокополигональная модель правого плечевого пояса. Мышцы и кости взяты из одной координатной системы BodyParts3D 3.0.",
-  bodyparts4: "Контрольная web-модель правого плечевого пояса BodyParts3D 4.0. Она легче, но сильнее упрощена.",
-};
-
-async function loadSelectedModel(modelId) {
-  modelSource.disabled = true;
-  loadingEl.classList.remove("is-hidden");
-  loadingEl.textContent = "Загружаю 3D-модель…";
-  questionLabelEl.textContent = "Модель";
-  questionEl.textContent = "Загрузка";
-  feedbackEl.className = "feedback";
-  feedbackEl.textContent = "После загрузки можно продолжить тренировку или исследование.";
-
-  clearLoadedModel();
-  currentModelId = modelId;
-  modelNote.textContent = MODEL_NOTES[modelId] || "";
-
+async function loadMuscleModel() {
   try {
-    if (modelId === "bodyparts3") {
-      await loadBodyParts3Model();
-    } else if (modelId === "bodyparts4") {
-      await loadBodyParts4Model();
-    } else {
-      await loadZAnatomyModel();
-    }
+    const loader = new GLTFLoader();
+    const gltf = await loader.loadAsync(MUSCLE_MODEL_URL);
+
+    const json = gltf.parser.json;
+    const assoc = gltf.parser.associations;
+    const originalName = (obj) => {
+      const a = assoc.get(obj);
+      if (a && a.nodes !== undefined && json.nodes?.[a.nodes]) {
+        return json.nodes[a.nodes].name || obj.name;
+      }
+      return obj.name;
+    };
+
+    gltf.scene.updateMatrixWorld(true);
+
+    const geometries = [];
+    const vertexCounts = [];
+
+    gltf.scene.traverse((child) => {
+      if (!child.isMesh) return;
+
+      const name = originalName(child) || `Структура ${structureNames.length}`;
+      if (COVER_RE.test(name)) return;
+
+      const sid = structureNames.length;
+      const color = baseColorFor(name);
+      const geometry = cleanMuscleGeometry(child.geometry, child.matrixWorld, sid, color);
+
+      structureNames.push(name);
+      baseColors.push(color);
+      vertexCounts.push(geometry.getAttribute("position").count);
+      geometries.push(geometry);
+    });
+
+    const merged = mergeGeometries(geometries, false);
+    if (!merged) throw new Error("Не удалось объединить геометрию мышц.");
+
+    let start = 0;
+    structureRanges = vertexCounts.map((count) => {
+      const range = { start, count };
+      start += count;
+      return range;
+    });
+    structureVisibility = structureNames.map(() => true);
+
+    for (const geometry of geometries) geometry.dispose();
+
+    const material = new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      roughness: 0.62,
+      metalness: 0,
+    });
+
+    material.onBeforeCompile = (shader) => {
+      shader.vertexShader =
+        "attribute float structureVisible; varying float vStructureVisible;\n" +
+        shader.vertexShader;
+      shader.vertexShader = shader.vertexShader.replace(
+        "#include <begin_vertex>",
+        "#include <begin_vertex>\nvStructureVisible = structureVisible;"
+      );
+      shader.fragmentShader =
+        "varying float vStructureVisible;\n" + shader.fragmentShader;
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <clipping_planes_fragment>",
+        "#include <clipping_planes_fragment>\nif (vStructureVisible < 0.5) discard;"
+      );
+    };
+    material.customProgramCacheKey = () => "muscle-visibility-v1";
+
+    anatomyMesh = new THREE.Mesh(merged, material);
+    anatomyMesh.renderOrder = 1;
+    modelGroup.add(anatomyMesh);
+
+    fitCamera(modelGroup);
+    discoverTargets();
+    loadingEl.classList.add("is-hidden");
+
+    boneMode.disabled = true;
+    void loadSkeletonLayer(loader);
     applyInitialQueryState();
   } catch (error) {
     console.error(error);
-    loadingEl.textContent = "Не удалось загрузить выбранную 3D-модель.";
+    loadingEl.textContent = "Не удалось загрузить 3D-модель.";
     questionEl.textContent = "Ошибка загрузки";
     feedbackEl.textContent =
-      "Эта модель сейчас недоступна. Можно выбрать другой источник в правой панели.";
+      "Технический прототип не прошёл загрузку модели. Причина указана в диагностике.";
     diagnosticsEl.textContent = String(error?.message || error);
-    modelSource.disabled = false;
   }
 }
 
@@ -1278,7 +1013,9 @@ boneOpacity.addEventListener("input", () => {
 });
 
 modelSource.addEventListener("change", () => {
-  void loadSelectedModel(modelSource.value);
+  if (modelSource.value === "bodyparts4") {
+    window.location.href = "./quality-lab.html";
+  }
 });
 
 focusShoulderButton.addEventListener("click", setShoulderView);
@@ -1342,4 +1079,4 @@ function animate() {
 }
 
 animate();
-void loadSelectedModel(modelSource.value);
+loadMuscleModel();
