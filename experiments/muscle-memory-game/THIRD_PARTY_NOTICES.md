@@ -80,3 +80,12 @@ Relevant patterns include tap-versus-drag handling, structure isolation, camera 
 - **ts-fsrs** — open-spaced-repetition/ts-fsrs — MIT
 
 These are documented as evaluated candidates. They are not automatically dependencies of the current MVP unless explicitly imported by the application code.
+
+
+## Pinned prototype anatomy revision
+
+The current Z-Anatomy-derived web prototype is pinned to the source repository commit:
+
+`37e85dfbbb398e11ba33c8f0e411f06f9bba592f`
+
+This avoids silent geometry changes when the upstream `main` branch moves. Pinning improves reproducibility but does **not** constitute anatomical validation.
