@@ -71,7 +71,11 @@ jobs:
             assert.equal(await page.locator('#viewer').getAttribute('data-model-source'), 'z-anatomy');
 
             await page.fill('#structure-search', 'deltoid');
-            await page.waitForSelector('.search-result', { timeout: 15000 });
+            await page.waitForFunction(
+              () => document.querySelectorAll('.search-result').length > 0,
+              null,
+              { timeout: 15000 }
+            );
             assert.ok((await page.locator('.search-result').count()) > 0);
 
             const pathnameBefore = new URL(page.url()).pathname;
@@ -94,8 +98,13 @@ jobs:
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'muscle-mask');
 
             await page.fill('#structure-search', 'дельтовидная');
-            await page.waitForSelector('.search-result', { timeout: 15000 });
+            await page.waitForFunction(
+              () => document.querySelectorAll('.search-result').length > 0,
+              null,
+              { timeout: 15000 }
+            );
             assert.ok((await page.locator('.search-result').count()) > 0);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-bone-occlusion-inflation')) > 0);
 
             await page.selectOption('#view-preset', 'front');
             await page.waitForTimeout(600);
