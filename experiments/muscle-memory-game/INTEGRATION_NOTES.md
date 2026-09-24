@@ -16,7 +16,7 @@ This file records useful open-source projects evaluated for the anatomy learning
   - compact mobile controls;
   - search as a route into direct structure inspection.
 
-A future data migration to its BodyParts3D 4.0 pipeline is worth prototyping separately because it offers 2,234 source meshes, 3,432 named concepts, current CC BY 4.0 data licensing, browser-ready chunks, and richer system metadata.
+Its BodyParts3D 4.0 pipeline is useful as a **control/reference pipeline** because it offers 2,234 named mesh parts, rich concept/system metadata, browser-ready chunks, and current CC BY 4.0 licensing for the underlying official database. It is not treated as a high-resolution geometry source: the official 4.0 downloadable mesh is already published with polygon reduction rate 99%, and Human Atlas applies an additional meshoptimizer simplification step.
 
 ## Already available in current Three.js, no extra dependency required
 
