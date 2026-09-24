@@ -137,6 +137,22 @@
       "expires_at": "2026-10-24T17:41:37Z",
       "status": "downloaded_and_verified_glb",
       "note": "Valid GLB 2.0; 1129 nodes, 918 meshes, one scene. Retained for provenance/quality benchmark, not primary shoulder anatomy."
+    },
+    {
+      "id": "bodyparts3d_3_0_95_right_shoulder_hq_glb",
+      "github_actions_run_id": 36036525498,
+      "artifact_id": 10825346816,
+      "artifact_name": "bodyparts3d-3.0-95-right-shoulder-hq-glb",
+      "glb_bytes": 62034420,
+      "artifact_zip_bytes": 62046064,
+      "structure_count": 28,
+      "vertex_count": 3875148,
+      "triangle_count": 1291716,
+      "watertight_structure_count": 0,
+      "sha256": "7bb5c21de2d5ea54d2ff306210519415c1a612d0a9133890fef86fec7fbc5da6",
+      "expires_at": "2026-10-24T17:45:54Z",
+      "status": "web_ready_benchmark_built",
+      "note": "Right-side high-polygon shoulder benchmark exported to GLB with separate named structures. None of the 28 STL source meshes reports as watertight in trimesh; acceptable for display testing but must be considered in anatomy/topology review."
     }
   ]
 }
