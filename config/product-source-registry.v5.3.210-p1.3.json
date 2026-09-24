@@ -32,6 +32,26 @@
       "priority": 1
     },
     {
+      "id": "HEALTH_CANADA_CNF",
+      "name": "Canadian Nutrient File",
+      "authority": "Health Canada",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://food-nutrition.canada.ca/cnf-fce/",
+      "data_url": "https://open.canada.ca/data/en/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109",
+      "version_policy": "Record CNF edition and Food_Code; registry reference is Canadian Nutrient File 2026.",
+      "priority": 2
+    },
+    {
+      "id": "GERMANY_BLS",
+      "name": "Bundeslebensmittelschluessel (BLS)",
+      "authority": "Max Rubner-Institut",
+      "kind": "PRIMARY_DATASET",
+      "official_url": "https://blsdb.de/",
+      "data_url": "https://blsdb.de/download",
+      "version_policy": "Record BLS edition and product code; registry reference is BLS 4.0 (2025). Attribution is required by the CC BY 4.0 licence.",
+      "priority": 2
+    },
+    {
       "id": "ANSES_CIQUAL",
       "name": "ANSES-CIQUAL food composition table",
       "authority": "ANSES",
