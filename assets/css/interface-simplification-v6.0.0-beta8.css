@@ -435,6 +435,30 @@ html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
 .ivory-brand-copy span{
   font-size:12px!important;
 }
+/* The labels grew to 12px but their containers did not, which the design review read as
+   cramped pills and a flattened hierarchy. Values step up, labels step back, and the
+   containers holding the enlarged text get matching breathing room. */
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div>strong{
+  font-size:13px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid{
+  gap:6px 26px!important;
+}
+#mainContent #consultationNeedsSummary .consultation-summary-grid>div{
+  gap:8px!important;
+}
+.diet-acc-chip{
+  padding:3px 9px!important;
+}
+.workspace-analysis-row__values>div{
+  padding:10px 11px!important;
+}
+span.pill{
+  padding:2px 8px!important;
+}
+.workspace-ration-inline__metrics>div{
+  padding:9px 11px!important;
+}
 .search-result-main .meta .pill,
 .search-result-main .meta span.pill{
   font-size:12px!important;
