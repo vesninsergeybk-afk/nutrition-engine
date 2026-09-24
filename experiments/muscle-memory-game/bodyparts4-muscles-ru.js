@@ -209,7 +209,109 @@ const BASE_RU = new Map([
   ["vastus medialis", "Медиальная широкая мышца бедра"],
   ["vertical intermediate part of longus colli", "Вертикальная промежуточная часть длинной мышцы шеи"],
   ["vocalis", "Голосовая мышца"],
+  ["anterior belly of digastric", "Переднее брюшко двубрюшной мышцы"],
+  ["ary-epiglottic part of oblique arytenoid", "Черпалонадгортанная часть косой черпаловидной мышцы"],
+  ["bucinator", "Щёчная мышца"],
+  ["corrugator supercilii", "Мышца, сморщивающая бровь"],
+  ["deep head of flexor pollicis brevis", "Глубокая головка короткого сгибателя большого пальца кисти"],
+  ["deep head of pronator teres", "Глубокая головка круглого пронатора"],
+  ["deep part of masseter", "Глубокая часть жевательной мышцы"],
+  ["depressor anguli oris", "Мышца, опускающая угол рта"],
+  ["depressor labii inferioris", "Мышца, опускающая нижнюю губу"],
+  ["depressor septi nasi", "Мышца, опускающая перегородку носа"],
+  ["dorsal interossei of foot", "Тыльные межкостные мышцы стопы"],
+  ["dorsal interossei of hand", "Тыльные межкостные мышцы кисти"],
+  ["dorsal parts of lateral intertransversarii lumborum", "Задние части латеральных межпоперечных мышц поясницы"],
+  ["extensor digitorum brevis", "Короткий разгибатель пальцев стопы"],
+  ["external abdominal oblique", "Наружная косая мышца живота"],
+  ["external part of thyro-arytenoid", "Наружная часть щиточерпаловидной мышцы"],
+  ["frontalis", "Лобное брюшко надчерепной мышцы"],
+  ["humeral head of extensor carpi ulnaris", "Плечевая головка локтевого разгибателя запястья"],
+  ["humero-ulnar head of flexor digitorum superficialis", "Плечелоктевая головка поверхностного сгибателя пальцев"],
+  ["inferior head of lateral pterygoid", "Нижняя головка латеральной крыловидной мышцы"],
+  ["inferior pharyngeal constrictor", "Нижний констриктор глотки"],
+  ["internal abdominal oblique", "Внутренняя косая мышца живота"],
+  ["interspinales thoracis", "Межостистые мышцы груди"],
+  ["levator anguli oris", "Мышца, поднимающая угол рта"],
+  ["levator labii superioris", "Мышца, поднимающая верхнюю губу"],
+  ["levator nasolabialis", "Мышца, поднимающая верхнюю губу и крыло носа"],
+  ["longus colli", "Длинная мышца шеи"],
+  ["lumbrical muscles of foot", "Червеобразные мышцы стопы"],
+  ["lumbrical muscles of hand", "Червеобразные мышцы кисти"],
+  ["medial pterygoid", "Медиальная крыловидная мышца"],
+  ["mentalis", "Подбородочная мышца"],
+  ["middle pharyngeal constrictor", "Средний констриктор глотки"],
+  ["multifidus colli", "Многораздельные мышцы шеи"],
+  ["multifidus lumborum", "Многораздельные мышцы поясницы"],
+  ["multifidus thoracis", "Многораздельные мышцы груди"],
+  ["nasalis", "Носовая мышца"],
+  ["occipitalis", "Затылочное брюшко надчерепной мышцы"],
+  ["orbicularis oris", "Круговая мышца рта"],
+  ["orbital part of orbicularis oculi", "Глазничная часть круговой мышцы глаза"],
+  ["palatopharyngeus", "Нёбно-глоточная мышца"],
+  ["palmar interossei", "Ладонные межкостные мышцы кисти"],
+  ["palpebral part of orbicularis oculi", "Вековая часть круговой мышцы глаза"],
+  ["plantar interossei", "Подошвенные межкостные мышцы стопы"],
+  ["posterior belly of digastric", "Заднее брюшко двубрюшной мышцы"],
+  ["procerus", "Мышца гордецов"],
+  ["pubo-analis", "Лобково-анальная мышца"],
+  ["pyramidalis", "Пирамидальная мышца"],
+  ["quadratus lumborum", "Квадратная мышца поясницы"],
+  ["quadratus plantae", "Квадратная мышца подошвы"],
+  ["radial head of flexor digitorum superficialis", "Лучевая головка поверхностного сгибателя пальцев"],
+  ["rectus abdominis", "Прямая мышца живота"],
+  ["risorius", "Мышца смеха"],
+  ["rotatores", "Мышцы-вращатели"],
+  ["spinalis capitis", "Остистая мышца головы"],
+  ["spinalis colli", "Остистая мышца шеи"],
+  ["stylopharyngeus", "Шилоглоточная мышца"],
+  ["superficial head of pronator teres", "Поверхностная головка круглого пронатора"],
+  ["superficial part of masseter", "Поверхностная часть жевательной мышцы"],
+  ["superior head of lateral pterygoid", "Верхняя головка латеральной крыловидной мышцы"],
+  ["superior pharyngeal constrictor", "Верхний констриктор глотки"],
+  ["temporalis", "Височная мышца"],
+  ["temporoparietalis", "Височно-теменная мышца"],
+  ["thyro-epiglottic part of thyro-arytenoid", "Щитонадгортанная часть щиточерпаловидной мышцы"],
+  ["transversus abdominis", "Поперечная мышца живота"],
+  ["ulnar head of extensor carpi ulnaris", "Локтевая головка локтевого разгибателя запястья"],
+  ["ventral parts of lateral intertransversarii lumborum", "Передние части латеральных межпоперечных мышц поясницы"],
+  ["zygomaticus major", "Большая скуловая мышца"],
+  ["zygomaticus minor", "Малая скуловая мышца"],
 ]);
+
+const Z_KEY_ALIASES = new Map([
+  ["inferior gemellus", "gemellus inferior"],
+  ["superior gemellus", "gemellus superior"],
+  ["iliocostalis colli", "iliocostalis cervicis"],
+  ["longissimus colli", "longissimus cervicis"],
+  ["semispinalis colli", "semispinalis cervicis"],
+  ["splenius colli", "splenius cervicis"],
+  ["obliquus inferior capitis", "obliquus capitis inferior"],
+  ["obliquus superior capitis", "obliquus capitis superior"],
+  ["rectus anterior capitis", "rectus capitis anterior"],
+  ["rectus lateralis capitis", "rectus capitis lateralis"],
+  ["rectus posterior major capitis", "rectus capitis posterior major"],
+  ["rectus posterior minor capitis", "rectus capitis posterior minor"],
+  ["levatores breves costarum", "set of levatores costarum breves"],
+  ["levatores longi costarum", "set of levatores costarum longi"],
+  ["interspinales colli", "set of interspinales cervicis"],
+  ["interspinales lumborum", "set of interspinales lumborum"],
+  ["opponens digiti minimi of hand", "opponens digiti minimi of hand"],
+  ["flexor digiti minimi of foot", "flexor digiti minimi brevis of foot"],
+  ["flexor digiti minimi of hand", "flexor digiti minimi brevis of hand"],
+]);
+
+function zNormalizedMuscleKey(sourceName) {
+  const cleaned = String(sourceName || "")
+    .trim()
+    .replace(/^\((.*)\)$/u, "$1")
+    .replace(/\.(l|r)$/i, "")
+    .replace(/\bmuscles?\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLocaleLowerCase("en-US");
+  return Z_KEY_ALIASES.get(cleaned) || cleaned;
+}
 
 function normalizedMuscleKey(sourceName) {
   return String(sourceName || "")
@@ -228,12 +330,15 @@ export function bodyPartsMuscleNameRu(sourceName) {
   const exact = EXACT_RU.get(lower);
   if (exact) return exact;
 
-  const key = normalizedMuscleKey(source);
-  const base = BASE_RU.get(key);
+  const bodyPartsKey = normalizedMuscleKey(source);
+  const zKey = zNormalizedMuscleKey(source);
+  const base = BASE_RU.get(bodyPartsKey) || BASE_RU.get(zKey);
   if (!base) return null;
 
-  const hasRight = /\bright\b/i.test(source);
-  const hasLeft = /\bleft\b/i.test(source);
+  const suffixRight = /\.r$/i.test(source);
+  const suffixLeft = /\.l$/i.test(source);
+  const hasRight = /\bright\b/i.test(source) || suffixRight;
+  const hasLeft = /\bleft\b/i.test(source) || suffixLeft;
   const side = hasRight && !hasLeft ? " (справа)" : hasLeft && !hasRight ? " (слева)" : "";
   return base + side;
 }
