@@ -38,6 +38,43 @@ jobs:
 
           ls -lh .cache/external-food-sources
 
+      - name: Probe BLS workbook schema
+        if: ${{ hashFiles('.cache/external-food-sources/bls_4_0_2025.zip') != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet openpyxl
+          python3 - <<'PY'
+          import io, json, zipfile
+          from pathlib import Path
+          import openpyxl
+
+          archive = Path(".cache/external-food-sources/bls_4_0_2025.zip")
+          probe = {}
+          with zipfile.ZipFile(archive) as z:
+              for member in z.namelist():
+                  if not member.lower().endswith(".xlsx"):
+                      continue
+                  wb = openpyxl.load_workbook(io.BytesIO(z.read(member)), read_only=True, data_only=True)
+                  sheets = {}
+                  for ws in wb.worksheets:
+                      rows = []
+                      for i, row in enumerate(ws.iter_rows(values_only=True)):
+                          rows.append([None if v is None else str(v) for v in row[:25]])
+                          if i >= 5:
+                              break
+                      sheets[ws.title] = {
+                          "max_row": ws.max_row,
+                          "max_column": ws.max_column,
+                          "first_rows_first_25_columns": rows,
+                      }
+                  probe[member] = sheets
+
+          out = Path("staging/external-food-sources/bls_schema_probe.json")
+          out.write_text(json.dumps(probe, ensure_ascii=False, indent=2), encoding="utf-8")
+          print(json.dumps(probe, ensure_ascii=False, indent=2)[:20000])
+          PY
+
       - name: Normalize into non-production staging
         shell: bash
         run: |
