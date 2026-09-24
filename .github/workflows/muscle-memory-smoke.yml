@@ -112,6 +112,18 @@ jobs:
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'off');
 
+            assert.equal(await page.locator('#connective-mode').isDisabled(), false);
+            assert.equal(await page.locator('#connective-mode').inputValue(), 'anatomical');
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
+            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
+
+            await page.selectOption('#connective-mode', 'ghost');
+            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'ghost');
+            await page.selectOption('#connective-mode', 'off');
+            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'off');
+            await page.selectOption('#connective-mode', 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
+
             await page.selectOption('#bone-mode', 'xray');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'true');
@@ -131,6 +143,12 @@ jobs:
             await page.selectOption('#view-preset', 'front');
             await page.waitForTimeout(600);
             await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-front.png', fullPage: true });
+
+            await page.selectOption('#connective-mode', 'off');
+            await page.waitForTimeout(400);
+            await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-front-no-connective.png', fullPage: true });
+            await page.selectOption('#connective-mode', 'anatomical');
+            await page.waitForTimeout(400);
 
             await page.selectOption('#view-preset', 'back');
             await page.waitForTimeout(600);
