@@ -41,7 +41,7 @@
       "version": "4.3",
       "mesh_count_claimed": 3210,
       "status": "pending_provenance_and_license_review",
-      "note": "Undocumented Anatomography endpoints; do not publish as production dependency until license/provenance is resolved."
+      "note": "Undocumented Anatomography endpoints; do not publish as production dependency until license/provenance is resolved. Third-party manifest FMA IDs are not assumed to uniquely identify each muscle; repeated IDs occur across distinct shoulder muscles. Major shoulder ligaments/tendon structures are not represented as a complete separate set in the checked manifest."
     },
     "human_atlas_conversion": {
       "role": "browser_conversion_for_quality_lab",
