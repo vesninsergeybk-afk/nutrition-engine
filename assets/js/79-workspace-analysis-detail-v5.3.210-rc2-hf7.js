@@ -235,9 +235,9 @@
   function pagerHtml(kind,paged){if(paged.pages<=1)return '';var attr=kind==='nutrient'?'data-nutrient-page':'data-hei-page';return '<nav class="workspace-analysis-pager" aria-label="Страницы результатов"><button type="button" '+attr+'="prev"'+(paged.page===0?' disabled':'')+'>Предыдущие</button><span>'+paged.start+'–'+paged.end+' из '+paged.total+'</span><button type="button" '+attr+'="next"'+(paged.page>=paged.pages-1?' disabled':'')+'>Следующие</button></nav>';}
   function renderNutrients(vm){
     var summary=vm.nutrientSummary,host=byId('workspaceNutrientList'),guidance=byId('workspaceNutrientGuidance'),quality=byId('workspaceNutrientQuality'),visible=[],groups={},open={},i,row,group,html='';
-    if(byId('workspaceNutrientAttentionCount'))byId('workspaceNutrientAttentionCount').textContent=summary.attention;
-    if(byId('workspaceNutrientOkCount'))byId('workspaceNutrientOkCount').textContent=summary.ok;
-    if(byId('workspaceNutrientIncompleteCount'))byId('workspaceNutrientIncompleteCount').textContent=summary.incomplete;
+    if(byId('workspaceNutrientAttentionCount'))byId('workspaceNutrientAttentionCount').textContent=vm.items?summary.attention:'—';
+    if(byId('workspaceNutrientOkCount'))byId('workspaceNutrientOkCount').textContent=vm.items?summary.ok:'—';
+    if(byId('workspaceNutrientIncompleteCount'))byId('workspaceNutrientIncompleteCount').textContent=vm.items?summary.incomplete:'—';
     if(guidance){if(!vm.items)guidance.innerHTML='<strong>Рацион пока пуст.</strong><span>Добавьте продукты, и здесь появятся значения, ориентиры и вкладчики.</span>';else if(vm.completion<.7)guidance.innerHTML='<strong>Рацион заполнен примерно на '+Math.round(vm.completion*100)+'% от ориентира по энергии.</strong><span>Недостатки отдельных витаминов и минералов пока считаются предварительными и не выводятся в список главных приоритетов.</span>';else guidance.innerHTML='<strong>Расчёт выполнен по текущему рациону.</strong><span>Ориентир потребления не является верхним пределом; достижение значения выше RDA или AI само по себе не отмечается как проблема.</span>';}
     if(!host)return;
     Array.prototype.forEach.call(host.querySelectorAll('details[open][data-contributor-key]'),function(el){open[el.getAttribute('data-contributor-key')]=1;});
@@ -257,7 +257,7 @@
       host.innerHTML=html+pagerHtml('nutrient',paged);
       Array.prototype.forEach.call(host.querySelectorAll('details[data-contributor-key]'),function(el){if(open[el.getAttribute('data-contributor-key')])el.open=true;});
     }
-    if(quality){var q=vm.sourceQuality||{},incomplete=summary.incomplete;quality.innerHTML='<strong>Качество исходных карточек: '+esc(sourceQualityLabel(q))+'</strong><span>'+(incomplete?incomplete+' '+plural(incomplete,'показатель рассчитан','показателя рассчитаны','показателей рассчитаны')+' не по всем продуктам. Это отмечено в строках и не подменяется нулём.':'Для показанных нутриентов существенных пробелов покрытия не обнаружено.')+'</span>';}
+    if(quality){if(!vm.items)quality.innerHTML='<strong>Качество исходных карточек: нет рациона</strong><span>Оценка покрытия появится после добавления продуктов.</span>';else{var q=vm.sourceQuality||{},incomplete=summary.incomplete;quality.innerHTML='<strong>Качество исходных карточек: '+esc(sourceQualityLabel(q))+'</strong><span>'+(incomplete?incomplete+' '+plural(incomplete,'показатель рассчитан','показателя рассчитаны','показателей рассчитаны')+' не по всем продуктам. Это отмечено в строках и не подменяется нулём.':'Для показанных нутриентов существенных пробелов покрытия не обнаружено.')+'</span>';}}
     updatePressed('[data-nutrient-filter]',nutrientFilter,'data-nutrient-filter');updatePressed('[data-nutrient-group]',nutrientGroup,'data-nutrient-group');
   }
 
@@ -286,14 +286,14 @@
     rows.forEach(function(row){html+='<article class="workspace-guardrail is-'+esc(row.code)+'"><div><strong>'+esc(row.title)+'</strong><p>'+esc(row.body)+'</p></div>'+(row.nutrient?'<button type="button" data-analysis-open-nutrient="'+esc(row.nutrient)+'">Открыть нутриент</button>':'')+'</article>';});host.innerHTML=html;
   }
   function renderHei(vm){
-    var model=vm.hei.model||{},summary=vm.hei.summary,host=byId('workspaceHeiComponentList'),visible=[],groups={},open={},html='',i,row,quality=byId('workspaceHeiQuality'),total=num(model.total,NaN),grade=model.grade||'';
+    var model=vm.hei.model||{},summary=vm.hei.summary,host=byId('workspaceHeiComponentList'),visible=[],groups={},open={},html='',i,row,quality=byId('workspaceHeiQuality'),total=vm.items?num(model.total,NaN):NaN,grade=vm.items?(model.grade||''):'';
     if(byId('workspaceHeiTotal'))byId('workspaceHeiTotal').textContent=isFinite(total)?fmt(total,0)+'/100':'—';
     if(byId('workspaceHeiGrade'))byId('workspaceHeiGrade').textContent=grade?('Категория '+grade+' — '+(GRADE_LABELS[grade]||'оценка структуры')):'нет расчёта';
     if(byId('workspaceHeiTotalBar'))byId('workspaceHeiTotalBar').style.width=(isFinite(total)?clamp(total,0,100):0)+'%';
     if(byId('workspaceHeiConclusion'))byId('workspaceHeiConclusion').textContent=!vm.items?'Добавьте продукты, чтобы рассчитать HEI.':(vm.completion<.7?'Рацион заполнен не полностью. Балл уже отражает введённую структуру, но вывод остаётся предварительным.':'Индекс рассчитан по фактической энергии рациона. Причины балла показаны в компонентах ниже.');
-    if(byId('workspaceHeiAttentionCount'))byId('workspaceHeiAttentionCount').textContent=summary.attention;
-    if(byId('workspaceHeiOkCount'))byId('workspaceHeiOkCount').textContent=summary.ok;
-    if(byId('workspaceHeiGuardrailCount'))byId('workspaceHeiGuardrailCount').textContent=summary.guardrails;
+    if(byId('workspaceHeiAttentionCount'))byId('workspaceHeiAttentionCount').textContent=vm.items?summary.attention:'—';
+    if(byId('workspaceHeiOkCount'))byId('workspaceHeiOkCount').textContent=vm.items?summary.ok:'—';
+    if(byId('workspaceHeiGuardrailCount'))byId('workspaceHeiGuardrailCount').textContent=vm.items?summary.guardrails:'—';
     renderGuardrails(vm);
     if(!host)return;
     Array.prototype.forEach.call(host.querySelectorAll('details[open][data-hei-contributor-key]'),function(el){open[el.getAttribute('data-hei-contributor-key')]=1;});
@@ -306,7 +306,7 @@
       ['adequacy','moderation','ratio'].forEach(function(groupKey){var rows=groups[groupKey];if(!rows||!rows.length)return;html+='<section class="workspace-analysis-group"><div class="workspace-analysis-section-head"><div><span>Тип компонента</span><h3>'+esc(HEI_GROUP_LABELS[groupKey])+'</h3></div><small>'+rows.length+' '+plural(rows.length,'компонент','компонента','компонентов')+'</small></div><div class="workspace-analysis-group__rows">';rows.forEach(function(r){html+=heiRowHtml(r);});html+='</div></section>';});host.innerHTML=html+pagerHtml('hei',paged);
       Array.prototype.forEach.call(host.querySelectorAll('details[data-hei-contributor-key]'),function(el){if(open[el.getAttribute('data-hei-contributor-key')])el.open=true;});
     }
-    if(quality){var a=w.__lastDietAssessment||{},limitations=(a.limitations||a.notEvaluable||[]).length;quality.innerHTML='<strong>Достоверность HEI: '+esc(confidenceRu(a.confidence&&a.confidence.hei))+'</strong><span>'+(limitations?limitations+' '+plural(limitations,'ограничение данных не позволяет','ограничения данных не позволяют','ограничений данных не позволяют')+' считать соответствующие показатели нулевыми.':'Существенных ограничений данных для компонентов HEI не отмечено.')+'</span>';}
+    if(quality){if(!vm.items)quality.innerHTML='<strong>Достоверность HEI: нет расчёта</strong><span>Оценка достоверности появится после добавления продуктов.</span>';else{var a=w.__lastDietAssessment||{},limitations=(a.limitations||a.notEvaluable||[]).length;quality.innerHTML='<strong>Достоверность HEI: '+esc(confidenceRu(a.confidence&&a.confidence.hei))+'</strong><span>'+(limitations?limitations+' '+plural(limitations,'ограничение данных не позволяет','ограничения данных не позволяют','ограничений данных не позволяют')+' считать соответствующие показатели нулевыми.':'Существенных ограничений данных для компонентов HEI не отмечено.')+'</span>';}}
     updatePressed('[data-hei-filter]',heiFilter,'data-hei-filter');updatePressed('[data-hei-group]',heiGroup,'data-hei-group');
   }
   function updatePressed(selector,value,attr){Array.prototype.forEach.call(d.querySelectorAll(selector),function(button){var active=button.getAttribute(attr)===value;button.classList.toggle('is-active',active);button.setAttribute('aria-pressed',active?'true':'false');});}

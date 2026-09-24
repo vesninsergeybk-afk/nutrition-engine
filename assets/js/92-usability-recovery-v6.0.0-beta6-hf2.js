@@ -81,9 +81,10 @@
       var api=shell(),state=null;
       try{state=api&&typeof api.getState==='function'?api.getState():null;}catch(_){}
       /* The current Needs Checkpoint uses the long canvas as the primary
-         consultation surface. Calling navigate() from long mode implicitly
-         switches NavigationShell back to workspace, so preserve the active
-         canvas and only scroll to the freshly calculated results. */
+         consultation surface. Do not let this delayed post-calculation scroll
+         undo an explicit transition the user has already made to another
+         workspace route. */
+      if(state&&state.mode==='workspace'&&state.route&&state.route!=='profile')return;
       if(!state||state.mode!=='long')navigate('profile','needs_out');
       scrollToNode(byId('needs_out')||byId('workspaceProfileNext'));
     },90);

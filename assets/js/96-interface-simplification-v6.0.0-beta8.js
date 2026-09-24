@@ -75,6 +75,29 @@
     setText(button,compact?(ready?'Изменить':'Профиль'):(ready?'Изменить профиль':'Рассчитать'));
   }
 
+  function syncEmptyAnalysisSemantics(){
+    if(d.documentElement.getAttribute('data-ivory-ration')!=='empty')return;
+    var emptyCounters=[
+      'workspaceNutrientAttentionCount','workspaceNutrientOkCount','workspaceNutrientIncompleteCount',
+      'workspaceHeiAttentionCount','workspaceHeiOkCount','workspaceHeiGuardrailCount'
+    ];
+    var i,node;
+    for(i=0;i<emptyCounters.length;i++)setText(byId(emptyCounters[i]),'—');
+    setText(byId('workspaceHeiTotal'),'—');
+    setText(byId('workspaceHeiGrade'),'нет расчёта');
+    setText(byId('workspaceHeiConclusion'),'Добавьте продукты, чтобы рассчитать HEI.');
+    node=byId('workspaceHeiTotalBar');
+    if(node&&node.style.width!=='0%')node.style.width='0%';
+    node=byId('workspaceNutrientQuality');
+    if(node&&node.textContent&&!/нет рациона/i.test(node.textContent)){
+      node.innerHTML='<strong>Достоверность данных: нет рациона</strong><span>Оценка появится после добавления продуктов.</span>';
+    }
+    node=byId('workspaceHeiQuality');
+    if(node&&node.textContent&&!/нет расч[её]та/i.test(node.textContent)){
+      node.innerHTML='<strong>Достоверность HEI: нет расчёта</strong><span>Оценка достоверности появится после добавления продуктов.</span>';
+    }
+  }
+
   function simplifyEntryMethods(){
     var panel=byId('workspaceRationEntryMethods');
     var search=byId('globalSearchSection');
@@ -162,6 +185,7 @@
     syncSettingsVisibility();
     simplifyEntryMethods();
     simplifyPersonContext();
+    syncEmptyAnalysisSemantics();
   }
   function schedule(){
     w.clearTimeout(timer);
