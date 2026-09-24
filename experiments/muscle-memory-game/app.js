@@ -828,15 +828,15 @@ async function loadSkeletonLayer(loader) {
     boneToggle.disabled = false;
     boneOpacity.disabled = false;
     boneToggle.textContent = bonesVisible
-      ? "Костные ориентиры: вкл"
-      : "Костные ориентиры: выкл";
+      ? "Костные ориентиры (просвечивание): вкл"
+      : "Костные ориентиры (просвечивание): выкл";
 
-    updateDiagnostics("Скелет используется только как визуальный ориентир и не участвует в проверке клика.");
+    updateDiagnostics("Скелет показан в режиме условного просвечивания поверх мышц; это навигационный слой, а не анатомическая окклюзия. В проверке клика он не участвует.");
   } catch (error) {
     console.error(error);
     boneToggle.disabled = true;
     boneOpacity.disabled = true;
-    boneToggle.textContent = "Костные ориентиры: ошибка";
+    boneToggle.textContent = "Костные ориентиры (просвечивание): ошибка";
     updateDiagnostics(`Ошибка загрузки костных ориентиров: ${String(error?.message || error)}`);
   }
 }
@@ -921,7 +921,7 @@ async function loadMuscleModel() {
     discoverTargets();
     loadingEl.classList.add("is-hidden");
 
-    boneToggle.textContent = "Костные ориентиры: загрузка…";
+    boneToggle.textContent = "Костные ориентиры (просвечивание): загрузка…";
     void loadSkeletonLayer(loader);
   } catch (error) {
     console.error(error);
@@ -938,8 +938,8 @@ boneToggle.addEventListener("click", () => {
   bonesVisible = !bonesVisible;
   skeletonMesh.visible = bonesVisible;
   boneToggle.textContent = bonesVisible
-    ? "Костные ориентиры: вкл"
-    : "Костные ориентиры: выкл";
+    ? "Костные ориентиры (просвечивание): вкл"
+    : "Костные ориентиры (просвечивание): выкл";
 });
 
 boneOpacity.addEventListener("input", () => {
