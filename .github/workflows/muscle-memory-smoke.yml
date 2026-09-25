@@ -39,9 +39,11 @@ jobs:
           node --check experiments/muscle-memory-game/learning-engine.js
           node --check experiments/muscle-memory-game/learning-session.js
           node --check experiments/muscle-memory-game/retention-engine.js
+          node --check experiments/muscle-memory-game/progress-engine.js
           node --check experiments/muscle-memory-game/check-learning-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-session.mjs
           node --check experiments/muscle-memory-game/check-retention-engine.mjs
+          node --check experiments/muscle-memory-game/check-progress-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-cross-source.mjs
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node --check experiments/muscle-memory-game/verify.mjs
@@ -82,6 +84,7 @@ jobs:
           node experiments/muscle-memory-game/check-learning-engine.mjs
           node experiments/muscle-memory-game/check-learning-session.mjs
           node experiments/muscle-memory-game/check-retention-engine.mjs
+          node experiments/muscle-memory-game/check-progress-engine.mjs
           node experiments/muscle-memory-game/check-learning-cross-source.mjs
 
       - name: Install browser
@@ -242,6 +245,20 @@ jobs:
               localStorage.getItem('muscle-memory-learning-v1')
             );
             assert.ok(storedLearning && storedLearning.includes('::name'));
+            await page.click('#exit-learning-session');
+
+            // Pass 3: due work becomes one direct action, not another dashboard.
+            assert.equal(await page.locator('#today-learning-session').isVisible(), true);
+            assert.match(await page.locator('#today-learning-session').innerText(), /Повторить сегодня/i);
+            assert.equal(await page.locator('#learning-progress').isVisible(), true);
+            await page.locator('#learning-progress > summary').click();
+            assert.match(await page.locator('#learning-progress-content').innerText(), /Найти:|Назвать:/i);
+            await page.locator('#learning-progress > summary').click();
+
+            await page.click('#today-learning-session');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'today');
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-session-total')) > 0);
+            assert.match(await page.locator('#question-label').innerText(), /На сегодня/i);
             await page.click('#exit-learning-session');
 
             // PRACTICAL: mixed finite practice, not a duplicate FIND flow.
