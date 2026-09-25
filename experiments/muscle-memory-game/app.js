@@ -4,6 +4,11 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
 import {
+  studyLayerNameRu,
+  studyStructureSearchText,
+  studyStructureTerm,
+} from "./study-layer-terms-ru.js";
+import {
   bodyPartsAnatomyKind,
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
@@ -188,6 +193,10 @@ let skinMesh = null;
 let referenceMeshes = new Map();
 let referenceLayerPromises = new Map();
 let referenceLoadGeneration = 0;
+let studyStructures = [];
+let selectedStudyId = null;
+let highlightedStudyId = null;
+const exploreHiddenActions = [];
 let structureNames = [];
 let structureRanges = [];
 let structureVisibility = [];
@@ -302,6 +311,154 @@ function displayStructureName(sid) {
   // поисковым синонимом и диагностическим идентификатором.
   return normalizeRussianSideLabel(term.nameRu || sourceName, sourceName);
 }
+
+function studyEntry(studyId) {
+  return studyStructures[studyId] || null;
+}
+
+function studyDisplayName(studyId) {
+  const entry = studyEntry(studyId);
+  if (!entry) return "Анатомическая структура";
+  return studyStructureTerm(entry.sourceName, entry.layerKey).nameRu;
+}
+
+function studyMeshes() {
+  return [
+    ...connectiveMeshes.values(),
+    ...(skinMesh ? [skinMesh] : []),
+  ];
+}
+
+function studyStructureIdFromHit(hit) {
+  if (!hit?.object?.geometry || hit.faceIndex == null) return null;
+  const geometry = hit.object.geometry;
+  const ids = geometry.getAttribute("structureId");
+  if (!ids) return null;
+  const corner = hit.faceIndex * 3;
+  const vertexIndex = geometry.index ? geometry.index.getX(corner) : corner;
+  const value = Math.round(ids.getX(vertexIndex));
+  return studyStructures[value] ? value : null;
+}
+
+function setStudyStructureVisible(studyId, visible) {
+  for (const mesh of studyMeshes()) {
+    const ids = mesh.geometry.getAttribute("structureId");
+    const visibility = mesh.geometry.getAttribute("structureVisible");
+    if (!ids || !visibility) continue;
+
+    let changed = false;
+    for (let i = 0; i < ids.count; i += 1) {
+      if (Math.round(ids.getX(i)) !== studyId) continue;
+      visibility.setX(i, visible ? 1 : 0);
+      changed = true;
+    }
+    if (changed) visibility.needsUpdate = true;
+  }
+}
+
+function setAllStudyStructuresVisible(visible = true) {
+  for (const mesh of studyMeshes()) {
+    const visibility = mesh.geometry.getAttribute("structureVisible");
+    if (!visibility) continue;
+    visibility.array.fill(visible ? 1 : 0);
+    visibility.needsUpdate = true;
+  }
+}
+
+function studyStructureIsVisible(studyId) {
+  for (const mesh of studyMeshes()) {
+    const ids = mesh.geometry.getAttribute("structureId");
+    const visibility = mesh.geometry.getAttribute("structureVisible");
+    if (!ids || !visibility) continue;
+    for (let i = 0; i < ids.count; i += 1) {
+      if (
+        Math.round(ids.getX(i)) === studyId &&
+        visibility.getX(i) >= 0.5
+      ) return true;
+    }
+  }
+  return false;
+}
+
+function studyBaseColor(entry) {
+  if (!entry) return new THREE.Color(0xc9c1b2);
+  if (entry.layerKey === "skin") return new THREE.Color(0xc69c84);
+  return new THREE.Color(
+    CONNECTIVE_LAYER_COLORS[entry.layerKey] || CONNECTIVE_LAYER_COLORS.other
+  );
+}
+
+function paintStudyStructure(studyId, color) {
+  for (const mesh of studyMeshes()) {
+    const ids = mesh.geometry.getAttribute("structureId");
+    const colors = mesh.geometry.getAttribute("color");
+    if (!ids || !colors) continue;
+
+    let changed = false;
+    for (let i = 0; i < ids.count; i += 1) {
+      if (Math.round(ids.getX(i)) !== studyId) continue;
+      colors.setXYZ(i, color.r, color.g, color.b);
+      changed = true;
+    }
+    if (changed) colors.needsUpdate = true;
+  }
+}
+
+function restoreStudyHighlight() {
+  if (highlightedStudyId == null) return;
+  const entry = studyEntry(highlightedStudyId);
+  paintStudyStructure(highlightedStudyId, studyBaseColor(entry));
+  highlightedStudyId = null;
+}
+
+function boxForStudyStructure(studyId) {
+  const box = new THREE.Box3().makeEmpty();
+  const point = new THREE.Vector3();
+
+  for (const mesh of studyMeshes()) {
+    mesh.updateMatrixWorld(true);
+    const ids = mesh.geometry.getAttribute("structureId");
+    const position = mesh.geometry.getAttribute("position");
+    if (!ids || !position) continue;
+
+    for (let i = 0; i < ids.count; i += 1) {
+      if (Math.round(ids.getX(i)) !== studyId) continue;
+      point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
+      box.expandByPoint(point);
+    }
+  }
+  return box;
+}
+
+function nearestMuscleForPart(part, muscleParts) {
+  if (!part?.bounds || !muscleParts?.length) return "";
+  const center = new THREE.Vector3(
+    (part.bounds[0][0] + part.bounds[1][0]) / 2,
+    (part.bounds[0][1] + part.bounds[1][1]) / 2,
+    (part.bounds[0][2] + part.bounds[1][2]) / 2
+  );
+
+  let best = null;
+  let bestDistance = Infinity;
+  for (const muscle of muscleParts) {
+    if (!muscle.bounds) continue;
+    const muscleCenter = new THREE.Vector3(
+      (muscle.bounds[0][0] + muscle.bounds[1][0]) / 2,
+      (muscle.bounds[0][1] + muscle.bounds[1][1]) / 2,
+      (muscle.bounds[0][2] + muscle.bounds[1][2]) / 2
+    );
+    const distance = center.distanceToSquared(muscleCenter);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = muscle;
+    }
+  }
+
+  if (!best) return "";
+  const term = structureTerm(best.name);
+  return normalizeRussianSideLabel(term.nameRu || best.name, best.name);
+}
+
 
 const navPoint = new THREE.Vector3();
 
@@ -2263,6 +2420,10 @@ function resetLoadedModel() {
   referenceMeshes = new Map();
   referenceLayerPromises = new Map();
   referenceLoadGeneration += 1;
+  studyStructures = [];
+  selectedStudyId = null;
+  highlightedStudyId = null;
+  exploreHiddenActions.length = 0;
   structureNames = [];
   structureRanges = [];
   structureVisibility = [];
@@ -2332,6 +2493,8 @@ function resetLoadedModel() {
   canvas.dataset.connectiveVisibleLayers = "";
   canvas.dataset.skinMode = "";
   canvas.dataset.skinCount = "";
+  canvas.dataset.selectedStudyLayer = "";
+  canvas.dataset.selectedStudySpecific = "";
   canvas.dataset.boneMode = "";
   canvas.dataset.boneTransparent = "";
   canvas.dataset.boneStencil = "";
@@ -2353,17 +2516,7 @@ function resetLoadedModel() {
   canvas.dataset.skinTrainingHidden = "false";
 }
 
-function createMuscleMaterial() {
-  const material = new THREE.MeshStandardMaterial({
-    vertexColors: true,
-    roughness: 0.62,
-    metalness: 0,
-    side: THREE.DoubleSide,
-    transparent: false,
-    depthTest: true,
-    depthWrite: true,
-  });
-
+function attachStructureVisibilityShader(material, cacheKey) {
   material.onBeforeCompile = (shader) => {
     shader.vertexShader =
       "attribute float structureVisible; varying float vStructureVisible;\n" +
@@ -2379,8 +2532,22 @@ function createMuscleMaterial() {
       "#include <clipping_planes_fragment>\nif (vStructureVisible < 0.5) discard;"
     );
   };
-  material.customProgramCacheKey = () => "muscle-visibility-v2";
+  material.customProgramCacheKey = () => cacheKey;
   return material;
+}
+
+function createMuscleMaterial() {
+  const material = new THREE.MeshStandardMaterial({
+    vertexColors: true,
+    roughness: 0.62,
+    metalness: 0,
+    side: THREE.DoubleSide,
+    transparent: false,
+    depthTest: true,
+    depthWrite: true,
+  });
+
+  return attachStructureVisibilityShader(material, "muscle-visibility-v3");
 }
 
 function createBoneMaterial() {
@@ -2536,8 +2703,9 @@ async function handleReferenceLayerChange(input) {
 }
 
 function createConnectiveMaterial(layerKey) {
-  return new THREE.MeshStandardMaterial({
-    color: CONNECTIVE_LAYER_COLORS[layerKey] || CONNECTIVE_LAYER_COLORS.other,
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    vertexColors: true,
     roughness: layerKey === "fascia" ? 0.76 : 0.68,
     metalness: 0,
     side: THREE.DoubleSide,
@@ -2546,11 +2714,16 @@ function createConnectiveMaterial(layerKey) {
     depthTest: true,
     depthWrite: true,
   });
+  return attachStructureVisibilityShader(
+    material,
+    "study-connective-visibility-" + layerKey
+  );
 }
 
 function createSkinMaterial() {
-  return new THREE.MeshStandardMaterial({
-    color: 0xc69c84,
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    vertexColors: true,
     roughness: 0.82,
     metalness: 0,
     side: THREE.DoubleSide,
@@ -2559,6 +2732,7 @@ function createSkinMaterial() {
     depthTest: true,
     depthWrite: true,
   });
+  return attachStructureVisibilityShader(material, "study-skin-visibility-v1");
 }
 
 function selectedConnectiveLayers() {
@@ -2787,13 +2961,15 @@ function bodyPartsGeometry(part, buffer, sid = null, color = null) {
       new THREE.BufferAttribute(new Float32Array(part.vertexCount).fill(1), 1)
     );
 
-    const colors = new Float32Array(part.vertexCount * 3);
-    for (let i = 0; i < part.vertexCount; i += 1) {
-      colors[i * 3] = color.r;
-      colors[i * 3 + 1] = color.g;
-      colors[i * 3 + 2] = color.b;
+    if (color) {
+      const colors = new Float32Array(part.vertexCount * 3);
+      for (let i = 0; i < part.vertexCount; i += 1) {
+        colors[i * 3] = color.r;
+        colors[i * 3 + 1] = color.g;
+        colors[i * 3 + 2] = color.b;
+      }
+      geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
     }
-    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   }
 
   return geometry;
@@ -2921,6 +3097,9 @@ async function loadBodyParts4Model() {
   const atlas = await response.json();
 
   const anatomyParts = atlas.parts.filter((part) => bodyPartsAnatomyKind(part));
+  const muscleAnatomyParts = atlas.parts.filter(
+    (part) => bodyPartsAnatomyKind(part) === "muscle"
+  );
   const connectiveParts = atlas.parts.filter(
     (part) =>
       !bodyPartsAnatomyKind(part) &&
@@ -2997,7 +3176,7 @@ async function loadBodyParts4Model() {
     }
 
     const connectiveInChunk = chunkParts.filter(
-      (part) => part.system === "connective" && !bodyPartsAnatomyKind(part)
+      (part) => connectiveIds.has(part.id)
     );
     for (const layerKey of ["subcutaneous", "fascia", "tendon", "ligament", "joint", "cartilage", "other"]) {
       const layerParts = connectiveInChunk.filter(
@@ -3006,8 +3185,20 @@ async function loadBodyParts4Model() {
       if (!layerParts.length) continue;
 
       const geometries = layerParts.map((part) => {
+        const studyId = studyStructures.length;
+        const color = new THREE.Color(
+          CONNECTIVE_LAYER_COLORS[layerKey] || CONNECTIVE_LAYER_COLORS.other
+        );
+        const geometry = bodyPartsGeometry(part, buffer, studyId, color);
+        studyStructures.push({
+          id: studyId,
+          sourceName: part.name,
+          conceptId: part.conceptId || "",
+          layerKey,
+          nearestMuscleNameRu: nearestMuscleForPart(part, muscleAnatomyParts),
+        });
         connectiveTriangleCount += Math.floor(part.indexCount / 3);
-        return bodyPartsGeometry(part, buffer);
+        return geometry;
       });
       const mergedChunk = mergeGeometries(geometries, false);
       for (const geometry of geometries) geometry.dispose();
@@ -3020,8 +3211,22 @@ async function loadBodyParts4Model() {
     const skinInChunk = chunkParts.filter((part) => part.system === "integumentary");
     if (skinInChunk.length) {
       const geometries = skinInChunk.map((part) => {
+        const studyId = studyStructures.length;
+        const geometry = bodyPartsGeometry(
+          part,
+          buffer,
+          studyId,
+          new THREE.Color(0xc69c84)
+        );
+        studyStructures.push({
+          id: studyId,
+          sourceName: part.name,
+          conceptId: part.conceptId || "",
+          layerKey: "skin",
+          nearestMuscleNameRu: nearestMuscleForPart(part, muscleAnatomyParts),
+        });
         skinTriangleCount += Math.floor(part.indexCount / 3);
-        return bodyPartsGeometry(part, buffer);
+        return geometry;
       });
       const mergedChunk = mergeGeometries(geometries, false);
       for (const geometry of geometries) geometry.dispose();
