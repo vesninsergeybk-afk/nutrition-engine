@@ -769,7 +769,14 @@ function revealAnswer() {
   wrong += 1;
   wrongEl.textContent = String(wrong);
   recordDifficulty(currentTarget, false);
-  recordLearningAttempt(learningStore, currentTarget.id, item.skillId, false);
+  recordLearningAttempt(
+    learningStore,
+    currentTarget.id,
+    item.skillId,
+    false,
+    undefined,
+    { addReviewDebt: currentItemWrongAttempts === 0 }
+  );
   updateLearningSummary();
   locked = true;
 
@@ -798,7 +805,14 @@ function chooseQuiz(sid) {
     feedbackEl.className = "feedback correct";
     feedbackEl.textContent = \`Верно. Вы выбрали: \${displayStructureName(sid)}.\`;
     recordDifficulty(currentTarget, true);
-    recordLearningAttempt(learningStore, currentTarget.id, "find", true);
+    recordLearningAttempt(
+      learningStore,
+      currentTarget.id,
+      "find",
+      true,
+      undefined,
+      { retireMistake: currentItemWrongAttempts === 0 }
+    );
     updateLearningSummary();
     locked = true;
     revealDeeperButton.hidden = true;
@@ -818,7 +832,14 @@ function chooseQuiz(sid) {
     feedbackEl.textContent =
       \`Это «\${displayStructureName(sid)}». Можно продолжить поиск или скрыть эту структуру, если цель лежит глубже.\`;
     recordDifficulty(currentTarget, false);
-    recordLearningAttempt(learningStore, currentTarget.id, "find", false);
+    recordLearningAttempt(
+      learningStore,
+      currentTarget.id,
+      "find",
+      false,
+      undefined,
+      { addReviewDebt: currentItemWrongAttempts === 1 }
+    );
     updateLearningSummary();
 
     lastWrongSid = sid;
@@ -841,7 +862,14 @@ function chooseNameAnswer(targetId, button) {
     for (const option of nameChoicesEl.querySelectorAll(".name-choice")) option.disabled = true;
     feedbackEl.className = "feedback correct";
     feedbackEl.textContent = \`Верно: «\${currentTarget.nameRu}».\`;
-    recordLearningAttempt(learningStore, currentTarget.id, "name", true);
+    recordLearningAttempt(
+      learningStore,
+      currentTarget.id,
+      "name",
+      true,
+      undefined,
+      { retireMistake: currentItemWrongAttempts === 0 }
+    );
     updateLearningSummary();
     locked = true;
 
@@ -858,7 +886,14 @@ function chooseNameAnswer(targetId, button) {
     button.disabled = true;
     feedbackEl.className = "feedback wrong";
     feedbackEl.textContent = "Не эта мышца. Сравните варианты и попробуйте ещё раз.";
-    recordLearningAttempt(learningStore, currentTarget.id, "name", false);
+    recordLearningAttempt(
+      learningStore,
+      currentTarget.id,
+      "name",
+      false,
+      undefined,
+      { addReviewDebt: currentItemWrongAttempts === 1 }
+    );
     updateLearningSummary();
   }
 }
