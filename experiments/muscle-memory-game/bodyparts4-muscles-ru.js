@@ -7,6 +7,22 @@ const EXACT_RU = new Map([
 ]);
 
 const BASE_RU = new Map([
+  ["adductor hallucis", "Мышца, приводящая большой палец стопы"],
+  ["adductor pollicis", "Мышца, приводящая большой палец кисти"],
+  ["biceps brachii", "Двуглавая мышца плеча"],
+  ["biceps femoris", "Двуглавая мышца бедра"],
+  ["cricothyroid", "Перстнещитовидная мышца"],
+  ["deltoid", "Дельтовидная мышца"],
+  ["flexor carpi ulnaris", "Локтевой сгибатель запястья"],
+  ["flexor hallucis brevis", "Короткий сгибатель большого пальца стопы"],
+  ["gastrocnemius", "Икроножная мышца"],
+  ["lateral pterygoid", "Латеральная крыловидная мышца"],
+  ["masseter", "Жевательная мышца"],
+  ["orbicularis oculi", "Круговая мышца глаза"],
+  ["pectoralis major", "Большая грудная мышца"],
+  ["pronator teres", "Круглый пронатор"],
+  ["trapezius", "Трапециевидная мышца"],
+  ["triceps brachii", "Трёхглавая мышца плеча"],
   ["abdominal part of pectoralis major", "Брюшная часть большой грудной мышцы"],
   ["abductor digiti minimi of foot", "Мышца, отводящая мизинец стопы"],
   ["abductor digiti minimi of hand", "Мышца, отводящая мизинец кисти"],
