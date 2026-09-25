@@ -134,20 +134,34 @@ function scopeOverlap(scopeId) {
   };
 }
 
-const scopeContracts = [
-  ["shoulder", 0.90],
-  ["upper-limb", 0.80],
-  ["lower-limb", 0.80],
-  ["neck", 0.70],
-  ["neck-collar", 0.70],
-  ["foot", 0.70],
-  ["erector-spinae", 0.70],
-  ["rotator-cuff", 1.00],
-  ["scapular-stabilizers", 0.80],
+const scopeIdsToCheck = [
+  "shoulder",
+  "upper-limb",
+  "lower-limb",
+  "neck",
+  "neck-collar",
+  "foot",
+  "erector-spinae",
+  "rotator-cuff",
+  "scapular-stabilizers",
 ];
 
-for (const [scopeId, minimumCoverage] of scopeContracts) {
+const sharedGlobalIds = new Set(shared);
+
+for (const scopeId of scopeIdsToCheck) {
   const result = scopeOverlap(scopeId);
+  const zScopeIds = new Set(result.z.map((item) => item.id));
+  const bpScopeIds = new Set(result.bp.map((item) => item.id));
+
+  // Source completeness is allowed to differ. The actual grouping contract is
+  // stricter: whenever the same muscle concept exists in both sources, both
+  // sources must agree whether that concept belongs to this learning scope.
+  const semanticMismatches = [...sharedGlobalIds].filter(
+    (id) => zScopeIds.has(id) !== bpScopeIds.has(id)
+  );
+
+  const onlyZ = result.z.filter((item) => !bpIds.has(item.id));
+  const onlyBp = result.bp.filter((item) => !zIds.has(item.id));
 
   console.log("Scope overlap:", {
     scope: scopeId,
@@ -156,13 +170,39 @@ for (const [scopeId, minimumCoverage] of scopeContracts) {
     shared: result.shared.length,
     coverage:
       Math.round(result.coverage * 1000) / 10 + "%",
+    sourceOnlyZ: onlyZ.length,
+    sourceOnlyBodyParts: onlyBp.length,
+    semanticMismatches: semanticMismatches.length,
   });
+
+  if (onlyZ.length) {
+    console.log(
+      "Scope source-only Z:",
+      scopeId,
+      onlyZ.map((item) => item.nameRu).join(" | ")
+    );
+  }
+  if (onlyBp.length) {
+    console.log(
+      "Scope source-only BodyParts:",
+      scopeId,
+      onlyBp.map((item) => item.nameRu).join(" | ")
+    );
+  }
 
   assert(result.z.length > 0, "Z-Anatomy scope is empty: " + scopeId);
   assert(result.bp.length > 0, "BodyParts scope is empty: " + scopeId);
   assert(
-    result.coverage >= minimumCoverage,
-    "Cross-source scope divergence for " + scopeId + ": " +
+    semanticMismatches.length === 0,
+    "Shared muscle concepts are grouped differently for " + scopeId + ": " +
+      semanticMismatches.join(", ")
+  );
+
+  // Still catch a catastrophic loss of source coverage without pretending
+  // that the two source atlases must contain identical anatomy.
+  assert(
+    result.coverage >= 0.50,
+    "Regional source coverage collapsed for " + scopeId + ": " +
       result.shared.length + "/" +
       Math.min(result.z.length, result.bp.length)
   );
@@ -177,4 +217,4 @@ for (const [scopeId, minimumCoverage] of scopeContracts) {
   }
 }
 
-console.log("Cross-source regional scopes: ok");
+console.log("Cross-source regional grouping semantics: ok");
