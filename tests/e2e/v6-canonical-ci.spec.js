@@ -286,6 +286,24 @@ test('collapsed settings stay collapsed across workspace route changes', async (
   await expect(page.locator('#themeSwitcher')).toBeVisible();
 });
 
+test('finished runtime loader stays hidden across workspace route changes', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  const routes = ['ration', 'analysis/overview', 'analysis/nutrients', 'analysis/hei', 'correction', 'report'];
+  for (const route of routes) {
+    await page.evaluate(name => window.NavigationShellV1.navigate(name), route);
+    await page.waitForTimeout(350);
+    const overlay = page.locator('#runtimeBootStatusOverlay');
+    if (await overlay.count()) {
+      await expect(overlay).toHaveAttribute('aria-hidden', 'true');
+      await expect(overlay).toHaveClass(/hide/);
+    }
+  }
+});
+
 test('861-899px seam uses the desktop shell without mobile search overlay', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 880, height: 900 });
   await loadApp();
