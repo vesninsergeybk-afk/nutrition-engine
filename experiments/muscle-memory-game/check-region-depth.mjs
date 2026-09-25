@@ -49,13 +49,13 @@ assert(
   "Source-incomplete anatomy warning is hidden in diagnostics instead of the user UI"
 );
 assert(
-  app.includes('boneDisplayMode = "off"') &&
+  app.includes('boneDisplayMode = "xray"') &&
     app.includes('preset === "bones"') &&
     app.includes("applyRegionBoneVisibility()"),
-  "Regional bones must be hidden by default and available as an explicit filtered layer"
+  "Regional bones must be visible by default as a filtered xray layer"
 );
 
-console.log("Regional isolation: muscles default + opt-in regional bones ok");
+console.log("Regional isolation: muscles + filtered xray bones by default ok");
 console.log("Depth exploration: regional anatomical peeling + constrained click stack ok");
 
 
