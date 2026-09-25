@@ -77,24 +77,20 @@ function similarityScore(a, b) {
   return score;
 }
 
-function spreadSimilarTargets(items, rng = Math.random) {
-  const remaining = shuffled(items, rng);
-  if (remaining.length < 3) return remaining;
+function greedySpreadFrom(items, firstIndex) {
+  const remaining = items.filter((_, index) => index !== firstIndex);
+  const ordered = [items[firstIndex]];
 
-  const ordered = [remaining.shift()];
   while (remaining.length) {
     const previous = ordered[ordered.length - 1];
     let bestIndex = 0;
     let bestScore = Infinity;
-    let bestTie = Infinity;
 
     for (let i = 0; i < remaining.length; i += 1) {
       const score = similarityScore(previous, remaining[i]);
-      const tie = rng();
-      if (score < bestScore || (score === bestScore && tie < bestTie)) {
+      if (score < bestScore) {
         bestIndex = i;
         bestScore = score;
-        bestTie = tie;
       }
     }
 
@@ -102,6 +98,37 @@ function spreadSimilarTargets(items, rng = Math.random) {
   }
 
   return ordered;
+}
+
+function sequenceSimilarityPenalty(items) {
+  let penalty = 0;
+  for (let i = 1; i < items.length; i += 1) {
+    const score = similarityScore(items[i - 1], items[i]);
+    penalty += score * score;
+  }
+  return penalty;
+}
+
+function spreadSimilarTargets(items, rng = Math.random) {
+  const seedOrder = shuffled(items, rng);
+  if (seedOrder.length < 3) return seedOrder;
+
+  let best = seedOrder;
+  let bestPenalty = Infinity;
+
+  // Sessions are capped at 30 targets, so evaluating every possible starting
+  // target remains cheap and avoids leaving a confusable pair together merely
+  // because of an unlucky starting point.
+  for (let firstIndex = 0; firstIndex < seedOrder.length; firstIndex += 1) {
+    const candidate = greedySpreadFrom(seedOrder, firstIndex);
+    const penalty = sequenceSimilarityPenalty(candidate);
+    if (penalty < bestPenalty) {
+      best = candidate;
+      bestPenalty = penalty;
+    }
+  }
+
+  return best;
 }
 
 function confusionWeight(store, targetId, candidateId) {
