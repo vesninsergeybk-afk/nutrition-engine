@@ -53,9 +53,6 @@ const PROFILES = Object.freeze({
       "pectoralis-major": Object.freeze([
         "pectoralis-minor",
       ]),
-      "latissimus-dorsi": Object.freeze([
-        "teres-major",
-      ]),
     }),
   }),
 
@@ -157,8 +154,8 @@ const PROFILES = Object.freeze({
     nameRu: "Задняя группа голени",
     rules: Object.freeze([
       rule("gastrocnemius", "superficial", /^gastrocnemius$/i),
-      rule("soleus", "intermediate", /^soleus$/i),
-      rule("plantaris", "intermediate", /^plantaris$/i),
+      rule("soleus", "superficial", /^soleus$/i),
+      rule("plantaris", "superficial", /^plantaris$/i),
       rule("popliteus", "deep", /^popliteus$/i),
       rule("tibialis-posterior", "deep", /^tibialis posterior$/i),
       rule("flexor-digitorum-longus", "deep", /^flexor digitorum longus$/i),

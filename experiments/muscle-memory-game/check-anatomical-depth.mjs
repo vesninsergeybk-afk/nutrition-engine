@@ -111,15 +111,33 @@ assert(
 
 assert(
   muscleDepthInfo("posterior-leg", "gastrocnemius")?.rank === 1 &&
-    muscleDepthInfo("posterior-leg", "soleus")?.rank === 2 &&
-    muscleDepthInfo("posterior-leg", "tibialis posterior")?.rank === 3,
-  "Posterior-leg layering is broken"
+    muscleDepthInfo("posterior-leg", "soleus")?.rank === 1 &&
+    muscleDepthInfo("posterior-leg", "plantaris")?.rank === 1 &&
+    muscleDepthInfo("posterior-leg", "tibialis posterior")?.rank === 3 &&
+    muscleDepthInfo("posterior-leg", "popliteus")?.rank === 3,
+  "Posterior-leg superficial/deep compartment classification is broken"
+);
+assert(
+  isKnownDeeperRelation("posterior-leg", "gastrocnemius", "soleus") &&
+    isKnownDeeperRelation("posterior-leg", "gastrocnemius", "plantaris"),
+  "Posterior-leg local cover graph must preserve gastrocnemius-over-soleus/plantaris topology"
 );
 assert(
   isKnownDeeperRelation("posterior-leg", "gastrocnemius", "tibialis-posterior"),
-  "Posterior-leg cover graph must be transitive"
+  "Posterior-leg cover graph must remain transitively connected to the deep compartment"
+);
+assert(
+  !isKnownDeeperRelation("shoulder", "latissimus-dorsi", "teres-major"),
+  "Latissimus dorsi and teres major must not be simplified into a generic cover relation"
 );
 
 console.log("Regional anatomical depth maps: shoulder/back/abdomen/gluteal/thigh/leg ok");
 console.log("Deep-but-exposed muscle preservation: ok");
 console.log("Local cover graph: ok");
+
+assert(
+  /candidateInfo\.rank < selectedInfo\.rank/.test(
+    await (await import("node:fs/promises")).readFile(new URL("./app.js", import.meta.url), "utf8")
+  ),
+  "Local verified cover relations at the same compartment rank are still blocked"
+);

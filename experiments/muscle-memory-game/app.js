@@ -1685,7 +1685,7 @@ function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
       const depthRegionId = activeDepthProfileId(selectedTarget);
       if (
         activeDepthProfileId(candidateTarget) !== depthRegionId ||
-        candidateInfo.rank <= selectedInfo.rank
+        candidateInfo.rank < selectedInfo.rank
       ) {
         continue;
       }
@@ -1731,7 +1731,7 @@ function verifiedDeeperMuscleIds(selectedSid, limit = 3) {
     if (
       !info ||
       activeDepthProfileId(target) !== depthRegionId ||
-      info.rank <= selectedInfo.rank ||
+      info.rank < selectedInfo.rank ||
       !isKnownDeeperRelation(
         depthRegionId,
         selectedInfo.ruleId,
