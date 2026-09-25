@@ -60,6 +60,7 @@ const learningControls = document.querySelector("#learning-controls");
 const learningRegion = document.querySelector("#learning-region");
 const learningSummaryEl = document.querySelector("#learning-summary");
 const learningSessionMode = document.querySelector("#learning-session-mode");
+const learningModeButtons = [...document.querySelectorAll("[data-learning-mode]")];
 const learningSessionSize = document.querySelector("#learning-session-size");
 const startLearningSessionButton = document.querySelector("#start-learning-session");
 const sessionProgressEl = document.querySelector("#session-progress");
@@ -520,6 +521,36 @@ function summarySkillForMode() {
   return selectedSessionMode === "name" ? "name" : "find";
 }
 
+function syncLearningModeButtons() {
+  const noTargets = availableTargets.length === 0;
+  const hasMistakes = mistakeTargets(learningStore, availableTargets).length > 0;
+
+  for (const button of learningModeButtons) {
+    const mode = button.dataset.learningMode;
+    const active = mode === selectedSessionMode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+    button.disabled = noTargets || (mode === "mistakes" && !hasMistakes);
+  }
+}
+
+function setLearningMode(mode, { reset = true } = {}) {
+  if (!SESSION_MODES[mode]) return;
+
+  selectedSessionMode = mode;
+  learningSessionMode.value = mode;
+  syncLearningModeButtons();
+  updateLearningSummary();
+
+  if (reset) {
+    resetLearningSessionUi(
+      mode === "mistakes" && !canStartLearningSession()
+        ? "Ошибок для повторения пока нет."
+        : "Настройте короткую тренировку и нажмите «Начать»."
+    );
+  }
+}
+
 function canStartLearningSession() {
   if (!availableTargets.length) return false;
   if (selectedSessionMode !== "mistakes") return true;
@@ -591,6 +622,7 @@ function applyLearningRegion() {
   focusShoulderButton.textContent = "К региону";
 
   learningSessionMode.disabled = availableTargets.length === 0;
+  syncLearningModeButtons();
   startLearningSessionButton.disabled = !canStartLearningSession();
   updateLearningSummary();
 
@@ -1043,8 +1075,7 @@ function nextSessionStep() {
     const hasMistakes = mistakeTargets(learningStore, availableTargets).length > 0;
 
     if (hasMistakes) {
-      selectedSessionMode = "mistakes";
-      learningSessionMode.value = "mistakes";
+      setLearningMode("mistakes", { reset: false });
       startLearningSession();
     } else {
       resetLearningSessionUi(
@@ -1475,6 +1506,7 @@ function resetLoadedModel() {
   learningRegion.disabled = true;
   learningRegion.replaceChildren(new Option("Загрузка…", "all"));
   learningSessionMode.disabled = true;
+  for (const button of learningModeButtons) button.disabled = true;
   startLearningSessionButton.disabled = true;
   sessionProgressEl.hidden = true;
   nameChoicesEl.hidden = true;
@@ -2032,14 +2064,15 @@ learningRegion.addEventListener("change", () => {
 });
 
 learningSessionMode.addEventListener("change", () => {
-  selectedSessionMode = learningSessionMode.value;
-  updateLearningSummary();
-  resetLearningSessionUi(
-    selectedSessionMode === "mistakes" && !canStartLearningSession()
-      ? "В выбранном регионе пока нет сохранённых ошибок."
-      : "Выберите режим и начните сессию."
-  );
+  setLearningMode(learningSessionMode.value);
 });
+
+for (const button of learningModeButtons) {
+  button.addEventListener("click", () => {
+    if (button.disabled) return;
+    setLearningMode(button.dataset.learningMode);
+  });
+}
 
 startLearningSessionButton.addEventListener("click", startLearningSession);
 
