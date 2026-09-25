@@ -1008,9 +1008,10 @@ button:disabled {
 .deeper-structures {
   margin: 13px 0 2px;
   padding: 12px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid rgba(36, 93, 168, .24);
+  border-left-width: 3px;
   border-radius: 13px;
-  background: rgba(27, 27, 29, .035);
+  background: rgba(36, 93, 168, .055);
 }
 
 .deeper-structures-head {
@@ -1022,6 +1023,7 @@ button:disabled {
 .deeper-structures-head strong {
   font-size: 13px;
   line-height: 1.25;
+  color: rgba(25, 69, 128, .98);
 }
 
 .deeper-structures-head span {

@@ -119,3 +119,14 @@ assert(
     !/function verifiedDeeperMuscleIds[\s\S]*?structureVisibility\[sid\] !== false[\s\S]*?return candidates/.test(app),
   "Verified deeper relations still depend on current scene visibility"
 );
+
+assert(
+  app.includes('"Почему послойность недоступна?"') &&
+    !/peelSurfaceLayerButton\.disabled[\s\S]{0,240}layerUnavailable/.test(app),
+  "Unavailable depth maps are still silently disabled instead of explained"
+);
+assert(
+  css.includes("border-left-width: 3px") &&
+    css.includes("rgba(36, 93, 168, .055)"),
+  "Deeper-anatomy block is still visually too easy to miss"
+);

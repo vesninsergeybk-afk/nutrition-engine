@@ -1891,15 +1891,20 @@ function updateLayerButtons() {
     appMode !== "explore" ||
     !anatomyMesh ||
     !regionIsolationActive() ||
-    !structureVisibility.some(Boolean) ||
-    layerUnavailable;
+    !structureVisibility.some(Boolean);
 
   peelSurfaceLayerButton.textContent =
-    nextLayer?.supported && nextLayer?.ids?.length
-      ? "Снять: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
-      : "Снять анатомический слой";
+    layerUnavailable
+      ? "Почему послойность недоступна?"
+      : nextLayer?.supported && nextLayer?.ids?.length
+        ? "Снять: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
+        : "Снять анатомический слой";
   peelSurfaceLayerButton.title =
     layerUnavailable ? nextLayer.reason || "Послойность пока недоступна." : "";
+  peelSurfaceLayerButton.setAttribute(
+    "aria-description",
+    layerUnavailable ? nextLayer.reason || "Послойность пока недоступна." : ""
+  );
   undoHideButton.disabled =
     hiddenStack.length === 0 && exploreHiddenActions.length === 0;
 
