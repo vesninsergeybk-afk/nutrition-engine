@@ -162,7 +162,7 @@ jobs:
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'find');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-total'), '5');
-            assert.match(await page.locator('#question').innerText(), /Найдите на модели:/);
+            assert.match(await page.locator('#question').innerText(), /Найдите:/);
             await page.click('#show-answer');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-done'), '1');
             let storedLearning = await page.evaluate(() =>
@@ -194,7 +194,7 @@ jobs:
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'name');
             assert.equal(await page.locator('.name-choice').count(), 4);
-            assert.match(await page.locator('#question').innerText(), /Как называется выделенная мышца/);
+            assert.match(await page.locator('#question').innerText(), /Назовите выделенную мышцу/);
             for (let tries = 0; tries < 4; tries += 1) {
               const enabled = page.locator('.name-choice:not(:disabled)').first();
               if (!(await enabled.count())) break;
