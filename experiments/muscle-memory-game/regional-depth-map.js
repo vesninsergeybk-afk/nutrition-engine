@@ -87,6 +87,93 @@ const PROFILES = Object.freeze({
     }),
   }),
 
+  gluteal: Object.freeze({
+    id: "gluteal",
+    nameRu: "Ягодичная область",
+    rules: Object.freeze([
+      rule("gluteus-maximus", "superficial", /^gluteus maximus$/i),
+      rule("tensor-fasciae-latae", "superficial", /^tensor fasciae latae$/i),
+      rule("gluteus-medius", "intermediate", /^gluteus medius$/i),
+      rule("gluteus-minimus", "deep", /^gluteus minimus$/i),
+      rule("piriformis", "deep", /^piriformis$/i),
+      rule("gemellus-superior", "deep", /^(?:gemellus superior|superior gemellus)$/i),
+      rule("gemellus-inferior", "deep", /^(?:gemellus inferior|inferior gemellus)$/i),
+      rule("obturator-internus", "deep", /^obturator internus$/i),
+      rule("obturator-externus", "deep", /^obturator externus$/i),
+      rule("quadratus-femoris", "deep", /^quadratus femoris$/i),
+    ]),
+    covers: Object.freeze({
+      "gluteus-maximus": Object.freeze([
+        "gluteus-medius",
+        "piriformis",
+        "gemellus-superior",
+        "gemellus-inferior",
+        "obturator-internus",
+        "quadratus-femoris",
+      ]),
+      "gluteus-medius": Object.freeze(["gluteus-minimus"]),
+    }),
+  }),
+
+  "medial-thigh": Object.freeze({
+    id: "medial-thigh",
+    nameRu: "Медиальная группа бедра",
+    rules: Object.freeze([
+      rule("gracilis", "superficial", /^gracilis$/i),
+      rule("pectineus", "superficial", /^pectineus$/i),
+      rule("adductor-longus", "superficial", /^adductor longus$/i),
+      rule("adductor-brevis", "intermediate", /^adductor brevis$/i),
+      rule("adductor-magnus", "deep", /^adductor magnus$/i),
+      rule("adductor-minimus", "deep", /^adductor minimus$/i),
+    ]),
+    covers: Object.freeze({
+      "adductor-longus": Object.freeze(["adductor-brevis", "adductor-magnus"]),
+      pectineus: Object.freeze(["adductor-brevis"]),
+      "adductor-brevis": Object.freeze(["adductor-magnus", "adductor-minimus"]),
+    }),
+  }),
+
+  "posterior-thigh": Object.freeze({
+    id: "posterior-thigh",
+    nameRu: "Задняя поверхность бедра",
+    rules: Object.freeze([
+      rule("gluteus-maximus", "superficial", /^gluteus maximus$/i),
+      rule("biceps-femoris", "intermediate", /^biceps femoris$/i),
+      rule("semitendinosus", "intermediate", /^semitendinosus$/i),
+      rule("semimembranosus", "intermediate", /^semimembranosus$/i),
+      rule("adductor-magnus", "deep", /^adductor magnus$/i),
+    ]),
+    covers: Object.freeze({
+      "gluteus-maximus": Object.freeze([
+        "biceps-femoris",
+        "semitendinosus",
+        "semimembranosus",
+      ]),
+    }),
+  }),
+
+  "posterior-leg": Object.freeze({
+    id: "posterior-leg",
+    nameRu: "Задняя группа голени",
+    rules: Object.freeze([
+      rule("gastrocnemius", "superficial", /^gastrocnemius$/i),
+      rule("soleus", "intermediate", /^soleus$/i),
+      rule("plantaris", "intermediate", /^plantaris$/i),
+      rule("popliteus", "deep", /^popliteus$/i),
+      rule("tibialis-posterior", "deep", /^tibialis posterior$/i),
+      rule("flexor-digitorum-longus", "deep", /^flexor digitorum longus$/i),
+      rule("flexor-hallucis-longus", "deep", /^flexor hallucis longus$/i),
+    ]),
+    covers: Object.freeze({
+      gastrocnemius: Object.freeze(["soleus", "plantaris"]),
+      soleus: Object.freeze([
+        "tibialis-posterior",
+        "flexor-digitorum-longus",
+        "flexor-hallucis-longus",
+      ]),
+    }),
+  }),
+
   abdomen: Object.freeze({
     id: "abdomen",
     nameRu: "Живот",
