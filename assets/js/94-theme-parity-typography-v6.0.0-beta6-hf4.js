@@ -112,12 +112,13 @@
 
   function ensureHeiExecutive(){
     var section=byId('workspaceHeiDashboardHF2');if(!section)return;
-    var vm=analysisVM(),rows=vm&&vm.hei&&vm.hei.rows||[];
-    var sig=JSON.stringify(rows.map(function(r){return [r.key,r.points,r.maxPoints,r.pct,r.title];}));
+    var vm=analysisVM(),items=vm&&isFinite(num(vm.items,NaN))?num(vm.items,0):0,rows=vm&&vm.hei&&vm.hei.rows||[];
+    var sig=JSON.stringify([items,rows.map(function(r){return [r.key,r.points,r.maxPoints,r.pct,r.title];})]);
     if(sig===lastHeiKey&&byId('workspaceHeiExecutiveHF4'))return;lastHeiKey=sig;
     section.setAttribute('data-hf4-enhanced','1');
+    section.setAttribute('data-hf4-state',items>0?'ready':'empty');
     var executive=byId('workspaceHeiExecutiveHF4');if(!executive){executive=d.createElement('div');executive.id='workspaceHeiExecutiveHF4';section.appendChild(executive);}
-    if(!rows.length){executive.innerHTML='<div class="hei-executive-hf4"><div class="hei-executive-hf4__summary" style="grid-column:1/-1"><span class="hei-executive-hf4__eyebrow">Общий вывод</span><h4>HEI пока не рассчитан</h4><p>Добавьте продукты — затем здесь появятся общий балл, две группы компонентов и приоритеты улучшения.</p></div></div>';return;}
+    if(!items||!rows.length){executive.innerHTML='<div class="hei-executive-hf4"><div class="hei-executive-hf4__summary" style="grid-column:1/-1"><span class="hei-executive-hf4__eyebrow">Общий вывод</span><h4>HEI пока не рассчитан</h4><p>Добавьте продукты — затем здесь появятся общий балл, две группы компонентов и приоритеты улучшения.</p></div></div>';return;}
     var adequacy=rows.filter(function(r){return ADEQUACY[r.key];}),moderation=rows.filter(function(r){return MODERATION[r.key];}),other=rows.filter(function(r){return !ADEQUACY[r.key]&&!MODERATION[r.key];});
     var total=sumRows(rows),a=sumRows(adequacy),m=sumRows(moderation),totalPoints=Math.max(0,Math.min(100,total.points)),interp=interpretation(totalPoints);
     var ranked=rows.slice().filter(function(r){return isFinite(rowPct(r));}).sort(function(x,y){return rowPct(x)-rowPct(y);});
