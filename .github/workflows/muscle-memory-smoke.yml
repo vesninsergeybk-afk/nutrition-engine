@@ -55,6 +55,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-anatomy-validation.mjs
           node --check experiments/muscle-memory-game/check-study-layers.mjs
           node --check experiments/muscle-memory-game/check-virtual-specimens.mjs
+          node --check experiments/muscle-memory-game/check-virtual-specimen-coverage.mjs
           node --check experiments/muscle-memory-game/check-anatomical-depth.mjs
           node --check experiments/muscle-memory-game/study-layer-terms-ru.js
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
@@ -110,6 +111,7 @@ jobs:
           node experiments/muscle-memory-game/check-anatomy-validation.mjs
           node experiments/muscle-memory-game/check-study-layers.mjs
           node experiments/muscle-memory-game/check-virtual-specimens.mjs
+          node experiments/muscle-memory-game/check-virtual-specimen-coverage.mjs
           node experiments/muscle-memory-game/check-anatomical-depth.mjs
           node experiments/muscle-memory-game/check-region-depth.mjs
           node experiments/muscle-memory-game/check-deeper-links.mjs

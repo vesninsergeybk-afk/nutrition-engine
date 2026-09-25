@@ -1296,6 +1296,13 @@ function peelAnatomicalMuscleLayer() {
 function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
   const selectedTarget = learningTargetBySid.get(selectedSid) || null;
   const selectedInfo = targetDepthInfo(selectedTarget);
+
+  // A second ray hit is not, by itself, proof of an anatomical layer
+  // relationship. Until this region has a verified depth map, keep the
+  // "Глубже здесь" claim silent rather than showing a contralateral/posterior
+  // structure merely because the ray eventually intersects it.
+  if (!selectedTarget || !selectedInfo) return [];
+
   const ordered = [];
   let reachedSelected = false;
 
@@ -1407,7 +1414,13 @@ function renderDeeperStructures(ids) {
 
     const depth = document.createElement("span");
     depth.className = "deeper-structure-depth";
-    depth.textContent = index === 0 ? "Следующий слой" : "Ещё глубже";
+    const target = learningTargetBySid.get(sid) || null;
+    const info = targetDepthInfo(target);
+    depth.textContent = info?.nameRu
+      ? info.nameRu + " слой"
+      : index === 0
+        ? "Глубже"
+        : "Ещё глубже";
 
     const name = document.createElement("strong");
     name.textContent = displayStructureName(sid);
@@ -2046,6 +2059,22 @@ function resetLearningSessionUi(message = "Выберите режим и нач
 }
 
 function applyLearningRegion() {
+  if (appMode === "explore") {
+    clearDeeperStructures();
+    restoreStudyHighlight();
+    restoreHighlights();
+    selectedStudyId = null;
+    selectedExploreSid = null;
+    focusedStructureIds = [];
+    isolated = false;
+    focusSelectedButton.disabled = true;
+    isolateButton.disabled = true;
+    hideSelectedButton.disabled = true;
+    canvas.dataset.selectedStudyLayer = "";
+    canvas.dataset.selectedStudySpecific = "";
+    canvas.dataset.deeperFocus = "false";
+  }
+
   availableTargets = filterCatalogByRegion(learningCatalog, selectedLearningRegion);
   currentTarget = null;
   syncLearningSessionSizes();
@@ -2832,6 +2861,12 @@ function nextSessionStep() {
 function selectExploreStructure(sid, hitStack = null) {
   if (sid == null || !structureNames[sid]) return;
 
+  const keepIsolation =
+    isolated &&
+    selectedStudyId == null &&
+    selectedExploreSid === sid &&
+    structureVisibility[sid] !== false;
+
   restoreStudyHighlight();
   restoreHighlights();
   selectedStudyId = null;
@@ -2839,7 +2874,7 @@ function selectExploreStructure(sid, hitStack = null) {
   canvas.dataset.selectedStudySpecific = "";
   selectedExploreSid = sid;
   focusedStructureIds = [sid];
-  isolated = false;
+  isolated = keepIsolation;
   highlightStructures([sid], "selected");
 
   questionLabelEl.textContent = "Мышца";
@@ -3498,6 +3533,8 @@ function disposeMaterial(material) {
 }
 
 function resetLoadedModel() {
+  clearDeeperStructures();
+  canvas.dataset.deeperFocus = "";
   restoreHighlights();
 
   for (const child of [...modelGroup.children]) {
