@@ -169,6 +169,9 @@ let learningSession = null;
 let currentItemWrongAttempts = 0;
 let lastWrongSid = null;
 let sessionSummaryShown = false;
+let examTimerId = null;
+let examDeadline = 0;
+const EXAM_ITEM_SECONDS = 20;
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
@@ -916,13 +919,16 @@ function updateLearningSummary() {
       ? "назвать выделенную мышцу"
       : selectedSessionMode === "practical"
         ? "вперемешку: найти и назвать"
-        : "найти мышцу по названию";
+        : selectedSessionMode === "exam"
+          ? "одна попытка · 20 секунд на задание"
+          : "найти мышцу по названию";
 
   learningSummaryEl.textContent =
     `${regionNameRu(selectedLearningRegion)} · ${summary.muscles} мышц · ${modeHint}`;
 }
 
 function resetLearningSessionUi(message = "Выберите режим и начните сессию.") {
+  clearExamTimer();
   learningSession = null;
   sessionSummaryShown = false;
   document.body.classList.remove("session-active");
@@ -1043,8 +1049,13 @@ function renderSessionProgress() {
       ? progress.done
       : progress.current;
   sessionProgressEl.hidden = false;
+  const examRemaining =
+    learningSession.mode === "exam" && examDeadline
+      ? Math.max(0, Math.ceil((examDeadline - Date.now()) / 1000))
+      : null;
   sessionProgressEl.textContent =
-    `${regionNameRu(selectedLearningRegion)} · ${visibleStep} из ${progress.total}`;
+    `${regionNameRu(selectedLearningRegion)} · ${visibleStep} из ${progress.total}` +
+    (examRemaining == null ? "" : ` · ${examRemaining} с`);
   sessionProgressEl.style.setProperty(
     "--session-progress",
     progress.total ? `${Math.round((progress.done / progress.total) * 100)}%` : "0%"
@@ -1072,6 +1083,125 @@ function renderNameChoices(item) {
   nameChoicesEl.hidden = false;
 }
 
+function clearExamTimer() {
+  if (examTimerId != null) {
+    clearInterval(examTimerId);
+    examTimerId = null;
+  }
+  examDeadline = 0;
+  canvas.dataset.examSeconds = "";
+}
+
+function startExamTimer() {
+  clearExamTimer();
+  if (!learningSession || learningSession.mode !== "exam" || locked) return;
+
+  examDeadline = Date.now() + EXAM_ITEM_SECONDS * 1000;
+  canvas.dataset.examSeconds = String(EXAM_ITEM_SECONDS);
+  renderSessionProgress();
+
+  examTimerId = setInterval(() => {
+    if (!learningSession || learningSession.mode !== "exam" || locked) {
+      clearExamTimer();
+      return;
+    }
+
+    const remaining = Math.max(0, Math.ceil((examDeadline - Date.now()) / 1000));
+    canvas.dataset.examSeconds = String(remaining);
+    renderSessionProgress();
+
+    if (remaining <= 0) {
+      clearExamTimer();
+      completeExamFailure({ timedOut: true });
+    }
+  }, 250);
+}
+
+function completeExamFailure({
+  chosenSid = null,
+  chosenTargetId = null,
+  chosenButton = null,
+  timedOut = false,
+} = {}) {
+  if (
+    !learningSession ||
+    learningSession.mode !== "exam" ||
+    !currentTarget ||
+    locked
+  ) return;
+
+  const item = currentSessionItem(learningSession);
+  if (!item) return;
+
+  clearExamTimer();
+  wrong += 1;
+  currentItemWrongAttempts = 1;
+  wrongEl.textContent = String(wrong);
+
+  if (item.skillId === "find" && chosenSid != null) {
+    const chosenTarget = learningTargetBySid.get(chosenSid);
+    if (chosenTarget) {
+      recordConfusion(
+        learningStore,
+        currentTarget.id,
+        chosenTarget.id,
+        "find"
+      );
+    }
+  }
+
+  if (
+    item.skillId === "name" &&
+    chosenTargetId &&
+    chosenTargetId !== currentTarget.id
+  ) {
+    recordConfusion(
+      learningStore,
+      currentTarget.id,
+      chosenTargetId,
+      "name"
+    );
+  }
+
+  recordLearningAttempt(
+    learningStore,
+    currentTarget.id,
+    item.skillId,
+    false,
+    undefined,
+    { addReviewDebt: true }
+  );
+
+  restoreHighlights();
+  if (item.skillId === "find") {
+    if (chosenSid != null) highlightStructures([chosenSid], "wrong");
+    const ids = targetStructureIds(currentTarget);
+    highlightStructures(ids, "answer");
+    focusedStructureIds = ids;
+    focusSelectedButton.disabled = false;
+  } else {
+    if (chosenButton) chosenButton.classList.add("wrong");
+    for (const option of nameChoicesEl.querySelectorAll(".name-choice")) {
+      if (option.dataset.targetId === currentTarget.id) option.classList.add("correct");
+      option.disabled = true;
+    }
+  }
+
+  feedbackEl.className = "feedback wrong";
+  feedbackEl.textContent =
+    (timedOut ? "Время вышло. " : "Неверно. ") +
+    `Ответ: «${currentTarget.nameRu}».`;
+
+  updateLearningSummary();
+  renderProgressPanel();
+  locked = true;
+  completeCurrentSessionItem({
+    correct: false,
+    wrongAttempts: 1,
+    revealed: true,
+  });
+}
+
 function prepareSessionItem() {
   if (!learningSession || appMode !== "quiz") return;
 
@@ -1094,14 +1224,16 @@ function prepareSessionItem() {
   canvas.dataset.nameView = "";
   canvas.dataset.trainingDisplay = "";
   canvas.dataset.connectiveTrainingHidden = "";
+  canvas.dataset.examSeconds = "";
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
-  quizActions.hidden = false;
+  const examMode = learningSession.mode === "exam";
+  quizActions.hidden = examMode;
   quizActions.classList.remove("next-only");
-  answerButton.hidden = false;
-  answerButton.disabled = false;
+  answerButton.hidden = examMode;
+  answerButton.disabled = examMode;
   nextButton.disabled = true;
   nextButton.textContent = "Следующая";
   feedbackEl.className = "feedback";
@@ -1144,6 +1276,9 @@ function prepareSessionItem() {
     questionEl.textContent = `Найдите: «${item.target.nameRu}»`;
     feedbackEl.textContent = "Коснитесь нужной мышцы на модели.";
   }
+
+  if (examMode) startExamTimer();
+  else clearExamTimer();
 }
 
 function startLearningSession(modeOverride = null) {
@@ -1194,6 +1329,7 @@ function startLearningSession(modeOverride = null) {
 
 function completeCurrentSessionItem(result) {
   if (!learningSession) return;
+  clearExamTimer();
 
   const item = currentSessionItem(learningSession);
   if (item) {
@@ -1226,6 +1362,7 @@ function completeCurrentSessionItem(result) {
 
 function finishLearningSession() {
   if (!learningSession) return;
+  clearExamTimer();
 
   const summary = sessionSummary(learningSession);
   recordSessionHistory(learningStore, learningSession, {
@@ -1325,6 +1462,7 @@ function commitPendingFindMistake() {
 
 function revealAnswer() {
   if (!currentTarget || appMode !== "quiz" || locked || !learningSession) return;
+  if (learningSession.mode === "exam") return;
 
   const item = currentSessionItem(learningSession);
   if (!item) return;
@@ -1405,6 +1543,11 @@ function chooseQuiz(sid) {
       revealed: false,
     });
   } else {
+    if (learningSession.mode === "exam") {
+      completeExamFailure({ chosenSid: sid });
+      return;
+    }
+
     highlightStructures([sid], "wrong");
     feedbackEl.className = "feedback wrong";
     feedbackEl.textContent =
@@ -1447,6 +1590,14 @@ function chooseNameAnswer(targetId, button) {
       revealed: false,
     });
   } else {
+    if (learningSession.mode === "exam") {
+      completeExamFailure({
+        chosenTargetId: targetId,
+        chosenButton: button,
+      });
+      return;
+    }
+
     wrong += 1;
     currentItemWrongAttempts += 1;
     wrongEl.textContent = String(wrong);
@@ -1474,6 +1625,7 @@ function chooseNameAnswer(targetId, button) {
 
 function revealDeeperAfterMistake() {
   if (appMode !== "quiz" || locked || lastWrongSid == null) return;
+  if (learningSession?.mode === "exam") return;
   if (structureVisibility[lastWrongSid] === false) return;
 
   const sid = lastWrongSid;
