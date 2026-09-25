@@ -41,6 +41,9 @@ const COVER_RE =
   /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
 
 const canvas = document.querySelector("#viewer");
+const viewerWrap = document.querySelector(".viewer-wrap");
+const panelEl = document.querySelector(".panel");
+const questionCardEl = document.querySelector(".question-card");
 const loadingEl = document.querySelector("#loading");
 const questionLabelEl = document.querySelector("#question-label");
 const questionEl = document.querySelector("#question");
@@ -64,7 +67,10 @@ const nameChoicesEl = document.querySelector("#name-choices");
 const revealDeeperButton = document.querySelector("#reveal-deeper");
 const boneMode = document.querySelector("#bone-mode");
 const boneOpacity = document.querySelector("#bone-opacity");
+const boneOpacityField = document.querySelector("#bone-opacity-field");
 const connectiveMode = document.querySelector("#connective-mode");
+const connectiveField = document.querySelector("#connective-field");
+const debugPanel = document.querySelector("#debug-panel");
 const modelSource = document.querySelector("#model-source");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
@@ -145,6 +151,23 @@ let sessionSummaryShown = false;
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
+
+const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
+
+function syncQuestionCardPlacement() {
+  const shouldDock =
+    mobileTaskMedia.matches &&
+    appMode === "quiz" &&
+    Boolean(learningSession);
+
+  if (shouldDock) {
+    if (questionCardEl.parentElement !== viewerWrap) viewerWrap.appendChild(questionCardEl);
+  } else if (questionCardEl.parentElement !== panelEl) {
+    panelEl.prepend(questionCardEl);
+  }
+
+  document.body.classList.toggle("task-docked", shouldDock);
+}
 let isolated = false;
 const hiddenStack = [];
 let locked = false;
