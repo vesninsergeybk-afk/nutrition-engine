@@ -90,20 +90,37 @@ let store = loadLearningStore(storage);
 recordLearningAttempt(store, "a", "find", false, storage, { addReviewDebt: true });
 recordLearningAttempt(store, "a", "find", false, storage, { addReviewDebt: false });
 recordLearningAttempt(store, "a", "find", true, storage, { retireMistake: false });
+recordLearningAttempt(store, "a", "name", false, storage, { addReviewDebt: true });
 recordLearningAttempt(store, "b", "name", false, storage, { addReviewDebt: true });
 store = loadLearningStore(storage);
 
 let mistakes = mistakeTargets(store, catalog);
-const aMistake = mistakes.find((item) => item.target.id === "a");
-const bMistake = mistakes.find((item) => item.target.id === "b");
-assert(aMistake?.debt === 1 && aMistake.skillId === "find", "One failed item must create one find review debt");
-assert(bMistake?.debt === 1 && bMistake.skillId === "name", "Name mistake debt is wrong");
+const aFindMistake = mistakes.find((item) => item.target.id === "a" && item.skillId === "find");
+const aNameMistake = mistakes.find((item) => item.target.id === "a" && item.skillId === "name");
+const bNameMistake = mistakes.find((item) => item.target.id === "b" && item.skillId === "name");
+assert(aFindMistake?.debt === 1, "One failed item must create one find review debt");
+assert(aNameMistake?.debt === 1, "The same muscle must retain an independent name-review debt");
+assert(bNameMistake?.debt === 1, "Name mistake debt is wrong");
+
+const mixedReview = createLearningSession({
+  mode: "mistakes",
+  catalog,
+  store,
+  size: 5,
+  rng: () => 0.3,
+});
+assert(
+  mixedReview.items.some((item) => item.target.id === "a" && item.skillId === "find") &&
+    mixedReview.items.some((item) => item.target.id === "a" && item.skillId === "name"),
+  "Mistake review collapsed two skills of one muscle into a single item"
+);
 
 recordLearningAttempt(store, "a", "find", true, storage, { retireMistake: true });
+recordLearningAttempt(store, "a", "name", true, storage, { retireMistake: true });
 recordLearningAttempt(store, "b", "name", true, storage, { retireMistake: true });
 store = loadLearningStore(storage);
 mistakes = mistakeTargets(store, catalog);
-assert(!mistakes.some((item) => item.target.id === "a"), "Resolved find mistake stayed in queue");
+assert(!mistakes.some((item) => item.target.id === "a"), "Resolved muscle skills stayed in review queue");
 assert(!mistakes.some((item) => item.target.id === "b"), "Resolved name mistake stayed in queue");
 
 const practical = createLearningSession({
@@ -124,4 +141,5 @@ console.log("Learning sessions: finite unique targets ok");
 console.log("Confusable target spacing: ok");
 console.log("Smart distractors: ok");
 console.log("Mistake debt retirement: ok");
+console.log("Independent skill review: ok");
 console.log("Session summary: ok");
