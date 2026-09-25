@@ -115,6 +115,34 @@ function validationNameRu(entry) {
   return term?.nameRu || entry.canonical_key;
 }
 
+function qualityStructureSide(sourceName) {
+  const source = String(sourceName || "");
+  if (/\b(?:right|left) ventricle\b/i.test(source)) return null;
+  if (/\bright\b/i.test(source)) return "справа";
+  if (/\bleft\b/i.test(source)) return "слева";
+  return null;
+}
+
+function qualityDisplayName(sourceName) {
+  const term = structureTerm(sourceName);
+  const nameRu = term?.nameRu || sourceName;
+  const side = qualityStructureSide(sourceName);
+  if (!side) return nameRu;
+
+  const base = String(nameRu || "")
+    .replace(/\s*\((?:справа|слева)\)\s*$/iu, "")
+    .replace(/^(?:правая|левая)\s+/iu, "")
+    .replace(
+      /\b(?:прав(?:ой|ую|ого|ому|ым|ом)|лев(?:ой|ую|ого|ому|ым|ом))\b/giu,
+      ""
+    )
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
+    .trim();
+
+  return base ? base + " (" + side + ")" : nameRu;
+}
+
 function reviewLabel(value) {
   if (value === "verified") return "проверено";
   if (value === "not_applicable") return "не требуется";
@@ -274,7 +302,7 @@ function selectMesh(mesh) {
 
   const part = mesh.userData.part;
   const triangles = Math.floor(part.indexCount / 3);
-  selectedEl.textContent = part.name;
+  selectedEl.textContent = qualityDisplayName(part.name);
   metaEl.textContent =
     (part.system === "muscular" ? "Мышца" : "Кость") +
     " · representation ID: " + part.id +
@@ -444,7 +472,9 @@ async function loadAtlas() {
     .map((mesh) => {
       const validation = validationEntryForName(mesh.name);
       const auditMark = validation?.status === "verified_for_teaching" ? "✓ " : "· ";
-      return auditMark + (mesh.userData.kind === "muscle" ? "М · " : "К · ") + mesh.name;
+      return auditMark +
+        (mesh.userData.kind === "muscle" ? "М · " : "К · ") +
+        qualityDisplayName(mesh.name);
     })
     .sort((a, b) => a.localeCompare(b))
     .join("\n");
