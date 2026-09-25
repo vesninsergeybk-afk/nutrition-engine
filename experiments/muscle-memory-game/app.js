@@ -1318,7 +1318,10 @@ function mergeSkeletonGeometries(geometries) {
 }
 
 function applyBoneDisplayMode() {
-  if (!skeletonMesh) return;
+  if (!skeletonMesh) {
+    boneOpacityField.hidden = true;
+    return;
+  }
 
   const mode = boneDisplayMode;
   const material = skeletonMesh.material;
@@ -1326,6 +1329,7 @@ function applyBoneDisplayMode() {
   if (mode === "off") {
     skeletonMesh.visible = false;
     boneOpacity.disabled = true;
+    boneOpacityField.hidden = true;
     canvas.dataset.boneMode = mode;
     canvas.dataset.boneTransparent = "false";
     canvas.dataset.boneStencil = "off";
@@ -1342,6 +1346,7 @@ function applyBoneDisplayMode() {
     anatomyMesh.renderOrder = 0;
     skeletonMesh.renderOrder = 1;
     boneOpacity.disabled = true;
+    boneOpacityField.hidden = true;
   } else {
     material.transparent = true;
     material.opacity = Number(boneOpacity.value);
@@ -1349,6 +1354,7 @@ function applyBoneDisplayMode() {
     material.depthWrite = false;
     skeletonMesh.renderOrder = 10;
     boneOpacity.disabled = false;
+    boneOpacityField.hidden = false;
   }
 
   material.needsUpdate = true;
@@ -1542,10 +1548,12 @@ function createConnectiveMaterial() {
 function applyConnectiveDisplayMode() {
   if (!connectiveMesh) {
     connectiveMode.disabled = true;
+    connectiveField.hidden = true;
     canvas.dataset.connectiveMode = "unavailable";
     return;
   }
 
+  connectiveField.hidden = false;
   connectiveMode.disabled = false;
   const mode = connectiveDisplayMode;
   const material = connectiveMesh.material;
@@ -1938,10 +1946,7 @@ async function loadSelectedModel(source) {
   const requestedSource = source === "bodyparts4" ? "bodyparts4" : "z-anatomy";
   modelSource.disabled = true;
   loadingEl.classList.remove("is-hidden");
-  loadingEl.textContent =
-    requestedSource === "bodyparts4"
-      ? "Загружаю полнотелую BodyParts3D 4.0…"
-      : "Загружаю Z-Anatomy…";
+  loadingEl.textContent = "Загружаю анатомическую модель…";
 
   resetLoadedModel();
   currentModelSource = requestedSource;
@@ -1973,7 +1978,7 @@ async function loadSelectedModel(source) {
     loadingEl.textContent = "Не удалось загрузить выбранную 3D-модель.";
     questionEl.textContent = "Ошибка загрузки";
     feedbackEl.textContent =
-      "Можно выбрать другой источник модели в том же интерфейсе.";
+      "Попробуйте выбрать другую анатомическую модель в разделе «Отображение».";
     diagnosticsEl.textContent = String(error?.message || error);
     modelSource.disabled = false;
   }
