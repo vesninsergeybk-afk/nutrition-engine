@@ -340,6 +340,18 @@ jobs:
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
 
+            // Muscle training uses a normalized anatomical display: bones remain
+            // anatomical landmarks while connective tissue cannot cover the answer.
+            await page.click('#mode-quiz');
+            await page.click('[data-learning-mode="find"]');
+            await page.click('#start-learning-session');
+            assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'true');
+            assert.equal(await page.locator('#viewer').getAttribute('data-connective-training-hidden'), 'true');
+            await page.click('#exit-learning-session');
+            assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'false');
+            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
+            await page.click('#mode-explore');
+
             await page.fill('#structure-search', 'передняя большеберцовая');
             await page.waitForFunction(
               () => document.querySelectorAll('.search-result').length > 0,
