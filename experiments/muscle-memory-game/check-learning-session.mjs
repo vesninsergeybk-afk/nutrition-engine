@@ -38,6 +38,23 @@ assert(findSession.items.length === 5, "Find session size is wrong");
 assert(new Set(findSession.items.map((item) => item.target.id)).size === 5, "Session repeats targets");
 assert(findSession.items.every((item) => item.skillId === "find"), "Find session has wrong skill");
 
+const sequenceRng = (() => {
+  let n = 0;
+  return () => ((n++ * 19 + 11) % 97) / 97;
+})();
+const spreadSession = createLearningSession({
+  mode: "find",
+  catalog,
+  store: { records: {} },
+  size: 6,
+  rng: sequenceRng,
+});
+const spreadIds = spreadSession.items.map((item) => item.target.id);
+assert(
+  Math.abs(spreadIds.indexOf("a") - spreadIds.indexOf("b")) > 1,
+  "Confusable large/small teres targets were placed consecutively"
+);
+
 completeSessionItem(findSession, { correct: true, wrongAttempts: 1 });
 assert(sessionProgress(findSession).done === 1, "Session progress did not advance");
 
@@ -104,6 +121,7 @@ assert(summary.total === 3 && summary.clean === 3, "Practical summary is wrong")
 assert(sessionProgress(practical).finished, "Practical session did not finish");
 
 console.log("Learning sessions: finite unique targets ok");
+console.log("Confusable target spacing: ok");
 console.log("Smart distractors: ok");
 console.log("Mistake debt retirement: ok");
 console.log("Session summary: ok");
