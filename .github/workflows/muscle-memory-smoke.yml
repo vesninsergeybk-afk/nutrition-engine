@@ -148,7 +148,7 @@ jobs:
             await page.selectOption('#learning-region', 'shoulder');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 0);
-            assert.match(await page.locator('#learning-summary').innerText(), /Плечевой пояс:/);
+            assert.match(await page.locator('#learning-summary').innerText(), /Плечевой пояс/);
 
             await page.selectOption('#learning-region', 'all');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'all');
@@ -224,12 +224,17 @@ jobs:
             assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/i);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-summary.png', fullPage: true });
 
-            // Mobile-width learning UI must stay usable without a separate flow.
+            // Mobile training becomes a task sheet attached to the 3D viewer.
             await page.setViewportSize({ width: 412, height: 915 });
             await page.selectOption('#learning-session-mode', 'name');
             await page.click('#start-learning-session');
-            assert.equal(await page.locator('#learning-controls').isVisible(), true);
+            assert.equal(await page.locator('#learning-controls').isHidden(), true);
             assert.equal(await page.locator('.name-choice').count(), 4);
+            assert.equal(
+              await page.locator('.question-card').evaluate(el => el.parentElement?.classList.contains('viewer-wrap')),
+              true
+            );
+            assert.equal(await page.locator('#score').isHidden(), true);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-mobile-name.png', fullPage: true });
             await page.setViewportSize({ width: 1440, height: 1000 });
 
@@ -248,6 +253,7 @@ jobs:
             assert.doesNotMatch(zDeltoidLabel, /deltoid/i);
 
             const pathnameBefore = new URL(page.url()).pathname;
+            await page.locator('.viewer-settings > summary').click();
             await page.selectOption('#model-source', 'bodyparts4');
 
             await page.waitForFunction(
