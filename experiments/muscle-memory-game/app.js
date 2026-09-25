@@ -754,12 +754,44 @@ function finishLearningSession() {
   canvas.dataset.learningSessionFinished = "true";
 }
 
+function commitPendingFindMistake() {
+  if (
+    lastWrongSid == null ||
+    !learningSession ||
+    !currentTarget ||
+    locked
+  ) return false;
+
+  const item = currentSessionItem(learningSession);
+  if (!item || item.skillId !== "find") return false;
+
+  wrong += 1;
+  currentItemWrongAttempts += 1;
+  wrongEl.textContent = String(wrong);
+
+  recordLearningAttempt(
+    learningStore,
+    currentTarget.id,
+    "find",
+    false,
+    undefined,
+    { addReviewDebt: currentItemWrongAttempts === 1 }
+  );
+  updateLearningSummary();
+
+  lastWrongSid = null;
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
+  return true;
+}
+
 function revealAnswer() {
   if (!currentTarget || appMode !== "quiz" || locked || !learningSession) return;
 
   const item = currentSessionItem(learningSession);
   if (!item) return;
 
+  if (item.skillId === "find") commitPendingFindMistake();
   restoreHighlights();
   const ids = targetStructureIds(currentTarget);
   highlightStructures(ids, "answer");
@@ -802,6 +834,7 @@ function chooseQuiz(sid) {
   const item = currentSessionItem(learningSession);
   if (!item || item.skillId !== "find") return;
 
+  if (lastWrongSid != null) commitPendingFindMistake();
   restoreHighlights();
   const isCorrect = targetStructureIds(currentTarget).includes(sid);
 
@@ -832,22 +865,10 @@ function chooseQuiz(sid) {
       revealed: false,
     });
   } else {
-    wrong += 1;
-    currentItemWrongAttempts += 1;
-    wrongEl.textContent = String(wrong);
     highlightStructures([sid], "wrong");
     feedbackEl.className = "feedback wrong";
     feedbackEl.textContent =
-      `Это «${displayStructureName(sid)}». Можно продолжить поиск или скрыть эту структуру, если цель лежит глубже.`;
-    recordLearningAttempt(
-      learningStore,
-      currentTarget.id,
-      "find",
-      false,
-      undefined,
-      { addReviewDebt: currentItemWrongAttempts === 1 }
-    );
-    updateLearningSummary();
+      `Вы попали в «${displayStructureName(sid)}». Если она закрывает целевую мышцу, скройте её и продолжайте поиск глубже; иначе выберите другую структуру.`;
 
     lastWrongSid = sid;
     revealDeeperButton.hidden = false;
@@ -916,7 +937,7 @@ function revealDeeperAfterMistake() {
 
   feedbackEl.className = "feedback";
   feedbackEl.textContent =
-    `«${displayStructureName(sid)}» скрыта. Продолжайте искать целевую мышцу глубже.`;
+    `«${displayStructureName(sid)}» скрыта как поверхностный слой. Это навигационное действие не засчитано как ошибка; продолжайте поиск глубже.`;
 
   lastWrongSid = null;
   revealDeeperButton.hidden = true;
