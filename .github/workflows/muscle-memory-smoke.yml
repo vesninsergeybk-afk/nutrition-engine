@@ -19,7 +19,9 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Full-body BodyParts3D is downloaded from the pinned upstream source in the
+    # browser test. Cold GitHub runners can legitimately need more than 15 min.
+    timeout-minutes: 25
 
     steps:
       - uses: actions/checkout@v4
