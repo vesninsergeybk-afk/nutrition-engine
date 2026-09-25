@@ -18,6 +18,11 @@ import {
   regionNameRu,
 } from "./learning-engine.js";
 import {
+  RETENTION_OUTCOMES,
+  buildTodayQueue,
+  recordReviewOutcome,
+} from "./retention-engine.js";
+import {
   SESSION_MODES,
   buildSmartChoices,
   completeSessionItem,
@@ -59,6 +64,7 @@ const targetStatusEl = document.querySelector("#target-status");
 const learningControls = document.querySelector("#learning-controls");
 const learningRegion = document.querySelector("#learning-region");
 const learningSummaryEl = document.querySelector("#learning-summary");
+const todayLearningSessionButton = document.querySelector("#today-learning-session");
 const learningSessionMode = document.querySelector("#learning-session-mode");
 const learningModeButtons = [...document.querySelectorAll("[data-learning-mode]")];
 const learningSessionSize = document.querySelector("#learning-session-size");
@@ -675,6 +681,23 @@ function setLearningMode(mode, { reset = true } = {}) {
   }
 }
 
+function todayQueueForCurrentRegion(limit = 30) {
+  return buildTodayQueue(learningStore, availableTargets, {
+    now: Date.now(),
+    limit,
+  });
+}
+
+function updateTodayAction() {
+  const due = todayQueueForCurrentRegion();
+  todayLearningSessionButton.hidden = due.length === 0 || appMode !== "quiz";
+  todayLearningSessionButton.disabled = due.length === 0;
+  todayLearningSessionButton.textContent =
+    due.length === 1
+      ? "Повторить сегодня · 1 задание"
+      : `Повторить сегодня · ${due.length} заданий`;
+}
+
 function canStartLearningSession() {
   if (!availableTargets.length) return false;
   if (selectedSessionMode !== "mistakes") return true;
@@ -728,6 +751,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   syncLearningModeButtons();
   startLearningSessionButton.disabled = !canStartLearningSession();
   startLearningSessionButton.textContent = "Начать";
+  updateTodayAction();
 
   if (appMode === "quiz") {
     questionLabelEl.textContent = "Тренировка";
@@ -737,6 +761,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   }
 
   syncQuestionCardPlacement();
+  updateTodayAction();
 }
 
 function applyLearningRegion() {
@@ -757,6 +782,7 @@ function applyLearningRegion() {
   syncLearningModeButtons();
   startLearningSessionButton.disabled = !canStartLearningSession();
   updateLearningSummary();
+  updateTodayAction();
 
   if (!availableTargets.length) {
     resetLearningSessionUi("В этой области нет учебных целей. Выберите другую область тела.");
@@ -917,15 +943,18 @@ function prepareSessionItem() {
   }
 }
 
-function startLearningSession() {
+function startLearningSession(modeOverride = null) {
   if (!availableTargets.length || appMode !== "quiz") return;
 
-  selectedSessionMode = learningSessionMode.value;
-  updateLearningSummary();
+  const sessionMode = modeOverride || learningSessionMode.value;
+  if (!modeOverride) {
+    selectedSessionMode = sessionMode;
+    updateLearningSummary();
+  }
   const size = Number(learningSessionSize.value) || 10;
 
   learningSession = createLearningSession({
-    mode: selectedSessionMode,
+    mode: sessionMode,
     catalog: availableTargets,
     store: learningStore,
     size,
@@ -933,9 +962,11 @@ function startLearningSession() {
 
   if (!learningSession.items.length) {
     resetLearningSessionUi(
-      selectedSessionMode === "mistakes"
-        ? "В выбранной области пока нет сохранённых ошибок. Сначала пройдите обычную тренировку."
-        : "Для этой сессии не удалось подобрать задания."
+      sessionMode === "today"
+        ? "На сегодня повторений нет."
+        : selectedSessionMode === "mistakes"
+          ? "В выбранной области пока нет сохранённых ошибок. Сначала пройдите обычную тренировку."
+          : "Для этой сессии не удалось подобрать задания."
     );
     return;
   }
@@ -960,7 +991,25 @@ function startLearningSession() {
 
 function completeCurrentSessionItem(result) {
   if (!learningSession) return;
+
+  const item = currentSessionItem(learningSession);
+  if (item) {
+    const outcome = result?.revealed
+      ? RETENTION_OUTCOMES.revealed
+      : result?.correct && (Number(result?.wrongAttempts) || 0) === 0
+        ? RETENTION_OUTCOMES.clean
+        : RETENTION_OUTCOMES.corrected;
+
+    recordReviewOutcome(
+      learningStore,
+      item.target.id,
+      item.skillId,
+      outcome
+    );
+  }
+
   completeSessionItem(learningSession, result);
+  updateTodayAction();
   renderSessionProgress();
 
   answerButton.hidden = true;
@@ -1294,6 +1343,7 @@ function setMode(mode) {
   sessionProgressEl.hidden = mode !== "quiz" || !learningSession;
   scoreEl.hidden = true;
   document.body.classList.toggle("explore-mode", mode === "explore");
+  updateTodayAction();
   if (mode !== "quiz") document.body.classList.remove("session-active");
   syncQuestionCardPlacement();
 
@@ -2266,7 +2316,8 @@ for (const button of learningModeButtons) {
   });
 }
 
-startLearningSessionButton.addEventListener("click", startLearningSession);
+startLearningSessionButton.addEventListener("click", () => startLearningSession());
+todayLearningSessionButton.addEventListener("click", () => startLearningSession("today"));
 exitLearningSessionButton.addEventListener("click", () => {
   resetLearningSessionUi("Выберите область и способ тренировки.");
 });
