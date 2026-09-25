@@ -32,6 +32,7 @@ jobs:
           node --check experiments/muscle-memory-game/bodyparts4-muscles-ru.js
           node --check experiments/muscle-memory-game/learning-engine.js
           node --check experiments/muscle-memory-game/check-learning-engine.mjs
+          node --check experiments/muscle-memory-game/check-learning-cross-source.mjs
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
@@ -69,6 +70,7 @@ jobs:
 
           node experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node experiments/muscle-memory-game/check-learning-engine.mjs
+          node experiments/muscle-memory-game/check-learning-cross-source.mjs
 
       - name: Install browser
         run: |
