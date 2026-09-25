@@ -307,6 +307,13 @@ jobs:
             const examSeconds = Number(await page.locator('#viewer').getAttribute('data-exam-seconds'));
             assert.ok(examSeconds > 0 && examSeconds <= 20);
             assert.match(await page.locator('#session-progress').innerText(), /\d+ с/);
+            const examSkill = await page.locator('#viewer').getAttribute('data-learning-current-skill');
+            if (examSkill === 'find') {
+              assert.equal(
+                await page.locator('#viewer').getAttribute('data-exam-find-accessible'),
+                'true'
+              );
+            }
             await page.click('#exit-learning-session');
 
             // Return to setup before checking the mobile NAME flow.
