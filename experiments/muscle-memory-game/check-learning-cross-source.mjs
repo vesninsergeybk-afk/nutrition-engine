@@ -74,6 +74,9 @@ console.log("Cross-source learning targets:", {
   z: zCatalog.length,
   bodyParts: bpCatalog.length,
   shared: shared.length,
+  commonCoverage: Math.round(
+    (shared.length / Math.max(1, Math.min(zCatalog.length, bpCatalog.length))) * 1000
+  ) / 10 + "%",
 });
 console.log("Shoulder overlap:", {
   z: zShoulder.length,
@@ -83,9 +86,13 @@ console.log("Shoulder overlap:", {
 console.log("Only Z shoulder:", onlyZShoulder.map((item) => item.nameRu).join(" | ") || "none");
 console.log("Only BodyParts shoulder:", onlyBpShoulder.map((item) => item.nameRu).join(" | ") || "none");
 
+const commonCoverage =
+  shared.length / Math.max(1, Math.min(zCatalog.length, bpCatalog.length));
+
 assert(
-  shared.length >= 160,
-  "Too little cross-source catalog overlap for common concepts: " + shared.length
+  commonCoverage >= 0.84,
+  "Too little cross-source catalog overlap for common concepts: " +
+    shared.length + "/" + Math.min(zCatalog.length, bpCatalog.length)
 );
 assert(
   sharedShoulder.length >= Math.min(zShoulder.length, bpShoulder.length) - 1,
