@@ -369,3 +369,61 @@ button:disabled {
 .embed-mode h1 {
   font-size: clamp(24px, 3vw, 38px);
 }
+
+
+.learning-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, auto);
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+
+.learning-field,
+.learning-skill {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.learning-field > span,
+.learning-skill > span {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(23, 23, 25, 0.58);
+}
+
+.learning-field select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(0, 0, 0, 0.13);
+  border-radius: 11px;
+  background: #fff;
+  color: inherit;
+  padding: 9px 10px;
+}
+
+.learning-skill strong {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.025);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.learning-summary {
+  margin: 0 0 16px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(23, 23, 25, 0.62);
+}
+
+@media (max-width: 560px) {
+  .learning-controls {
+    grid-template-columns: 1fr;
+  }
+}
