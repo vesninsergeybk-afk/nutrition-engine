@@ -64,6 +64,7 @@ const learningModeButtons = [...document.querySelectorAll("[data-learning-mode]"
 const learningSessionSize = document.querySelector("#learning-session-size");
 const startLearningSessionButton = document.querySelector("#start-learning-session");
 const sessionProgressEl = document.querySelector("#session-progress");
+const exitLearningSessionButton = document.querySelector("#exit-learning-session");
 const nameChoicesEl = document.querySelector("#name-choices");
 const revealDeeperButton = document.querySelector("#reveal-deeper");
 const boneMode = document.querySelector("#bone-mode");
@@ -588,6 +589,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   nameChoicesEl.replaceChildren();
   nameChoicesEl.hidden = true;
   sessionProgressEl.hidden = true;
+  exitLearningSessionButton.hidden = true;
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   answerButton.disabled = true;
@@ -796,6 +798,7 @@ function startLearningSession() {
   wrongEl.textContent = "0";
   sessionSummaryShown = false;
   document.body.classList.add("session-active");
+  exitLearningSessionButton.hidden = false;
   if (viewerSettings) viewerSettings.open = false;
   startLearningSessionButton.textContent = "Перезапустить";
   syncQuestionCardPlacement();
@@ -855,6 +858,7 @@ function finishLearningSession() {
     : "Все задания выполнены без ошибок и подсказки.";
 
   sessionProgressEl.hidden = false;
+  exitLearningSessionButton.hidden = true;
   sessionProgressEl.textContent =
     `Итог · ${regionNameRu(selectedLearningRegion)} · ${summary.completed}/${summary.total}`;
 
@@ -2075,6 +2079,9 @@ for (const button of learningModeButtons) {
 }
 
 startLearningSessionButton.addEventListener("click", startLearningSession);
+exitLearningSessionButton.addEventListener("click", () => {
+  resetLearningSessionUi("Выберите область и способ тренировки.");
+});
 
 focusShoulderButton.addEventListener("click", focusLearningRegion);
 focusFullButton.addEventListener("click", () => setFullBodyView());
