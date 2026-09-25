@@ -470,6 +470,12 @@ function summarySkillForMode() {
   return selectedSessionMode === "name" ? "name" : "find";
 }
 
+function canStartLearningSession() {
+  if (!availableTargets.length) return false;
+  if (selectedSessionMode !== "mistakes") return true;
+  return mistakeTargets(learningStore, availableTargets).length > 0;
+}
+
 function updateLearningSummary() {
   if (selectedSessionMode === "mistakes") {
     const queue = mistakeTargets(learningStore, availableTargets);
@@ -509,7 +515,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   revealDeeperButton.disabled = true;
   answerButton.disabled = true;
   nextButton.disabled = true;
-  startLearningSessionButton.disabled = !availableTargets.length;
+  startLearningSessionButton.disabled = !canStartLearningSession();
   startLearningSessionButton.textContent = "Начать";
 
   if (appMode === "quiz") {
@@ -533,7 +539,7 @@ function applyLearningRegion() {
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
 
   learningSessionMode.disabled = availableTargets.length === 0;
-  startLearningSessionButton.disabled = availableTargets.length === 0;
+  startLearningSessionButton.disabled = !canStartLearningSession();
   updateLearningSummary();
 
   if (!availableTargets.length) {
@@ -1915,7 +1921,11 @@ learningRegion.addEventListener("change", () => {
 learningSessionMode.addEventListener("change", () => {
   selectedSessionMode = learningSessionMode.value;
   updateLearningSummary();
-  resetLearningSessionUi();
+  resetLearningSessionUi(
+    selectedSessionMode === "mistakes" && !canStartLearningSession()
+      ? "В выбранном регионе пока нет сохранённых ошибок."
+      : "Выберите режим и начните сессию."
+  );
 });
 
 startLearningSessionButton.addEventListener("click", startLearningSession);
