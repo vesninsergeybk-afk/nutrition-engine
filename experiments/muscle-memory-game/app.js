@@ -925,11 +925,16 @@ function applyStudyLayerPreset(preset = "muscles") {
 
 function syncLayerPresetAvailability() {
   const available = currentModelSource === "bodyparts4";
-  layerPresetField.hidden = !available;
-  layerPresetNote.hidden = !available;
+  layerPresetField.hidden = false;
+  layerPresetNote.hidden = false;
   layerPreset.disabled = !available;
+  layerPresetNote.textContent = available
+    ? "Послойные режимы применяются внутри выбранного учебного блока."
+    : "Послойные тканевые режимы доступны в BodyParts3D; мышечный блок остаётся доступен в текущей модели.";
+
   if (!available) {
     currentLayerPreset = "muscles";
+    layerPreset.value = "muscles";
     canvas.dataset.layerPreset = "muscles";
   }
 }
@@ -3446,8 +3451,16 @@ function applySkinDisplayMode() {
 
 function applyTrainingDisplayOverride() {
   applyRegionMuscleVisibility();
-  muscleDisplayMode = "anatomical";
-  applyMuscleDisplayMode();
+
+  if (anatomyMesh) {
+    const material = anatomyMesh.material;
+    anatomyMesh.visible = true;
+    material.transparent = false;
+    material.opacity = 1;
+    material.depthTest = true;
+    material.depthWrite = true;
+    material.needsUpdate = true;
+  }
 
   if (skeletonMesh) skeletonMesh.visible = false;
   for (const mesh of connectiveMeshes.values()) mesh.visible = false;
