@@ -884,10 +884,17 @@ function applyStudyLayerPreset(preset = "muscles") {
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
   setConnectiveLayerSelection([]);
-  boneDisplayMode = preset === "muscles" ? "anatomical" : "off";
+  boneDisplayMode =
+    preset === "muscles" && !regionIsolationActive()
+      ? "anatomical"
+      : "off";
   boneMode.value = boneDisplayMode;
 
-  if (preset === "skin") {
+  if (preset === "bones") {
+    muscleDisplayMode = "ghost";
+    boneDisplayMode = "anatomical";
+    boneMode.value = boneDisplayMode;
+  } else if (preset === "skin") {
     muscleDisplayMode = "ghost";
     skinDisplayMode = "anatomical";
   } else if (preset === "subcutaneous") {
@@ -950,10 +957,10 @@ function resetRegionSupportLayers() {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  boneDisplayMode = "anatomical";
+  boneDisplayMode = "off";
   if (skinMode) skinMode.value = "off";
   if (connectiveMode) connectiveMode.value = "off";
-  if (boneMode) boneMode.value = "anatomical";
+  if (boneMode) boneMode.value = "off";
   setConnectiveLayerSelection([]);
   for (const input of referenceLayerInputs) input.checked = false;
 }
@@ -974,17 +981,12 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
     canvas.dataset.regionBoneContext = regional ? "filtered" : "all";
   }
 
-  if (regional) {
-    for (const mesh of referenceMeshes.values()) mesh.visible = false;
-    setReferenceLayerAvailability(false);
-    canvas.dataset.referenceTrainingHidden = "false";
-  } else {
-    setReferenceLayerAvailability(currentModelSource === "z-anatomy");
-    restoreReferenceLayerVisibility();
-  }
+  setReferenceLayerAvailability(currentModelSource === "z-anatomy");
+  restoreReferenceLayerVisibility();
 
   applyConnectiveDisplayMode();
   applySkinDisplayMode();
+  restoreReferenceLayerVisibility();
 
   if (focus) {
     if (regional) focusLearningRegion();
@@ -3064,16 +3066,7 @@ function applyBoneDisplayMode() {
     return;
   }
 
-  if (regionIsolationActive()) {
-    skeletonMesh.visible = false;
-    boneOpacity.disabled = true;
-    boneOpacityField.hidden = true;
-    canvas.dataset.boneMode = "regional-hidden";
-    canvas.dataset.boneTransparent = "false";
-    canvas.dataset.boneStencil = "off";
-    return;
-  }
-
+  applyRegionBoneVisibility();
   const mode = boneDisplayMode;
   const material = skeletonMesh.material;
 
@@ -3110,6 +3103,7 @@ function applyBoneDisplayMode() {
 
   material.needsUpdate = true;
   canvas.dataset.boneMode = mode;
+  canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full";
   canvas.dataset.boneTransparent = String(Boolean(material.transparent));
   canvas.dataset.boneStencil = "off";
 }
@@ -3306,6 +3300,7 @@ function resetLoadedModel() {
   canvas.dataset.selectedStudyLayer = "";
   canvas.dataset.selectedStudySpecific = "";
   canvas.dataset.boneMode = "";
+  canvas.dataset.boneScope = "";
   canvas.dataset.boneTransparent = "";
   canvas.dataset.regionVisibleBones = "";
   canvas.dataset.boneStencil = "";
@@ -3397,7 +3392,7 @@ const CONNECTIVE_DISPLAY_NAME_RE =
   /ligament|fascia|tendon|aponeuros|retinacul|cartilage|bursa|capsule|synovial|subcutaneous|adipose|iliotibial tract/i;
 
 function createReferenceMaterial(layerKey) {
-  return new THREE.MeshStandardMaterial({
+  const material = new THREE.MeshStandardMaterial({
     color: REFERENCE_LAYER_COLORS[layerKey] || 0xb8b8b8,
     roughness: 0.58,
     metalness: 0,
@@ -3407,6 +3402,58 @@ function createReferenceMaterial(layerKey) {
     depthTest: true,
     depthWrite: true,
   });
+  return attachStructureVisibilityShader(
+    material,
+    "reference-region-visibility-" + layerKey
+  );
+}
+
+function referenceWorldBox(mesh, partIndex) {
+  const local = mesh?.userData?.referenceBounds?.[partIndex];
+  if (!mesh || !local) return new THREE.Box3().makeEmpty();
+  mesh.updateMatrixWorld(true);
+  return local.clone().applyMatrix4(mesh.matrixWorld);
+}
+
+function setReferencePartVisible(mesh, partIndex, visible) {
+  const range = mesh?.userData?.referenceRanges?.[partIndex];
+  const attr = mesh?.geometry?.getAttribute("structureVisible");
+  if (!range || !attr) return;
+
+  attr.array.fill(
+    visible ? 1 : 0,
+    range.start,
+    range.start + range.count
+  );
+  attr.needsUpdate = true;
+}
+
+function applyReferenceRegionVisibility(mesh) {
+  const ranges = mesh?.userData?.referenceRanges || [];
+  if (!mesh || !ranges.length) return 0;
+
+  if (!regionIsolationActive()) {
+    for (let i = 0; i < ranges.length; i += 1) {
+      setReferencePartVisible(mesh, i, true);
+    }
+    return ranges.length;
+  }
+
+  const context = regionalBoneContextBox();
+  if (context.isEmpty()) {
+    for (let i = 0; i < ranges.length; i += 1) {
+      setReferencePartVisible(mesh, i, false);
+    }
+    return 0;
+  }
+
+  let visible = 0;
+  for (let i = 0; i < ranges.length; i += 1) {
+    const show = context.intersectsBox(referenceWorldBox(mesh, i));
+    setReferencePartVisible(mesh, i, show);
+    if (show) visible += 1;
+  }
+  return visible;
 }
 
 function updateReferenceLayerDataset() {
@@ -3421,7 +3468,10 @@ function restoreReferenceLayerVisibility() {
   for (const input of referenceLayerInputs) {
     const key = input.dataset.referenceLayer;
     const mesh = referenceMeshes.get(key);
-    if (mesh) mesh.visible = Boolean(input.checked);
+    if (!mesh) continue;
+
+    const visibleParts = applyReferenceRegionVisibility(mesh);
+    mesh.visible = Boolean(input.checked) && visibleParts > 0;
   }
   updateReferenceLayerDataset();
 }
@@ -3445,15 +3495,22 @@ async function loadReferenceLayer(layerKey) {
 
     gltf.scene.updateMatrixWorld(true);
     const geometries = [];
+    const vertexCounts = [];
+    const localBounds = [];
+
     gltf.scene.traverse((child) => {
       if (!child.isMesh) return;
 
-      // Reference layers are not bones. Keep their geometry independent so
-      // loading nerves/vessels/lymphatics can never corrupt bone ranges or
-      // regional skeletal filtering.
-      geometries.push(
-        cleanSkeletonGeometry(child.geometry, child.matrixWorld)
+      // Reference layers keep their own part IDs. They never share bone state.
+      const referenceId = vertexCounts.length;
+      const geometry = cleanSkeletonGeometry(
+        child.geometry,
+        child.matrixWorld,
+        referenceId
       );
+      vertexCounts.push(geometry.getAttribute("position").count);
+      localBounds.push(geometry.boundingBox?.clone() || null);
+      geometries.push(geometry);
     });
 
     const { merged, temporaries } = mergeSkeletonGeometries(geometries);
@@ -3461,14 +3518,26 @@ async function loadReferenceLayer(layerKey) {
     for (const geometry of temporaries) geometry.dispose();
     if (!merged) throw new Error("Не удалось собрать дополнительный анатомический слой.");
 
+    let start = 0;
+    const ranges = vertexCounts.map((count) => {
+      const range = { start, count };
+      start += count;
+      return range;
+    });
+
     const mesh = new THREE.Mesh(merged, createReferenceMaterial(layerKey));
     mesh.renderOrder = 2;
     mesh.userData.referenceLayer = layerKey;
-    mesh.visible = Boolean(
-      referenceLayerInputs.find((input) => input.dataset.referenceLayer === layerKey)?.checked
-    );
+    mesh.userData.referenceRanges = ranges;
+    mesh.userData.referenceBounds = localBounds;
     modelGroup.add(mesh);
     referenceMeshes.set(layerKey, mesh);
+
+    const visibleParts = applyReferenceRegionVisibility(mesh);
+    mesh.visible = Boolean(
+      referenceLayerInputs.find((input) => input.dataset.referenceLayer === layerKey)?.checked
+    ) && visibleParts > 0;
+
     updateReferenceLayerDataset();
     return mesh;
   })()
@@ -3521,7 +3590,7 @@ async function handleReferenceLayerChange(input) {
   input.disabled = true;
   const mesh = await loadReferenceLayer(layerKey);
   if (mesh && input.checked && currentModelSource === "z-anatomy") {
-    mesh.visible = true;
+    mesh.visible = applyReferenceRegionVisibility(mesh) > 0;
     updateReferenceLayerDataset();
   }
 }

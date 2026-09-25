@@ -42,8 +42,10 @@ assert(
   "Regional renderer does not independently control muscles, tissue layers and bones"
 );
 assert(
-  app.includes('canvas.dataset.boneMode = "regional-hidden"'),
-  "Regional scene no longer guarantees bones are absent by default"
+  app.includes('boneDisplayMode = "off"') &&
+    app.includes("applyRegionBoneVisibility()") &&
+    app.includes('canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full"'),
+  "Regional bones are not opt-in and region-filtered"
 );
 assert(
   app.includes("function applyStudyLayerPreset") &&
@@ -58,3 +60,11 @@ assert(
 
 console.log("Regional renderer: isolated muscles + independent support layers");
 console.log("Skeletal/reference state separation: ok");
+
+
+assert(
+  app.includes("applyReferenceRegionVisibility") &&
+    app.includes("referenceRanges") &&
+    app.includes("referenceBounds"),
+  "Safety-reference layers cannot be clipped to the active regional scene"
+);

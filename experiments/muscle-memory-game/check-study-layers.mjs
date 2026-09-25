@@ -148,6 +148,7 @@ console.log("Study-layer deduplication and navigation state: ok");
 
 assert(
   html.includes('id="layer-preset"') &&
+    html.includes('value="bones"') &&
     html.includes('value="skin"') &&
     html.includes('value="subcutaneous"') &&
     html.includes('value="fascia"') &&
@@ -156,6 +157,7 @@ assert(
 );
 assert(
   app.includes("function applyStudyLayerPreset") &&
+    app.includes('preset === "bones"') &&
     app.includes('preset === "skin"') &&
     app.includes('preset === "subcutaneous"') &&
     app.includes('preset === "fascia"') &&
@@ -166,4 +168,12 @@ assert(
   app.includes("applyRegionStudyVisibility();") &&
     app.includes("studyStructureMatchesActiveRegion"),
   "Study layers ignore the active regional block"
+);
+
+
+assert(
+  app.includes("applyReferenceRegionVisibility") &&
+    app.includes("referenceRanges") &&
+    app.includes("referenceBounds"),
+  "Safety-reference layers are not region-filtered"
 );
