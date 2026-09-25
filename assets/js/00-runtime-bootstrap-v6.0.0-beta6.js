@@ -704,8 +704,15 @@
         '</section>';
       document.body.appendChild(overlay);
     }
-    overlay.removeAttribute('aria-hidden');
-    overlay.classList.remove('hide');
+    /* Late progress/status callbacks may still arrive after the loader has
+       completed. Never let those callbacks re-expose the finished overlay. */
+    if (window.__RUNTIME_LOADER_CLOSED__ === true && LOADER_RUNTIME.kind !== 'error') {
+      overlay.setAttribute('aria-hidden','true');
+      overlay.classList.add('hide');
+    } else {
+      overlay.removeAttribute('aria-hidden');
+      overlay.classList.remove('hide');
+    }
     return document.getElementById('runtimeBootStatus');
   }
   function ensureBackgroundStatusUi(){
