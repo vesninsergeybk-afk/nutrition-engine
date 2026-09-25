@@ -49,6 +49,11 @@ jobs:
           node-version: '24.14.0'
           package-manager-cache: false
 
+      - name: Create non-secret CI configuration
+        run: |
+          cp api/gemini-secret.example.php api/gemini-secret.php
+          chmod 0644 api/gemini-secret.php
+
       - name: Run fast structural feedback
         run: python3 tools/ci_fast_gate_v6.py
 
