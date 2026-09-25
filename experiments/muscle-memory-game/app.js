@@ -750,12 +750,21 @@ function todayQueueForCurrentRegion(limit = 1000) {
 
 function updateTodayAction() {
   const due = todayQueueForCurrentRegion();
+  const selectedSize = Math.max(1, Number(learningSessionSize.value) || 10);
+  const batchSize = Math.min(due.length, selectedSize);
+
   todayLearningSessionButton.hidden = due.length === 0 || appMode !== "quiz";
   todayLearningSessionButton.disabled = due.length === 0;
-  todayLearningSessionButton.textContent =
-    due.length === 1
-      ? "Повторить сегодня · 1 задание"
-      : `Повторить сегодня · ${due.length} заданий`;
+
+  if (due.length <= selectedSize) {
+    todayLearningSessionButton.textContent =
+      due.length === 1
+        ? "Повторить сегодня · 1 задание"
+        : `Повторить сегодня · ${due.length} заданий`;
+  } else {
+    todayLearningSessionButton.textContent =
+      `Повторить сегодня · ${batchSize} из ${due.length}`;
+  }
 }
 
 
@@ -2768,6 +2777,8 @@ learningRegion.addEventListener("change", () => {
 learningSessionMode.addEventListener("change", () => {
   setLearningMode(learningSessionMode.value);
 });
+
+learningSessionSize.addEventListener("change", updateTodayAction);
 
 for (const button of learningModeButtons) {
   button.addEventListener("click", () => {
