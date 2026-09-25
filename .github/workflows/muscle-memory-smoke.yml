@@ -171,7 +171,10 @@ jobs:
             await page.selectOption('#learning-region', 'shoulder');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
             assert.equal(await page.locator('#focus-shoulder').isVisible(), true);
-            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 0);
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-learning-target-count'),
+              '13'
+            );
             assert.match(await page.locator('#learning-summary').innerText(), /Плечевой пояс/);
 
             await page.selectOption('#learning-region', 'all');
@@ -383,6 +386,7 @@ jobs:
             assert.ok((await page.locator('.search-result').count()) > 0);
             const zDeltoidLabel = await page.locator('.search-result').first().innerText();
             assert.match(zDeltoidLabel, /Дельтовидн/i);
+            assert.match(zDeltoidLabel, /\((справа|слева)\)$/i);
             assert.doesNotMatch(zDeltoidLabel, /deltoid/i);
 
             const pathnameBefore = new URL(page.url()).pathname;
@@ -403,7 +407,10 @@ jobs:
             assert.equal(await page.locator('#learning-region').isDisabled(), false);
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-catalog-count')) > 140);
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
-            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 0);
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-learning-target-count'),
+              '13'
+            );
             assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
@@ -466,6 +473,7 @@ jobs:
               );
               const label = await page.locator('.search-result').first().innerText();
               assert.match(label, expected);
+              assert.match(label, /\((справа|слева)\)$/i);
               assert.doesNotMatch(label, new RegExp(query, 'i'));
             }
 
