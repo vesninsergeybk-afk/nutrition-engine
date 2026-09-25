@@ -81,19 +81,36 @@
               <option value="all">Всё тело</option>
             </select>
           </label>
-          <div class="learning-skill">
-            <span>Навык</span>
-            <strong>Найти на модели</strong>
-          </div>
+          <label class="learning-field">
+            <span>Режим</span>
+            <select id="learning-session-mode" aria-label="Режим учебной сессии" disabled>
+              <option value="find">Найти</option>
+              <option value="name">Назвать</option>
+              <option value="practical">Практикум</option>
+              <option value="mistakes">Повторить ошибки</option>
+            </select>
+          </label>
+          <label class="learning-field learning-size-field">
+            <span>Заданий</span>
+            <select id="learning-session-size" aria-label="Число заданий">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+          <button id="start-learning-session" class="learning-start" type="button" disabled>Начать</button>
         </div>
         <p id="learning-summary" class="learning-summary">Учебный каталог появится после загрузки модели.</p>
+        <div id="session-progress" class="session-progress" hidden></div>
 
         <p id="question-label" class="question-label">Задание</p>
         <h2 id="question">После загрузки появится первая мышца</h2>
-        <p id="feedback" class="feedback">Нажмите на нужную мышцу прямо на модели.</p>
+        <p id="feedback" class="feedback">Выберите регион и начните учебную сессию.</p>
+        <div id="name-choices" class="name-choices" hidden></div>
 
         <div id="quiz-actions" class="actions">
           <button id="show-answer" type="button" disabled>Показать ответ</button>
+          <button id="reveal-deeper" type="button" disabled hidden>Скрыть выбранную и искать глубже</button>
           <button id="next-question" type="button" class="primary" disabled>Следующая</button>
         </div>
 
