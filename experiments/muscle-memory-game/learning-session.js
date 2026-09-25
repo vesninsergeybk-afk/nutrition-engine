@@ -434,6 +434,7 @@ export function completeSessionItem(session, result) {
     skillId: session.items[session.index].skillId,
     correct: Boolean(result?.correct),
     wrongAttempts: Math.max(0, Number(result?.wrongAttempts) || 0),
+    navigationActions: Math.max(0, Number(result?.navigationActions) || 0),
     revealed: Boolean(result?.revealed),
   });
 
@@ -459,6 +460,10 @@ export function sessionSummary(session) {
   const correct = results.filter((result) => result.correct).length;
   const revealed = results.filter((result) => result.revealed).length;
   const wrongAttempts = results.reduce((sum, result) => sum + result.wrongAttempts, 0);
+  const navigationActions = results.reduce(
+    (sum, result) => sum + (Number(result.navigationActions) || 0),
+    0
+  );
   const cleanResults = results.filter(
     (result) => result.correct && result.wrongAttempts === 0 && !result.revealed
   );
@@ -479,6 +484,10 @@ export function sessionSummary(session) {
         (sum, result) => sum + result.wrongAttempts,
         0
       ),
+      navigationActions: skillResults.reduce(
+        (sum, result) => sum + (Number(result.navigationActions) || 0),
+        0
+      ),
     };
   }
 
@@ -488,6 +497,7 @@ export function sessionSummary(session) {
     correct,
     revealed,
     wrongAttempts,
+    navigationActions,
     clean: cleanResults.length,
     bySkill,
   };

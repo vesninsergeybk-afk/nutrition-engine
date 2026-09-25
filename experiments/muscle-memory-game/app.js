@@ -67,6 +67,10 @@ import {
   sessionProgress,
   sessionSummary,
 } from "./learning-session.js";
+import {
+  FIND_SELECTION_KINDS,
+  classifyFindSelection,
+} from "./learning-navigation.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
@@ -247,7 +251,8 @@ let learningStore = loadLearningStore();
 let selectedSessionMode = "find";
 let learningSession = null;
 let currentItemWrongAttempts = 0;
-let lastWrongSid = null;
+let currentItemNavigationActions = 0;
+let pendingNavigationSid = null;
 let sessionSummaryShown = false;
 let examTimerId = null;
 let examDeadline = 0;
@@ -908,27 +913,33 @@ function revealNamedTarget(ids, maxOccluders = 10) {
 }
 
 
-function prepareFindTargetAccess(target, maxOccluders = 10) {
+function inspectFindTargetAccess(target) {
   const ids = targetStructureIds(target);
   if (!anatomyMesh || !ids.length) {
-    return { accessible: false, hidden: 0 };
+    return { accessible: false, reachesTarget: false, occluders: [], hitOrder: [] };
   }
 
   const targetSet = new Set(ids);
   const targetPoint = nearestTargetPointToCamera(ids);
-  if (!targetPoint) return { accessible: false, hidden: 0 };
+  if (!targetPoint) {
+    return { accessible: false, reachesTarget: false, occluders: [], hitOrder: [] };
+  }
 
   const direction = targetPoint.clone().sub(camera.position);
-  if (direction.lengthSq() < 1e-10) return { accessible: false, hidden: 0 };
+  if (direction.lengthSq() < 1e-10) {
+    return { accessible: false, reachesTarget: false, occluders: [], hitOrder: [] };
+  }
 
   raycaster.set(camera.position, direction.normalize());
   const hits = raycaster.intersectObject(anatomyMesh, false);
   const occluders = [];
+  const hitOrder = [];
   let reachesTarget = false;
 
   for (const hit of hits) {
     const sid = structureIdFromHit(hit);
     if (sid == null || structureVisibility[sid] === false) continue;
+    if (!hitOrder.includes(sid)) hitOrder.push(sid);
     if (targetSet.has(sid)) {
       reachesTarget = true;
       break;
@@ -936,18 +947,73 @@ function prepareFindTargetAccess(target, maxOccluders = 10) {
     if (!occluders.includes(sid)) occluders.push(sid);
   }
 
-  if (!reachesTarget) return { accessible: false, hidden: 0 };
+  return {
+    accessible: reachesTarget && occluders.length === 0,
+    reachesTarget,
+    targetPoint,
+    occluders,
+    hitOrder,
+  };
+}
 
-  for (const sid of occluders.slice(0, maxOccluders)) {
+function prepareFindTargetAccess(target, maxOccluders = 10) {
+  const inspection = inspectFindTargetAccess(target);
+  if (!inspection.reachesTarget) {
+    return { accessible: false, hidden: 0 };
+  }
+
+  for (const sid of inspection.occluders.slice(0, maxOccluders)) {
     hiddenStack.push(sid);
     setStructureVisible(sid, false);
   }
 
-  const visibleSid = firstVisibleStructureOnRay(targetPoint);
+  const visibleSid = firstVisibleStructureOnRay(inspection.targetPoint);
+  const targetSet = new Set(targetStructureIds(target));
   return {
     accessible: visibleSid != null && targetSet.has(visibleSid),
-    hidden: Math.min(occluders.length, maxOccluders),
+    hidden: Math.min(inspection.occluders.length, maxOccluders),
   };
+}
+
+function findHitOrder(hits) {
+  const ordered = [];
+  for (const hit of hits || []) {
+    if (hit.object !== anatomyMesh) continue;
+    const sid = structureIdFromHit(hit);
+    if (
+      sid == null ||
+      structureVisibility[sid] === false ||
+      ordered.includes(sid)
+    ) continue;
+    ordered.push(sid);
+  }
+  return ordered;
+}
+
+function verifiedFindCover(selectedSid, target) {
+  const selectedTarget = learningTargetBySid.get(selectedSid) || null;
+  if (!selectedTarget || !target || selectedTarget === target) return false;
+
+  const upper = targetDepthInfo(selectedTarget);
+  const deeper = targetDepthInfo(target);
+  const depthRegionId = activeDepthProfileId(target);
+  if (
+    !upper ||
+    !deeper ||
+    activeDepthProfileId(selectedTarget) !== depthRegionId ||
+    upper.rank >= deeper.rank ||
+    !isKnownDeeperRelation(depthRegionId, upper.ruleId, deeper.ruleId)
+  ) {
+    return false;
+  }
+
+  const selectedSide = targetSideForSid(selectedTarget, selectedSid);
+  return (target.sids || []).some((targetSid) =>
+    sidesCanShareDepthPath(
+      selectedSide,
+      targetSideForSid(target, targetSid)
+    )
+  );
 }
 
 function focusSelectedStructures(padding = 1.65, direction = null) {
@@ -1344,6 +1410,7 @@ function highlightStructures(ids, kind = "answer") {
   const colors = {
     answer: 0x168148,
     wrong: 0x751d28,
+    navigation: 0x9a6b18,
     selected: 0x245da8,
   };
   const color = new THREE.Color(colors[kind] || colors.answer);
@@ -2388,7 +2455,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   document.body.classList.remove("session-active");
   currentTarget = null;
   currentItemWrongAttempts = 0;
-  lastWrongSid = null;
+  pendingNavigationSid = null;
   locked = true;
 
   restoreDisplayAfterTraining();
@@ -2726,7 +2793,10 @@ function prepareSessionItem() {
   currentTarget = item.target;
   canvas.dataset.learningCurrentTargetId = currentTarget.id;
   currentItemWrongAttempts = 0;
-  lastWrongSid = null;
+  currentItemNavigationActions = 0;
+  pendingNavigationSid = null;
+  canvas.dataset.findNavigationActions = "0";
+  canvas.dataset.findSelectionState = "search";
   canvas.dataset.nameTargetVisible = "";
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
@@ -2808,7 +2878,7 @@ function prepareSessionItem() {
     feedbackEl.textContent =
       examMode && Number(canvas.dataset.examOccludersHidden || 0) > 0
         ? "Поверхностный слой подготовлен. Коснитесь нужной мышцы."
-        : "Коснитесь нужной мышцы на модели.";
+        : "Коснитесь нужной мышцы. Если цель закрыта, выберите перекрывающую мышцу — её можно убрать без штрафа.";
   }
 
   if (examMode) startExamTimer();
@@ -2920,7 +2990,7 @@ function finishLearningSession() {
   currentTarget = null;
   canvas.dataset.learningCurrentTargetId = "";
   canvas.dataset.learningCurrentSkill = "";
-  lastWrongSid = null;
+  pendingNavigationSid = null;
   restoreHighlights();
   showAllStructures();
   nameChoicesEl.replaceChildren();
@@ -2958,6 +3028,11 @@ function finishLearningSession() {
       `Назвать: без ошибок ${summary.bySkill.name.clean} из ${summary.bySkill.name.total}`
     );
   }
+  if (summary.navigationActions > 0) {
+    skillLines.push(
+      `Навигация по слоям: ${summary.navigationActions} действий (без штрафа)`
+    );
+  }
 
   feedbackEl.className = "feedback";
   feedbackEl.textContent =
@@ -2979,14 +3054,8 @@ function finishLearningSession() {
   canvas.dataset.learningSessionFinished = "true";
 }
 
-function commitPendingFindMistake() {
-  if (
-    lastWrongSid == null ||
-    !learningSession ||
-    !currentTarget ||
-    locked
-  ) return false;
-
+function recordFindMistake(sid) {
+  if (!learningSession || !currentTarget || locked) return false;
   const item = currentSessionItem(learningSession);
   if (!item || item.skillId !== "find") return false;
 
@@ -2994,7 +3063,7 @@ function commitPendingFindMistake() {
   currentItemWrongAttempts += 1;
   wrongEl.textContent = String(wrong);
 
-  const chosenTarget = learningTargetBySid.get(lastWrongSid);
+  const chosenTarget = learningTargetBySid.get(sid);
   if (chosenTarget) {
     recordConfusion(
       learningStore,
@@ -3013,12 +3082,9 @@ function commitPendingFindMistake() {
     { addReviewDebt: currentItemWrongAttempts === 1 }
   );
   updateLearningSummary();
-
-  lastWrongSid = null;
-  revealDeeperButton.hidden = true;
-  revealDeeperButton.disabled = true;
   return true;
 }
+
 
 function revealAnswer() {
   if (!currentTarget || appMode !== "quiz" || locked || !learningSession) return;
@@ -3027,7 +3093,9 @@ function revealAnswer() {
   const item = currentSessionItem(learningSession);
   if (!item) return;
 
-  if (item.skillId === "find") commitPendingFindMistake();
+  pendingNavigationSid = null;
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
   restoreHighlights();
   const ids =
     item.skillId === "name"
@@ -3064,28 +3132,45 @@ function revealAnswer() {
   completeCurrentSessionItem({
     correct: false,
     wrongAttempts: currentItemWrongAttempts + 1,
+    navigationActions: currentItemNavigationActions,
     revealed: true,
   });
 }
 
-function chooseQuiz(sid) {
+function chooseQuiz(sid, hitStack = null) {
   if (!currentTarget || locked || sid == null || !structureNames[sid] || !learningSession) return;
 
   const item = currentSessionItem(learningSession);
   if (!item || item.skillId !== "find") return;
 
-  if (lastWrongSid != null) commitPendingFindMistake();
   restoreHighlights();
-  const isCorrect = targetStructureIds(currentTarget).includes(sid);
+  pendingNavigationSid = null;
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
 
-  if (isCorrect) {
+  const targetSids = targetStructureIds(currentTarget);
+  const inspection = inspectFindTargetAccess(currentTarget);
+  const classification = classifyFindSelection({
+    selectedSid: sid,
+    targetSids,
+    rayHitSids: findHitOrder(hitStack),
+    targetOccluderSids: inspection.occluders,
+    verifiedCover: verifiedFindCover(sid, currentTarget),
+  });
+
+  canvas.dataset.findSelectionState = classification;
+
+  if (classification === FIND_SELECTION_KINDS.correct) {
     correct += 1;
     correctEl.textContent = String(correct);
     highlightStructures([sid], "answer");
     focusedStructureIds = [sid];
     focusSelectedButton.disabled = false;
     feedbackEl.className = "feedback correct";
-    feedbackEl.textContent = `Верно. Вы выбрали: ${displayStructureName(sid)}.`;
+    feedbackEl.textContent =
+      currentItemNavigationActions > 0
+        ? `Верно. Вы нашли «${displayStructureName(sid)}», открыв путь через ${currentItemNavigationActions} ${currentItemNavigationActions === 1 ? "слой" : "слоя"}.`
+        : `Верно. Вы выбрали: ${displayStructureName(sid)}.`;
     recordLearningAttempt(
       learningStore,
       currentTarget.id,
@@ -3097,30 +3182,40 @@ function chooseQuiz(sid) {
     updateLearningSummary();
     locked = true;
     answerButton.disabled = true;
-    revealDeeperButton.hidden = true;
-    revealDeeperButton.disabled = true;
 
     completeCurrentSessionItem({
       correct: true,
       wrongAttempts: currentItemWrongAttempts,
+      navigationActions: currentItemNavigationActions,
       revealed: false,
     });
-  } else {
-    if (learningSession.mode === "exam") {
-      completeExamFailure({ chosenSid: sid });
-      return;
-    }
+    return;
+  }
 
-    highlightStructures([sid], "wrong");
-    feedbackEl.className = "feedback wrong";
+  if (learningSession.mode === "exam") {
+    completeExamFailure({ chosenSid: sid });
+    return;
+  }
+
+  if (classification === FIND_SELECTION_KINDS.navigation) {
+    pendingNavigationSid = sid;
+    highlightStructures([sid], "navigation");
+    feedbackEl.className = "feedback navigation";
     feedbackEl.textContent =
-      `Вы попали в «${displayStructureName(sid)}». Если она закрывает целевую мышцу, скройте её и продолжайте поиск глубже; иначе выберите другую структуру.`;
-
-    lastWrongSid = sid;
+      `«${displayStructureName(sid)}» находится перед целевой мышцей в текущем анатомическом пути. Это навигация, а не ошибка: откройте слой или поверните модель.`;
+    revealDeeperButton.textContent = "Открыть глубже";
     revealDeeperButton.hidden = false;
     revealDeeperButton.disabled = false;
+    return;
   }
+
+  recordFindMistake(sid);
+  highlightStructures([sid], "wrong");
+  feedbackEl.className = "feedback wrong";
+  feedbackEl.textContent =
+    `«${displayStructureName(sid)}» не является целевой мышцей и не перекрывает её в подтверждённом пути. Попробуйте ещё раз.`;
 }
+
 
 function chooseNameAnswer(targetId, button) {
   if (!learningSession || !currentTarget || locked) return;
@@ -3193,24 +3288,29 @@ function chooseNameAnswer(targetId, button) {
 }
 
 function revealDeeperAfterMistake() {
-  if (appMode !== "quiz" || locked || lastWrongSid == null) return;
+  if (appMode !== "quiz" || locked || pendingNavigationSid == null) return;
   if (learningSession?.mode === "exam") return;
-  if (structureVisibility[lastWrongSid] === false) return;
+  if (structureVisibility[pendingNavigationSid] === false) return;
 
-  const sid = lastWrongSid;
+  const sid = pendingNavigationSid;
   hiddenStack.push(sid);
   setStructureVisible(sid, false);
   restoreHighlights();
 
-  feedbackEl.className = "feedback";
-  feedbackEl.textContent =
-    `«${displayStructureName(sid)}» скрыта как поверхностный слой. Это навигационное действие не засчитано как ошибка; продолжайте поиск глубже.`;
+  currentItemNavigationActions += 1;
+  canvas.dataset.findNavigationActions = String(currentItemNavigationActions);
+  canvas.dataset.findSelectionState = "search";
 
-  lastWrongSid = null;
+  feedbackEl.className = "feedback navigation";
+  feedbackEl.textContent =
+    `«${displayStructureName(sid)}» скрыта, чтобы открыть более глубокие структуры. Навигация не засчитывается как ошибка.`;
+
+  pendingNavigationSid = null;
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   updateLayerButtons();
 }
+
 
 function nextSessionStep() {
   if (appMode !== "quiz") return;
@@ -3545,7 +3645,7 @@ function onPointerUp(event) {
     for (const hit of hits) {
       const candidate = structureIdFromHit(hit);
       if (candidate != null && structureVisibility[candidate] !== false) {
-        chooseQuiz(candidate);
+        chooseQuiz(candidate, hits);
         return;
       }
     }
@@ -4075,7 +4175,8 @@ function resetLoadedModel() {
   sessionSummaryShown = false;
   document.body.classList.remove("session-active");
   currentItemWrongAttempts = 0;
-  lastWrongSid = null;
+  currentItemNavigationActions = 0;
+  pendingNavigationSid = null;
   currentTarget = null;
   selectedExploreSid = null;
   isolated = false;

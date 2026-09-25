@@ -305,3 +305,24 @@ assert(
   "Recognition question must contain exactly one correct answer"
 );
 console.log("Recognition-choice uniqueness: ok");
+
+const navigationSession = createLearningSession({
+  mode: "find",
+  catalog,
+  store: { records: {} },
+  size: 1,
+  rng: () => 0,
+});
+completeSessionItem(navigationSession, {
+  correct: true,
+  wrongAttempts: 0,
+  navigationActions: 2,
+});
+const navigationSummary = sessionSummary(navigationSession);
+assert(
+  navigationSummary.clean === 1 &&
+    navigationSummary.wrongAttempts === 0 &&
+    navigationSummary.navigationActions === 2,
+  "Layer navigation must be tracked separately from identification errors"
+);
+console.log("Navigation actions are separated from errors: ok");

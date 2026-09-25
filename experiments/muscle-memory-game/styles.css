@@ -1093,3 +1093,17 @@ button:disabled {
 .source-coverage-note[hidden] {
   display: none;
 }
+
+
+.feedback.navigation {
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: rgba(154, 107, 24, .08);
+  color: rgba(78, 53, 12, .92);
+}
+
+#reveal-deeper:not([hidden]) {
+  font-weight: 720;
+  border-color: rgba(154, 107, 24, .34);
+  background: rgba(154, 107, 24, .08);
+}
