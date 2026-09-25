@@ -196,7 +196,11 @@ jobs:
               Number(await page.locator('#viewer').getAttribute('data-region-visible-muscles')) >=
               Number(await page.locator('#viewer').getAttribute('data-learning-target-count'))
             );
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'regional-hidden');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
+            assert.ok(
+              Number(await page.locator('#viewer').getAttribute('data-region-visible-bones')) > 0
+            );
 
             await page.selectOption('#learning-region', 'rotator-cuff');
             assert.equal(
@@ -474,11 +478,31 @@ jobs:
             );
             assert.equal(await page.locator('#region-isolation').isChecked(), true);
             assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
-            assert.equal(await page.locator('#bone-mode').isDisabled(), true);
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'regional-hidden');
+            assert.equal(await page.locator('#bone-mode').isDisabled(), false);
+            assert.equal(await page.locator('#bone-mode').inputValue(), 'off');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
+            const regionalBoneCount = Number(
+              await page.locator('#viewer').getAttribute('data-region-visible-bones')
+            );
+            assert.ok(regionalBoneCount > 0);
 
             // Layer presets operate inside the isolated region.
             assert.equal(await page.locator('#layer-preset').isDisabled(), false);
+
+            await page.selectOption('#layer-preset', 'bones');
+            assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'bones');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
+            assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
+            assert.equal(
+              Number(await page.locator('#viewer').getAttribute('data-region-visible-bones')),
+              regionalBoneCount
+            );
+
+            await page.selectOption('#layer-preset', 'muscles');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
+            assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-skin-count')) > 0);
 
