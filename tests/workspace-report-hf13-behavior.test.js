@@ -25,4 +25,18 @@ const lean=api.buildReportModel({detailedNutrients:false,fullHei:false,contribut
 const leanBody=api.buildBodyHtml(lean);
 check('optional detailed nutrients can be excluded',()=>assert.ok(!leanBody.includes('Нутриенты и ориентиры')));
 check('HEI summary remains when full components are excluded',()=>assert.ok(leanBody.includes('HEI-2020')&&!leanBody.includes('Цельные фрукты')));
+
+base.displayRationRows=[];
+base.rationPositionCount=0;
+base.totals={kcal:0,protein_g:0,fat_g:0,carbs_g:0,fiber_g:0,sfa_g:0,salt_g:0,sodium_mg:0};
+base.hei={total:null,grade:'F',rows:[]};
+base.productCorrection={analysisState:'empty'};
+analysis.items=0;
+analysis.nutrients=[{key:'fiber_g',title:'Клетчатка',group:'basic',actual:0,unit:'г',target:30,mode:'adequacy',status:{code:'medium',label:'Нет рациона'},quality:{label:'нет данных'},coverage:{items:[]}}];
+analysis.hei={model:{total:null,grade:'F'},rows:[{key:'fruits_whole',title:'Цельные фрукты',points:0,maxPoints:5,pct:0,actual:'',norm:'0,8 cup-eq',status:{code:'medium',label:'Приоритет'},confidence:'',contributors:{positive:{items:[]}}}],guardrails:[]};
+const empty=api.buildReportModel({detailedNutrients:true,fullHei:true,contributors:false,appliedChanges:false,methodology:false});
+const emptyBody=api.buildBodyHtml(empty);
+check('empty report does not expose HEI zero as a measurement',()=>{assert.equal(empty.hei.available,false);assert.ok(!emptyBody.includes('0/100'));assert.ok(!emptyBody.includes(' · F'));});
+check('empty report suppresses zero-valued nutrient rows',()=>assert.ok(emptyBody.includes('Нет данных для анализа нутриентов')&&!emptyBody.includes('workspace-report-mobile-row')));
+check('empty report uses concise analysis placeholders',()=>assert.ok(emptyBody.includes('Нет данных о рационе')&&emptyBody.includes('Рацион пока пуст')));
 console.log(JSON.stringify({status:'PASS',assertions:n},null,2));
