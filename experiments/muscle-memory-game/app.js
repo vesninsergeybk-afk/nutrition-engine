@@ -1355,6 +1355,15 @@ function targetSideStructureIds(target, sid) {
   return ids?.length ? [...ids] : [sid];
 }
 
+function targetDisplayNameForSid(target, sid) {
+  if (!target?.nameRu) return displayStructureName(sid);
+
+  const side = targetSideForSid(target, sid);
+  if (side === "right") return target.nameRu + " (справа)";
+  if (side === "left") return target.nameRu + " (слева)";
+  return target.nameRu;
+}
+
 function deeperMuscleKey(target, sid) {
   return (target?.id || String(sid)) + "::" + targetSideForSid(target, sid);
 }
@@ -1467,7 +1476,14 @@ function isolateDeeperMuscle(sid) {
   selectedExploreSid = sid;
   focusedStructureIds = [...muscleIds];
 
-  if (anatomyMesh) anatomyMesh.visible = true;
+  if (anatomyMesh) {
+    anatomyMesh.visible = true;
+    anatomyMesh.material.transparent = false;
+    anatomyMesh.material.opacity = 1;
+    anatomyMesh.material.depthTest = true;
+    anatomyMesh.material.depthWrite = true;
+    anatomyMesh.material.needsUpdate = true;
+  }
   setVisibleStructures(muscleIds);
   setAllStudyStructuresVisible(false);
 
@@ -1480,7 +1496,7 @@ function isolateDeeperMuscle(sid) {
   isolated = true;
 
   questionLabelEl.textContent = "Глубже здесь";
-  questionEl.textContent = displayStructureName(sid);
+  questionEl.textContent = targetDisplayNameForSid(target, sid);
   feedbackEl.className = "feedback deeper-focus-feedback";
   feedbackEl.textContent =
     "Мышца показана отдельно. Нажмите «Показать окружение», чтобы вернуться к препарату.";
@@ -1515,7 +1531,7 @@ function renderDeeperStructures(ids) {
         : "Ещё глубже";
 
     const name = document.createElement("strong");
-    name.textContent = displayStructureName(sid);
+    name.textContent = targetDisplayNameForSid(target, sid);
 
     button.append(depth, name);
     button.addEventListener("click", () => isolateDeeperMuscle(sid));
