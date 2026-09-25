@@ -149,8 +149,6 @@ const hiddenStack = [];
 let locked = false;
 let correct = 0;
 let wrong = 0;
-let lastTargetIndex = -1;
-const sessionDifficulty = new Map();
 const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
@@ -512,9 +510,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
 
 function applyLearningRegion() {
   availableTargets = filterCatalogByRegion(learningCatalog, selectedLearningRegion);
-  lastTargetIndex = -1;
   currentTarget = null;
-  sessionDifficulty.clear();
 
   targetStatusEl.textContent =
     `Учебный каталог: ${learningCatalog.length} мышц и частей мышц. ` +
@@ -571,12 +567,6 @@ function updateDiagnostics(extra = "") {
 
   diagnosticsEl.textContent =
     `Мышечных структур после исключения фасциальных покрытий: ${structureNames.length}. Для рендера они объединены в один mesh; ${skeletonState}.${extra ? " " + extra : ""}`;
-}
-
-function recordDifficulty(target, wasCorrect) {
-  if (!target) return;
-  const current = sessionDifficulty.get(target.id) || 0;
-  sessionDifficulty.set(target.id, wasCorrect ? Math.max(0, current - 0.5) : current + 1);
 }
 
 function renderSessionProgress() {
@@ -768,7 +758,6 @@ function revealAnswer() {
 
   wrong += 1;
   wrongEl.textContent = String(wrong);
-  recordDifficulty(currentTarget, false);
   recordLearningAttempt(
     learningStore,
     currentTarget.id,
@@ -804,7 +793,6 @@ function chooseQuiz(sid) {
     focusSelectedButton.disabled = false;
     feedbackEl.className = "feedback correct";
     feedbackEl.textContent = `Верно. Вы выбрали: ${displayStructureName(sid)}.`;
-    recordDifficulty(currentTarget, true);
     recordLearningAttempt(
       learningStore,
       currentTarget.id,
@@ -831,7 +819,6 @@ function chooseQuiz(sid) {
     feedbackEl.className = "feedback wrong";
     feedbackEl.textContent =
       `Это «${displayStructureName(sid)}». Можно продолжить поиск или скрыть эту структуру, если цель лежит глубже.`;
-    recordDifficulty(currentTarget, false);
     recordLearningAttempt(
       learningStore,
       currentTarget.id,
@@ -1343,7 +1330,7 @@ function resetLoadedModel() {
   isolated = false;
   hiddenStack.length = 0;
   locked = false;
-  lastTargetIndex = -1;
+
   focusedStructureIds = [];
 
   searchInput.value = "";
