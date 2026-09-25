@@ -99,6 +99,15 @@
               <p id="layer-training-note" class="viewer-setting-note" hidden>
                 Во время тренировки кожа и соединительные слои временно скрываются, чтобы не перекрывать целевую мышцу. Набор структур зависит от полноты выбранной анатомической базы.
               </p>
+              <fieldset id="reference-layers-field" class="connective-layer-options" hidden>
+                <legend>Ориентиры безопасности</legend>
+                <label><input type="checkbox" data-reference-layer="nervous" /> Нервные структуры</label>
+                <label><input type="checkbox" data-reference-layer="vascular" /> Кровеносные сосуды</label>
+                <label><input type="checkbox" data-reference-layer="lymphatic" /> Лимфатические структуры</label>
+              </fieldset>
+              <p id="reference-layer-note" class="viewer-setting-note" hidden>
+                Эти слои Z-Anatomy загружаются только по запросу и служат дополнительными топографическими ориентирами; они не обозначены как исчерпывающий клинический атлас.
+              </p>
               <label id="bone-opacity-field" class="viewer-setting-field" hidden>
                 <span>Прозрачность костей</span>
                 <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.10" disabled />

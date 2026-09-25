@@ -49,6 +49,18 @@ const MUSCLE_MODEL_URL =
 const SKELETON_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/iskelet.glb";
 
+const REFERENCE_LAYER_SOURCES = {
+  nervous: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/sinir.glb",
+  vascular: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/dolasim.glb",
+  lymphatic: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/lenf.glb",
+};
+
+const REFERENCE_LAYER_COLORS = {
+  nervous: 0xd1ad5d,
+  vascular: 0xa44f4b,
+  lymphatic: 0x78966f,
+};
+
 const BODYPARTS_SOURCE_ROOT =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
 const BODYPARTS_ATLAS_URL = BODYPARTS_SOURCE_ROOT + "/models/atlas.json";
@@ -100,6 +112,11 @@ const connectiveLayerInputs = [
 const skinMode = document.querySelector("#skin-mode");
 const skinField = document.querySelector("#skin-field");
 const layerTrainingNote = document.querySelector("#layer-training-note");
+const referenceLayersField = document.querySelector("#reference-layers-field");
+const referenceLayerNote = document.querySelector("#reference-layer-note");
+const referenceLayerInputs = [
+  ...document.querySelectorAll("[data-reference-layer]"),
+];
 const debugPanel = document.querySelector("#debug-panel");
 const viewerSettings = document.querySelector(".viewer-settings");
 const modelSource = document.querySelector("#model-source");
@@ -168,6 +185,9 @@ let anatomyMesh = null;
 let skeletonMesh = null;
 let connectiveMeshes = new Map();
 let skinMesh = null;
+let referenceMeshes = new Map();
+let referenceLayerPromises = new Map();
+let referenceLoadGeneration = 0;
 let structureNames = [];
 let structureRanges = [];
 let structureVisibility = [];
@@ -2220,6 +2240,9 @@ function resetLoadedModel() {
   skeletonMesh = null;
   connectiveMeshes = new Map();
   skinMesh = null;
+  referenceMeshes = new Map();
+  referenceLayerPromises = new Map();
+  referenceLoadGeneration += 1;
   structureNames = [];
   structureRanges = [];
   structureVisibility = [];
@@ -2279,6 +2302,11 @@ function resetLoadedModel() {
   skinMode.disabled = true;
   skinField.hidden = true;
   layerTrainingNote.hidden = true;
+  referenceLayersField.hidden = true;
+  referenceLayerNote.hidden = true;
+  for (const input of referenceLayerInputs) input.disabled = true;
+  canvas.dataset.referenceLayers = "";
+  canvas.dataset.referenceTrainingHidden = "false";
   canvas.dataset.connectiveMode = "";
   canvas.dataset.connectiveCount = "";
   canvas.dataset.connectiveVisibleLayers = "";
@@ -2361,6 +2389,130 @@ const CONNECTIVE_LAYER_COLORS = {
 
 const CONNECTIVE_DISPLAY_NAME_RE =
   /ligament|fascia|tendon|aponeuros|retinacul|cartilage|bursa|capsule|synovial|subcutaneous|adipose|iliotibial tract/i;
+
+function createReferenceMaterial(layerKey) {
+  return new THREE.MeshStandardMaterial({
+    color: REFERENCE_LAYER_COLORS[layerKey] || 0xb8b8b8,
+    roughness: 0.58,
+    metalness: 0,
+    side: THREE.DoubleSide,
+    transparent: false,
+    opacity: 1,
+    depthTest: true,
+    depthWrite: true,
+  });
+}
+
+function updateReferenceLayerDataset() {
+  const visible = [];
+  for (const [key, mesh] of referenceMeshes) {
+    if (mesh.visible) visible.push(key);
+  }
+  canvas.dataset.referenceLayers = visible.join(",");
+}
+
+function restoreReferenceLayerVisibility() {
+  for (const input of referenceLayerInputs) {
+    const key = input.dataset.referenceLayer;
+    const mesh = referenceMeshes.get(key);
+    if (mesh) mesh.visible = Boolean(input.checked);
+  }
+  updateReferenceLayerDataset();
+}
+
+async function loadReferenceLayer(layerKey) {
+  if (currentModelSource !== "z-anatomy") return null;
+  if (referenceMeshes.has(layerKey)) return referenceMeshes.get(layerKey);
+  if (referenceLayerPromises.has(layerKey)) return referenceLayerPromises.get(layerKey);
+
+  const url = REFERENCE_LAYER_SOURCES[layerKey];
+  if (!url) return null;
+  const generation = referenceLoadGeneration;
+
+  const promise = (async () => {
+    const loader = new GLTFLoader();
+    const gltf = await loader.loadAsync(url);
+
+    if (generation !== referenceLoadGeneration || currentModelSource !== "z-anatomy") {
+      return null;
+    }
+
+    gltf.scene.updateMatrixWorld(true);
+    const geometries = [];
+    gltf.scene.traverse((child) => {
+      if (!child.isMesh) return;
+      geometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
+    });
+
+    const { merged, temporaries } = mergeSkeletonGeometries(geometries);
+    for (const geometry of geometries) geometry.dispose();
+    for (const geometry of temporaries) geometry.dispose();
+    if (!merged) throw new Error("Не удалось собрать дополнительный анатомический слой.");
+
+    const mesh = new THREE.Mesh(merged, createReferenceMaterial(layerKey));
+    mesh.renderOrder = 2;
+    mesh.userData.referenceLayer = layerKey;
+    mesh.visible = Boolean(
+      referenceLayerInputs.find((input) => input.dataset.referenceLayer === layerKey)?.checked
+    );
+    modelGroup.add(mesh);
+    referenceMeshes.set(layerKey, mesh);
+    updateReferenceLayerDataset();
+    return mesh;
+  })()
+    .catch((error) => {
+      console.error(error);
+      const input = referenceLayerInputs.find(
+        (item) => item.dataset.referenceLayer === layerKey
+      );
+      if (input) input.checked = false;
+      if (appMode === "explore") {
+        feedbackEl.className = "feedback wrong";
+        feedbackEl.textContent =
+          "Не удалось загрузить дополнительный анатомический слой. Основная модель продолжает работать.";
+      }
+      return null;
+    })
+    .finally(() => {
+      referenceLayerPromises.delete(layerKey);
+      const input = referenceLayerInputs.find(
+        (item) => item.dataset.referenceLayer === layerKey
+      );
+      if (input && currentModelSource === "z-anatomy") input.disabled = false;
+    });
+
+  referenceLayerPromises.set(layerKey, promise);
+  return promise;
+}
+
+function setReferenceLayerAvailability(available) {
+  referenceLayersField.hidden = !available;
+  referenceLayerNote.hidden = !available;
+  for (const input of referenceLayerInputs) input.disabled = !available;
+  if (!available) {
+    for (const mesh of referenceMeshes.values()) mesh.visible = false;
+    updateReferenceLayerDataset();
+  }
+}
+
+async function handleReferenceLayerChange(input) {
+  const layerKey = input.dataset.referenceLayer;
+  if (!layerKey || currentModelSource !== "z-anatomy") return;
+
+  if (!input.checked) {
+    const mesh = referenceMeshes.get(layerKey);
+    if (mesh) mesh.visible = false;
+    updateReferenceLayerDataset();
+    return;
+  }
+
+  input.disabled = true;
+  const mesh = await loadReferenceLayer(layerKey);
+  if (mesh && input.checked && currentModelSource === "z-anatomy") {
+    mesh.visible = true;
+    updateReferenceLayerDataset();
+  }
+}
 
 function createConnectiveMaterial(layerKey) {
   return new THREE.MeshStandardMaterial({
@@ -2495,20 +2647,24 @@ function applyTrainingDisplayOverride() {
 
   for (const mesh of connectiveMeshes.values()) mesh.visible = false;
   if (skinMesh) skinMesh.visible = false;
+  for (const mesh of referenceMeshes.values()) mesh.visible = false;
 
   canvas.dataset.trainingDisplay = "true";
   canvas.dataset.connectiveTrainingHidden = String(connectiveMeshes.size > 0);
   canvas.dataset.skinTrainingHidden = String(Boolean(skinMesh));
+  canvas.dataset.referenceTrainingHidden = String(referenceMeshes.size > 0);
 }
 
 function restoreDisplayAfterTraining() {
   if (skeletonMesh) applyBoneDisplayMode();
   applyConnectiveDisplayMode();
   applySkinDisplayMode();
+  restoreReferenceLayerVisibility();
 
   canvas.dataset.trainingDisplay = "false";
   canvas.dataset.connectiveTrainingHidden = "false";
   canvas.dataset.skinTrainingHidden = "false";
+  canvas.dataset.referenceTrainingHidden = "false";
 }
 
 function connectiveSubtype(name) {
@@ -2725,7 +2881,12 @@ async function loadZAnatomyModel() {
     canvas.dataset.skinMode = "unavailable";
     canvas.dataset.skinCount = "0";
     boneMode.disabled = true;
+    setReferenceLayerAvailability(true);
     await loadSkeletonLayer(loader);
+
+    for (const input of referenceLayerInputs) {
+      if (input.checked) void handleReferenceLayerChange(input);
+    }
   } catch (error) {
     console.error(error);
     throw error;
@@ -2733,6 +2894,7 @@ async function loadZAnatomyModel() {
 }
 
 async function loadBodyParts4Model() {
+  setReferenceLayerAvailability(false);
   const response = await fetch(BODYPARTS_ATLAS_URL);
   if (!response.ok) throw new Error("Не удалось получить каталог BodyParts3D 4.0.");
   const atlas = await response.json();
@@ -3004,6 +3166,12 @@ skinMode.addEventListener("change", () => {
   skinDisplayMode = skinMode.value;
   applySkinDisplayMode();
 });
+
+for (const input of referenceLayerInputs) {
+  input.addEventListener("change", () => {
+    void handleReferenceLayerChange(input);
+  });
+}
 
 boneOpacity.addEventListener("input", () => {
   if (!skeletonMesh || boneDisplayMode !== "xray") return;
