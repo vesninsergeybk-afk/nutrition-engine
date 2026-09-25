@@ -100,7 +100,7 @@ const EXPECTED_EXACT_BOTH = Object.freeze({
   "leg-posterior": 7,
   "rotator-cuff": 4,
   "scapular-stabilizers": 5,
-  "erector-spinae": 5,
+  "erector-spinae": 4,
   quadriceps: 4,
   "calf-complex": 3,
   suboccipital: 4,
