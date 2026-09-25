@@ -1,0 +1,480 @@
+function specimen(
+  id,
+  type,
+  nameRu,
+  descriptionRu,
+  {
+    questionRegionIds = [],
+    questionPatterns = [],
+    contextPatterns = [],
+    supportBonePatterns = [],
+    depthProfile = null,
+    defaultViews = ["threeQuarter"],
+    padding = 1.28,
+  } = {}
+) {
+  return Object.freeze({
+    id,
+    type,
+    nameRu,
+    descriptionRu,
+    questionRegionIds: Object.freeze([...questionRegionIds]),
+    questionPatterns: Object.freeze([...questionPatterns]),
+    contextPatterns: Object.freeze([...contextPatterns]),
+    supportBonePatterns: Object.freeze([...supportBonePatterns]),
+    depthProfile,
+    defaultViews: Object.freeze([...defaultViews]),
+    padding,
+  });
+}
+
+export const VIRTUAL_SPECIMENS = Object.freeze([
+  // Topographic specimens
+  specimen(
+    "neck-collar",
+    "region",
+    "Шейно-воротниковая зона",
+    "Шея, подзатылочная область и лопаточно-шейный переход.",
+    {
+      questionPatterns: [
+        /sternocleidomastoid|scalenus|splenius|semispinalis (?:capitis|cervicis|colli)|longissimus (?:capitis|cervicis|colli)|iliocostalis (?:cervicis|colli)|longus (?:capitis|colli)|rectus (?:posterior (?:major|minor)|lateralis|anterior) capitis|obliquus (?:capitis|inferior capitis|superior capitis)|multifidus (?:cervicis|colli)|interspinales cervicis|intertransversarii cervicis|trapezius|levator scapulae|rhomboid/i,
+      ],
+      contextPatterns: [/deltoid/i],
+      supportBonePatterns: [/cervical|vertebra|occip|clavicle|scapula/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "shoulder",
+    "region",
+    "Плечевой пояс",
+    "Лопаточный комплекс, мышцы плечевого пояса и глубокий контекст плечевого сустава.",
+    {
+      questionRegionIds: ["shoulder"],
+      contextPatterns: [/pectoralis major|latissimus dorsi/i],
+      supportBonePatterns: [/scapula|clavicle|humerus|rib|thoracic vertebra/i],
+      depthProfile: "shoulder",
+      defaultViews: ["back", "threeQuarter", "front"],
+      padding: 1.22,
+    }
+  ),
+  specimen(
+    "arm-anterior",
+    "region",
+    "Плечо — передняя группа",
+    "Передняя мышечная группа плеча и локтевой переход.",
+    {
+      questionPatterns: [/biceps brachii|brachialis|coracobrachialis/i],
+      contextPatterns: [/deltoid/i],
+      supportBonePatterns: [/humerus|radius|ulna/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "arm-posterior",
+    "region",
+    "Плечо — задняя группа",
+    "Задняя мышечная группа плеча и локтевой переход.",
+    {
+      questionPatterns: [/triceps brachii|anconeus/i],
+      contextPatterns: [/deltoid/i],
+      supportBonePatterns: [/humerus|radius|ulna|olecranon/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "forearm-hand-anterior",
+    "region",
+    "Предплечье и кисть — передняя поверхность",
+    "Сгибатели, пронаторы и ладонный мышечный контекст.",
+    {
+      questionPatterns: [
+        /pronator|flexor carpi|flexor digitorum|flexor pollicis|palmaris longus|lumbrical.*hand|interosse.*hand|opponens|adductor pollicis|abductor pollicis brevis/i,
+      ],
+      supportBonePatterns: [/radius|ulna|carpal|metacarp|phalan/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "forearm-hand-posterior",
+    "region",
+    "Предплечье и кисть — задняя поверхность",
+    "Разгибатели, супинатор и тыльный мышечный контекст.",
+    {
+      questionPatterns: [
+        /supinator|extensor carpi|extensor digitorum|extensor digiti minimi|extensor pollicis|abductor pollicis longus|extensor indicis|brachioradialis/i,
+      ],
+      supportBonePatterns: [/radius|ulna|carpal|metacarp|phalan/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "thorax-anterior",
+    "region",
+    "Передняя грудная стенка",
+    "Грудные мышцы, передняя зубчатая и межрёберный контекст.",
+    {
+      questionPatterns: [
+        /pectoralis major|pectoralis minor|subclavius|serratus anterior|intercostal|transversus thoracis/i,
+      ],
+      supportBonePatterns: [/sternum|rib|clavicle|thoracic vertebra/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "abdomen",
+    "region",
+    "Переднебоковая брюшная стенка",
+    "Прямая, косые и поперечная мышцы живота с региональной послойностью.",
+    {
+      questionRegionIds: ["abdomen"],
+      supportBonePatterns: [/rib|sternum|ilium|pubis|lumbar vertebra/i],
+      depthProfile: "abdomen",
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "upper-back",
+    "region",
+    "Верхняя часть спины",
+    "Лопаточная область и верхнегрудной мышечный контекст.",
+    {
+      questionPatterns: [
+        /trapezius|rhomboid|levator scapulae|serratus posterior superior|supraspinatus|infraspinatus|teres major|teres minor/i,
+      ],
+      contextPatterns: [/latissimus dorsi|deltoid/i],
+      supportBonePatterns: [/scapula|clavicle|rib|thoracic vertebra|humerus/i],
+      depthProfile: "shoulder",
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "lower-back",
+    "region",
+    "Поясничная и нижнегрудная область",
+    "Поверхностные и собственные мышцы нижней части спины.",
+    {
+      questionPatterns: [
+        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|spinalis(?: thoracis)?|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levatores costarum/i,
+      ],
+      supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium/i],
+      depthProfile: "back",
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "gluteal",
+    "region",
+    "Ягодичная область",
+    "Ягодичные мышцы и глубокие наружные ротаторы тазобедренной области.",
+    {
+      questionRegionIds: ["gluteal"],
+      contextPatterns: [/tensor fasciae latae/i],
+      supportBonePatterns: [/sacrum|ilium|ischium|femur/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "thigh-anterior",
+    "region",
+    "Бедро — передняя поверхность",
+    "Четырёхглавая мышца, портняжная и передний тазобедренный переход.",
+    {
+      questionPatterns: [
+        /rectus femoris|vastus (?:lateralis|medialis|intermedius)|sartorius|tensor fasciae latae|iliacus|psoas major|pectineus/i,
+      ],
+      supportBonePatterns: [/femur|patella|ilium|pubis/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "thigh-medial",
+    "region",
+    "Бедро — медиальная группа",
+    "Приводящие мышцы, тонкая и гребенчатая.",
+    {
+      questionPatterns: [/adductor (?:longus|brevis|magnus|minimus)|gracilis|pectineus/i],
+      supportBonePatterns: [/femur|pubis|ischium/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "thigh-posterior",
+    "region",
+    "Бедро — задняя поверхность",
+    "Задняя группа бедра с ягодичным покровом и соседним приводящим контекстом.",
+    {
+      questionPatterns: [/biceps femoris|semitendinosus|semimembranosus/i],
+      contextPatterns: [/gluteus maximus|adductor magnus/i],
+      supportBonePatterns: [/femur|ischium|tibia|fibula/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "leg-anterior-lateral",
+    "region",
+    "Голень — переднелатеральная группа",
+    "Передняя и латеральная мышечные группы голени.",
+    {
+      questionPatterns: [
+        /tibialis anterior|extensor digitorum longus|extensor hallucis longus|fibularis|peroneus/i,
+      ],
+      supportBonePatterns: [/tibia|fibula|talus|calcaneus/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "leg-posterior",
+    "region",
+    "Голень — задняя группа",
+    "Поверхностная и глубокая задние группы голени.",
+    {
+      questionPatterns: [
+        /gastrocnemius|soleus|plantaris|popliteus|tibialis posterior|flexor digitorum longus|flexor hallucis longus/i,
+      ],
+      supportBonePatterns: [/tibia|fibula|talus|calcaneus/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "foot",
+    "region",
+    "Стопа",
+    "Собственные мышцы тыла и подошвы стопы.",
+    {
+      questionPatterns: [
+        /abductor hallucis|adductor hallucis|flexor hallucis brevis|extensor hallucis brevis|flexor digitorum brevis|extensor digitorum brevis|quadratus plantae|flexor accessorius|abductor digiti minimi.*foot|flexor digiti minimi.*foot|opponens digiti minimi.*foot|lumbrical.*foot|interosse.*foot/i,
+      ],
+      supportBonePatterns: [/talus|calcaneus|tarsal|metatars|phalan/i],
+      defaultViews: ["threeQuarter", "front"],
+    }
+  ),
+
+  // Thematic / functional specimens
+  specimen(
+    "rotator-cuff",
+    "group",
+    "Ротаторная манжета плеча",
+    "Четыре мышцы ротаторной манжеты в лопаточно-плечевом контексте.",
+    {
+      questionPatterns: [/supraspinatus|infraspinatus|subscapularis|teres minor/i],
+      contextPatterns: [/deltoid|teres major/i],
+      supportBonePatterns: [/scapula|clavicle|humerus/i],
+      depthProfile: "shoulder",
+      defaultViews: ["back", "threeQuarter", "front"],
+      padding: 1.16,
+    }
+  ),
+  specimen(
+    "scapular-stabilizers",
+    "group",
+    "Лопаточный комплекс",
+    "Основные мышцы положения и движения лопатки.",
+    {
+      questionPatterns: [/trapezius|rhomboid|levator scapulae|serratus anterior/i],
+      contextPatterns: [/deltoid|latissimus dorsi|pectoralis major|pectoralis minor/i],
+      supportBonePatterns: [/scapula|clavicle|rib|thoracic vertebra/i],
+      depthProfile: "shoulder",
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "erector-spinae",
+    "group",
+    "Мышца, выпрямляющая позвоночник",
+    "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
+    {
+      questionPatterns: [/iliocostalis|longissimus thoracis|spinalis(?: thoracis)?/i],
+      contextPatterns: [/latissimus dorsi|serratus posterior/i],
+      supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
+      depthProfile: "back",
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "deep-back",
+    "group",
+    "Глубокие мышцы спины",
+    "Многораздельные, вращатели и короткие сегментарные мышцы.",
+    {
+      questionPatterns: [
+        /multifidus|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levatores costarum/i,
+      ],
+      contextPatterns: [/erector|iliocostalis|longissimus thoracis|spinalis|latissimus dorsi/i],
+      supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
+      depthProfile: "back",
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "hamstrings",
+    "group",
+    "Мышцы задней поверхности бедра",
+    "Двуглавая, полусухожильная и полуперепончатая мышцы.",
+    {
+      questionPatterns: [/biceps femoris|semitendinosus|semimembranosus/i],
+      contextPatterns: [/gluteus maximus|adductor magnus/i],
+      supportBonePatterns: [/femur|ischium|tibia|fibula/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "quadriceps",
+    "group",
+    "Четырёхглавая мышца бедра",
+    "Прямая и три широкие мышцы передней поверхности бедра.",
+    {
+      questionPatterns: [/rectus femoris|vastus (?:lateralis|medialis|intermedius)/i],
+      contextPatterns: [/sartorius|tensor fasciae latae/i],
+      supportBonePatterns: [/femur|patella|ilium/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "adductors",
+    "group",
+    "Приводящая группа бедра",
+    "Приводящие мышцы, тонкая и гребенчатая.",
+    {
+      questionPatterns: [/adductor (?:longus|brevis|magnus|minimus)|gracilis|pectineus/i],
+      supportBonePatterns: [/femur|pubis|ischium/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "gluteal-complex",
+    "group",
+    "Ягодичный комплекс",
+    "Ягодичные мышцы, напрягатель широкой фасции и глубокие наружные ротаторы.",
+    {
+      questionPatterns: [
+        /gluteus|tensor fasciae latae|piriformis|gemellus|obturator|quadratus femoris/i,
+      ],
+      supportBonePatterns: [/sacrum|ilium|ischium|femur/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "calf-complex",
+    "group",
+    "Икроножно-камбаловидный комплекс",
+    "Икроножная, камбаловидная и подошвенная мышцы.",
+    {
+      questionPatterns: [/gastrocnemius|soleus|plantaris/i],
+      contextPatterns: [/popliteus|tibialis posterior/i],
+      supportBonePatterns: [/tibia|fibula|calcaneus/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "anterior-abdominal-wall",
+    "group",
+    "Переднебоковая брюшная стенка",
+    "Прямая, наружная и внутренняя косые, поперечная и пирамидальная мышцы.",
+    {
+      questionRegionIds: ["abdomen"],
+      supportBonePatterns: [/rib|sternum|ilium|pubis|lumbar vertebra/i],
+      depthProfile: "abdomen",
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "suboccipital",
+    "group",
+    "Подзатылочный комплекс",
+    "Короткие глубокие мышцы подзатылочной области.",
+    {
+      questionPatterns: [
+        /rectus posterior (?:major|minor) capitis|obliquus (?:superior|inferior) capitis|obliquus capitis/i,
+      ],
+      contextPatterns: [/splenius capitis|semispinalis capitis|trapezius/i],
+      supportBonePatterns: [/occip|cervical vertebra|atlas|axis/i],
+      defaultViews: ["back", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "hip-flexors",
+    "group",
+    "Передний тазобедренный комплекс",
+    "Основные сгибатели тазобедренного сустава в переднем тазовом контексте.",
+    {
+      questionPatterns: [/iliacus|psoas major|rectus femoris|sartorius|tensor fasciae latae/i],
+      supportBonePatterns: [/ilium|pubis|femur|lumbar vertebra/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+]);
+
+const SPECIMEN_BY_ID = new Map(VIRTUAL_SPECIMENS.map((item) => [item.id, item]));
+
+function targetText(target) {
+  return [
+    ...(target?.sourceNames || []),
+    target?.nameRu || "",
+  ]
+    .join(" ")
+    .toLocaleLowerCase("en-US");
+}
+
+function matchesPatterns(text, patterns) {
+  return (patterns || []).some((pattern) => pattern.test(text));
+}
+
+export function specimenById(id) {
+  return SPECIMEN_BY_ID.get(id) || null;
+}
+
+export function specimenMatchesTarget(target, specimenOrId, mode = "question") {
+  const item =
+    typeof specimenOrId === "string" ? specimenById(specimenOrId) : specimenOrId;
+  if (!item || !target) return false;
+
+  const text = targetText(target);
+  const question =
+    item.questionRegionIds.includes(target.region) ||
+    matchesPatterns(text, item.questionPatterns);
+
+  if (mode === "question") return question;
+  return question || matchesPatterns(text, item.contextPatterns);
+}
+
+export function filterCatalogForSpecimen(catalog, specimenId, mode = "question") {
+  const item = specimenById(specimenId);
+  if (!item) return [];
+  return (catalog || []).filter((target) =>
+    specimenMatchesTarget(target, item, mode)
+  );
+}
+
+export function specimenSceneTargets(catalog, specimenId) {
+  return filterCatalogForSpecimen(catalog, specimenId, "scene");
+}
+
+export function specimenSupportBoneMatches(specimenId, boneName) {
+  const item = specimenById(specimenId);
+  if (!item?.supportBonePatterns?.length) return false;
+  const text = String(boneName || "").toLocaleLowerCase("en-US");
+  return item.supportBonePatterns.some((pattern) => pattern.test(text));
+}
+
+export function specimenLearningScopes() {
+  return VIRTUAL_SPECIMENS.map((item) => ({
+    id: item.id,
+    nameRu: item.nameRu,
+    descriptionRu: item.descriptionRu,
+    group: item.type === "region" ? "specimen-region" : "specimen-group",
+    specimenType: item.type,
+  }));
+}
+
+export function specimenDepthProfileId(specimenId) {
+  return specimenById(specimenId)?.depthProfile || null;
+}
+
+export function specimenPrimaryView(specimenId) {
+  return specimenById(specimenId)?.defaultViews?.[0] || null;
+}
+
+export function specimenPadding(specimenId) {
+  return Number(specimenById(specimenId)?.padding) || 1.28;
+}

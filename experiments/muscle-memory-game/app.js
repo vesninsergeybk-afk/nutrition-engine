@@ -16,6 +16,14 @@ import {
   regionHasDepthProfile,
 } from "./regional-depth-map.js";
 import {
+  specimenById,
+  specimenDepthProfileId,
+  specimenPadding,
+  specimenPrimaryView,
+  specimenSceneTargets,
+  specimenSupportBoneMatches,
+} from "./virtual-specimens.js";
+import {
   bodyPartsAnatomyKind,
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
@@ -786,17 +794,24 @@ function regionIsolationActive() {
   );
 }
 
+function activeSceneTargets() {
+  const specimen = specimenById(selectedLearningRegion);
+  if (!specimen) return availableTargets;
+  const targets = specimenSceneTargets(learningCatalog, specimen.id);
+  return targets.length ? targets : availableTargets;
+}
+
 function activeRegionStructureIds() {
   return [
     ...new Set(
-      availableTargets.flatMap((target) => target.sids || [])
+      activeSceneTargets().flatMap((target) => target.sids || [])
     ),
   ];
 }
 
 function activeRegionConceptKeys() {
   const keys = new Set();
-  for (const target of availableTargets) {
+  for (const target of activeSceneTargets()) {
     for (const sourceName of target.sourceNames || []) {
       keys.add(learningConceptSourceName(sourceName));
     }
@@ -980,12 +995,25 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
   applyRegionStudyVisibility();
   applyMuscleDisplayMode();
 
+  const depthProfileId =
+    specimenDepthProfileId(selectedLearningRegion) ||
+    (
+      activeSceneTargets().length &&
+      activeSceneTargets().every(
+        (target) => target.region === activeSceneTargets()[0].region
+      )
+        ? activeSceneTargets()[0].region
+        : null
+    );
+
   canvas.dataset.depthProfile =
     regionIsolationActive() &&
-    availableTargets.length &&
-    availableTargets.every((target) => regionHasDepthProfile(target.region))
-      ? "regional-anatomical"
+    depthProfileId &&
+    regionHasDepthProfile(depthProfileId)
+      ? depthProfileId
       : "unverified-or-mixed";
+  canvas.dataset.virtualSpecimen =
+    specimenById(selectedLearningRegion)?.id || "";
 
   const regional = regionIsolationActive();
   if (skeletonMesh) {
@@ -1007,20 +1035,42 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
   }
 }
 
+function specimenViewDirection(viewId) {
+  const directions = {
+    threeQuarter: new THREE.Vector3(0.35, 0.04, 1).normalize(),
+    front: new THREE.Vector3(0, 0.02, 1).normalize(),
+    back: new THREE.Vector3(0, 0.02, -1).normalize(),
+    left: new THREE.Vector3(-1, 0.02, 0).normalize(),
+    right: new THREE.Vector3(1, 0.02, 0).normalize(),
+  };
+  return directions[viewId] || currentViewDirection();
+}
+
 function focusLearningRegion() {
-  if (!availableTargets.length) {
+  const sceneTargets = activeSceneTargets();
+  if (!sceneTargets.length) {
     setFullBodyView();
     return;
   }
 
-  const ids = [...new Set(availableTargets.flatMap((target) => target.sids || []))];
+  const ids = [...new Set(sceneTargets.flatMap((target) => target.sids || []))];
   const box = boxForStructures(ids);
   if (box.isEmpty()) {
     setFullBodyView();
     return;
   }
 
-  focusBox(box, selectedLearningRegion === "all" ? 1.12 : 1.28);
+  const specimen = specimenById(selectedLearningRegion);
+  const preferredView = specimenPrimaryView(selectedLearningRegion);
+  const direction = preferredView
+    ? specimenViewDirection(preferredView)
+    : bestViewDirectionForBox(box).direction;
+
+  focusBox(
+    box,
+    specimen ? specimenPadding(specimen.id) : selectedLearningRegion === "all" ? 1.12 : 1.28,
+    direction
+  );
 }
 
 function fitCamera(object) {
@@ -1114,11 +1164,20 @@ function targetConceptKeys(target) {
   ];
 }
 
+function activeDepthProfileId(target = null) {
+  return (
+    specimenDepthProfileId(selectedLearningRegion) ||
+    target?.region ||
+    null
+  );
+}
+
 function targetDepthInfo(target) {
-  if (!target?.region) return null;
+  const depthRegionId = activeDepthProfileId(target);
+  if (!target || !depthRegionId) return null;
 
   for (const conceptKey of targetConceptKeys(target)) {
-    const info = muscleDepthInfo(target.region, conceptKey);
+    const info = muscleDepthInfo(depthRegionId, conceptKey);
     if (info) return { ...info, conceptKey };
   }
 
@@ -1132,14 +1191,15 @@ function targetHasVisibleStructure(target) {
 }
 
 function nextRegionalAnatomicalLayer() {
-  if (!regionIsolationActive() || !availableTargets.length) {
+  const sceneTargets = activeSceneTargets();
+  if (!regionIsolationActive() || !sceneTargets.length) {
     return {
       supported: false,
       reason: "Сначала изолируйте анатомический блок.",
     };
   }
 
-  const visibleTargets = availableTargets.filter(targetHasVisibleStructure);
+  const visibleTargets = sceneTargets.filter(targetHasVisibleStructure);
   if (!visibleTargets.length) {
     return {
       supported: false,
@@ -1252,17 +1312,18 @@ function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
     const candidateInfo = targetDepthInfo(candidateTarget);
 
     if (selectedInfo && candidateInfo) {
+      const depthRegionId = activeDepthProfileId(selectedTarget);
       if (
-        selectedTarget?.region !== candidateTarget?.region ||
+        activeDepthProfileId(candidateTarget) !== depthRegionId ||
         candidateInfo.rank <= selectedInfo.rank
       ) {
         continue;
       }
 
       if (
-        hasCoverageRules(selectedTarget.region, selectedInfo.ruleId) &&
+        hasCoverageRules(depthRegionId, selectedInfo.ruleId) &&
         !isKnownDeeperRelation(
-          selectedTarget.region,
+          depthRegionId,
           selectedInfo.ruleId,
           candidateInfo.ruleId
         )
@@ -1497,24 +1558,36 @@ function renderLearningRegionOptions() {
 
   learningRegion.replaceChildren();
 
-  const courseGroup = document.createElement("optgroup");
-  courseGroup.label = "Учебные блоки";
-  for (const scope of LEARNING_SCOPES) {
-    const count = filterCatalogByRegion(learningCatalog, scope.id).length;
-    if (scope.id !== "all" && count === 0) continue;
+  const groups = [
+    { id: "overview", label: "Обзорные учебные блоки" },
+    { id: "specimen-region", label: "Виртуальные препараты — области" },
+    { id: "specimen-group", label: "Виртуальные препараты — комплексы" },
+  ];
 
-    const option = document.createElement("option");
-    option.value = scope.id;
-    option.textContent = `${scope.nameRu} · ${count}`;
-    courseGroup.appendChild(option);
+  for (const group of groups) {
+    const optgroup = document.createElement("optgroup");
+    optgroup.label = group.label;
+
+    for (const scope of LEARNING_SCOPES.filter(
+      (item) => (item.group || "overview") === group.id
+    )) {
+      const count = filterCatalogByRegion(learningCatalog, scope.id).length;
+      if (scope.id !== "all" && count === 0) continue;
+
+      const option = document.createElement("option");
+      option.value = scope.id;
+      option.textContent = `${scope.nameRu} · ${count}`;
+      optgroup.appendChild(option);
+    }
+
+    if (optgroup.children.length) learningRegion.appendChild(optgroup);
   }
-  learningRegion.appendChild(courseGroup);
 
-  const courseIds = new Set(LEARNING_SCOPES.map((scope) => scope.id));
+  const scopeIds = new Set(LEARNING_SCOPES.map((scope) => scope.id));
   const exactGroup = document.createElement("optgroup");
-  exactGroup.label = "Точные анатомические области";
+  exactGroup.label = "Полные анатомические области";
   for (const region of LEARNING_REGIONS) {
-    if (courseIds.has(region.id)) continue;
+    if (scopeIds.has(region.id)) continue;
     const count = counts[region.id] || 0;
     if (!count) continue;
 
@@ -3176,9 +3249,20 @@ function applyRegionBoneVisibility() {
     return;
   }
 
+  const specimen = specimenById(selectedLearningRegion);
+  const hasNamedBoneMatches =
+    Boolean(specimen) &&
+    boneNames.some((name) =>
+      specimenSupportBoneMatches(specimen.id, name)
+    );
+
   let visibleCount = 0;
   for (let boneId = 0; boneId < boneNames.length; boneId += 1) {
-    const visible = context.intersectsBox(boneWorldBox(boneId));
+    const inWindow = context.intersectsBox(boneWorldBox(boneId));
+    const namedMatch =
+      !hasNamedBoneMatches ||
+      specimenSupportBoneMatches(specimen.id, boneNames[boneId]);
+    const visible = inWindow && namedMatch;
     setBoneVisible(boneId, visible);
     if (visible) visibleCount += 1;
   }

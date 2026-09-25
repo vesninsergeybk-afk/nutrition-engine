@@ -1,5 +1,10 @@
 import { structureTerm } from "./anatomy-terms-ru.js";
 import { bodyPartsMuscleNameRu } from "./bodyparts4-muscles-ru.js";
+import {
+  filterCatalogForSpecimen,
+  specimenById,
+  specimenLearningScopes,
+} from "./virtual-specimens.js";
 
 export const LEARNING_SKILLS = Object.freeze({
   find: {
@@ -40,61 +45,30 @@ export const LEARNING_SCOPES = Object.freeze([
     nameRu: "Всё тело",
     descriptionRu: "Все доступные мышечные цели.",
     regionIds: ["all"],
-  },
-  {
-    id: "shoulder",
-    nameRu: "Плечевой пояс",
-    descriptionRu: "Мышцы плечевого пояса и лопаточного комплекса.",
-    regionIds: ["shoulder"],
+    group: "overview",
   },
   {
     id: "upper-limb",
     nameRu: "Верхняя конечность",
     descriptionRu: "Плечевой пояс, плечо, предплечье и кисть.",
     regionIds: ["shoulder", "arm", "forearm-hand"],
+    group: "overview",
   },
   {
     id: "lower-limb",
     nameRu: "Нижняя конечность",
     descriptionRu: "Ягодичная область, бедро, голень и стопа.",
     regionIds: ["gluteal", "thigh", "leg-foot"],
+    group: "overview",
   },
   {
     id: "neck",
     nameRu: "Шея",
-    descriptionRu: "Мышцы шеи и подзатылочной области без мышц лица и лопаточного комплекса.",
+    descriptionRu: "Мышцы шеи и подзатылочной области без мышц лица.",
     match: "neck",
+    group: "overview",
   },
-  {
-    id: "neck-collar",
-    nameRu: "Шейно-воротниковая зона",
-    descriptionRu: "Мышцы шеи, подзатылочной области и лопаточно-шейного перехода.",
-    match: "neck-collar",
-  },
-  {
-    id: "foot",
-    nameRu: "Стопа",
-    descriptionRu: "Собственные мышцы тыла и подошвы стопы.",
-    match: "foot",
-  },
-  {
-    id: "erector-spinae",
-    nameRu: "Мышца, выпрямляющая позвоночник",
-    descriptionRu: "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
-    match: "erector-spinae",
-  },
-  {
-    id: "rotator-cuff",
-    nameRu: "Ротаторная манжета плеча",
-    descriptionRu: "Надостная, подостная, подлопаточная и малая круглая мышцы.",
-    match: "rotator-cuff",
-  },
-  {
-    id: "scapular-stabilizers",
-    nameRu: "Лопаточный комплекс",
-    descriptionRu: "Трапециевидная, ромбовидные, передняя зубчатая и мышца, поднимающая лопатку.",
-    match: "scapular-stabilizers",
-  },
+  ...specimenLearningScopes(),
 ]);
 
 const REGION_BY_ID = new Map(LEARNING_REGIONS.map((region) => [region.id, region]));
@@ -533,6 +507,10 @@ function matchesNamedScope(target, matchId) {
 export function filterCatalogByRegion(catalog, regionId) {
   const items = [...(catalog || [])];
   if (!regionId || regionId === "all") return items;
+
+  if (specimenById(regionId)) {
+    return filterCatalogForSpecimen(items, regionId, "question");
+  }
 
   const scope = SCOPE_BY_ID.get(regionId);
   if (scope) {

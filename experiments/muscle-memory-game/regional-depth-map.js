@@ -22,6 +22,8 @@ const PROFILES = Object.freeze({
     rules: Object.freeze([
       rule("trapezius", "superficial", /^trapezius$/i),
       rule("deltoid", "superficial", /^deltoid$/i),
+      rule("pectoralis-major", "superficial", /^pectoralis major$/i),
+      rule("latissimus-dorsi", "superficial", /^latissimus dorsi$/i),
 
       rule("supraspinatus", "intermediate", /^supraspinatus$/i),
       rule("infraspinatus", "intermediate", /^infraspinatus$/i),
@@ -47,6 +49,12 @@ const PROFILES = Object.freeze({
         "supraspinatus",
         "infraspinatus",
         "teres-minor",
+      ]),
+      "pectoralis-major": Object.freeze([
+        "pectoralis-minor",
+      ]),
+      "latissimus-dorsi": Object.freeze([
+        "teres-major",
       ]),
     }),
   }),
