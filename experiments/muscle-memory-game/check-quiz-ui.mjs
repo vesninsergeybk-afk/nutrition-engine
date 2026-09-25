@@ -85,9 +85,9 @@ console.log("Quiz UI contract: course scopes + active-block choices + adaptive s
 
 assert(
   app.includes("applyRegionBoneVisibility()") &&
-    app.includes('boneDisplayMode = "off"') &&
+    app.includes('boneDisplayMode = "xray"') &&
     app.includes('canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full"'),
-  "Regional bone support is not filtered and opt-in"
+  "Regional bone support is not filtered and visible by default"
 );
 assert(
   app.includes("studyStructureMatchesActiveRegion") &&
