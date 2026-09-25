@@ -71,6 +71,7 @@ const boneOpacityField = document.querySelector("#bone-opacity-field");
 const connectiveMode = document.querySelector("#connective-mode");
 const connectiveField = document.querySelector("#connective-field");
 const debugPanel = document.querySelector("#debug-panel");
+const viewerSettings = document.querySelector(".viewer-settings");
 const modelSource = document.querySelector("#model-source");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
@@ -752,6 +753,7 @@ function startLearningSession() {
   wrongEl.textContent = "0";
   sessionSummaryShown = false;
   document.body.classList.add("session-active");
+  if (viewerSettings) viewerSettings.open = false;
   startLearningSessionButton.textContent = "Перезапустить";
   syncQuestionCardPlacement();
   prepareSessionItem();
