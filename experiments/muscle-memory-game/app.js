@@ -98,6 +98,8 @@ const loadingEl = document.querySelector("#loading");
 const questionLabelEl = document.querySelector("#question-label");
 const questionEl = document.querySelector("#question");
 const feedbackEl = document.querySelector("#feedback");
+const deeperStructuresEl = document.querySelector("#deeper-structures");
+const deeperStructureListEl = document.querySelector("#deeper-structure-list");
 const nextButton = document.querySelector("#next-question");
 const answerButton = document.querySelector("#show-answer");
 const correctEl = document.querySelector("#score-correct");
@@ -1253,6 +1255,7 @@ function nextRegionalAnatomicalLayer() {
 
 function peelAnatomicalMuscleLayer() {
   if (appMode !== "explore") return;
+  clearDeeperStructures();
 
   const layer = nextRegionalAnatomicalLayer();
   if (!layer.supported || !layer.ids.length) {
@@ -1290,7 +1293,7 @@ function peelAnatomicalMuscleLayer() {
   updateLayerButtons();
 }
 
-function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
+function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
   const selectedTarget = learningTargetBySid.get(selectedSid) || null;
   const selectedInfo = targetDepthInfo(selectedTarget);
   const ordered = [];
@@ -1308,7 +1311,12 @@ function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
 
     if (sid === selectedSid || ordered.includes(sid)) continue;
 
+    // "Глубже здесь" is deliberately a muscle-learning affordance. Atlas
+    // structures that are not mapped to a muscle target (e.g. linea alba)
+    // must not masquerade as a deeper muscle.
     const candidateTarget = learningTargetBySid.get(sid) || null;
+    if (!candidateTarget) continue;
+
     const candidateInfo = targetDepthInfo(candidateTarget);
 
     if (selectedInfo && candidateInfo) {
@@ -1336,8 +1344,82 @@ function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
     if (ordered.length >= limit) break;
   }
 
-  return ordered.map((sid) => displayStructureName(sid));
+  return ordered;
 }
+
+function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
+  return deeperMuscleIdsFromHits(hits, selectedSid, limit).map((sid) =>
+    displayStructureName(sid)
+  );
+}
+
+function clearDeeperStructures() {
+  deeperStructureListEl?.replaceChildren();
+  if (deeperStructuresEl) deeperStructuresEl.hidden = true;
+}
+
+function isolateDeeperMuscle(sid) {
+  if (appMode !== "explore" || sid == null || !structureNames[sid]) return;
+
+  restoreHighlights();
+  restoreStudyHighlight();
+  clearDeeperStructures();
+
+  selectedStudyId = null;
+  selectedExploreSid = sid;
+  focusedStructureIds = [sid];
+
+  if (anatomyMesh) anatomyMesh.visible = true;
+  setVisibleStructures([sid]);
+  setAllStudyStructuresVisible(false);
+
+  for (const mesh of connectiveMeshes.values()) mesh.visible = false;
+  if (skinMesh) skinMesh.visible = false;
+  if (skeletonMesh) skeletonMesh.visible = false;
+  for (const mesh of referenceMeshes.values()) mesh.visible = false;
+
+  highlightStructures([sid], "selected");
+  isolated = true;
+
+  questionLabelEl.textContent = "Глубже здесь";
+  questionEl.textContent = displayStructureName(sid);
+  feedbackEl.className = "feedback deeper-focus-feedback";
+  feedbackEl.textContent =
+    "Мышца показана отдельно. Нажмите «Показать окружение», чтобы вернуться к препарату.";
+
+  focusSelectedButton.disabled = false;
+  isolateButton.disabled = false;
+  focusSelectedStructures(1.72);
+  updateLayerButtons();
+
+  canvas.dataset.deeperFocus = "true";
+}
+
+function renderDeeperStructures(ids) {
+  clearDeeperStructures();
+  if (!deeperStructuresEl || !deeperStructureListEl || !ids?.length) return;
+
+  ids.forEach((sid, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "deeper-structure";
+    button.dataset.structureId = String(sid);
+
+    const depth = document.createElement("span");
+    depth.className = "deeper-structure-depth";
+    depth.textContent = index === 0 ? "Следующий слой" : "Ещё глубже";
+
+    const name = document.createElement("strong");
+    name.textContent = displayStructureName(sid);
+
+    button.append(depth, name);
+    button.addEventListener("click", () => isolateDeeperMuscle(sid));
+    deeperStructureListEl.appendChild(button);
+  });
+
+  deeperStructuresEl.hidden = false;
+}
+
 
 function updateLayerButtons() {
   isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
@@ -1403,6 +1485,7 @@ function showAllStructures() {
 }
 
 function restoreExploreContext() {
+  clearDeeperStructures();
   if (anatomyMesh) anatomyMesh.visible = true;
   applyRegionMuscleVisibility();
   setAllStudyStructuresVisible(true);
@@ -1411,10 +1494,12 @@ function restoreExploreContext() {
   exploreHiddenActions.length = 0;
   isolated = false;
   applyMuscleDisplayMode();
+  applyBoneDisplayMode();
   applyConnectiveDisplayMode();
   applySkinDisplayMode();
   restoreReferenceLayerVisibility();
   updateLayerButtons();
+  canvas.dataset.deeperFocus = "false";
 }
 
 function isolateSelectedStudyStructure() {
@@ -1447,6 +1532,7 @@ function isolateSelectedStudyStructure() {
 
 function hideSelectedStructure() {
   if (appMode !== "explore") return;
+  clearDeeperStructures();
 
   if (selectedStudyId != null) {
     if (isolated || !studyStructureIsVisible(selectedStudyId)) return;
@@ -2759,12 +2845,11 @@ function selectExploreStructure(sid, hitStack = null) {
   questionLabelEl.textContent = "Мышца";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
-  const deeperNames = deeperMuscleNamesFromHits(hitStack, sid);
-  feedbackEl.textContent = deeperNames.length
-    ? "Глубже по выбранной точке: " +
-      deeperNames.join(" → ") +
-      ". Можно снять видимый слой целиком или скрыть только выбранную мышцу."
+  const deeperIds = deeperMuscleIdsFromHits(hitStack, sid);
+  feedbackEl.textContent = deeperIds.length
+    ? "Ниже показаны мышцы, которые модель действительно пересекает глубже в выбранной точке."
     : "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
+  renderDeeperStructures(deeperIds);
 
   focusSelectedButton.disabled = false;
   isolateButton.disabled = false;
@@ -2773,6 +2858,7 @@ function selectExploreStructure(sid, hitStack = null) {
 
 function selectStudyStructure(studyId) {
   if (appMode !== "explore") return;
+  clearDeeperStructures();
   const entry = studyEntry(studyId);
   if (!entry) return;
 
@@ -2813,6 +2899,7 @@ function setMode(mode) {
   if (mode !== "quiz" && mode !== "explore") return;
 
   appMode = mode;
+  clearDeeperStructures();
   restoreStudyHighlight();
   restoreHighlights();
   restoreExploreContext();
@@ -4663,9 +4750,12 @@ isolateButton.addEventListener("click", () => {
   if (selectedExploreSid == null) return;
 
   if (isolated) {
-    showAllStructures();
-    if (selectedExploreSid != null) {
-      highlightStructures([selectedExploreSid], "selected");
+    const sid = selectedExploreSid;
+    restoreExploreContext();
+    if (sid != null) {
+      selectedExploreSid = sid;
+      focusedStructureIds = [sid];
+      highlightStructures([sid], "selected");
     }
   } else {
     setVisibleStructures([selectedExploreSid]);

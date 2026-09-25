@@ -112,6 +112,7 @@ jobs:
           node experiments/muscle-memory-game/check-virtual-specimens.mjs
           node experiments/muscle-memory-game/check-anatomical-depth.mjs
           node experiments/muscle-memory-game/check-region-depth.mjs
+          node experiments/muscle-memory-game/check-deeper-links.mjs
 
       - name: Install browser
         if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') }}
