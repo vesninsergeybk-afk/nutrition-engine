@@ -217,6 +217,15 @@ html[data-theme="modern"][data-interface-simplification="1"] .search-status{
   color:#475467!important;
   border-left-color:#b9c4d3!important;
 }
+
+/* Firefox/axe resolves the legacy accent (#1ea97c) against the soft correction
+   surface below AA for the small uppercase eyebrow text. Keep the semantic green
+   but use the already-audited darker value (#12805c on #f7f9fc = 4.67:1). */
+html[data-theme="modern"][data-interface-simplification="1"] .analysis-overview-bridge-hf2>div>span,
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-group-overview-hf2__head>div>span,
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-hei-dashboard-hf2__head>div>span{
+  color:#12805c!important;
+}
 html[data-theme="modern"][data-interface-simplification="1"] .chip,
 html[data-theme="modern"][data-interface-simplification="1"] .pill,
 html[data-theme="modern"][data-interface-simplification="1"] #heiBadge{
@@ -228,6 +237,21 @@ html[data-theme="modern"][data-interface-simplification="1"] .rec,
 html[data-theme="modern"][data-interface-simplification="1"] #heiRecommendations .rec{
   box-shadow:none!important;
   border-radius:10px!important;
+}
+
+/* HF2 overview buttons are navigational data cards. The legacy global button rule
+   paints them primary blue, leaving their muted <small> copy below AA in Firefox.
+   Keep state meaning on the existing left border and return the card itself to a
+   neutral surface. */
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-group-overview-hf2__list>button,
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-hei-dashboard-hf2__list>button{
+  background:#fff!important;
+  color:var(--vg-ink)!important;
+  border-color:var(--vg-line)!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-group-overview-hf2__list>button small,
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-hei-dashboard-hf2__list>button small{
+  color:#475467!important;
 }
 
 /* 6. Tables and repeated data should read as data, not a stack of floating objects. */
