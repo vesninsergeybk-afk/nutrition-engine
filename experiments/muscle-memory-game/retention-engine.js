@@ -42,7 +42,7 @@ export function retentionRecord(store, muscleId, skillId) {
   // scheduling system without erasing previous progress.
   const legacyDueAt =
     base.attempts > 0 && !lastReviewedAt
-      ? Math.max(1, Number(base.lastSeen) || 1)
+      ? 1
       : 0;
 
   return {
