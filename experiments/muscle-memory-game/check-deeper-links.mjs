@@ -120,9 +120,11 @@ assert(
   "Verified deeper relations still depend on current scene visibility"
 );
 
+const disabledBlock =
+  app.match(/peelSurfaceLayerButton\.disabled\s*=([\s\S]*?);/)?.[1] || "";
 assert(
   app.includes('"Почему послойность недоступна?"') &&
-    !/peelSurfaceLayerButton\.disabled[\s\S]{0,240}layerUnavailable/.test(app),
+    !disabledBlock.includes("layerUnavailable"),
   "Unavailable depth maps are still silently disabled instead of explained"
 );
 assert(
