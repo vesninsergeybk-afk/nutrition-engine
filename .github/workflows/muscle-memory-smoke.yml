@@ -175,6 +175,7 @@ jobs:
             assert.match(await page.locator('#question').innerText(), /Найдите:/);
             await page.click('#show-answer');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-done'), '1');
+            assert.match(await page.locator('#session-progress').innerText(), /1 из 5/i);
             let storedLearning = await page.evaluate(() =>
               localStorage.getItem('muscle-memory-learning-v1')
             );
