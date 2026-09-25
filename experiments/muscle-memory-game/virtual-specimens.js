@@ -7,6 +7,7 @@ function specimen(
     questionRegionIds = [],
     questionPatterns = [],
     contextPatterns = [],
+    excludePatterns = [],
     supportBonePatterns = [],
     depthProfile = null,
     minDepthQuestionTargets = 0,
@@ -22,6 +23,7 @@ function specimen(
     questionRegionIds: Object.freeze([...questionRegionIds]),
     questionPatterns: Object.freeze([...questionPatterns]),
     contextPatterns: Object.freeze([...contextPatterns]),
+    excludePatterns: Object.freeze([...excludePatterns]),
     supportBonePatterns: Object.freeze([...supportBonePatterns]),
     depthProfile,
     minDepthQuestionTargets,
@@ -93,8 +95,9 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Сгибатели, пронаторы и ладонный мышечный контекст.",
     {
       questionPatterns: [
-        /pronator|flexor carpi|flexor digitorum (?:profundus|superficialis)|flexor pollicis|palmaris longus|lumbrical.*hand|palmar interosse|interosse.*hand|opponens pollicis|opponens digiti minimi(?! of foot)|adductor pollicis|abductor pollicis brevis|flexor digiti minimi(?!.*foot)|abductor digiti minimi(?!.*foot)|ладонн.*межкостн.*кист/iu,
+        /pronator|flexor carpi|flexor digitorum (?:profundus|superficialis)|flexor pollicis|palmaris longus|lumbrical.*hand|palmar interosse|interosse.*hand|opponens pollicis|opponens digiti minimi|adductor pollicis|abductor pollicis brevis|flexor digiti minimi|abductor digiti minimi|ладонн.*межкостн.*кист/iu,
       ],
+      excludePatterns: [/foot|toe|plantar|стоп|подошв/iu],
       supportBonePatterns: [
         /radius|ulna|carpal|metacarp/i,
         /^(?!.*(?:toe|foot)).*phalanx.*(?:finger|thumb)/i,
@@ -111,6 +114,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /supinator|extensor carpi|extensor digitorum|extensor digiti minimi|extensor pollicis|abductor pollicis longus|extensor indicis|brachioradialis/i,
       ],
+      excludePatterns: [/foot|toe|plantar|стоп|подошв/iu],
       supportBonePatterns: [
         /radius|ulna|carpal|metacarp/i,
         /^(?!.*(?:toe|foot)).*phalanx.*(?:finger|thumb)/i,
@@ -491,6 +495,8 @@ export function specimenMatchesTarget(target, specimenOrId, mode = "question") {
   if (!item || !target) return false;
 
   const text = targetText(target);
+  if (matchesPatterns(text, item.excludePatterns)) return false;
+
   const question =
     item.questionRegionIds.includes(target.region) ||
     matchesPatterns(text, item.questionPatterns);
