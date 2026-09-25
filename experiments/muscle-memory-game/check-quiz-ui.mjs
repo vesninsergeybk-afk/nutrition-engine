@@ -81,9 +81,10 @@ console.log("Quiz UI contract: course scopes + active-block choices + adaptive s
 
 
 assert(
-  app.includes("if (regionIsolationActive())") &&
-    app.includes('canvas.dataset.boneMode = "regional-hidden"'),
-  "Whole-body bones can leak into an isolated regional scene"
+  app.includes("applyRegionBoneVisibility()") &&
+    app.includes('boneDisplayMode = "off"') &&
+    app.includes('canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full"'),
+  "Regional bone support is not filtered and opt-in"
 );
 assert(
   app.includes("studyStructureMatchesActiveRegion") &&
