@@ -102,7 +102,7 @@ export function inferMuscleRegion(sourceName, nameRu = "") {
   if (
     has(
       text,
-      /frontalis|occipitalis|temporalis|temporoparietalis|masseter|pterygoid|bucinator|buccinator|zygomatic|orbicularis|corrugator|procerus|nasalis|mentalis|risorius|depressor|levator (?:anguli|labii|palpebrae)|rectus capitis|obliquus capitis|longus capitis|longus colli|splenius capitis|splenius cervicis|semispinalis capitis|semispinalis cervicis|spinalis capitis|spinalis colli|longissimus capitis|longissimus cervicis|iliocostalis cervicis|sternocleidomastoid|scalenus|platysma|digastric|mylohyoid|geniohyoid|genioglossus|hyoglossus|stylohyoid|omohyoid|sternohyoid|sternothyroid|thyrohyoid|pharyngeal|pharyngeus|arytenoid|crico|thyro-arytenoid|thyroarytenoid|vocalis|palatini|uvular|intertransversarii cervicis|interspinales cervicis|multifidus colli|superior rectus|inferior rectus|medial rectus|lateral rectus|superior oblique|inferior oblique|глаз|глот|гортан|языч|подъязыч|жеватель|крыловид|скулов|круговая мышца рта|круговая мышца глаза/u
+      /frontalis|occipitalis|temporalis|temporoparietalis|masseter|pterygoid|bucinator|buccinator|zygomatic|orbicularis|corrugator|procerus|nasalis|mentalis|risorius|depressor|levator (?:anguli|labii|palpebrae|nasolabialis)|rectus capitis|obliquus capitis|longus capitis|longus colli|splenius capitis|splenius cervicis|semispinalis capitis|semispinalis cervicis|spinalis capitis|spinalis colli|longissimus capitis|longissimus cervicis|iliocostalis cervicis|sternocleidomastoid|scalenus|platysma|digastric|mylohyoid|geniohyoid|genioglossus|hyoglossus|stylohyoid|omohyoid|sternohyoid|sternothyroid|thyrohyoid|pharyngeal|pharyngeus|arytenoid|aryepiglotticus|crico|thyro-arytenoid|thyroarytenoid|vocalis|palatini|uvular|intertransversarii cervicis|cervical intertransversarii|interspinales cervicis|multifidus colli|superior rectus|inferior rectus|medial rectus|lateral rectus|superior oblique|inferior oblique|глаз|глот|гортан|языч|подъязыч|жеватель|крыловид|скулов|круговая мышца рта|круговая мышца глаза/u
     )
   ) return "head-neck";
 
@@ -123,7 +123,7 @@ export function inferMuscleRegion(sourceName, nameRu = "") {
   if (
     has(
       text,
-      /brachioradialis|pronator|supinator|carpi|palmaris|pollicis|indicis|digiti minimi of hand|digitorum profundus|digitorum superficialis|extensor digitorum(?! longus| brevis)|lumbrical.*hand|interossei.*hand|opponens.*hand|adductor pollicis|сгибател.*запяст|разгибател.*запяст|пронатор|супинатор|плечелучев|ладонн|кисти|больш.*палец кист|указательн.*пальц/u
+      /brachioradialis|pronator|supinator|carpi|palmaris|pollicis|indicis|digiti minimi(?: brevis)? of hand|extensor digiti minimi|digitorum profundus|digitorum superficialis|extensor digitorum(?! longus| brevis)|lumbrical.*hand|interossei.*hand|palmar interossei|opponens.*hand|adductor pollicis|сгибател.*запяст|разгибател.*запяст|пронатор|супинатор|плечелучев|ладонн|кисти|больш.*палец кист|указательн.*пальц/u
     )
   ) return "forearm-hand";
 
@@ -172,7 +172,7 @@ export function inferMuscleRegion(sourceName, nameRu = "") {
   if (
     has(
       text,
-      /gastrocnemius|soleus|plantaris|popliteus|tibialis|fibularis|hallucis|digitorum longus|digitorum brevis|digiti minimi of foot|lumbrical.*foot|interossei.*foot|opponens.*foot|abductor.*foot|quadratus plantae|икронож|камбаловид|подошвен|подколенн|большеберцов|малоберцов|палец стопы|пальцев стопы|мизинец стопы|межкостн.*стоп|червеобразн.*стоп|квадратная мышца подошвы/u
+      /gastrocnemius|soleus|plantaris|popliteus|tibialis|fibularis|hallucis|digitorum longus|digitorum brevis|digiti minimi(?: brevis)? of foot|lumbrical.*foot|interossei.*foot|plantar interossei|opponens.*foot|abductor.*foot|quadratus plantae|flexor accessorius|икронож|камбаловид|подошвен|подколенн|большеберцов|малоберцов|палец стопы|пальцев стопы|мизинец стопы|межкостн.*стоп|червеобразн.*стоп|квадратная мышца подошвы/u
     )
   ) return "leg-foot";
 
