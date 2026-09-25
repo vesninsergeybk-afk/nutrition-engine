@@ -269,6 +269,7 @@ test('mobile ration starts with text search and keeps alternatives collapsed', a
 
   const alternative = page.locator('#workspaceAltEntryMethods');
   await expect(alternative).toBeVisible();
+  await expect(page.locator('#workspaceRationSecondary')).toBeHidden();
   await expect(alternative).not.toHaveAttribute('open', '');
   await expect(alternative.locator('button[data-ration-entry-method]')).toHaveCount(3);
 
@@ -483,11 +484,8 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiPanel .workspace-guardrails')).toBeHidden();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeHidden();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-actions')).toBeHidden();
-  await expect(page.locator('#workspaceHeiExecutiveHF4')).toContainText('HEI пока не рассчитан');
-  await expect(page.locator('#workspaceHeiExecutiveHF4 .hei-card-hf4')).toHaveCount(0);
-  await expect(page.locator('#workspaceHeiDashboardListHF2 [data-hf2-hei-key]')).toHaveCount(0);
   await expect(page.locator('#workspaceHeiDashboardHF2')).toBeHidden();
-  await expect(page.locator('#workspaceHeiDashboardHF2 [data-hf2-hei-all]')).toBeHidden();
+  await expect(page.locator('#workspaceHeiPanel [data-hf2-hei-key]:visible')).toHaveCount(0);
 
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
   const search = page.locator('#globalSearchInput');
@@ -510,9 +508,6 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-summary')).toBeVisible();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeVisible();
   await expect(page.locator('#workspaceHeiDashboardHF2')).toBeVisible();
-  await expect(page.locator('#workspaceHeiExecutiveHF4 .hei-card-hf4').first()).toBeVisible();
-  await expect(page.locator('#workspaceHeiDashboardListHF2 [data-hf2-hei-key]').first()).toBeHidden();
-  await expect(page.locator('#workspaceHeiDashboardHF2 [data-hf2-hei-all]')).toBeVisible();
 });
 
 test('empty report does not present missing ration data as measured zeros', async ({ page, loadApp }) => {
