@@ -54,6 +54,35 @@ function normalizedTokens(value) {
   );
 }
 
+const ANATOMICAL_FAMILIES = [
+  ["rotator-cuff", /supraspinatus|infraspinatus|subscapularis|teres minor|надостн|подостн|подлопаточн|малая круглая/u],
+  ["scapular-stabilizers", /trapezius|rhomboid|levator scapulae|serratus anterior|трапециевид|ромбовид|поднимающ.*лопат|передн.*зубчат/u],
+  ["elbow-flexors", /biceps brachii|brachialis|brachioradialis|двуглав.*плеч|плечевая мышца|плечелучев/u],
+  ["elbow-extensors", /triceps brachii|anconeus|тр[её]хглав.*плеч|локтевая мышца/u],
+  ["forearm-flexor-pronator", /flexor|palmaris|pronator|сгибател|ладонн|пронатор/u],
+  ["forearm-extensor-supinator", /extensor|supinator|разгибател|супинатор/u],
+  ["quadriceps", /rectus femoris|vastus|прямая мышца бедра|широкая мышца бедра/u],
+  ["hamstrings", /biceps femoris|semitendinosus|semimembranosus|двуглав.*бедра|полусухожиль|полуперепончат/u],
+  ["hip-adductors", /adductor (?:brevis|longus|magnus|minimus)|gracilis|pectineus|приводящ.*мышц|тонкая мышца|гребенчат/u],
+  ["deep-gluteal", /piriformis|obturator|gemellus|quadratus femoris|грушевид|запирательн|близнецов|квадратная мышца бедра/u],
+  ["triceps-surae", /gastrocnemius|soleus|plantaris|икронож|камбаловид|подошвен/u],
+  ["anterior-leg", /tibialis anterior|extensor digitorum longus|extensor hallucis longus|передн.*большеберцов|длинн.*разгибател.*пальц/u],
+  ["lateral-leg", /fibularis (?:longus|brevis)|малоберцов/u],
+];
+
+function anatomicalFamilyTags(target) {
+  const source = [
+    target?.nameRu || "",
+    ...(target?.sourceNames || []),
+  ].join(" ").toLocaleLowerCase("ru-RU");
+
+  return new Set(
+    ANATOMICAL_FAMILIES
+      .filter(([, pattern]) => pattern.test(source))
+      .map(([id]) => id)
+  );
+}
+
 function similarityScore(a, b) {
   const aTokens = normalizedTokens(a.nameRu);
   const bTokens = normalizedTokens(b.nameRu);
@@ -62,6 +91,12 @@ function similarityScore(a, b) {
 
   let score = shared * 5;
   if (a.region === b.region) score += 3;
+
+  const aFamilies = anatomicalFamilyTags(a);
+  const bFamilies = anatomicalFamilyTags(b);
+  for (const family of aFamilies) {
+    if (bFamilies.has(family)) score += 8;
+  }
 
   const aName = a.nameRu.toLocaleLowerCase("ru-RU");
   const bName = b.nameRu.toLocaleLowerCase("ru-RU");

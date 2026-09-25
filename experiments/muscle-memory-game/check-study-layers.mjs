@@ -114,3 +114,16 @@ assert(
   "Layer controls can break study-structure isolation"
 );
 console.log("Study-layer state restoration: ok");
+
+assert(
+  app.includes("studyRanges = new Map()") &&
+    app.includes("indexStudyRanges(mesh)") &&
+    app.includes("range.start + range.count"),
+  "Study-layer selection still scans full merged geometry instead of indexed ranges"
+);
+assert(
+  app.includes("bounds: part.bounds || null") &&
+    app.includes("boxForStudyStructure"),
+  "Study-layer camera focus is not using stored anatomical bounds"
+);
+console.log("Study-layer indexed interaction: ok");

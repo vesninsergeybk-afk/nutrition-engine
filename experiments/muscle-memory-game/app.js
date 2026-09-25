@@ -195,6 +195,7 @@ let referenceMeshes = new Map();
 let referenceLayerPromises = new Map();
 let referenceLoadGeneration = 0;
 let studyStructures = [];
+let studyRanges = new Map();
 let selectedStudyId = null;
 let highlightedStudyId = null;
 const exploreHiddenActions = [];
@@ -330,6 +331,28 @@ function studyMeshes() {
   ];
 }
 
+function indexStudyRanges(mesh) {
+  const ids = mesh?.geometry?.getAttribute("structureId");
+  if (!ids?.count) return;
+
+  let start = 0;
+  let currentId = Math.round(ids.getX(0));
+
+  for (let i = 1; i <= ids.count; i += 1) {
+    const nextId = i < ids.count ? Math.round(ids.getX(i)) : null;
+    if (nextId === currentId) continue;
+
+    studyRanges.set(currentId, {
+      mesh,
+      start,
+      count: i - start,
+    });
+    start = i;
+    currentId = nextId;
+  }
+}
+
+
 function studyStructureIdFromHit(hit) {
   if (!hit?.object?.geometry || hit.faceIndex == null) return null;
   const geometry = hit.object.geometry;
@@ -342,19 +365,16 @@ function studyStructureIdFromHit(hit) {
 }
 
 function setStudyStructureVisible(studyId, visible) {
-  for (const mesh of studyMeshes()) {
-    const ids = mesh.geometry.getAttribute("structureId");
-    const visibility = mesh.geometry.getAttribute("structureVisible");
-    if (!ids || !visibility) continue;
+  const range = studyRanges.get(studyId);
+  const visibility = range?.mesh?.geometry?.getAttribute("structureVisible");
+  if (!range || !visibility) return;
 
-    let changed = false;
-    for (let i = 0; i < ids.count; i += 1) {
-      if (Math.round(ids.getX(i)) !== studyId) continue;
-      visibility.setX(i, visible ? 1 : 0);
-      changed = true;
-    }
-    if (changed) visibility.needsUpdate = true;
-  }
+  visibility.array.fill(
+    visible ? 1 : 0,
+    range.start,
+    range.start + range.count
+  );
+  visibility.needsUpdate = true;
 }
 
 function setAllStudyStructuresVisible(visible = true) {
@@ -367,18 +387,13 @@ function setAllStudyStructuresVisible(visible = true) {
 }
 
 function studyStructureIsVisible(studyId) {
-  for (const mesh of studyMeshes()) {
-    const ids = mesh.geometry.getAttribute("structureId");
-    const visibility = mesh.geometry.getAttribute("structureVisible");
-    if (!ids || !visibility) continue;
-    for (let i = 0; i < ids.count; i += 1) {
-      if (
-        Math.round(ids.getX(i)) === studyId &&
-        visibility.getX(i) >= 0.5
-      ) return true;
-    }
-  }
-  return false;
+  const range = studyRanges.get(studyId);
+  const visibility = range?.mesh?.geometry?.getAttribute("structureVisible");
+  return Boolean(
+    range &&
+    visibility &&
+    visibility.getX(range.start) >= 0.5
+  );
 }
 
 function studyBaseColor(entry) {
@@ -390,19 +405,14 @@ function studyBaseColor(entry) {
 }
 
 function paintStudyStructure(studyId, color) {
-  for (const mesh of studyMeshes()) {
-    const ids = mesh.geometry.getAttribute("structureId");
-    const colors = mesh.geometry.getAttribute("color");
-    if (!ids || !colors) continue;
+  const range = studyRanges.get(studyId);
+  const colors = range?.mesh?.geometry?.getAttribute("color");
+  if (!range || !colors) return;
 
-    let changed = false;
-    for (let i = 0; i < ids.count; i += 1) {
-      if (Math.round(ids.getX(i)) !== studyId) continue;
-      colors.setXYZ(i, color.r, color.g, color.b);
-      changed = true;
-    }
-    if (changed) colors.needsUpdate = true;
+  for (let i = range.start; i < range.start + range.count; i += 1) {
+    colors.setXYZ(i, color.r, color.g, color.b);
   }
+  colors.needsUpdate = true;
 }
 
 function restoreStudyHighlight() {
@@ -413,22 +423,25 @@ function restoreStudyHighlight() {
 }
 
 function boxForStudyStructure(studyId) {
-  const box = new THREE.Box3().makeEmpty();
-  const point = new THREE.Vector3();
+  const entry = studyEntry(studyId);
+  if (!entry?.bounds) return new THREE.Box3().makeEmpty();
 
-  for (const mesh of studyMeshes()) {
-    mesh.updateMatrixWorld(true);
-    const ids = mesh.geometry.getAttribute("structureId");
-    const position = mesh.geometry.getAttribute("position");
-    if (!ids || !position) continue;
+  modelGroup.updateMatrixWorld(true);
+  const min = new THREE.Vector3(...entry.bounds[0]).applyMatrix4(modelGroup.matrixWorld);
+  const max = new THREE.Vector3(...entry.bounds[1]).applyMatrix4(modelGroup.matrixWorld);
 
-    for (let i = 0; i < ids.count; i += 1) {
-      if (Math.round(ids.getX(i)) !== studyId) continue;
-      point.fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
-      box.expandByPoint(point);
-    }
-  }
-  return box;
+  return new THREE.Box3(
+    new THREE.Vector3(
+      Math.min(min.x, max.x),
+      Math.min(min.y, max.y),
+      Math.min(min.z, max.z)
+    ),
+    new THREE.Vector3(
+      Math.max(min.x, max.x),
+      Math.max(min.y, max.y),
+      Math.max(min.z, max.z)
+    )
+  );
 }
 
 function nearestMuscleForPart(part, muscleParts) {
@@ -2657,6 +2670,7 @@ function resetLoadedModel() {
   referenceLayerPromises = new Map();
   referenceLoadGeneration += 1;
   studyStructures = [];
+  studyRanges = new Map();
   selectedStudyId = null;
   highlightedStudyId = null;
   exploreHiddenActions.length = 0;
@@ -3444,6 +3458,7 @@ async function loadBodyParts4Model() {
           sourceName: part.name,
           conceptId: part.conceptId || "",
           layerKey,
+          bounds: part.bounds || null,
           nearestMuscleNameRu: nearestMuscle.nameRu,
           nearestMuscleSourceName: nearestMuscle.sourceName,
         });
@@ -3474,6 +3489,7 @@ async function loadBodyParts4Model() {
           sourceName: part.name,
           conceptId: part.conceptId || "",
           layerKey: "skin",
+          bounds: part.bounds || null,
           nearestMuscleNameRu: nearestMuscle.nameRu,
           nearestMuscleSourceName: nearestMuscle.sourceName,
         });
@@ -3524,6 +3540,7 @@ async function loadBodyParts4Model() {
     mesh.userData.layerKey = layerKey;
     connectiveMeshes.set(layerKey, mesh);
     modelGroup.add(mesh);
+    indexStudyRanges(mesh);
   }
 
   const mergedSkin = skinChunks.length ? mergeGeometries(skinChunks, false) : null;
@@ -3532,6 +3549,7 @@ async function loadBodyParts4Model() {
     skinMesh = new THREE.Mesh(mergedSkin, createSkinMaterial());
     skinMesh.renderOrder = 4;
     modelGroup.add(skinMesh);
+    indexStudyRanges(skinMesh);
   }
 
   fitCamera(modelGroup);

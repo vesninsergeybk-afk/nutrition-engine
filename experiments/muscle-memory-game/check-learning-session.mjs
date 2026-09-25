@@ -77,6 +77,13 @@ assert(
   "Similar same-region distractor was not preferred"
 );
 
+const cuffChoices = buildSmartChoices(catalog[2], catalog, 4, () => 0.25);
+assert(
+  cuffChoices.some((item) => item.id === "d") &&
+    cuffChoices.some((item) => item.id === "b"),
+  "Rotator-cuff distractors were not prioritized anatomically"
+);
+
 const confusionAwareStore = {
   records: {},
   confusions: {
