@@ -365,6 +365,76 @@ export function learningSummary(store, catalog, skillId = "find") {
   };
 }
 
+
+
+export function recordConfusion(
+  store,
+  expectedMuscleId,
+  chosenMuscleId,
+  skillId,
+  storage = globalThis.localStorage
+) {
+  if (!expectedMuscleId || !chosenMuscleId || expectedMuscleId === chosenMuscleId) return null;
+
+  if (!store.confusions || typeof store.confusions !== "object") store.confusions = {};
+  const key = [skillId, expectedMuscleId, chosenMuscleId].join("::");
+  const current = store.confusions[key] || {
+    skillId,
+    expectedMuscleId,
+    chosenMuscleId,
+    count: 0,
+    lastSeen: 0,
+  };
+
+  store.confusions[key] = {
+    ...current,
+    count: (Number(current.count) || 0) + 1,
+    lastSeen: Date.now(),
+  };
+  saveLearningStore(store, storage);
+  return store.confusions[key];
+}
+
+export function confusionPairs(store, { skillId = null, limit = 10 } = {}) {
+  return Object.values(store?.confusions || {})
+    .filter((entry) => !skillId || entry.skillId === skillId)
+    .sort(
+      (a, b) =>
+        (Number(b.count) || 0) - (Number(a.count) || 0) ||
+        (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0)
+    )
+    .slice(0, Math.max(1, Number(limit) || 10));
+}
+
+export function appendSessionHistory(
+  store,
+  entry,
+  storage = globalThis.localStorage
+) {
+  if (!Array.isArray(store.sessions)) store.sessions = [];
+
+  const normalized = {
+    completedAt: Number(entry?.completedAt) || Date.now(),
+    mode: String(entry?.mode || ""),
+    region: String(entry?.region || "all"),
+    total: Math.max(0, Number(entry?.total) || 0),
+    clean: Math.max(0, Number(entry?.clean) || 0),
+    wrongAttempts: Math.max(0, Number(entry?.wrongAttempts) || 0),
+    revealed: Math.max(0, Number(entry?.revealed) || 0),
+  };
+
+  store.sessions.push(normalized);
+  if (store.sessions.length > 100) store.sessions = store.sessions.slice(-100);
+  saveLearningStore(store, storage);
+  return normalized;
+}
+
+export function learningHistory(store, limit = 20) {
+  return [...(store?.sessions || [])]
+    .sort((a, b) => (Number(b.completedAt) || 0) - (Number(a.completedAt) || 0))
+    .slice(0, Math.max(1, Number(limit) || 20));
+}
+
 export function resetLearningStore(storage = globalThis.localStorage) {
   const store = emptyStore();
   saveLearningStore(store, storage);
