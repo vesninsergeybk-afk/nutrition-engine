@@ -680,6 +680,7 @@ function startLearningSession() {
   if (!availableTargets.length || appMode !== "quiz") return;
 
   selectedSessionMode = learningSessionMode.value;
+  updateLearningSummary();
   const size = Number(learningSessionSize.value) || 10;
 
   learningSession = createLearningSession({
