@@ -477,6 +477,19 @@ jobs:
             assert.match(zDeltoidLabel, /\((справа|слева)\)$/i);
             assert.doesNotMatch(zDeltoidLabel, /deltoid/i);
 
+            // Z-Anatomy has the complete five-target abdominal wall needed for
+            // the verified depth profile.
+            await page.selectOption('#learning-region', 'abdomen');
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-learning-target-count'),
+              '5'
+            );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-depth-source-capability'),
+              'ok'
+            );
+            await page.selectOption('#learning-region', 'shoulder');
+
             const pathnameBefore = new URL(page.url()).pathname;
             await page.locator('.viewer-settings > summary').click();
             await page.selectOption('#model-source', 'bodyparts4');
@@ -509,6 +522,25 @@ jobs:
               await page.locator('#viewer').getAttribute('data-region-visible-bones')
             );
             assert.ok(regionalBoneCount > 0);
+
+            // BodyParts3D is intentionally incomplete for the abdominal muscle
+            // wall. It must not present one external-oblique target as a full
+            // anatomical depth stack.
+            await page.selectOption('#learning-region', 'abdomen');
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-learning-target-count'),
+              '1'
+            );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-depth-source-capability'),
+              'source-incomplete'
+            );
+            await page.click('#peel-surface-layer');
+            assert.match(
+              await page.locator('#feedback').innerText(),
+              /препарат неполон.*1 из 5/i
+            );
+            await page.selectOption('#learning-region', 'shoulder');
 
             // Layer presets operate inside the isolated region.
             assert.equal(await page.locator('#layer-preset').isDisabled(), false);

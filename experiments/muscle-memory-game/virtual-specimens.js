@@ -132,7 +132,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Прямая, косые и поперечная мышцы живота с региональной послойностью.",
     {
       questionRegionIds: ["abdomen"],
-      supportBonePatterns: [/rib|sternum|ilium|pubis|lumbar vertebra/i],
+      supportBonePatterns: [/rib|sternum|ilium|pubis|hip bone|os cox|lumbar vertebra/i],
       depthProfile: "abdomen",
       minDepthQuestionTargets: 5,
       defaultViews: ["front", "threeQuarter"],
@@ -162,7 +162,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|spinalis(?: thoracis)?|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)? costar|поднимающ.*р[её]бр/iu,
       ],
-      supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium/i],
+      supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium|hip bone|os cox/i],
       depthProfile: "back",
       minDepthQuestionTargets: 6,
       defaultViews: ["back", "threeQuarter"],
@@ -176,7 +176,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionRegionIds: ["gluteal"],
       contextPatterns: [/tensor fasciae latae/i],
-      supportBonePatterns: [/sacrum|ilium|ischium|femur/i],
+      supportBonePatterns: [/sacrum|ilium|ischium|hip bone|os cox|femur/i],
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -189,7 +189,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /rectus femoris|vastus (?:lateralis|medialis|intermedius)|sartorius|tensor fasciae latae|iliacus|psoas major|pectineus/i,
       ],
-      supportBonePatterns: [/femur|patella|ilium|pubis/i],
+      supportBonePatterns: [/femur|patella|ilium|pubis|hip bone|os cox/i],
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -200,7 +200,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Приводящие мышцы, тонкая и гребенчатая.",
     {
       questionPatterns: [/adductor (?:longus|brevis|magnus|minimus)|gracilis|pectineus/i],
-      supportBonePatterns: [/femur|pubis|ischium/i],
+      supportBonePatterns: [/femur|pubis|ischium|hip bone|os cox/i],
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -212,7 +212,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionPatterns: [/biceps femoris|semitendinosus|semimembranosus/i],
       contextPatterns: [/gluteus maximus|adductor magnus/i],
-      supportBonePatterns: [/femur|ischium|tibia|fibula/i],
+      supportBonePatterns: [/femur|ischium|hip bone|os cox|tibia|fibula/i],
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -324,7 +324,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionPatterns: [/biceps femoris|semitendinosus|semimembranosus/i],
       contextPatterns: [/gluteus maximus|adductor magnus/i],
-      supportBonePatterns: [/femur|ischium|tibia|fibula/i],
+      supportBonePatterns: [/femur|ischium|hip bone|os cox|tibia|fibula/i],
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -347,7 +347,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Приводящие мышцы, тонкая и гребенчатая.",
     {
       questionPatterns: [/adductor (?:longus|brevis|magnus|minimus)|gracilis|pectineus/i],
-      supportBonePatterns: [/femur|pubis|ischium/i],
+      supportBonePatterns: [/femur|pubis|ischium|hip bone|os cox/i],
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -360,7 +360,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /gluteus|tensor fasciae latae|piriformis|gemellus|obturator|quadratus femoris/i,
       ],
-      supportBonePatterns: [/sacrum|ilium|ischium|femur/i],
+      supportBonePatterns: [/sacrum|ilium|ischium|hip bone|os cox|femur/i],
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -383,7 +383,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Прямая, наружная и внутренняя косые, поперечная и пирамидальная мышцы.",
     {
       questionRegionIds: ["abdomen"],
-      supportBonePatterns: [/rib|sternum|ilium|pubis|lumbar vertebra/i],
+      supportBonePatterns: [/rib|sternum|ilium|pubis|hip bone|os cox|lumbar vertebra/i],
       depthProfile: "abdomen",
       minDepthQuestionTargets: 5,
       defaultViews: ["front", "threeQuarter"],
@@ -410,7 +410,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Основные сгибатели тазобедренного сустава в переднем тазовом контексте.",
     {
       questionPatterns: [/iliacus|psoas major|rectus femoris|sartorius|tensor fasciae latae/i],
-      supportBonePatterns: [/ilium|pubis|femur|lumbar vertebra/i],
+      supportBonePatterns: [/ilium|pubis|hip bone|os cox|femur|lumbar vertebra/i],
       defaultViews: ["front", "threeQuarter"],
     }
   ),

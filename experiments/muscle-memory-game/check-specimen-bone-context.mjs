@@ -46,6 +46,21 @@ const bpBones=bpAtlas.parts
   .map(part=>part.name);
 
 let neither=0;
+const pelvicAnchorSpecimens = new Set([
+  "abdomen",
+  "lower-back",
+  "gluteal",
+  "thigh-anterior",
+  "thigh-medial",
+  "thigh-posterior",
+  "hamstrings",
+  "quadriceps",
+  "adductors",
+  "gluteal-complex",
+  "anterior-abdominal-wall",
+  "hip-flexors",
+]);
+
 for(const specimen of VIRTUAL_SPECIMENS){
   const z=zBones.filter(name=>specimenSupportBoneMatches(specimen.id,name));
   const bp=bpBones.filter(name=>specimenSupportBoneMatches(specimen.id,name));
@@ -57,6 +72,13 @@ for(const specimen of VIRTUAL_SPECIMENS){
     bpSample:bp.slice(0,3),
   }));
   if(!z.length && !bp.length) neither+=1;
+
+  if (pelvicAnchorSpecimens.has(specimen.id)) {
+    assert(
+      bp.some((name) => /hip bone/i.test(name)),
+      specimen.id + ": BodyParts3D pelvic context is missing the hip bone"
+    );
+  }
 }
 assert(neither===0,"A virtual specimen has no named bone anchors in either source");
 console.log("Virtual specimen bone-anchor audit: ok");
