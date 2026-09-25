@@ -1,5 +1,6 @@
 import {
   LEARNING_REGIONS,
+  appendSessionHistory,
   confusionPairs,
   filterCatalogByRegion,
   learningHistory,
@@ -142,6 +143,57 @@ export function weakSkills(
         a.skillId.localeCompare(b.skillId)
     )
     .slice(0, Math.max(1, Number(limit) || 6));
+}
+
+
+
+export function recordSessionHistory(
+  store,
+  session,
+  {
+    regionId = "all",
+    modelSource = "",
+    storage = globalThis.localStorage,
+  } = {}
+) {
+  if (!session) return null;
+
+  const results = session.results || [];
+  const clean = results.filter(
+    (result) =>
+      result.correct &&
+      (Number(result.wrongAttempts) || 0) === 0 &&
+      !result.revealed
+  ).length;
+  const wrongAttempts = results.reduce(
+    (sum, result) => sum + Math.max(0, Number(result.wrongAttempts) || 0),
+    0
+  );
+  const revealed = results.filter((result) => result.revealed).length;
+  const completedAt = Number(session.finishedAt) || Date.now();
+  const sessionId = [
+    Number(session.startedAt) || 0,
+    completedAt,
+    String(session.mode || ""),
+    String(regionId || "all"),
+  ].join(":");
+
+  return appendSessionHistory(
+    store,
+    {
+      sessionId,
+      startedAt: Number(session.startedAt) || 0,
+      completedAt,
+      mode: String(session.mode || ""),
+      region: regionId,
+      modelSource,
+      total: session.items?.length || results.length,
+      clean,
+      wrongAttempts,
+      revealed,
+    },
+    storage
+  );
 }
 
 export function recentSessionHistory(store, limit = 5) {
