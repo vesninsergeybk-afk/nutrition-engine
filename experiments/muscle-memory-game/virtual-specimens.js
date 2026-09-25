@@ -95,7 +95,10 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /pronator|flexor carpi|flexor digitorum|flexor pollicis|palmaris longus|lumbrical.*hand|palmar interosse|interosse.*hand|opponens|adductor pollicis|abductor pollicis brevis|ладонн.*межкостн.*кист/iu,
       ],
-      supportBonePatterns: [/radius|ulna|carpal|metacarp|phalan/i],
+      supportBonePatterns: [
+        /radius|ulna|carpal|metacarp/i,
+        /^(?!.*(?:toe|foot)).*phalanx.*(?:finger|thumb)/i,
+      ],
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -108,7 +111,10 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /supinator|extensor carpi|extensor digitorum|extensor digiti minimi|extensor pollicis|abductor pollicis longus|extensor indicis|brachioradialis/i,
       ],
-      supportBonePatterns: [/radius|ulna|carpal|metacarp|phalan/i],
+      supportBonePatterns: [
+        /radius|ulna|carpal|metacarp/i,
+        /^(?!.*(?:toe|foot)).*phalanx.*(?:finger|thumb)/i,
+      ],
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -251,7 +257,10 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /abductor hallucis|adductor hallucis|flexor hallucis brevis|extensor hallucis brevis|flexor digitorum brevis|extensor digitorum brevis|quadratus plantae|flexor accessorius|abductor digiti minimi.*foot|flexor digiti minimi.*foot|opponens digiti minimi.*foot|lumbrical.*foot|interosse.*foot/i,
       ],
-      supportBonePatterns: [/talus|calcaneus|tarsal|metatars|phalan/i],
+      supportBonePatterns: [
+        /talus|calcaneus|tarsal|metatars/i,
+        /phalanx.*(?:toe|big toe)|phalanx.*foot/i,
+      ],
       defaultViews: ["threeQuarter", "front"],
     }
   ),
