@@ -756,3 +756,9 @@ button:disabled {
     min-height: 88dvh;
   }
 }
+
+
+.session-active .viewer-settings,
+.session-active .viewer-hint {
+  display: none;
+}
