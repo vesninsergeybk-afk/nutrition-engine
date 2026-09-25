@@ -90,13 +90,21 @@ for (const [sourceName, catalog] of Object.entries(sources)) {
   const back = filterCatalogForSpecimen(catalog, "back", "question");
   for (const [label, re] of [
     ["trapezius", /trapezius|трапециевид/i],
-    ["latissimus dorsi", /latissimus dorsi|широчайш/i],
     ["rhomboid", /rhomboid|ромбовид/i],
     ["levator scapulae", /levator scapulae|поднимающ.*лопат/i],
     ["erector-spinae component", /iliocostalis|longissimus thoracis|spinalis thoracis|подвздошно-р[её]бер|длиннейш.*груди|остистая мышца груди/iu],
     ["deep intrinsic back", /multifidus|rotator|interspinal|intertransversar|многораздель|вращател|межостист|межпопереч/iu],
   ]) {
     assert(has(back, re), sourceName + " back block is missing " + label);
+  }
+
+  const hasLatissimus = has(back, /latissimus dorsi|широчайш/i);
+  if (sourceName === "Z-Anatomy") {
+    assert(hasLatissimus, "Z-Anatomy back block is missing latissimus dorsi");
+  } else if (!hasLatissimus) {
+    console.log(
+      "Known BodyParts3D source limitation: latissimus dorsi has no direct canonical match in the pinned atlas"
+    );
   }
   assert(
     !has(back, /pectoralis major|большая грудная/i),
