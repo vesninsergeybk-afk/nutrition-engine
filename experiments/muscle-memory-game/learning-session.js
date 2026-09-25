@@ -198,12 +198,22 @@ export function createLearningSession({
         skillId: entry.skillId,
       }));
   } else {
-    const skillId = mode === "name" ? "name" : "find";
     const pool = spreadSimilarTargets(catalog, rng).slice(
       0,
       Math.min(safeSize, catalog.length)
     );
-    items = pool.map((target) => ({ target, skillId }));
+
+    if (mode === "practical") {
+      const startWithName = rng() >= 0.5;
+      items = pool.map((target, index) => ({
+        target,
+        skillId:
+          (index + (startWithName ? 1 : 0)) % 2 === 0 ? "find" : "name",
+      }));
+    } else {
+      const skillId = mode === "name" ? "name" : "find";
+      items = pool.map((target) => ({ target, skillId }));
+    }
   }
 
   return {
