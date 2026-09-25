@@ -2851,6 +2851,7 @@ startLearningSessionButton.addEventListener("click", () => startLearningSession(
 todayLearningSessionButton.addEventListener("click", () => startLearningSession("today"));
 exitLearningSessionButton.addEventListener("click", () => {
   resetLearningSessionUi("Выберите область и способ тренировки.");
+  focusLearningRegion();
 });
 
 focusShoulderButton.addEventListener("click", focusLearningRegion);
