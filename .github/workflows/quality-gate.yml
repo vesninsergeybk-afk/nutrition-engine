@@ -166,17 +166,17 @@ jobs:
           done
           node tools/real_run_smoke.cjs
 
-      # Axe executes the same DOM rule engine in every browser. Chromium remains
-      # the PR blocker; Firefox repeats the full accessibility matrix on main and
-      # manual full/browser runs. WebKit keeps the obligatory functional contract.
+      # Chromium and Firefox both block release candidates. The route matrix now
+      # reuses one browser state per viewport, so keeping cross-browser WCAG before
+      # merge no longer requires dozens of repeated app boots. Axe failures are
+      # deterministic and already collect every route before asserting, so retries
+      # would only repeat the whole matrix without adding signal.
       - name: Run WCAG accessibility gate
-        if: >-
-          matrix.browser == 'chromium' ||
-          (matrix.browser == 'firefox' && github.event_name != 'pull_request')
+        if: matrix.browser != 'webkit'
         run: |
           npx playwright test tests/e2e/accessibility.spec.js \
             --project=${{ matrix.browser }} \
-            --retries=1 \
+            --retries=0 \
             --timeout=90000 \
             --reporter=line
 
