@@ -236,13 +236,42 @@ function baseColorFor(name) {
   return new THREE.Color().setHSL(hue, saturation, lightness);
 }
 
+function structureSideForDisplay(sourceName) {
+  const source = String(sourceName || "");
+
+  // "Right/left ventricle" is an anatomical organ qualifier, not the side of
+  // a bilateral muscle mesh.
+  if (/\b(?:right|left) ventricle\b/i.test(source)) return null;
+  if (/\bright\b|\.r$/i.test(source)) return "справа";
+  if (/\bleft\b|\.l$/i.test(source)) return "слева";
+  return null;
+}
+
+function normalizeRussianSideLabel(nameRu, sourceName) {
+  const side = structureSideForDisplay(sourceName);
+  if (!side) return String(nameRu || "").trim();
+
+  const base = String(nameRu || "")
+    .replace(/\s*\((?:справа|слева)\)\s*$/iu, "")
+    .replace(/^(?:правая|левая)\s+/iu, "")
+    .replace(
+      /\b(?:прав(?:ой|ую|ого|ому|ым|ом)|лев(?:ой|ую|ого|ому|ым|ом))\b/giu,
+      ""
+    )
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
+    .trim();
+
+  return base ? base + " (" + side + ")" : String(nameRu || "").trim();
+}
+
 function displayStructureName(sid) {
   const sourceName = structureNames[sid] || "Неизвестная структура";
   const term = structureTerm(sourceName);
 
   // Пользовательский интерфейс — русскоязычный. Исходное имя остаётся
   // поисковым синонимом и диагностическим идентификатором.
-  return term.nameRu || sourceName;
+  return normalizeRussianSideLabel(term.nameRu || sourceName, sourceName);
 }
 
 const navPoint = new THREE.Vector3();
