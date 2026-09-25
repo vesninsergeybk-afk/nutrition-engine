@@ -288,10 +288,16 @@ export function skillRecord(store, muscleId, skillId) {
     correct,
     wrong,
     lastSeen: Number(raw.lastSeen) || 0,
+    // Во втором проходе это бинарная очередь повторения: навык либо
+    // требует повторения, либо нет. Частота ошибок хранится отдельно в wrong.
     reviewDebt:
       raw.reviewDebt == null
-        ? Math.max(0, wrong - correct)
-        : Math.max(0, Number(raw.reviewDebt) || 0),
+        ? wrong > correct
+          ? 1
+          : 0
+        : Number(raw.reviewDebt) > 0
+          ? 1
+          : 0,
   };
 }
 
@@ -314,8 +320,12 @@ export function recordLearningAttempt(
     wrong: current.wrong + (wasCorrect ? 0 : 1),
     lastSeen: Date.now(),
     reviewDebt: wasCorrect
-      ? Math.max(0, current.reviewDebt - (retireMistake ? 1 : 0))
-      : current.reviewDebt + (addReviewDebt ? 1 : 0),
+      ? retireMistake
+        ? 0
+        : current.reviewDebt
+      : addReviewDebt
+        ? 1
+        : current.reviewDebt,
   };
   saveLearningStore(store, storage);
   return store.records[key];
