@@ -79,6 +79,8 @@ const learningProgressContentEl = document.querySelector("#learning-progress-con
 const learningSessionMode = document.querySelector("#learning-session-mode");
 const learningModeButtons = [...document.querySelectorAll("[data-learning-mode]")];
 const learningSessionSize = document.querySelector("#learning-session-size");
+const examTimeField = document.querySelector("#exam-time-field");
+const examItemSeconds = document.querySelector("#exam-item-seconds");
 const startLearningSessionButton = document.querySelector("#start-learning-session");
 const sessionProgressEl = document.querySelector("#session-progress");
 const exitLearningSessionButton = document.querySelector("#exit-learning-session");
@@ -171,7 +173,6 @@ let lastWrongSid = null;
 let sessionSummaryShown = false;
 let examTimerId = null;
 let examDeadline = 0;
-const EXAM_ITEM_SECONDS = 20;
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
@@ -727,6 +728,7 @@ function setLearningMode(mode, { reset = true } = {}) {
 
   selectedSessionMode = mode;
   learningSessionMode.value = mode;
+  examTimeField.hidden = mode !== "exam";
   syncLearningModeButtons();
   updateLearningSummary();
 
@@ -963,7 +965,7 @@ function updateLearningSummary() {
       : selectedSessionMode === "practical"
         ? "вперемешку: найти и назвать"
         : selectedSessionMode === "exam"
-          ? "одна попытка · 20 секунд на задание"
+          ? "одна попытка · время задаётся перед началом"
           : "найти мышцу по названию";
 
   learningSummaryEl.textContent =
@@ -1142,8 +1144,9 @@ function startExamTimer() {
   clearExamTimer();
   if (!learningSession || learningSession.mode !== "exam" || locked) return;
 
-  examDeadline = Date.now() + EXAM_ITEM_SECONDS * 1000;
-  canvas.dataset.examSeconds = String(EXAM_ITEM_SECONDS);
+  const seconds = Math.max(5, Number(examItemSeconds.value) || 20);
+  examDeadline = Date.now() + seconds * 1000;
+  canvas.dataset.examSeconds = String(seconds);
   renderSessionProgress();
 
   examTimerId = setInterval(() => {
