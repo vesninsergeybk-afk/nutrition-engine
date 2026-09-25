@@ -47,11 +47,13 @@ jobs:
           node --check experiments/muscle-memory-game/regional-depth-map.js
           node --check experiments/muscle-memory-game/learning-session.js
           node --check experiments/muscle-memory-game/learning-navigation.js
+          node --check experiments/muscle-memory-game/topography-learning.js
           node --check experiments/muscle-memory-game/retention-engine.js
           node --check experiments/muscle-memory-game/progress-engine.js
           node --check experiments/muscle-memory-game/check-learning-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-session.mjs
           node --check experiments/muscle-memory-game/check-learning-navigation.mjs
+          node --check experiments/muscle-memory-game/check-topography-learning.mjs
           node --check experiments/muscle-memory-game/check-quiz-ui.mjs
           node --check experiments/muscle-memory-game/check-regional-rendering.mjs
           node --check experiments/muscle-memory-game/check-retention-engine.mjs
@@ -120,6 +122,7 @@ jobs:
           node experiments/muscle-memory-game/check-learning-engine.mjs
           node experiments/muscle-memory-game/check-learning-session.mjs
           node experiments/muscle-memory-game/check-learning-navigation.mjs
+          node experiments/muscle-memory-game/check-topography-learning.mjs
           node experiments/muscle-memory-game/check-quiz-ui.mjs
           node experiments/muscle-memory-game/check-regional-rendering.mjs
           node experiments/muscle-memory-game/check-retention-engine.mjs

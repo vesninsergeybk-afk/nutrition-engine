@@ -17,6 +17,11 @@ export const SESSION_MODES = Object.freeze({
     nameRu: "Практикум",
     descriptionRu: "Смешанная практика: поочерёдно находить мышцы и называть выделенные.",
   },
+  topography: {
+    id: "topography",
+    nameRu: "Топография",
+    descriptionRu: "Определять проверенные отношения: какая мышца расположена глубже относительно выделенной.",
+  },
   mistakes: {
     id: "mistakes",
     nameRu: "Повторить ошибки",
@@ -469,7 +474,8 @@ export function sessionSummary(session) {
   );
 
   const bySkill = {};
-  for (const skillId of ["find", "name"]) {
+  const skillIds = [...new Set(results.map((result) => result.skillId).filter(Boolean))];
+  for (const skillId of skillIds) {
     const skillResults = results.filter((result) => result.skillId === skillId);
     if (!skillResults.length) continue;
 

@@ -1107,3 +1107,12 @@ button:disabled {
   border-color: rgba(154, 107, 24, .34);
   background: rgba(154, 107, 24, .08);
 }
+
+
+.topography-choice {
+  border-left-width: 3px;
+}
+
+.learning-mode-buttons [data-learning-mode="topography"]:not(:disabled) {
+  border-color: rgba(36, 93, 168, .26);
+}

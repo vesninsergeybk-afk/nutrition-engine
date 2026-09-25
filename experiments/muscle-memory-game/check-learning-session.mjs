@@ -326,3 +326,25 @@ assert(
   "Layer navigation must be tracked separately from identification errors"
 );
 console.log("Navigation actions are separated from errors: ok");
+
+const topoSummarySession = {
+  mode: "topography",
+  items: [{ target: { id: "deep" }, skillId: "topography" }],
+  index: 1,
+  results: [{
+    index: 0,
+    targetId: "deep",
+    skillId: "topography",
+    correct: true,
+    wrongAttempts: 0,
+    navigationActions: 0,
+    revealed: false,
+  }],
+  finishedAt: Date.now(),
+};
+const topoSummary = sessionSummary(topoSummarySession);
+assert(
+  topoSummary.bySkill.topography?.clean === 1,
+  "Session summary must support topography without mixing it into find/name"
+);
+console.log("Topography session summary: ok");

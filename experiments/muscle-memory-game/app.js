@@ -71,6 +71,11 @@ import {
   FIND_SELECTION_KINDS,
   classifyFindSelection,
 } from "./learning-navigation.js";
+import {
+  buildTopographyChoices,
+  buildTopographyRelations,
+  createTopographySession,
+} from "./topography-learning.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
@@ -2183,7 +2188,12 @@ function syncLearningModeButtons() {
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", String(active));
     button.title = SESSION_MODES[mode]?.descriptionRu || "";
-    button.disabled = noTargets || (mode === "mistakes" && !hasMistakes);
+    const topographyUnavailable =
+      mode === "topography" && !currentTopographyContext().supported;
+    button.disabled =
+      noTargets ||
+      (mode === "mistakes" && !hasMistakes) ||
+      topographyUnavailable;
   }
 }
 
@@ -2415,13 +2425,63 @@ function renderProgressPanel() {
   learningProgressContentEl.replaceChildren(fragment);
 }
 
+function currentTopographyContext() {
+  const specimen = specimenById(selectedLearningRegion);
+  if (!specimen?.depthProfile) {
+    return {
+      supported: false,
+      profileId: null,
+      relations: [],
+      reason: "Для этого блока ещё нет проверенной карты глубины.",
+    };
+  }
+
+  const availability = specimenDepthAvailability(
+    learningCatalog,
+    selectedLearningRegion
+  );
+  if (!availability.supported) {
+    return {
+      supported: false,
+      profileId: availability.profileId || specimen.depthProfile,
+      relations: [],
+      reason:
+        availability.reason === "source-incomplete"
+          ? "Выбранная 3D-база неполна для топографической тренировки этого препарата."
+          : "Карта глубины этого препарата пока не готова для тренировки.",
+    };
+  }
+
+  const targets = activeSceneTargets();
+  const relations = buildTopographyRelations(targets, availability.profileId);
+  return {
+    supported: relations.length > 0,
+    profileId: availability.profileId,
+    relations,
+    reason: relations.length
+      ? ""
+      : "Для этого препарата пока нет проверенных пар «поверхностнее → глубже».",
+  };
+}
+
 function canStartLearningSession() {
   if (!availableTargets.length) return false;
+  if (selectedSessionMode === "topography") {
+    return currentTopographyContext().supported;
+  }
   if (selectedSessionMode !== "mistakes") return true;
   return mistakeTargets(learningStore, availableTargets).length > 0;
 }
 
 function updateLearningSummary() {
+  if (selectedSessionMode === "topography") {
+    const context = currentTopographyContext();
+    learningSummaryEl.textContent = context.supported
+      ? `${regionNameRu(selectedLearningRegion)} · топография · ${context.relations.length} проверенных связей`
+      : `${regionNameRu(selectedLearningRegion)} · топография недоступна: ${context.reason}`;
+    return;
+  }
+
   if (selectedSessionMode === "mistakes") {
     const queue = mistakeTargets(learningStore, availableTargets);
     learningSummaryEl.textContent = queue.length
@@ -2652,6 +2712,78 @@ function renderNameChoices(item) {
   nameChoicesEl.hidden = false;
 }
 
+function renderTopographyChoices(item) {
+  nameChoicesEl.replaceChildren();
+  const context = currentTopographyContext();
+  const choices = buildTopographyChoices(
+    item,
+    activeSceneTargets(),
+    context.profileId,
+    4,
+    Math.random
+  );
+
+  for (const choice of choices) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "name-choice topography-choice";
+    button.dataset.targetId = choice.id;
+    button.textContent = choice.nameRu;
+    button.addEventListener("click", () =>
+      chooseTopographyAnswer(choice.id, button)
+    );
+    nameChoicesEl.appendChild(button);
+  }
+
+  nameChoicesEl.hidden = false;
+}
+
+function chooseTopographyAnswer(targetId, button) {
+  if (!learningSession || !currentTarget || locked) return;
+  const item = currentSessionItem(learningSession);
+  if (!item || item.skillId !== "topography") return;
+
+  const isCorrect = targetId === item.answerTarget?.id;
+  if (!isCorrect) {
+    wrong += 1;
+    currentItemWrongAttempts += 1;
+    wrongEl.textContent = String(wrong);
+    button.classList.add("wrong");
+    button.disabled = true;
+    feedbackEl.className = "feedback wrong";
+    feedbackEl.textContent =
+      "Эта связь не относится к выбранной паре. Сопоставьте слои препарата и попробуйте ещё раз.";
+    return;
+  }
+
+  correct += 1;
+  correctEl.textContent = String(correct);
+  for (const option of nameChoicesEl.querySelectorAll(".name-choice")) {
+    option.disabled = true;
+    if (option.dataset.targetId === targetId) option.classList.add("correct");
+  }
+
+  restoreHighlights();
+  const promptIds = recognitionStructureIds(item.promptTarget, learningSession.index);
+  const answerIds = recognitionStructureIds(item.answerTarget, learningSession.index);
+  highlightStructures(promptIds, "selected");
+  highlightStructures(answerIds, "answer");
+  focusedStructureIds = [...new Set([...promptIds, ...answerIds])];
+
+  feedbackEl.className = "feedback correct";
+  feedbackEl.textContent =
+    `Верно. «${item.answerTarget.nameRu}» находится глубже относительно «${item.promptTarget.nameRu}» в этом препарате.`;
+
+  locked = true;
+  answerButton.disabled = true;
+  completeCurrentSessionItem({
+    correct: true,
+    wrongAttempts: currentItemWrongAttempts,
+    navigationActions: 0,
+    revealed: false,
+  });
+}
+
 function clearExamTimer() {
   if (examTimerId != null) {
     clearInterval(examTimerId);
@@ -2848,7 +2980,23 @@ function prepareSessionItem() {
 
   questionLabelEl.textContent = modeLabel;
 
-  if (item.skillId === "name") {
+  if (item.skillId === "topography") {
+    const promptIds = recognitionStructureIds(item.promptTarget, learningSession.index);
+    if (promptIds.length) {
+      focusedStructureIds = promptIds;
+      focusSelectedButton.disabled = false;
+      const promptBox = boxForStructures(promptIds);
+      const preferredView = bestViewDirectionForBox(promptBox);
+      focusSelectedStructures(1.95, preferredView.direction);
+      highlightStructures(promptIds, "selected");
+    }
+
+    questionEl.textContent =
+      `Что находится глубже относительно «${item.promptTarget.nameRu}»?`;
+    feedbackEl.textContent =
+      "Выберите мышцу, которая в проверенной топографии этого препарата располагается глубже.";
+    renderTopographyChoices(item);
+  } else if (item.skillId === "name") {
     const ids = recognitionStructureIds(item.target, learningSession.index);
     if (ids.length) {
       focusedStructureIds = ids;
@@ -2895,12 +3043,26 @@ function startLearningSession(modeOverride = null) {
   }
   const size = Number(learningSessionSize.value) || 10;
 
-  learningSession = createLearningSession({
-    mode: sessionMode,
-    catalog: availableTargets,
-    store: learningStore,
-    size,
-  });
+  if (sessionMode === "topography") {
+    const context = currentTopographyContext();
+    if (!context.supported) {
+      resetLearningSessionUi(context.reason || "Топографическая тренировка недоступна.");
+      return;
+    }
+    learningSession = createTopographySession({
+      mode: sessionMode,
+      catalog: activeSceneTargets(),
+      profileId: context.profileId,
+      size,
+    });
+  } else {
+    learningSession = createLearningSession({
+      mode: sessionMode,
+      catalog: availableTargets,
+      store: learningStore,
+      size,
+    });
+  }
 
   if (!learningSession.items.length) {
     resetLearningSessionUi(
@@ -2936,7 +3098,7 @@ function completeCurrentSessionItem(result) {
   clearExamTimer();
 
   const item = currentSessionItem(learningSession);
-  if (item) {
+  if (item && (item.skillId === "find" || item.skillId === "name")) {
     const outcome = result?.revealed
       ? RETENTION_OUTCOMES.revealed
       : result?.correct && (Number(result?.wrongAttempts) || 0) === 0
@@ -3010,7 +3172,13 @@ function finishLearningSession() {
     .map((result) => {
       const item = learningSession.items[result.index];
       if (!item) return null;
-      return `${item.target.nameRu} — ${item.skillId === "name" ? "назвать" : "найти"}`;
+      const skillLabel =
+        item.skillId === "name"
+          ? "назвать"
+          : item.skillId === "topography"
+            ? "топография"
+            : "найти";
+      return `${item.target.nameRu} — ${skillLabel}`;
     })
     .filter(Boolean);
   const uniqueReviewLabels = [...new Set(reviewLabels)];
@@ -3026,6 +3194,11 @@ function finishLearningSession() {
   if (summary.bySkill?.name) {
     skillLines.push(
       `Назвать: без ошибок ${summary.bySkill.name.clean} из ${summary.bySkill.name.total}`
+    );
+  }
+  if (summary.bySkill?.topography) {
+    skillLines.push(
+      `Топография: без ошибок ${summary.bySkill.topography.clean} из ${summary.bySkill.topography.total}`
     );
   }
   if (summary.navigationActions > 0) {
@@ -3092,6 +3265,37 @@ function revealAnswer() {
 
   const item = currentSessionItem(learningSession);
   if (!item) return;
+
+  if (item.skillId === "topography") {
+    restoreHighlights();
+    const promptIds = recognitionStructureIds(item.promptTarget, learningSession.index);
+    const answerIds = recognitionStructureIds(item.answerTarget, learningSession.index);
+    highlightStructures(promptIds, "selected");
+    highlightStructures(answerIds, "answer");
+    focusedStructureIds = [...new Set([...promptIds, ...answerIds])];
+
+    for (const button of nameChoicesEl.querySelectorAll(".name-choice")) {
+      if (button.dataset.targetId === item.answerTarget.id) {
+        button.classList.add("correct");
+      }
+      button.disabled = true;
+    }
+
+    feedbackEl.className = "feedback correct";
+    feedbackEl.textContent =
+      `Ответ: «${item.answerTarget.nameRu}» находится глубже относительно «${item.promptTarget.nameRu}».`;
+    wrong += 1;
+    wrongEl.textContent = String(wrong);
+    locked = true;
+    answerButton.disabled = true;
+    completeCurrentSessionItem({
+      correct: false,
+      wrongAttempts: currentItemWrongAttempts + 1,
+      navigationActions: 0,
+      revealed: true,
+    });
+    return;
+  }
 
   pendingNavigationSid = null;
   revealDeeperButton.hidden = true;
