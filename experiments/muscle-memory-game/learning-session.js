@@ -108,26 +108,66 @@ export function buildSmartChoices(target, catalog, count = 4, rng = Math.random)
   return shuffled([target, ...distractors], rng);
 }
 
-function mistakeItemForTarget(store, target) {
-  const find = skillRecord(store, target.id, "find");
-  const name = skillRecord(store, target.id, "name");
+export function mistakeTargets(store, catalog) {
+  const items = [];
 
-  const findDebt = find.reviewDebt;
-  const nameDebt = name.reviewDebt;
-  if (findDebt <= 0 && nameDebt <= 0) return null;
+  for (const target of catalog || []) {
+    const find = skillRecord(store, target.id, "find");
+    const name = skillRecord(store, target.id, "name");
 
-  return {
-    target,
-    skillId: nameDebt > findDebt ? "name" : "find",
-    debt: Math.max(findDebt, nameDebt),
-  };
+    if (find.reviewDebt > 0) {
+      items.push({
+        target,
+        skillId: "find",
+        debt: find.reviewDebt,
+      });
+    }
+
+    if (name.reviewDebt > 0) {
+      items.push({
+        target,
+        skillId: "name",
+        debt: name.reviewDebt,
+      });
+    }
+  }
+
+  return items.sort(
+    (a, b) =>
+      b.debt - a.debt ||
+      a.target.nameRu.localeCompare(b.target.nameRu, "ru") ||
+      a.skillId.localeCompare(b.skillId)
+  );
 }
 
-export function mistakeTargets(store, catalog) {
-  return (catalog || [])
-    .map((target) => mistakeItemForTarget(store, target))
-    .filter(Boolean)
-    .sort((a, b) => b.debt - a.debt || a.target.nameRu.localeCompare(b.target.nameRu, "ru"));
+function spreadReviewItems(items, rng = Math.random) {
+  const remaining = [...items];
+  const ordered = [];
+
+  while (remaining.length) {
+    const previous = ordered[ordered.length - 1];
+    let candidates = remaining.map((item, index) => ({ item, index }));
+
+    if (previous) {
+      const differentTarget = candidates.filter(
+        ({ item }) => item.target.id !== previous.target.id
+      );
+      if (differentTarget.length) candidates = differentTarget;
+    }
+
+    candidates.sort(
+      (a, b) =>
+        b.item.debt - a.item.debt ||
+        similarityScore(previous?.target || a.item.target, a.item.target) -
+          similarityScore(previous?.target || b.item.target, b.item.target) ||
+        rng() - 0.5
+    );
+
+    const chosenIndex = candidates[0].index;
+    ordered.push(remaining.splice(chosenIndex, 1)[0]);
+  }
+
+  return ordered;
 }
 
 export function createLearningSession({
@@ -141,7 +181,7 @@ export function createLearningSession({
   let items = [];
 
   if (mode === "mistakes") {
-    items = mistakeTargets(store, catalog)
+    items = spreadReviewItems(mistakeTargets(store, catalog), rng)
       .slice(0, safeSize)
       .map((entry) => ({
         target: entry.target,
