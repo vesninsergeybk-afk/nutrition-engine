@@ -8,6 +8,7 @@ import {
   sessionSummary,
 } from "./learning-session.js";
 import { loadLearningStore, recordLearningAttempt } from "./learning-engine.js";
+import { RETENTION_OUTCOMES, recordReviewOutcome } from "./retention-engine.js";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -126,6 +127,31 @@ mistakes = mistakeTargets(store, catalog);
 assert(!mistakes.some((item) => item.target.id === "a"), "Resolved muscle skills stayed in review queue");
 assert(!mistakes.some((item) => item.target.id === "b"), "Resolved name mistake stayed in queue");
 
+recordLearningAttempt(store, "c", "find", true, storage);
+recordReviewOutcome(
+  store,
+  "c",
+  "find",
+  RETENTION_OUTCOMES.clean,
+  storage,
+  { now: 1_000 }
+);
+store = loadLearningStore(storage);
+
+const todaySession = createLearningSession({
+  mode: "today",
+  catalog,
+  store,
+  size: 5,
+  now: 1_000 + 2 * 24 * 60 * 60 * 1000,
+  rng: deterministic,
+});
+assert(todaySession.items.length > 0, "Today session did not include due skills");
+assert(
+  todaySession.items.some((item) => item.target.id === "c" && item.skillId === "find"),
+  "Today session lost a due find skill"
+);
+
 const practical = createLearningSession({
   mode: "practical",
   catalog,
@@ -150,5 +176,6 @@ console.log("Confusable target spacing: ok");
 console.log("Smart distractors: ok");
 console.log("Mistake debt retirement: ok");
 console.log("Independent skill review: ok");
+console.log("Retention-driven today session: ok");
 console.log("Mixed practical retrieval: ok");
 console.log("Session summary: ok");
