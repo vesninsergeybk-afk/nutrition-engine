@@ -106,10 +106,29 @@ jobs:
 
             await page.goto('http://127.0.0.1:4173/?mode=explore', { waitUntil: 'domcontentloaded' });
             await page.waitForFunction(
-              () => document.querySelector('#loading')?.classList.contains('is-hidden'),
+              () => {
+                const loading = document.querySelector('#loading');
+                const question = document.querySelector('#question')?.textContent || '';
+                return loading?.classList.contains('is-hidden') ||
+                  /Не удалось загрузить|Ошибка загрузки/.test((loading?.textContent || '') + ' ' + question);
+              },
               null,
               { timeout: 90000 }
             );
+
+            const initialLoadingHidden = await page.locator('#loading').evaluate(
+              el => el.classList.contains('is-hidden')
+            );
+            if (!initialLoadingHidden) {
+              throw new Error(
+                'Initial model load failed: ' +
+                await page.locator('#loading').innerText() +
+                ' | ' +
+                await page.locator('#diagnostics').innerText() +
+                ' | browser errors: ' +
+                errors.join(' || ')
+              );
+            }
 
             assert.equal(new URL(page.url()).pathname, '/');
             assert.equal(await page.locator('#model-source').inputValue(), 'z-anatomy');
