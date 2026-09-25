@@ -421,6 +421,22 @@ button:disabled {
   transition: width .2s ease;
 }
 
+.session-exit {
+  margin: -6px 0 13px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.session-exit:hover {
+  color: #1b1b1d;
+}
+
 .name-choices {
   display: grid;
   gap: 7px;
