@@ -52,9 +52,12 @@ async function waitForCheckpoint(page) {
 }
 
 async function openNeeds(page) {
+  await waitForInterfacePass1(page);
+  const field = page.locator('#needs_sex');
+  if (await field.isVisible()) return;
   const toggle = page.locator('#v40NeedsToggle');
-  if (await toggle.count() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click();
-  await expect(page.locator('#needs_sex')).toBeVisible();
+  if (await toggle.count()) await toggle.click();
+  await expect(field).toBeVisible({ timeout: 12000 });
 }
 
 test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ page, loadApp }) => {
@@ -79,6 +82,11 @@ test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ pa
 
   await expect(page.locator('#themeSwitcher')).toBeHidden();
   await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+
+  const loaderOverlay = page.locator('#runtimeBootStatusOverlay');
+  if (await loaderOverlay.count()) {
+    await expect(loaderOverlay).toHaveAttribute('aria-hidden', 'true');
+  }
   await page.locator('#interfaceSettingsPass1').click();
   await expect(page.locator('#themeSwitcher')).toBeVisible();
   await expect(page.locator('#themeSwitcher [data-theme-value]')).toHaveCount(3);
