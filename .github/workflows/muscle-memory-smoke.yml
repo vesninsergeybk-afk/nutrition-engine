@@ -158,7 +158,7 @@ jobs:
             await page.selectOption('#learning-session-size', '5');
 
             // FIND: start, reveal one answer, advance.
-            await page.selectOption('#learning-session-mode', 'find');
+            await page.click('[data-learning-mode="find"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'find');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-total'), '5');
@@ -188,9 +188,11 @@ jobs:
             assert.equal(await page.locator('#learning-session-mode').inputValue(), 'mistakes');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'mistakes');
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-session-total')) > 0);
+            assert.equal(await page.locator('#exit-learning-session').isVisible(), true);
+            await page.click('#exit-learning-session');
 
             // NAME: four smart choices, eventually one must complete the item.
-            await page.selectOption('#learning-session-mode', 'name');
+            await page.click('[data-learning-mode="name"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'name');
             assert.equal(await page.locator('.name-choice').count(), 4);
@@ -208,7 +210,7 @@ jobs:
             assert.ok(storedLearning && storedLearning.includes('::name'));
 
             // PRACTICAL: finite ordered task set, not endless random quiz.
-            await page.selectOption('#learning-session-mode', 'practical');
+            await page.click('[data-learning-mode="practical"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'practical');
             assert.match(await page.locator('#question-label').innerText(), /Практикум · 1\/5/i);
@@ -224,9 +226,13 @@ jobs:
             assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/i);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-summary.png', fullPage: true });
 
+            // Return to setup before checking the mobile NAME flow.
+            await page.click('#mode-explore');
+            await page.click('#mode-quiz');
+
             // Mobile training becomes a task sheet attached to the 3D viewer.
             await page.setViewportSize({ width: 412, height: 915 });
-            await page.selectOption('#learning-session-mode', 'name');
+            await page.click('[data-learning-mode="name"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#learning-controls').isHidden(), true);
             assert.equal(await page.locator('.name-choice').count(), 4);
