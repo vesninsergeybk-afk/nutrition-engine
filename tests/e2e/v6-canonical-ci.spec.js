@@ -241,12 +241,16 @@ test('visual grammar layer keeps core workspace affordances and compact mobile c
     return {
       headerHeight: hr ? hr.height : null,
       searchHeight: ir ? ir.height : null,
+      settingsHeight: document.getElementById('interfaceSettingsPass1')?.getBoundingClientRect().height || null,
       scrollWidth: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth
     };
   });
   expect(geometry.headerHeight).not.toBeNull();
-  expect(geometry.headerHeight).toBeLessThanOrEqual(110);
+  // Cross-browser font metrics differ. This guards against the old oversized chrome
+  // without shrinking the Settings target below the 44px interaction floor.
+  expect(geometry.headerHeight).toBeLessThanOrEqual(140);
+  expect(geometry.settingsHeight).toBeGreaterThanOrEqual(44);
   expect(geometry.searchHeight).toBeGreaterThanOrEqual(44);
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
 });
