@@ -1331,6 +1331,34 @@ function peelAnatomicalMuscleLayer() {
   updateLayerButtons();
 }
 
+function targetSideForSid(target, sid) {
+  if (!target || sid == null) return "single";
+  if (target.sidsBySide?.right?.includes(sid)) return "right";
+  if (target.sidsBySide?.left?.includes(sid)) return "left";
+  if (target.sidsBySide?.midline?.includes(sid)) return "midline";
+  return "single";
+}
+
+function targetSideStructureIds(target, sid) {
+  if (!target || sid == null) return sid == null ? [] : [sid];
+
+  const side = targetSideForSid(target, sid);
+  const ids =
+    side === "right"
+      ? target.sidsBySide?.right
+      : side === "left"
+        ? target.sidsBySide?.left
+        : side === "midline"
+          ? target.sidsBySide?.midline
+          : null;
+
+  return ids?.length ? [...ids] : [sid];
+}
+
+function deeperMuscleKey(target, sid) {
+  return (target?.id || String(sid)) + "::" + targetSideForSid(target, sid);
+}
+
 function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
   const selectedTarget = learningTargetBySid.get(selectedSid) || null;
   const selectedInfo = targetDepthInfo(selectedTarget);
@@ -1342,6 +1370,7 @@ function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
   if (!selectedTarget || !selectedInfo) return [];
 
   const ordered = [];
+  const seenTargets = new Set();
   let reachedSelected = false;
 
   for (const hit of hits || []) {
@@ -1361,6 +1390,9 @@ function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
     // must not masquerade as a deeper muscle.
     const candidateTarget = learningTargetBySid.get(sid) || null;
     if (!candidateTarget) continue;
+
+    const candidateKey = deeperMuscleKey(candidateTarget, sid);
+    if (seenTargets.has(candidateKey)) continue;
 
     const candidateInfo = targetDepthInfo(candidateTarget);
 
@@ -1385,6 +1417,7 @@ function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
       }
     }
 
+    seenTargets.add(candidateKey);
     ordered.push(sid);
     if (ordered.length >= limit) break;
   }
@@ -1410,12 +1443,15 @@ function isolateDeeperMuscle(sid) {
   restoreStudyHighlight();
   clearDeeperStructures();
 
+  const target = learningTargetBySid.get(sid) || null;
+  const muscleIds = targetSideStructureIds(target, sid);
+
   selectedStudyId = null;
   selectedExploreSid = sid;
-  focusedStructureIds = [sid];
+  focusedStructureIds = [...muscleIds];
 
   if (anatomyMesh) anatomyMesh.visible = true;
-  setVisibleStructures([sid]);
+  setVisibleStructures(muscleIds);
   setAllStudyStructuresVisible(false);
 
   for (const mesh of connectiveMeshes.values()) mesh.visible = false;
@@ -1423,7 +1459,7 @@ function isolateDeeperMuscle(sid) {
   if (skeletonMesh) skeletonMesh.visible = false;
   for (const mesh of referenceMeshes.values()) mesh.visible = false;
 
-  highlightStructures([sid], "selected");
+  highlightStructures(muscleIds, "selected");
   isolated = true;
 
   questionLabelEl.textContent = "Глубже здесь";
@@ -1438,6 +1474,7 @@ function isolateDeeperMuscle(sid) {
   updateLayerButtons();
 
   canvas.dataset.deeperFocus = "true";
+  canvas.dataset.deeperFocusComponentCount = String(muscleIds.length);
 }
 
 function renderDeeperStructures(ids) {
@@ -1551,6 +1588,7 @@ function restoreExploreContext() {
   restoreReferenceLayerVisibility();
   updateLayerButtons();
   canvas.dataset.deeperFocus = "false";
+  canvas.dataset.deeperFocusComponentCount = "";
 }
 
 function isolateSelectedStudyStructure() {
@@ -3582,6 +3620,7 @@ function disposeMaterial(material) {
 function resetLoadedModel() {
   clearDeeperStructures();
   canvas.dataset.deeperFocus = "";
+  canvas.dataset.deeperFocusComponentCount = "";
   restoreHighlights();
 
   for (const child of [...modelGroup.children]) {
