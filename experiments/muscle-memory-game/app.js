@@ -23,6 +23,7 @@ import {
   completeSessionItem,
   createLearningSession,
   currentSessionItem,
+  mistakeTargets,
   sessionProgress,
   sessionSummary,
 } from "./learning-session.js";
@@ -139,6 +140,7 @@ let selectedSessionMode = "find";
 let learningSession = null;
 let currentItemWrongAttempts = 0;
 let lastWrongSid = null;
+let sessionSummaryShown = false;
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
@@ -465,74 +467,101 @@ function renderLearningRegionOptions() {
   learningRegion.disabled = learningCatalog.length === 0;
 }
 
-function updateLearningSummary() {
-  const summary = learningSummary(learningStore, availableTargets, "find");
-  const accuracy = summary.accuracy == null ? "—" : summary.accuracy + "%";
-
-  learningSummaryEl.textContent =
-    `${regionNameRu(selectedLearningRegion)}: ${summary.muscles} учебных целей · ` +
-    `встречались ${summary.touched} · попыток ${summary.attempts} · точность ${accuracy}.`;
+function summarySkillForMode() {
+  return selectedSessionMode === "name" ? "name" : "find";
 }
 
-function applyLearningRegion({ startQuestion = true } = {}) {
+function updateLearningSummary() {
+  const skillId = summarySkillForMode();
+  const summary = learningSummary(learningStore, availableTargets, skillId);
+  const accuracy = summary.accuracy == null ? "—" : summary.accuracy + "%";
+  const skillName = skillId === "name" ? "название" : "поиск на модели";
+
+  learningSummaryEl.textContent =
+    \`\${regionNameRu(selectedLearningRegion)}: \${summary.muscles} целей · \` +
+    \`\${skillName}: встречались \${summary.touched} · попыток \${summary.attempts} · точность \${accuracy}.\`;
+}
+
+function resetLearningSessionUi(message = "Выберите режим и начните сессию.") {
+  learningSession = null;
+  sessionSummaryShown = false;
+  currentTarget = null;
+  currentItemWrongAttempts = 0;
+  lastWrongSid = null;
+  locked = true;
+
+  restoreHighlights();
+  showAllStructures();
+  nameChoicesEl.replaceChildren();
+  nameChoicesEl.hidden = true;
+  sessionProgressEl.hidden = true;
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
+  answerButton.disabled = true;
+  nextButton.disabled = true;
+  startLearningSessionButton.disabled = !availableTargets.length;
+  startLearningSessionButton.textContent = "Начать";
+
+  if (appMode === "quiz") {
+    questionLabelEl.textContent = "Учебная сессия";
+    questionEl.textContent = regionNameRu(selectedLearningRegion);
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = message;
+  }
+}
+
+function applyLearningRegion() {
   availableTargets = filterCatalogByRegion(learningCatalog, selectedLearningRegion);
   lastTargetIndex = -1;
   currentTarget = null;
   sessionDifficulty.clear();
 
   targetStatusEl.textContent =
-    `Учебный каталог: ${learningCatalog.length} мышц и частей мышц. ` +
-    `Сейчас: ${regionNameRu(selectedLearningRegion)} — ${availableTargets.length} целей.`;
+    \`Учебный каталог: \${learningCatalog.length} мышц и частей мышц. \` +
+    \`Сейчас: \${regionNameRu(selectedLearningRegion)} — \${availableTargets.length} целей.\`;
 
   canvas.dataset.learningRegion = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
 
+  learningSessionMode.disabled = availableTargets.length === 0;
+  startLearningSessionButton.disabled = availableTargets.length === 0;
   updateLearningSummary();
 
   if (!availableTargets.length) {
-    nextButton.disabled = true;
-    answerButton.disabled = true;
-    questionEl.textContent = "В этом регионе нет учебных целей";
-    feedbackEl.textContent = "Выберите другой регион.";
+    resetLearningSessionUi("В этом регионе нет учебных целей. Выберите другой регион.");
     return;
   }
 
-  nextButton.disabled = false;
-  answerButton.disabled = false;
-
-  if (startQuestion && appMode === "quiz") nextQuestion();
+  resetLearningSessionUi();
 }
 
 function discoverTargets() {
   learningCatalog = buildMuscleCatalog(structureNames);
   renderLearningRegionOptions();
-  applyLearningRegion({ startQuestion: false });
+  applyLearningRegion();
 
   const counts = regionCounts(learningCatalog);
   const lines = LEARNING_REGIONS
     .filter((region) => region.id !== "all" && (counts[region.id] || 0) > 0)
-    .map((region) => `${region.nameRu}: ${counts[region.id]}`);
+    .map((region) => \`\${region.nameRu}: \${counts[region.id]}\`);
 
   updateDiagnostics(
-    `Учебных целей после объединения правой и левой сторон: ${learningCatalog.length}. ` +
-    `Регионы: ${lines.join("; ")}.`
+    \`Учебных целей после объединения правой и левой сторон: \${learningCatalog.length}. \` +
+    \`Регионы: \${lines.join("; ")}.\`
   );
 
   meshNamesEl.textContent =
     learningCatalog
       .slice(0, 220)
-      .map((target) => `${target.nameRu} [${target.region}] ← ${target.sourceNames.join(" | ")}`)
+      .map((target) => \`\${target.nameRu} [\${target.region}] ← \${target.sourceNames.join(" | ")}\`)
       .join("\n");
 
   if (!learningCatalog.length) {
     questionEl.textContent = "Не удалось построить учебный каталог";
     feedbackEl.textContent =
       "Откройте техническую диагностику: нужно сверить реальные имена объектов модели.";
-    return;
   }
-
-  applyLearningRegion({ startQuestion: appMode === "quiz" });
 }
 
 function updateDiagnostics(extra = "") {
@@ -541,31 +570,7 @@ function updateDiagnostics(extra = "") {
     : "костные ориентиры ещё не загружены";
 
   diagnosticsEl.textContent =
-    `Мышечных структур после исключения фасциальных покрытий: ${structureNames.length}. Для рендера они объединены в один mesh; ${skeletonState}.${extra ? " " + extra : ""}`;
-}
-
-function pickNextTargetIndex() {
-  if (!availableTargets.length) return -1;
-
-  const weights = availableTargets.map((target) => {
-    const difficulty = sessionDifficulty.get(target.id) || 0;
-    return 1 + Math.min(4, difficulty * 1.5);
-  });
-
-  let total = weights.reduce((sum, weight) => sum + weight, 0);
-  let roll = Math.random() * total;
-  let index = 0;
-
-  for (; index < weights.length; index += 1) {
-    roll -= weights[index];
-    if (roll <= 0) break;
-  }
-
-  index = Math.min(index, availableTargets.length - 1);
-  if (availableTargets.length > 1 && index === lastTargetIndex) {
-    index = (index + 1) % availableTargets.length;
-  }
-  return index;
+    \`Мышечных структур после исключения фасциальных покрытий: \${structureNames.length}. Для рендера они объединены в один mesh; \${skeletonState}.\${extra ? " " + extra : ""}\`;
 }
 
 function recordDifficulty(target, wasCorrect) {
@@ -574,28 +579,176 @@ function recordDifficulty(target, wasCorrect) {
   sessionDifficulty.set(target.id, wasCorrect ? Math.max(0, current - 0.5) : current + 1);
 }
 
-function nextQuestion() {
-  if (!availableTargets.length || appMode !== "quiz") return;
+function renderSessionProgress() {
+  if (!learningSession) {
+    sessionProgressEl.hidden = true;
+    return;
+  }
+
+  const progress = sessionProgress(learningSession);
+  const modeName = SESSION_MODES[learningSession.mode]?.nameRu || "Сессия";
+  sessionProgressEl.hidden = false;
+  sessionProgressEl.textContent =
+    \`\${modeName} · \${regionNameRu(selectedLearningRegion)} · \` +
+    \`\${progress.done}/\${progress.total} выполнено\`;
+
+  canvas.dataset.learningSessionMode = learningSession.mode;
+  canvas.dataset.learningSessionDone = String(progress.done);
+  canvas.dataset.learningSessionTotal = String(progress.total);
+}
+
+function renderNameChoices(item) {
+  nameChoicesEl.replaceChildren();
+  const choices = buildSmartChoices(item.target, availableTargets, 4);
+
+  for (const choice of choices) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "name-choice";
+    button.dataset.targetId = choice.id;
+    button.textContent = choice.nameRu;
+    button.addEventListener("click", () => chooseNameAnswer(choice.id, button));
+    nameChoicesEl.appendChild(button);
+  }
+
+  nameChoicesEl.hidden = false;
+}
+
+function prepareSessionItem() {
+  if (!learningSession || appMode !== "quiz") return;
+
+  const item = currentSessionItem(learningSession);
+  if (!item) {
+    finishLearningSession();
+    return;
+  }
 
   restoreHighlights();
   showAllStructures();
   locked = false;
-  feedbackEl.className = "feedback";
-  feedbackEl.textContent = "Нажмите на нужную мышцу прямо на модели.";
-
-  const index = pickNextTargetIndex();
-  lastTargetIndex = index;
-  currentTarget = availableTargets[index];
+  currentTarget = item.target;
+  currentItemWrongAttempts = 0;
+  lastWrongSid = null;
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
-
-  questionLabelEl.textContent = "Задание";
-  questionEl.textContent = `Найдите на модели: «${currentTarget.nameRu}»`;
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
+  answerButton.disabled = false;
+  nextButton.disabled = false;
   nextButton.textContent = "Пропустить";
+  feedbackEl.className = "feedback";
+
+  renderSessionProgress();
+
+  const progress = sessionProgress(learningSession);
+  const prefix =
+    learningSession.mode === "practical"
+      ? \`Практикум · \${progress.current}/\${progress.total}\`
+      : \`\${SESSION_MODES[learningSession.mode]?.nameRu || "Задание"} · \${progress.current}/\${progress.total}\`;
+
+  questionLabelEl.textContent = prefix;
+
+  if (item.skillId === "name") {
+    const ids = targetStructureIds(item.target);
+    const sid = ids.length ? ids[learningSession.index % ids.length] : null;
+    if (sid != null) {
+      highlightStructures([sid], "selected");
+      focusedStructureIds = [sid];
+      focusSelectedButton.disabled = false;
+    }
+    questionEl.textContent = "Как называется выделенная мышца?";
+    feedbackEl.textContent = "Выберите название. Неправильный вариант не завершает задание.";
+    renderNameChoices(item);
+  } else {
+    nameChoicesEl.replaceChildren();
+    nameChoicesEl.hidden = true;
+    questionEl.textContent = \`Найдите на модели: «\${item.target.nameRu}»\`;
+    feedbackEl.textContent = "Коснитесь нужной мышцы на модели.";
+  }
+}
+
+function startLearningSession() {
+  if (!availableTargets.length || appMode !== "quiz") return;
+
+  selectedSessionMode = learningSessionMode.value;
+  const size = Number(learningSessionSize.value) || 10;
+
+  learningSession = createLearningSession({
+    mode: selectedSessionMode,
+    catalog: availableTargets,
+    store: learningStore,
+    size,
+  });
+
+  if (!learningSession.items.length) {
+    resetLearningSessionUi(
+      selectedSessionMode === "mistakes"
+        ? "В выбранном регионе пока нет сохранённых ошибок. Сначала пройдите обычную сессию."
+        : "Для этой сессии не удалось подобрать задания."
+    );
+    return;
+  }
+
+  correct = 0;
+  wrong = 0;
+  correctEl.textContent = "0";
+  wrongEl.textContent = "0";
+  sessionSummaryShown = false;
+  startLearningSessionButton.textContent = "Начать заново";
+  prepareSessionItem();
+}
+
+function completeCurrentSessionItem(result) {
+  if (!learningSession) return;
+  completeSessionItem(learningSession, result);
+  renderSessionProgress();
+
+  const progress = sessionProgress(learningSession);
+  nextButton.textContent = progress.finished ? "Итоги" : "Следующая";
+}
+
+function finishLearningSession() {
+  if (!learningSession) return;
+
+  const summary = sessionSummary(learningSession);
+  sessionSummaryShown = true;
+  locked = true;
+  currentTarget = null;
+  lastWrongSid = null;
+  restoreHighlights();
+  nameChoicesEl.replaceChildren();
+  nameChoicesEl.hidden = true;
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
+  answerButton.disabled = true;
+  focusSelectedButton.disabled = true;
+
+  questionLabelEl.textContent = "Сессия завершена";
+  questionEl.textContent =
+    \`\${summary.clean} из \${summary.total} заданий выполнены без ошибок и подсказки\`;
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    \`Правильно завершено: \${summary.correct}. Показан ответ: \${summary.revealed}. \` +
+    \`Неверных попыток: \${summary.wrongAttempts}.\`;
+
+  sessionProgressEl.hidden = false;
+  sessionProgressEl.textContent =
+    \`Итог · \${regionNameRu(selectedLearningRegion)} · \${summary.completed}/\${summary.total}\`;
+
+  const hasMistakes =
+    mistakeTargets(learningStore, availableTargets).length > 0 ||
+    summary.wrongAttempts > 0 ||
+    summary.revealed > 0;
+  nextButton.disabled = false;
+  nextButton.textContent = hasMistakes ? "Повторить ошибки" : "Новая сессия";
+  canvas.dataset.learningSessionFinished = "true";
 }
 
 function revealAnswer() {
-  if (!currentTarget || appMode !== "quiz") return;
+  if (!currentTarget || appMode !== "quiz" || locked || !learningSession) return;
+
+  const item = currentSessionItem(learningSession);
+  if (!item) return;
 
   restoreHighlights();
   const ids = targetStructureIds(currentTarget);
@@ -603,19 +756,35 @@ function revealAnswer() {
   focusedStructureIds = ids;
   focusSelectedButton.disabled = false;
 
-  feedbackEl.className = "feedback correct";
-  feedbackEl.textContent =
-    `Ответ показан: «${currentTarget.nameRu}». Подсвечены доступные варианты этой структуры.`;
+  if (item.skillId === "name") {
+    for (const button of nameChoicesEl.querySelectorAll(".name-choice")) {
+      if (button.dataset.targetId === currentTarget.id) button.classList.add("correct");
+      button.disabled = true;
+    }
+  }
 
+  feedbackEl.className = "feedback correct";
+  feedbackEl.textContent = \`Ответ: «\${currentTarget.nameRu}».\`;
+
+  wrong += 1;
+  wrongEl.textContent = String(wrong);
   recordDifficulty(currentTarget, false);
-  recordLearningAttempt(learningStore, currentTarget.id, "find", false);
+  recordLearningAttempt(learningStore, currentTarget.id, item.skillId, false);
   updateLearningSummary();
   locked = true;
-  nextButton.textContent = "Следующая";
+
+  completeCurrentSessionItem({
+    correct: false,
+    wrongAttempts: currentItemWrongAttempts + 1,
+    revealed: true,
+  });
 }
 
 function chooseQuiz(sid) {
-  if (!currentTarget || locked || sid == null || !structureNames[sid]) return;
+  if (!currentTarget || locked || sid == null || !structureNames[sid] || !learningSession) return;
+
+  const item = currentSessionItem(learningSession);
+  if (!item || item.skillId !== "find") return;
 
   restoreHighlights();
   const isCorrect = targetStructureIds(currentTarget).includes(sid);
@@ -627,21 +796,127 @@ function chooseQuiz(sid) {
     focusedStructureIds = [sid];
     focusSelectedButton.disabled = false;
     feedbackEl.className = "feedback correct";
-    feedbackEl.textContent = `Верно. Вы выбрали: ${displayStructureName(sid)}.`;
+    feedbackEl.textContent = \`Верно. Вы выбрали: \${displayStructureName(sid)}.\`;
     recordDifficulty(currentTarget, true);
     recordLearningAttempt(learningStore, currentTarget.id, "find", true);
     updateLearningSummary();
     locked = true;
-    nextButton.textContent = "Следующая";
+    revealDeeperButton.hidden = true;
+    revealDeeperButton.disabled = true;
+
+    completeCurrentSessionItem({
+      correct: true,
+      wrongAttempts: currentItemWrongAttempts,
+      revealed: false,
+    });
   } else {
     wrong += 1;
+    currentItemWrongAttempts += 1;
     wrongEl.textContent = String(wrong);
     highlightStructures([sid], "wrong");
     feedbackEl.className = "feedback wrong";
-    feedbackEl.textContent = `Это «${displayStructureName(sid)}». Попробуйте ещё раз.`;
+    feedbackEl.textContent =
+      \`Это «\${displayStructureName(sid)}». Можно продолжить поиск или скрыть эту структуру, если цель лежит глубже.\`;
     recordDifficulty(currentTarget, false);
     recordLearningAttempt(learningStore, currentTarget.id, "find", false);
     updateLearningSummary();
+
+    lastWrongSid = sid;
+    revealDeeperButton.hidden = false;
+    revealDeeperButton.disabled = false;
+  }
+}
+
+function chooseNameAnswer(targetId, button) {
+  if (!learningSession || !currentTarget || locked) return;
+  const item = currentSessionItem(learningSession);
+  if (!item || item.skillId !== "name") return;
+
+  const isCorrect = targetId === currentTarget.id;
+
+  if (isCorrect) {
+    correct += 1;
+    correctEl.textContent = String(correct);
+    button.classList.add("correct");
+    for (const option of nameChoicesEl.querySelectorAll(".name-choice")) option.disabled = true;
+    feedbackEl.className = "feedback correct";
+    feedbackEl.textContent = \`Верно: «\${currentTarget.nameRu}».\`;
+    recordLearningAttempt(learningStore, currentTarget.id, "name", true);
+    updateLearningSummary();
+    locked = true;
+
+    completeCurrentSessionItem({
+      correct: true,
+      wrongAttempts: currentItemWrongAttempts,
+      revealed: false,
+    });
+  } else {
+    wrong += 1;
+    currentItemWrongAttempts += 1;
+    wrongEl.textContent = String(wrong);
+    button.classList.add("wrong");
+    button.disabled = true;
+    feedbackEl.className = "feedback wrong";
+    feedbackEl.textContent = "Не эта мышца. Сравните варианты и попробуйте ещё раз.";
+    recordLearningAttempt(learningStore, currentTarget.id, "name", false);
+    updateLearningSummary();
+  }
+}
+
+function revealDeeperAfterMistake() {
+  if (appMode !== "quiz" || locked || lastWrongSid == null) return;
+  if (structureVisibility[lastWrongSid] === false) return;
+
+  const sid = lastWrongSid;
+  hiddenStack.push(sid);
+  setStructureVisible(sid, false);
+  restoreHighlights();
+
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    \`«\${displayStructureName(sid)}» скрыта. Продолжайте искать целевую мышцу глубже.\`;
+
+  lastWrongSid = null;
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
+  updateLayerButtons();
+}
+
+function nextSessionStep() {
+  if (appMode !== "quiz") return;
+
+  if (!learningSession) {
+    startLearningSession();
+    return;
+  }
+
+  const progress = sessionProgress(learningSession);
+  if (progress.finished) {
+    if (!sessionSummaryShown) {
+      finishLearningSession();
+      return;
+    }
+
+    const summary = sessionSummary(learningSession);
+    const hasMistakes =
+      mistakeTargets(learningStore, availableTargets).length > 0 ||
+      summary.wrongAttempts > 0 ||
+      summary.revealed > 0;
+
+    if (hasMistakes) {
+      selectedSessionMode = "mistakes";
+      learningSessionMode.value = "mistakes";
+      startLearningSession();
+    } else {
+      startLearningSession();
+    }
+    return;
+  }
+
+  if (locked) {
+    prepareSessionItem();
+  } else {
+    revealAnswer();
   }
 }
 
