@@ -470,6 +470,8 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiPanel .workspace-guardrails')).toBeHidden();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeHidden();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-actions')).toBeHidden();
+  await expect(page.locator('#workspaceHeiExecutiveHF4')).toContainText('HEI пока не рассчитан');
+  await expect(page.locator('#workspaceHeiExecutiveHF4 .hei-card-hf4')).toHaveCount(0);
 
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
   const search = page.locator('#globalSearchInput');
@@ -491,4 +493,38 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiTotal')).not.toHaveText('—');
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-summary')).toBeVisible();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeVisible();
+  await expect(page.locator('#workspaceHeiExecutiveHF4 .hei-card-hf4').first()).toBeVisible();
+});
+
+test('empty report does not present missing ration data as measured zeros', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('report'));
+  await page.waitForFunction(() =>
+    window.WorkspaceReportHF13 &&
+    window.WorkspaceReportHF13.getLastModel &&
+    window.WorkspaceReportHF13.getLastModel() &&
+    document.querySelector('#workspaceReportPreview .workspace-report-document')
+  );
+
+  const model = await page.evaluate(() => {
+    const m = window.WorkspaceReportHF13.getLastModel();
+    return { rationCount: m.ration.count, heiAvailable: m.hei.available };
+  });
+  expect(model.rationCount).toBe(0);
+  expect(model.heiAvailable).toBe(false);
+
+  const preview = page.locator('#workspaceReportPreview');
+  await expect(preview).toContainText('Рацион пока пуст');
+  await expect(preview).not.toContainText('0/100');
+  await expect(preview.locator('.workspace-report-mobile-row')).toHaveCount(0);
+
+  const energy = preview.locator('.workspace-report-cover .workspace-report-kv').filter({ hasText: 'Энергия' });
+  const hei = preview.locator('.workspace-report-cover .workspace-report-kv').filter({ hasText: 'HEI' });
+  await expect(energy.locator('strong')).toHaveText('—');
+  await expect(hei.locator('strong')).toHaveText('не рассчитан');
+  await expect(preview).toContainText('Нет данных для анализа нутриентов');
 });
