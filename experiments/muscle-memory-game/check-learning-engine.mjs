@@ -36,6 +36,22 @@ assert(catalog.length > 140, "Learning catalog collapsed too aggressively: " + c
 const paired = catalog.filter((item) => item.sids.length >= 2);
 assert(paired.length > 80, "Too few bilateral learning targets: " + paired.length);
 
+const supraspinatus = catalog.find((item) => /Надостная мышца/i.test(item.nameRu));
+assert(supraspinatus, "Supraspinatus learning target is missing");
+assert(
+  supraspinatus.sids.length >= 2,
+  "Right/left supraspinatus were not grouped into one learning target"
+);
+
+const deltoidAcromial = catalog.find((item) =>
+  /Акромиальная часть дельтовидной мышцы/i.test(item.nameRu)
+);
+assert(deltoidAcromial, "Acromial deltoid learning target is missing");
+assert(
+  deltoidAcromial.sids.length >= 2,
+  "Right/left acromial deltoid parts were not grouped"
+);
+
 const counts = regionCounts(catalog);
 assert(counts.all === catalog.length, "Region totals do not match catalog size");
 
