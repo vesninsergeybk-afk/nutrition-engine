@@ -1353,6 +1353,7 @@ function completeCurrentSessionItem(result) {
   renderSessionProgress();
 
   answerButton.hidden = true;
+  quizActions.hidden = false;
   quizActions.classList.add("next-only");
 
   const progress = sessionProgress(learningSession);
