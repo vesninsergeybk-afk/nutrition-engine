@@ -1,0 +1,310 @@
+/* Visual grammar pass 1 — 2026-09-25
+ * Presentation-only layer.
+ * Goals:
+ *   1) make hierarchy legible without changing routes, DOM order, events or calculations;
+ *   2) reduce "card soup" by quieting borders/shadows rather than removing containers;
+ *   3) reserve strong blue for primary actions and active navigation;
+ *   4) make typography calmer in Russian: fewer shouty uppercase labels, steadier weights;
+ *   5) compact the app chrome while preserving every existing control.
+ *
+ * Retro intentionally keeps its own visual language.
+ */
+
+html[data-interface-simplification="1"]:not([data-theme^="retro"]){
+  --vg-surface:var(--card,#fff);
+  --vg-surface-soft:var(--surface-subtle,#f7f9fc);
+  --vg-border:var(--border,#dce4ed);
+  --vg-border-strong:#cbd7e4;
+  --vg-text:var(--text,#1b3046);
+  --vg-muted:var(--muted-text,#607286);
+  --vg-accent:#0b61d6;
+  --vg-accent-soft:#eef5ff;
+  --vg-radius-control:10px;
+  --vg-radius-inner:11px;
+  --vg-radius-panel:15px;
+  --vg-shadow-panel:0 1px 2px rgba(15,23,42,.035);
+}
+
+/* ---------- App chrome: calm, compact, still structurally identical ---------- */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:8px 4px 12px!important;
+  margin-bottom:8px!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header>.title{
+  color:var(--vg-text)!important;
+  font-weight:700!important;
+  letter-spacing:-.018em!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .app-subtitle,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .ivory-brand-copy span{
+  color:var(--vg-muted)!important;
+  font-weight:500!important;
+  letter-spacing:0!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #interfaceSettingsPass1{
+  min-height:40px!important;
+  padding:7px 11px!important;
+  border:1px solid var(--vg-border-strong)!important;
+  border-radius:var(--vg-radius-control)!important;
+  background:transparent!important;
+  color:var(--vg-muted)!important;
+  box-shadow:none!important;
+  font-weight:650!important;
+}
+
+/* ---------- Navigation: one stable frame, not a floating dashboard card ---------- */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell{
+  gap:10px!important;
+  border-color:var(--vg-border)!important;
+  border-radius:var(--vg-radius-panel)!important;
+  background:var(--vg-surface)!important;
+  box-shadow:var(--vg-shadow-panel)!important;
+  backdrop-filter:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__brand{
+  padding:2px 4px 8px!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__brand strong{
+  color:var(--vg-text)!important;
+  font-weight:700!important;
+  letter-spacing:-.01em!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__brand span{
+  color:var(--vg-muted)!important;
+  font-weight:500!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__items{
+  gap:4px!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__items a{
+  border-radius:10px!important;
+  color:#465a70!important;
+  font-weight:650!important;
+  transform:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__items a:hover,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__items a:focus-visible{
+  transform:none!important;
+  background:#f5f8fc!important;
+  border-color:var(--vg-border)!important;
+  color:#235b92!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell__items a.is-active{
+  background:var(--vg-accent-soft)!important;
+  border-color:#c8dcf5!important;
+  color:var(--vg-accent)!important;
+  font-weight:750!important;
+}
+
+/* ---------- Route context: keep the card, lower its volume ---------- */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context{
+  margin-bottom:10px!important;
+  padding:13px 15px!important;
+  border-color:var(--vg-border)!important;
+  border-radius:var(--vg-radius-panel)!important;
+  background:var(--vg-surface)!important;
+  box-shadow:var(--vg-shadow-panel)!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__copy>span{
+  margin-bottom:3px!important;
+  color:var(--vg-muted)!important;
+  font-size:12px!important;
+  font-weight:650!important;
+  letter-spacing:.015em!important;
+  text-transform:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__copy h2{
+  color:var(--vg-text)!important;
+  font-weight:700!important;
+  letter-spacing:-.018em!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__copy p{
+  color:var(--vg-muted)!important;
+  font-weight:450!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__views button,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__links button{
+  border-radius:var(--vg-radius-control)!important;
+  border-color:var(--vg-border)!important;
+  background:transparent!important;
+  color:#4b6076!important;
+  font-weight:650!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__views button.is-active{
+  background:var(--vg-accent-soft)!important;
+  border-color:#bfd7f4!important;
+  color:var(--vg-accent)!important;
+  box-shadow:none!important;
+}
+
+/* ---------- Primary surfaces: retain structure, remove ornamental weight ---------- */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #needsCompact,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #rationSection,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-analysis-detail,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-toolbar,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-options,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-section{
+  border-color:var(--vg-border)!important;
+  border-radius:var(--vg-radius-panel)!important;
+  box-shadow:var(--vg-shadow-panel)!important;
+}
+
+/* Inner cards still exist functionally, but no longer compete with the parent surface. */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-analysis-row,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-analysis-summary article,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-card,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-kv,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-option,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-mobile-row,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-ration-inline__metrics>div,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .analysis-command-center-hf3__card{
+  border-color:var(--vg-border)!important;
+  border-radius:var(--vg-radius-inner)!important;
+  box-shadow:none!important;
+}
+
+/* Preserve semantic warning/success fills; neutral metric cells become quieter. */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-analysis-row__values>div,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-option,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-card{
+  background:var(--vg-surface-soft)!important;
+}
+
+/* ---------- Typography: less shouting, clearer middle register ---------- */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-toolbar__copy>span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-section__head span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-option__copy span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-card>span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-analysis-row__group,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .hei-executive-hf4__eyebrow,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .hei-group-hf4__head span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .theme-parity-ration-hf4__head span{
+  font-weight:650!important;
+  letter-spacing:.015em!important;
+  text-transform:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-toolbar__copy strong,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-section__head h3,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-analysis-row h4{
+  color:var(--vg-text)!important;
+  font-weight:700!important;
+  letter-spacing:-.01em!important;
+}
+
+/* ---------- Controls: secondary really looks secondary ---------- */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent button.secondary{
+  border-color:var(--vg-border-strong)!important;
+  background:transparent!important;
+  color:#3f5e79!important;
+  box-shadow:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent button.secondary:hover,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent button.secondary:focus-visible{
+  border-color:#abc3dc!important;
+  background:#f5f8fb!important;
+  color:#245d91!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent input:not([type="checkbox"]):not([type="radio"]),
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent select,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent textarea{
+  border-radius:var(--vg-radius-control)!important;
+  box-shadow:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchInput{
+  min-height:48px!important;
+  border-color:var(--vg-border-strong)!important;
+  border-radius:12px!important;
+  background:var(--vg-surface)!important;
+  font-size:16px!important;
+}
+
+/* Report toolbar has one primary action (Print); exports stay visually secondary. */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-actions button[data-workspace-report-pdf],
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-actions button[data-workspace-report-json]{
+  border-color:var(--vg-border-strong)!important;
+  background:transparent!important;
+  color:#3f5e79!important;
+  box-shadow:none!important;
+}
+
+/* ---------- Mobile: reduce chrome before the user's task, not the task itself ---------- */
+@media(max-width:860px){
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:6px 8px!important;
+    padding:7px 2px 9px!important;
+    margin-bottom:6px!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header>.title{
+    grid-column:1!important;
+    grid-row:1!important;
+    min-width:0!important;
+    margin:0!important;
+    font-size:20px!important;
+    line-height:1.15!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header>#interfaceSettingsPass1{
+    grid-column:2!important;
+    grid-row:1!important;
+    align-self:center!important;
+    justify-self:end!important;
+    min-height:38px!important;
+    margin:0!important;
+    padding:6px 9px!important;
+    font-size:12px!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header.interface-settings-pass1-open #workspaceViewSwitcher,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header.interface-settings-pass1-open #themeSwitcher,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header.interface-settings-pass1-open>.toolbar{
+    grid-column:1/-1!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context{
+    margin-bottom:8px!important;
+    padding:10px 11px!important;
+    border-radius:13px!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__copy h2{
+    font-size:21px!important;
+    line-height:1.16!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #needsCompact,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #rationSection,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-analysis-detail,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-toolbar,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-options,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-section{
+    border-radius:13px!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-section{
+    padding:13px!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell{
+    border-radius:15px!important;
+  }
+}
+
+/* Preserve the theme personality: Ivory uses its own warm color tokens while sharing
+   spacing, hierarchy and control roles from this pass. */
+html[data-theme="ivory-brass"][data-interface-simplification="1"]{
+  --vg-surface:var(--ib-surface,#fffdf8);
+  --vg-surface-soft:var(--ib-surface-soft,#faf6ee);
+  --vg-border:var(--ib-line,#ddd3c1);
+  --vg-border-strong:var(--ib-line-strong,#cbbda5);
+  --vg-text:var(--ib-ink,#24251f);
+  --vg-muted:var(--ib-muted,#6d685e);
+  --vg-accent:var(--ib-brass-dark,#755016);
+  --vg-accent-soft:var(--ib-surface-strong,#f0e8d9);
+}
+html[data-theme="ivory-brass"][data-interface-simplification="1"] .navigation-shell__items a.is-active,
+html[data-theme="ivory-brass"][data-interface-simplification="1"] .navigation-shell-context__views button.is-active{
+  border-color:var(--ib-line-strong)!important;
+  background:var(--ib-surface-strong)!important;
+  color:var(--ib-olive)!important;
+}
