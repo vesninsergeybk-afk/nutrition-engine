@@ -768,7 +768,10 @@ function renderProgressPanel() {
   const now = Date.now();
   const area = currentAreaProgress(learningStore, availableTargets, now);
   const weak = weakSkills(learningStore, availableTargets, { limit: 6, now });
-  const confusions = topConfusions(learningStore, availableTargets, { limit: 4 });
+  const areaIds = new Set(availableTargets.map((target) => target.id));
+  const confusions = topConfusions(learningStore, learningCatalog, { limit: 20 })
+    .filter((item) => selectedLearningRegion === "all" || areaIds.has(item.target.id))
+    .slice(0, 4);
   const history = recentSessionHistory(learningStore, 4);
   const rows = regionProgress(learningStore, learningCatalog, now)
     .filter((row) => row.find.seen > 0 || row.name.seen > 0 || row.due > 0);
