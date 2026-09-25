@@ -215,6 +215,10 @@ jobs:
             assert.equal(await page.locator('#exit-learning-session').isVisible(), true);
             await page.click('#exit-learning-session');
 
+            assert.equal(await page.locator('#learning-progress').isVisible(), true);
+            await page.locator('#learning-progress > summary').click();
+            assert.match(await page.locator('#learning-progress-content').innerText(), /Слабые места|Выбранная область|Плечевой пояс/i);
+
             // Pass 3: due work is offered as one action, not as a statistics dashboard.
             assert.equal(await page.locator('#today-learning-session').isVisible(), true);
             assert.match(await page.locator('#today-learning-session').innerText(), /Повторить сегодня/i);
@@ -291,6 +295,19 @@ jobs:
             await page.click('#next-question');
             assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/i);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-summary.png', fullPage: true });
+
+            // CONTROL: one timed attempt, no reveal or layer hint before the answer.
+            await page.click('#mode-explore');
+            await page.click('#mode-quiz');
+            await page.click('[data-learning-mode="exam"]');
+            await page.click('#start-learning-session');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'exam');
+            assert.equal(await page.locator('#show-answer').isHidden(), true);
+            assert.equal(await page.locator('#reveal-deeper').isHidden(), true);
+            const examSeconds = Number(await page.locator('#viewer').getAttribute('data-exam-seconds'));
+            assert.ok(examSeconds > 0 && examSeconds <= 20);
+            assert.match(await page.locator('#session-progress').innerText(), /\d+ с/);
+            await page.click('#exit-learning-session');
 
             // Return to setup before checking the mobile NAME flow.
             await page.click('#mode-explore');
