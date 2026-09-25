@@ -471,6 +471,17 @@ function summarySkillForMode() {
 }
 
 function updateLearningSummary() {
+  if (selectedSessionMode === "mistakes") {
+    const queue = mistakeTargets(learningStore, availableTargets);
+    const findCount = queue.filter((item) => item.skillId === "find").length;
+    const nameCount = queue.filter((item) => item.skillId === "name").length;
+
+    learningSummaryEl.textContent =
+      `${regionNameRu(selectedLearningRegion)}: к повторению ${queue.length} · ` +
+      `найти ${findCount} · назвать ${nameCount}.`;
+    return;
+  }
+
   const skillId = summarySkillForMode();
   const summary = learningSummary(learningStore, availableTargets, skillId);
   const accuracy = summary.accuracy == null ? "—" : summary.accuracy + "%";
