@@ -439,7 +439,7 @@ const SPECIMEN_VERTICAL_WINDOWS = Object.freeze({
   "arm-posterior": Object.freeze([0.42, 0.80]),
   "forearm-hand-anterior": Object.freeze([0.22, 0.64]),
   "forearm-hand-posterior": Object.freeze([0.22, 0.64]),
-  "thorax-anterior": Object.freeze([0.48, 0.80]),
+  "thorax-anterior": Object.freeze([0.48, 0.88]),
   abdomen: Object.freeze([0.31, 0.62]),
   "upper-back": Object.freeze([0.50, 0.82]),
   "lower-back": Object.freeze([0.29, 0.58]),
