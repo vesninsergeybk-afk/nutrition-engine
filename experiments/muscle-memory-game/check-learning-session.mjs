@@ -88,7 +88,7 @@ const storage = {
 
 let store = loadLearningStore(storage);
 recordLearningAttempt(store, "a", "find", false, storage, { addReviewDebt: true });
-recordLearningAttempt(store, "a", "find", false, storage, { addReviewDebt: false });
+recordLearningAttempt(store, "a", "find", false, storage, { addReviewDebt: true });
 recordLearningAttempt(store, "a", "find", true, storage, { retireMistake: false });
 recordLearningAttempt(store, "a", "name", false, storage, { addReviewDebt: true });
 recordLearningAttempt(store, "b", "name", false, storage, { addReviewDebt: true });
@@ -98,7 +98,10 @@ let mistakes = mistakeTargets(store, catalog);
 const aFindMistake = mistakes.find((item) => item.target.id === "a" && item.skillId === "find");
 const aNameMistake = mistakes.find((item) => item.target.id === "a" && item.skillId === "name");
 const bNameMistake = mistakes.find((item) => item.target.id === "b" && item.skillId === "name");
-assert(aFindMistake?.debt === 1, "One failed item must create one find review debt");
+assert(
+  aFindMistake?.debt === 1,
+  "Repeated errors must keep one pending review item, not multiply review debt"
+);
 assert(aNameMistake?.debt === 1, "The same muscle must retain an independent name-review debt");
 assert(bNameMistake?.debt === 1, "Name mistake debt is wrong");
 
