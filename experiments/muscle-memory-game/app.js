@@ -967,7 +967,9 @@ function nextSessionStep() {
       learningSessionMode.value = "mistakes";
       startLearningSession();
     } else {
-      startLearningSession();
+      resetLearningSessionUi(
+        "Ошибок для повторения не осталось. Выберите следующий режим и начните новую сессию."
+      );
     }
     return;
   }
