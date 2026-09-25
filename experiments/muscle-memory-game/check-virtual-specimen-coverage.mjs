@@ -118,10 +118,23 @@ for (const specimen of VIRTUAL_SPECIMENS) {
   }
 
   if (semanticMismatches.length) {
+    const details = semanticMismatches.map((id) => {
+      const zTarget = sources.z.find((item) => item.id === id);
+      const bpTarget = sources.bp.find((item) => item.id === id);
+      return {
+        id,
+        zIncluded: zIds.has(id),
+        bpIncluded: bpIds.has(id),
+        zName: zTarget?.nameRu || null,
+        bpName: bpTarget?.nameRu || null,
+        zSources: zTarget?.sourceNames || [],
+        bpSources: bpTarget?.sourceNames || [],
+      };
+    });
     console.log(
       "Specimen semantic mismatch:",
       specimen.id,
-      semanticMismatches.join(" | ")
+      JSON.stringify(details)
     );
   }
 }

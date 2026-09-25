@@ -166,7 +166,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Поверхностные и собственные мышцы нижней части спины.",
     {
       questionPatterns: [
-        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|spinalis(?: thoracis)?|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)? costar|поднимающ.*р[её]бр/iu,
+        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|spinalis(?: thoracis)?|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
       ],
       supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium|hip bone|os cox/i],
       depthProfile: "back",
@@ -301,7 +301,9 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Мышца, выпрямляющая позвоночник",
     "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
     {
-      questionPatterns: [/\biliocostalis\b|\blongissimus thoracis\b|\bspinalis(?: thoracis)?\b/i],
+      questionPatterns: [
+        /\biliocostalis\b|\blongissimus thoracis\b|\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|подвздошно-р[её]бер|длиннейш.*груди|(?:^|\s)остистая мышца(?:\s|$)/iu,
+      ],
       contextPatterns: [/latissimus dorsi|serratus posterior/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
       depthProfile: "back",
@@ -316,7 +318,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Многораздельные, вращатели и короткие сегментарные мышцы.",
     {
       questionPatterns: [
-        /multifidus|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)? costar|поднимающ.*р[её]бр/iu,
+        /multifidus|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
       ],
       contextPatterns: [/erector|iliocostalis|longissimus thoracis|spinalis|latissimus dorsi/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
@@ -405,7 +407,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Короткие глубокие мышцы подзатылочной области.",
     {
       questionPatterns: [
-        /rectus (?:capitis posterior (?:major|minor)|posterior (?:major|minor) capitis)|obliquus (?:superior|inferior) capitis|obliquus capitis|задн.*прям.*мышц.*голов|кос.*мышц.*голов/iu,
+        /rectus (?:capitis posterior (?:major|minor)|posterior (?:major|minor) capitis)|obliquus (?:(?:superior|inferior) capitis|capitis (?:superior|inferior))|(?:большая|малая)?\s*задн.*прям.*мышц.*голов|кос.*мышц.*голов/iu,
       ],
       contextPatterns: [/splenius capitis|semispinalis capitis|trapezius/i],
       supportBonePatterns: [/occip|cervical vertebra|atlas|axis/i],
