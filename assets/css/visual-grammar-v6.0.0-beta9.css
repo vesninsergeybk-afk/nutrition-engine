@@ -1,0 +1,274 @@
+/* Visual grammar pass A — 2026-09-25
+ * Scope: Modern theme only.
+ * Purpose: reduce visual competition without changing routes, DOM order,
+ * visibility logic, event handling, calculations or report semantics.
+ */
+
+html[data-theme="modern"][data-interface-simplification="1"]{
+  --vg-bg:#f5f7fa;
+  --vg-surface:#ffffff;
+  --vg-subtle:#f8fafc;
+  --vg-line:#e2e8f0;
+  --vg-line-strong:#cbd5e1;
+  --vg-ink:#182235;
+  --vg-text:#344054;
+  --vg-muted:#667085;
+  --vg-primary:#155cc7;
+  --vg-primary-hover:#0d4faa;
+  --vg-primary-soft:#eef4ff;
+
+  /* Reuse the existing design-system hooks so the change remains additive. */
+  --d111-bg:var(--vg-bg);
+  --d111-surface:var(--vg-surface);
+  --d111-subtle:var(--vg-subtle);
+  --d111-soft-blue:var(--vg-primary-soft);
+  --d111-ink:var(--vg-ink);
+  --d111-text:var(--vg-text);
+  --d111-muted:var(--vg-muted);
+  --d111-border:var(--vg-line);
+  --d111-blue:var(--vg-primary);
+  --d111-blue-dark:var(--vg-primary-hover);
+  --d111-radius:14px;
+  --d111-radius-sm:10px;
+  --d111-shadow:0 1px 2px rgba(24,34,53,.045),0 8px 24px rgba(24,34,53,.025);
+}
+
+html[data-theme="modern"][data-interface-simplification="1"] body{
+  background:var(--vg-bg)!important;
+  color:var(--vg-ink)!important;
+}
+
+/* 1. Surface hierarchy: top-level sections remain cards, but stop floating. */
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent>section.card,
+html[data-theme="modern"][data-interface-simplification="1"] #needsCompact,
+html[data-theme="modern"][data-interface-simplification="1"] #globalSearchSection,
+html[data-theme="modern"][data-interface-simplification="1"] #rationSection,
+html[data-theme="modern"][data-interface-simplification="1"] #heiPanel,
+html[data-theme="modern"][data-interface-simplification="1"] #totalsSection,
+html[data-theme="modern"][data-interface-simplification="1"] #dietAnalysisProfilePanel,
+html[data-theme="modern"][data-interface-simplification="1"] #dataQualityPanel,
+html[data-theme="modern"][data-interface-simplification="1"] #globalActions{
+  background:var(--vg-surface)!important;
+  border-color:var(--vg-line)!important;
+  border-radius:14px!important;
+  box-shadow:0 1px 2px rgba(24,34,53,.04)!important;
+}
+
+/* Nested surfaces should read as groups, not as another level of floating cards. */
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .card .card,
+html[data-theme="modern"][data-interface-simplification="1"] .search-field-card,
+html[data-theme="modern"][data-interface-simplification="1"] .search-grams-card,
+html[data-theme="modern"][data-interface-simplification="1"] .v40-needs-summary,
+html[data-theme="modern"][data-interface-simplification="1"] .ui-method-details,
+html[data-theme="modern"][data-interface-simplification="1"] .ration-ui-legend,
+html[data-theme="modern"][data-interface-simplification="1"] .ui-ration-tools,
+html[data-theme="modern"][data-interface-simplification="1"] #heiPanel>.row,
+html[data-theme="modern"][data-interface-simplification="1"] .ui-hei-empty-state,
+html[data-theme="modern"][data-interface-simplification="1"] .total-card,
+html[data-theme="modern"][data-interface-simplification="1"] .diet-overview-card,
+html[data-theme="modern"][data-interface-simplification="1"] .diet-matrix-card-v540,
+html[data-theme="modern"][data-interface-simplification="1"] .ui-profile-domains,
+html[data-theme="modern"][data-interface-simplification="1"] .diet-matrix-diagnostic-details,
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-alt-entry{
+  background:var(--vg-subtle)!important;
+  border-color:var(--vg-line)!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+
+/* 2. Typography: fewer "shouts"; preserve the existing scale and content. */
+html[data-theme="modern"][data-interface-simplification="1"] h1,
+html[data-theme="modern"][data-interface-simplification="1"] h2,
+html[data-theme="modern"][data-interface-simplification="1"] .card-title,
+html[data-theme="modern"][data-interface-simplification="1"] .v40-needs-summary-title{
+  color:var(--vg-ink)!important;
+  font-weight:700!important;
+  letter-spacing:-.012em!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] h3,
+html[data-theme="modern"][data-interface-simplification="1"] h4{
+  color:var(--vg-ink)!important;
+  font-weight:650!important;
+  letter-spacing:-.006em!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] label{
+  color:#344054!important;
+  font-weight:600!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .muted,
+html[data-theme="modern"][data-interface-simplification="1"] .small,
+html[data-theme="modern"][data-interface-simplification="1"] .footer-note{
+  color:var(--vg-muted)!important;
+}
+
+/* Step markers remain available, but stop looking like another family of chips. */
+html[data-theme="modern"][data-interface-simplification="1"] .step-badge{
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:var(--vg-muted)!important;
+  font-size:12px!important;
+  font-weight:650!important;
+  text-transform:none!important;
+  letter-spacing:0!important;
+}
+
+/* 3. Controls: keep one strong primary language, neutralise secondary actions. */
+html[data-theme="modern"][data-interface-simplification="1"] button,
+html[data-theme="modern"][data-interface-simplification="1"] .btn,
+html[data-theme="modern"][data-interface-simplification="1"] input,
+html[data-theme="modern"][data-interface-simplification="1"] select,
+html[data-theme="modern"][data-interface-simplification="1"] textarea{
+  border-radius:10px!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] button,
+html[data-theme="modern"][data-interface-simplification="1"] .btn{
+  font-weight:650!important;
+  box-shadow:none!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] button.secondary,
+html[data-theme="modern"][data-interface-simplification="1"] .btn.secondary{
+  background:#fff!important;
+  color:#344054!important;
+  border-color:var(--vg-line-strong)!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] button.secondary:hover,
+html[data-theme="modern"][data-interface-simplification="1"] .btn.secondary:hover{
+  background:#f8fafc!important;
+  color:var(--vg-ink)!important;
+  border-color:#98a2b3!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] button.ghost,
+html[data-theme="modern"][data-interface-simplification="1"] .btn.ghost{
+  background:transparent!important;
+  color:#475467!important;
+  border-color:transparent!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] input,
+html[data-theme="modern"][data-interface-simplification="1"] select,
+html[data-theme="modern"][data-interface-simplification="1"] textarea{
+  background:#fff!important;
+  border-color:var(--vg-line-strong)!important;
+  color:var(--vg-ink)!important;
+  box-shadow:none!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] input:focus,
+html[data-theme="modern"][data-interface-simplification="1"] select:focus,
+html[data-theme="modern"][data-interface-simplification="1"] textarea:focus{
+  border-color:#7aa7df!important;
+  box-shadow:0 0 0 3px rgba(21,92,199,.10)!important;
+}
+
+/* Quick choices are helpers, not primary calls to action. */
+html[data-theme="modern"][data-interface-simplification="1"] .quick-searches button,
+html[data-theme="modern"][data-interface-simplification="1"] .quick-grams button{
+  background:#f8fafc!important;
+  color:#344054!important;
+  border-color:var(--vg-line)!important;
+  font-weight:600!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .quick-searches button:hover,
+html[data-theme="modern"][data-interface-simplification="1"] .quick-grams button:hover{
+  background:var(--vg-primary-soft)!important;
+  color:var(--vg-primary-hover)!important;
+  border-color:#c9daf3!important;
+}
+
+/* 4. Product chrome: retain navigation and settings, reduce decorative weight. */
+html[data-theme="modern"][data-interface-simplification="1"] header .title{
+  color:var(--vg-ink)!important;
+  font-weight:700!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] header .title:before{
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .workflow-steps{
+  background:rgba(255,255,255,.72)!important;
+  border-color:var(--vg-line)!important;
+  box-shadow:none!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .workflow-steps a{
+  font-weight:600!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .workflow-steps a span{
+  background:#eef2f6!important;
+  color:#475467!important;
+  font-weight:650!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .workflow-steps a[aria-current="step"],
+html[data-theme="modern"][data-interface-simplification="1"] .workflow-steps a.is-active{
+  color:var(--vg-primary-hover)!important;
+}
+
+/* 5. Status and analysis surfaces: colour should communicate state, not decorate. */
+html[data-theme="modern"][data-interface-simplification="1"] .search-db-count,
+html[data-theme="modern"][data-interface-simplification="1"] .ration-kpi-strip,
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-ration-inline__metrics>div,
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-overview__metrics>div{
+  background:#f8fafc!important;
+  border-color:var(--vg-line)!important;
+  box-shadow:none!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .search-status{
+  background:#f8fafc!important;
+  color:#475467!important;
+  border-left-color:#b9c4d3!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .chip,
+html[data-theme="modern"][data-interface-simplification="1"] .pill,
+html[data-theme="modern"][data-interface-simplification="1"] #heiBadge{
+  background:#f2f4f7!important;
+  color:#475467!important;
+  border-color:transparent!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .rec,
+html[data-theme="modern"][data-interface-simplification="1"] #heiRecommendations .rec{
+  box-shadow:none!important;
+  border-radius:10px!important;
+}
+
+/* 6. Tables and repeated data should read as data, not a stack of floating objects. */
+html[data-theme="modern"][data-interface-simplification="1"] .ration-table thead th{
+  color:#667085!important;
+  font-weight:600!important;
+  letter-spacing:.02em!important;
+  text-transform:none!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .ration-table tbody tr.ration-row>td{
+  border-color:var(--vg-line)!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .total-card{
+  box-shadow:none!important;
+}
+
+/* Mobile keeps the same information architecture; only visual weight changes. */
+@media(max-width:860px){
+  html[data-theme="modern"][data-interface-simplification="1"] #mainContent>section.card,
+  html[data-theme="modern"][data-interface-simplification="1"] #needsCompact,
+  html[data-theme="modern"][data-interface-simplification="1"] #globalSearchSection,
+  html[data-theme="modern"][data-interface-simplification="1"] #rationSection,
+  html[data-theme="modern"][data-interface-simplification="1"] #heiPanel,
+  html[data-theme="modern"][data-interface-simplification="1"] #totalsSection,
+  html[data-theme="modern"][data-interface-simplification="1"] #dietAnalysisProfilePanel,
+  html[data-theme="modern"][data-interface-simplification="1"] #dataQualityPanel,
+  html[data-theme="modern"][data-interface-simplification="1"] #globalActions{
+    border-radius:12px!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"][data-interface-simplification="1"] .ration-table tbody tr.ration-row{
+    border-color:var(--vg-line)!important;
+    border-radius:12px!important;
+    box-shadow:none!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-theme="modern"][data-interface-simplification="1"] *,
+  html[data-theme="modern"][data-interface-simplification="1"] *::before,
+  html[data-theme="modern"][data-interface-simplification="1"] *::after{
+    transition-duration:.01ms!important;
+  }
+}
