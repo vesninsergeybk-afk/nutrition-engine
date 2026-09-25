@@ -1,5 +1,7 @@
 import {
+  appendSessionHistory,
   loadLearningStore,
+  recordConfusion,
   recordLearningAttempt,
 } from "./learning-engine.js";
 import {
@@ -8,8 +10,6 @@ import {
 } from "./retention-engine.js";
 import {
   currentAreaProgress,
-  recordConfusion,
-  recordSessionHistory,
   recentSessionHistory,
   regionProgress,
   topConfusions,
@@ -87,21 +87,23 @@ const session = {
   ],
 };
 
-const historyEntry = recordSessionHistory(store, session, {
-  regionId: "shoulder",
-  modelSource: "z-anatomy",
-  storage,
-});
+const historyEntry = appendSessionHistory(
+  store,
+  {
+    completedAt: session.finishedAt,
+    mode: session.mode,
+    region: "shoulder",
+    total: session.items.length,
+    clean: 1,
+    wrongAttempts: 1,
+    revealed: 1,
+  },
+  storage
+);
 assert(historyEntry?.clean === 1, "Session clean count is wrong");
 assert(historyEntry?.revealed === 1, "Session revealed count is wrong");
-
-recordSessionHistory(store, session, {
-  regionId: "shoulder",
-  modelSource: "z-anatomy",
-  storage,
-});
 store = loadLearningStore(storage);
-assert(recentSessionHistory(store, 5).length === 1, "Session history duplicated one session");
+assert(recentSessionHistory(store, 5).length === 1, "Session history was not persisted");
 assert(Object.keys(store.confusions).length === 2, "Confusions disappeared after reload");
 
 console.log("Progress by region and skill: ok");
