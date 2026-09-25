@@ -70,6 +70,14 @@
                   <option value="off">Скрыть</option>
                 </select>
               </label>
+              <label id="skin-field" class="viewer-setting-field" hidden>
+                <span>Кожа и наружные покровы</span>
+                <select id="skin-mode" aria-label="Режим слоя кожи" disabled>
+                  <option value="off" selected>Скрыть</option>
+                  <option value="ghost">Полупрозрачно</option>
+                  <option value="anatomical">Показать поверхность</option>
+                </select>
+              </label>
               <label id="connective-field" class="viewer-setting-field" hidden>
                 <span>Соединительная ткань</span>
                 <select id="connective-mode" aria-label="Режим соединительнотканного слоя" disabled>
@@ -78,6 +86,17 @@
                   <option value="off">Скрыть</option>
                 </select>
               </label>
+              <fieldset id="connective-layers-field" class="connective-layer-options" hidden>
+                <legend>Соединительнотканные подслои</legend>
+                <label><input type="checkbox" data-connective-layer="ligament" checked /> Связки</label>
+                <label><input type="checkbox" data-connective-layer="tendon" checked /> Сухожилия и апоневрозы</label>
+                <label><input type="checkbox" data-connective-layer="fascia" checked /> Фасции и удерживатели</label>
+                <label><input type="checkbox" data-connective-layer="cartilage" checked /> Хрящевые структуры</label>
+                <label><input type="checkbox" data-connective-layer="other" checked /> Другие соединительные структуры</label>
+              </fieldset>
+              <p id="layer-training-note" class="viewer-setting-note" hidden>
+                Во время тренировки кожа и соединительные слои временно скрываются, чтобы не перекрывать целевую мышцу.
+              </p>
               <label id="bone-opacity-field" class="viewer-setting-field" hidden>
                 <span>Прозрачность костей</span>
                 <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.10" disabled />
@@ -183,7 +202,7 @@
       </details>
 
       <p class="attribution">
-        Анатомические 3D-данные: BodyParts3D и Z-Anatomy, CC BY-SA.
+        Анатомические 3D-данные: BodyParts3D — CC BY 4.0; Z-Anatomy — CC BY-SA 4.0.
         <a href="https://github.com/DrMuratAltun/anatomi-simulatoru" target="_blank" rel="noreferrer">Источник модели</a>.
       </p>
     </aside>

@@ -59,6 +59,15 @@ if (missing.length) {
   process.exitCode = 1;
 }
 
+const latinUserFacing = names.filter(name => /[A-Za-z]/.test(structureTerm(name).nameRu));
+if (latinUserFacing.length) {
+  console.log("Latin fragments leaked into Russian Z-Anatomy labels:");
+  for (const name of latinUserFacing) {
+    console.log(name + " -> " + structureTerm(name).nameRu);
+  }
+  process.exitCode = 1;
+}
+
 
 const learningCatalog = buildMuscleCatalog(names);
 const represented = learningCatalog.reduce((sum, item) => sum + item.sids.length, 0);

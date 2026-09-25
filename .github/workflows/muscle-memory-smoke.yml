@@ -78,6 +78,13 @@ jobs:
           if (missing.length) {
             throw new Error('Missing Russian muscle names: ' + missing.map(part => part.name).join(', '));
           }
+          const latinUserFacing = muscles.filter(part => /[A-Za-z]/.test(bodyPartsMuscleNameRu(part.name) || ''));
+          if (latinUserFacing.length) {
+            throw new Error(
+              'Latin fragments leaked into Russian BodyParts labels: ' +
+              latinUserFacing.map(part => part.name + ' -> ' + bodyPartsMuscleNameRu(part.name)).join(' | ')
+            );
+          }
           if (muscles.length !== 416) {
             throw new Error('Unexpected BodyParts3D muscle count: ' + muscles.length);
           }
@@ -421,6 +428,19 @@ jobs:
             assert.equal(await page.locator('#connective-mode').inputValue(), 'anatomical');
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
             assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
+            assert.equal(await page.locator('#connective-layers-field').isHidden(), false);
+            assert.match(
+              await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
+              /ligament|tendon|fascia|cartilage/
+            );
+
+            assert.equal(await page.locator('#skin-mode').isDisabled(), false);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-skin-count')) > 0);
+            assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'off');
+            await page.selectOption('#skin-mode', 'ghost');
+            assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'ghost');
+            await page.selectOption('#skin-mode', 'off');
+            assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'off');
 
             await page.selectOption('#connective-mode', 'ghost');
             assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'ghost');

@@ -93,6 +93,13 @@ const boneOpacity = document.querySelector("#bone-opacity");
 const boneOpacityField = document.querySelector("#bone-opacity-field");
 const connectiveMode = document.querySelector("#connective-mode");
 const connectiveField = document.querySelector("#connective-field");
+const connectiveLayersField = document.querySelector("#connective-layers-field");
+const connectiveLayerInputs = [
+  ...document.querySelectorAll("[data-connective-layer]"),
+];
+const skinMode = document.querySelector("#skin-mode");
+const skinField = document.querySelector("#skin-field");
+const layerTrainingNote = document.querySelector("#layer-training-note");
 const debugPanel = document.querySelector("#debug-panel");
 const viewerSettings = document.querySelector(".viewer-settings");
 const modelSource = document.querySelector("#model-source");
@@ -159,7 +166,8 @@ const pointer = new THREE.Vector2();
 
 let anatomyMesh = null;
 let skeletonMesh = null;
-let connectiveMesh = null;
+let connectiveMeshes = new Map();
+let skinMesh = null;
 let structureNames = [];
 let structureRanges = [];
 let structureVisibility = [];
@@ -206,6 +214,7 @@ let tapBlocked = false;
 let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
 let connectiveDisplayMode = "anatomical";
+let skinDisplayMode = "off";
 let currentModelSource = "z-anatomy";
 let initialQueryApplied = false;
 
@@ -2209,7 +2218,8 @@ function resetLoadedModel() {
 
   anatomyMesh = null;
   skeletonMesh = null;
-  connectiveMesh = null;
+  connectiveMeshes = new Map();
+  skinMesh = null;
   structureNames = [];
   structureRanges = [];
   structureVisibility = [];
@@ -2265,8 +2275,15 @@ function resetLoadedModel() {
   boneOpacityField.hidden = true;
   connectiveMode.disabled = true;
   connectiveField.hidden = true;
+  connectiveLayersField.hidden = true;
+  skinMode.disabled = true;
+  skinField.hidden = true;
+  layerTrainingNote.hidden = true;
   canvas.dataset.connectiveMode = "";
   canvas.dataset.connectiveCount = "";
+  canvas.dataset.connectiveVisibleLayers = "";
+  canvas.dataset.skinMode = "";
+  canvas.dataset.skinCount = "";
   canvas.dataset.boneMode = "";
   canvas.dataset.boneTransparent = "";
   canvas.dataset.boneStencil = "";
@@ -2284,6 +2301,7 @@ function resetLoadedModel() {
   canvas.dataset.nameView = "";
   canvas.dataset.trainingDisplay = "false";
   canvas.dataset.connectiveTrainingHidden = "false";
+  canvas.dataset.skinTrainingHidden = "false";
 }
 
 function createMuscleMaterial() {
@@ -2331,10 +2349,18 @@ function createBoneMaterial() {
 
 
 
-function createConnectiveMaterial() {
+const CONNECTIVE_LAYER_COLORS = {
+  ligament: 0xd8cfb7,
+  tendon: 0xe1d7c4,
+  fascia: 0xb9c6c2,
+  cartilage: 0xc5d2d6,
+  other: 0xc9c1b2,
+};
+
+function createConnectiveMaterial(layerKey) {
   return new THREE.MeshStandardMaterial({
-    color: 0xd5cfb8,
-    roughness: 0.68,
+    color: CONNECTIVE_LAYER_COLORS[layerKey] || CONNECTIVE_LAYER_COLORS.other,
+    roughness: layerKey === "fascia" ? 0.76 : 0.68,
     metalness: 0,
     side: THREE.DoubleSide,
     transparent: false,
@@ -2344,42 +2370,110 @@ function createConnectiveMaterial() {
   });
 }
 
+function createSkinMaterial() {
+  return new THREE.MeshStandardMaterial({
+    color: 0xc69c84,
+    roughness: 0.82,
+    metalness: 0,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.9,
+    depthTest: true,
+    depthWrite: true,
+  });
+}
+
+function selectedConnectiveLayers() {
+  return new Set(
+    connectiveLayerInputs
+      .filter((input) => input.checked)
+      .map((input) => input.dataset.connectiveLayer)
+      .filter(Boolean)
+  );
+}
+
 function applyConnectiveDisplayMode() {
-  if (!connectiveMesh) {
+  if (!connectiveMeshes.size) {
     connectiveMode.disabled = true;
     connectiveField.hidden = true;
+    connectiveLayersField.hidden = true;
     canvas.dataset.connectiveMode = "unavailable";
+    canvas.dataset.connectiveVisibleLayers = "";
     return;
   }
 
   connectiveField.hidden = false;
+  connectiveLayersField.hidden = false;
+  layerTrainingNote.hidden = false;
   connectiveMode.disabled = false;
-  const mode = connectiveDisplayMode;
-  const material = connectiveMesh.material;
 
-  if (mode === "off") {
-    connectiveMesh.visible = false;
-    canvas.dataset.connectiveMode = "off";
+  const mode = connectiveDisplayMode;
+  const enabled = selectedConnectiveLayers();
+  const visibleLayers = [];
+
+  for (const [layerKey, mesh] of connectiveMeshes) {
+    const show = mode !== "off" && enabled.has(layerKey);
+    mesh.visible = show;
+    if (show) visibleLayers.push(layerKey);
+
+    const material = mesh.material;
+    material.depthTest = true;
+
+    if (mode === "ghost") {
+      material.transparent = true;
+      material.opacity = layerKey === "fascia" ? 0.18 : 0.28;
+      material.depthWrite = false;
+      mesh.renderOrder = 3;
+    } else {
+      material.transparent = layerKey === "fascia";
+      material.opacity = layerKey === "fascia" ? 0.54 : 1;
+      material.depthWrite = layerKey !== "fascia";
+      mesh.renderOrder = 2;
+    }
+
+    material.needsUpdate = true;
+  }
+
+  canvas.dataset.connectiveMode = mode;
+  canvas.dataset.connectiveVisibleLayers = visibleLayers.join(",");
+}
+
+function applySkinDisplayMode() {
+  if (!skinMesh) {
+    skinMode.disabled = true;
+    skinField.hidden = true;
+    canvas.dataset.skinMode = "unavailable";
     return;
   }
 
-  connectiveMesh.visible = true;
+  skinField.hidden = false;
+  layerTrainingNote.hidden = false;
+  skinMode.disabled = false;
+  const mode = skinDisplayMode;
+  const material = skinMesh.material;
+
+  if (mode === "off") {
+    skinMesh.visible = false;
+    canvas.dataset.skinMode = "off";
+    return;
+  }
+
+  skinMesh.visible = true;
+  material.transparent = true;
   material.depthTest = true;
 
   if (mode === "ghost") {
-    material.transparent = true;
-    material.opacity = 0.28;
+    material.opacity = 0.16;
     material.depthWrite = false;
-    connectiveMesh.renderOrder = 3;
+    skinMesh.renderOrder = 4;
   } else {
-    material.transparent = false;
-    material.opacity = 1;
+    material.opacity = 0.9;
     material.depthWrite = true;
-    connectiveMesh.renderOrder = 2;
+    skinMesh.renderOrder = 4;
   }
 
   material.needsUpdate = true;
-  canvas.dataset.connectiveMode = mode;
+  canvas.dataset.skinMode = mode;
 }
 
 function applyTrainingDisplayOverride() {
@@ -2394,18 +2488,22 @@ function applyTrainingDisplayOverride() {
     material.needsUpdate = true;
   }
 
-  if (connectiveMesh) connectiveMesh.visible = false;
+  for (const mesh of connectiveMeshes.values()) mesh.visible = false;
+  if (skinMesh) skinMesh.visible = false;
 
   canvas.dataset.trainingDisplay = "true";
-  canvas.dataset.connectiveTrainingHidden = String(Boolean(connectiveMesh));
+  canvas.dataset.connectiveTrainingHidden = String(connectiveMeshes.size > 0);
+  canvas.dataset.skinTrainingHidden = String(Boolean(skinMesh));
 }
 
 function restoreDisplayAfterTraining() {
   if (skeletonMesh) applyBoneDisplayMode();
-  if (connectiveMesh) applyConnectiveDisplayMode();
+  applyConnectiveDisplayMode();
+  applySkinDisplayMode();
 
   canvas.dataset.trainingDisplay = "false";
   canvas.dataset.connectiveTrainingHidden = "false";
+  canvas.dataset.skinTrainingHidden = "false";
 }
 
 function connectiveSubtype(name) {
@@ -2417,6 +2515,13 @@ function connectiveSubtype(name) {
   if (/retinacul/.test(value)) return "retinaculum";
   if (/cartilage/.test(value)) return "cartilage";
   return "other";
+}
+
+function connectiveLayerKey(name) {
+  const subtype = connectiveSubtype(name);
+  if (subtype === "aponeurosis") return "tendon";
+  if (subtype === "retinaculum") return "fascia";
+  return subtype;
 }
 
 function connectiveStats(parts) {
@@ -2600,8 +2705,16 @@ async function loadZAnatomyModel() {
     discoverTargets();
 
     connectiveMode.disabled = true;
+    connectiveField.hidden = true;
+    connectiveLayersField.hidden = true;
+    skinMode.disabled = true;
+    skinField.hidden = true;
+    layerTrainingNote.hidden = true;
     canvas.dataset.connectiveMode = "unavailable";
     canvas.dataset.connectiveCount = "0";
+    canvas.dataset.connectiveVisibleLayers = "";
+    canvas.dataset.skinMode = "unavailable";
+    canvas.dataset.skinCount = "0";
     boneMode.disabled = true;
     await loadSkeletonLayer(loader);
   } catch (error) {
@@ -2619,15 +2732,20 @@ async function loadBodyParts4Model() {
   const connectiveParts = atlas.parts.filter(
     (part) => part.system === "connective" && !bodyPartsAnatomyKind(part)
   );
-  const parts = [...anatomyParts, ...connectiveParts];
+  const skinParts = atlas.parts.filter((part) => part.system === "integumentary");
+  const parts = [...anatomyParts, ...connectiveParts, ...skinParts];
   const chunkIds = [...new Set(parts.map((part) => part.chunk))].sort((a, b) => a - b);
 
   const muscleChunks = [];
   const boneChunks = [];
-  const connectiveChunks = [];
+  const connectiveChunksByLayer = new Map(
+    ["ligament", "tendon", "fascia", "cartilage", "other"].map((key) => [key, []])
+  );
+  const skinChunks = [];
   const vertexCounts = [];
   let triangleCount = 0;
   let connectiveTriangleCount = 0;
+  let skinTriangleCount = 0;
 
   for (let chunkPosition = 0; chunkPosition < chunkIds.length; chunkPosition += 1) {
     const chunkId = chunkIds[chunkPosition];
@@ -2677,15 +2795,34 @@ async function loadBodyParts4Model() {
     const connectiveInChunk = chunkParts.filter(
       (part) => part.system === "connective" && !bodyPartsAnatomyKind(part)
     );
-    if (connectiveInChunk.length) {
-      const geometries = connectiveInChunk.map((part) => {
+    for (const layerKey of ["ligament", "tendon", "fascia", "cartilage", "other"]) {
+      const layerParts = connectiveInChunk.filter(
+        (part) => connectiveLayerKey(part.name) === layerKey
+      );
+      if (!layerParts.length) continue;
+
+      const geometries = layerParts.map((part) => {
         connectiveTriangleCount += Math.floor(part.indexCount / 3);
         return bodyPartsGeometry(part, buffer);
       });
       const mergedChunk = mergeGeometries(geometries, false);
       for (const geometry of geometries) geometry.dispose();
-      if (!mergedChunk) throw new Error("Не удалось объединить соединительнотканный блок BodyParts3D.");
-      connectiveChunks.push(mergedChunk);
+      if (!mergedChunk) {
+        throw new Error("Не удалось объединить соединительнотканный подслой BodyParts3D.");
+      }
+      connectiveChunksByLayer.get(layerKey).push(mergedChunk);
+    }
+
+    const skinInChunk = chunkParts.filter((part) => part.system === "integumentary");
+    if (skinInChunk.length) {
+      const geometries = skinInChunk.map((part) => {
+        skinTriangleCount += Math.floor(part.indexCount / 3);
+        return bodyPartsGeometry(part, buffer);
+      });
+      const mergedChunk = mergeGeometries(geometries, false);
+      for (const geometry of geometries) geometry.dispose();
+      if (!mergedChunk) throw new Error("Не удалось объединить слой наружных покровов BodyParts3D.");
+      skinChunks.push(mergedChunk);
     }
 
     await new Promise(requestAnimationFrame);
@@ -2715,14 +2852,25 @@ async function loadBodyParts4Model() {
     modelGroup.add(skeletonMesh);
   }
 
-  const mergedConnective = connectiveChunks.length
-    ? mergeGeometries(connectiveChunks, false)
-    : null;
-  for (const geometry of connectiveChunks) geometry.dispose();
-  if (mergedConnective) {
-    connectiveMesh = new THREE.Mesh(mergedConnective, createConnectiveMaterial());
-    connectiveMesh.renderOrder = 2;
-    modelGroup.add(connectiveMesh);
+  for (const [layerKey, chunks] of connectiveChunksByLayer) {
+    if (!chunks.length) continue;
+    const merged = mergeGeometries(chunks, false);
+    for (const geometry of chunks) geometry.dispose();
+    if (!merged) continue;
+
+    const mesh = new THREE.Mesh(merged, createConnectiveMaterial(layerKey));
+    mesh.renderOrder = 2;
+    mesh.userData.layerKey = layerKey;
+    connectiveMeshes.set(layerKey, mesh);
+    modelGroup.add(mesh);
+  }
+
+  const mergedSkin = skinChunks.length ? mergeGeometries(skinChunks, false) : null;
+  for (const geometry of skinChunks) geometry.dispose();
+  if (mergedSkin) {
+    skinMesh = new THREE.Mesh(mergedSkin, createSkinMaterial());
+    skinMesh.renderOrder = 4;
+    modelGroup.add(skinMesh);
   }
 
   fitCamera(modelGroup);
@@ -2732,19 +2880,23 @@ async function loadBodyParts4Model() {
     applyBoneDisplayMode();
   }
   applyConnectiveDisplayMode();
+  applySkinDisplayMode();
 
   discoverTargets();
   const classification = bodyPartsClassificationStats(atlas.parts);
   const connective = connectiveStats(connectiveParts);
   canvas.dataset.connectiveCount = String(connective.total);
+  canvas.dataset.skinCount = String(skinParts.length);
   updateDiagnostics(
     "BodyParts3D 4.0: всё тело, " +
     classification.muscles +
     " мышечных, " +
     classification.bones +
-    " костных и " +
+    " костных, " +
     connective.total +
-    " соединительнотканных структур. " +
+    " соединительнотканных и " +
+    skinParts.length +
+    " структур наружных покровов. " +
     "В соединительнотканном слое по названиям: связки " +
     connective.ligament +
     ", фасции " +
@@ -2762,7 +2914,7 @@ async function loadBodyParts4Model() {
     ". Исключено " +
     classification.excludedSkeletal +
     " структур, ошибочно помеченных atlas как skeletal. " +
-    (triangleCount + connectiveTriangleCount).toLocaleString("ru-RU") +
+    (triangleCount + connectiveTriangleCount + skinTriangleCount).toLocaleString("ru-RU") +
     " треугольников загруженных слоёв."
   );
 }
@@ -2817,6 +2969,15 @@ boneMode.addEventListener("change", () => {
 connectiveMode.addEventListener("change", () => {
   connectiveDisplayMode = connectiveMode.value;
   applyConnectiveDisplayMode();
+});
+
+for (const input of connectiveLayerInputs) {
+  input.addEventListener("change", applyConnectiveDisplayMode);
+}
+
+skinMode.addEventListener("change", () => {
+  skinDisplayMode = skinMode.value;
+  applySkinDisplayMode();
 });
 
 boneOpacity.addEventListener("input", () => {
