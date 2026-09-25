@@ -174,6 +174,7 @@ jobs:
             assert.equal(await page.locator('#model-source-field').isHidden(), true);
             assert.equal(await page.locator('.viewer-settings').isHidden(), true);
             assert.equal(await page.locator('.viewer-hint').isHidden(), true);
+            assert.equal(await page.locator('.attribution').isHidden(), true);
             assert.equal(await page.locator('#exit-learning-session').isVisible(), true);
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-total'), '5');
             assert.match(await page.locator('#question').innerText(), /Найдите:/);
