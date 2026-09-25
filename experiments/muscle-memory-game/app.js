@@ -1298,6 +1298,7 @@ function prepareSessionItem() {
     canvas.dataset.examFindFallback = "";
   }
 
+  canvas.dataset.learningCurrentSkill = item.skillId;
   quizActions.hidden = examMode;
   quizActions.classList.remove("next-only");
   answerButton.hidden = examMode;
@@ -1446,6 +1447,7 @@ function finishLearningSession() {
   locked = true;
   currentTarget = null;
   canvas.dataset.learningCurrentTargetId = "";
+  canvas.dataset.learningCurrentSkill = "";
   lastWrongSid = null;
   restoreHighlights();
   showAllStructures();
