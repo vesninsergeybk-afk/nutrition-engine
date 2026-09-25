@@ -55,13 +55,19 @@ export function regionProgress(store, catalog, now = Date.now()) {
     const find = skillProgress(store, items, "find", now);
     const name = skillProgress(store, items, "name", now);
 
+    const seen = items.filter((target) => {
+      const findStatus = retentionStatus(store, target.id, "find", now);
+      const nameStatus = retentionStatus(store, target.id, "name", now);
+      return findStatus !== "new" || nameStatus !== "new";
+    }).length;
+
     rows.push({
       regionId: region.id,
       nameRu: region.nameRu,
       total: items.length,
       find,
       name,
-      seen: Math.max(find.seen, name.seen),
+      seen,
       due: find.due + name.due,
     });
   }
@@ -71,7 +77,6 @@ export function regionProgress(store, catalog, now = Date.now()) {
 
 function weakReason(record, status) {
   if (record.reviewDebt > 0) return "есть ошибка для повторения";
-  if (status === "due") return "подошёл срок повторения";
 
   const attempts = Math.max(0, Number(record.attempts) || 0);
   const wrong = Math.max(0, Number(record.wrong) || 0);
@@ -115,9 +120,10 @@ export function weakSkills(
       const wrong = Math.max(0, Number(record.wrong) || 0);
       const errorRate = attempts ? wrong / attempts : 0;
 
+      // A skill is not a "weak spot" merely because its scheduled
+      // review date arrived. Due-only work belongs in the Today queue.
       if (
         record.reviewDebt <= 0 &&
-        status !== "due" &&
         record.lapses < 2 &&
         !(attempts >= 2 && errorRate >= 0.4)
       ) {
