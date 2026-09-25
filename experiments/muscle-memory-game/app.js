@@ -227,6 +227,17 @@ function focusBox(box, padding = 1.22, direction = currentViewDirection()) {
 
   controls.target.copy(center);
   camera.position.copy(center).addScaledVector(direction, distance);
+
+  if (
+    document.body.classList.contains("task-docked") &&
+    document.body.classList.contains("session-active")
+  ) {
+    // The mobile task sheet occupies the lower part of the viewer. Aim slightly
+    // below the anatomical center so the structure itself appears higher in the
+    // unobstructed portion of the screen.
+    controls.target.y -= size.y * 0.18;
+  }
+
   controls.update();
 }
 
