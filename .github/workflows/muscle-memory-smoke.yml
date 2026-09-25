@@ -214,7 +214,8 @@ jobs:
             await page.click('[data-learning-mode="practical"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'practical');
-            assert.match(await page.locator('#question-label').innerText(), /Практикум · 1\/5/i);
+            assert.match(await page.locator('#question-label').innerText(), /Практикум/i);
+            assert.match(await page.locator('#session-progress').innerText(), /1 из 5/i);
             for (let done = 0; done < 5; done += 1) {
               await page.click('#show-answer');
               assert.equal(
