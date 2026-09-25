@@ -574,6 +574,8 @@ function applyLearningRegion() {
   canvas.dataset.learningRegion = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
+  focusShoulderButton.textContent =
+    selectedLearningRegion === "all" ? "К области" : "К региону";
 
   learningSessionMode.disabled = availableTargets.length === 0;
   startLearningSessionButton.disabled = !canStartLearningSession();
@@ -1083,7 +1085,10 @@ function setMode(mode) {
   learningControls.hidden = mode !== "quiz";
   learningSummaryEl.hidden = mode !== "quiz";
   sessionProgressEl.hidden = mode !== "quiz" || !learningSession;
-  scoreEl.hidden = mode !== "quiz";
+  scoreEl.hidden = true;
+  document.body.classList.toggle("explore-mode", mode === "explore");
+  if (mode !== "quiz") document.body.classList.remove("session-active");
+  syncQuestionCardPlacement();
 
   if (mode === "quiz") {
     if (learningSession && !sessionSummaryShown) {
@@ -1373,6 +1378,7 @@ function applyInitialQueryState() {
   initialQueryApplied = true;
   const params = new URLSearchParams(window.location.search);
 
+  if (debugPanel) debugPanel.hidden = params.get("debug") !== "1";
   if (params.get("mode") === "explore") setMode("explore");
   if (params.get("region") === "shoulder") setShoulderView();
 
@@ -2010,7 +2016,7 @@ learningSessionMode.addEventListener("change", () => {
 
 startLearningSessionButton.addEventListener("click", startLearningSession);
 
-focusShoulderButton.addEventListener("click", setShoulderView);
+focusShoulderButton.addEventListener("click", focusLearningRegion);
 focusFullButton.addEventListener("click", () => setFullBodyView());
 focusSelectedButton.addEventListener("click", focusSelectedStructures);
 viewPreset.addEventListener("change", () => setViewPreset(viewPreset.value));
@@ -2053,6 +2059,9 @@ showAllButton.addEventListener("click", () => {
     highlightStructures([selectedExploreSid], "selected");
   }
 });
+
+mobileTaskMedia.addEventListener?.("change", syncQuestionCardPlacement);
+window.addEventListener("resize", syncQuestionCardPlacement);
 
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointermove", onPointerMove);
