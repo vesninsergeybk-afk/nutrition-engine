@@ -63,10 +63,27 @@ const assert = require('node:assert/strict');
     { timeout: 15000 }
   );
   assert.ok((await page.locator('.search-result').count()) > 0);
-  const zDeltoidLabel = await page.locator('.search-result').first().innerText();
+  const zDeltoidResult = page.locator('.search-result').first();
+  const zDeltoidLabel = await zDeltoidResult.innerText();
   assert.match(zDeltoidLabel, /Дельтовидн/i);
   assert.match(zDeltoidLabel, /\((справа|слева)\)$/i);
   assert.doesNotMatch(zDeltoidLabel, /deltoid/i);
+
+  await zDeltoidResult.click();
+  assert.match(await page.locator('#question').innerText(), /Дельтовидн/i);
+
+  // Regression from the specimen audit: changing the virtual specimen must
+  // clear the previous selected-muscle card/search instead of showing, e.g.,
+  // "Шейно-воротниковая зона" together with a stale deltoid selection.
+  await page.selectOption('#learning-region', 'neck-collar');
+  assert.equal(await page.locator('#question-label').innerText(), 'Атлас');
+  assert.equal(await page.locator('#question').innerText(), 'Выберите структуру');
+  assert.equal(await page.locator('#structure-search').inputValue(), '');
+  assert.equal(await page.locator('#deeper-structures').isHidden(), true);
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-specimen-clip'),
+    'logical-box'
+  );
 
   // Z-Anatomy has the complete five-target abdominal wall needed for
   // the curated depth profile.

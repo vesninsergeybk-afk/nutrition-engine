@@ -82,6 +82,10 @@ const assert = require('node:assert/strict');
   );
   assert.equal(await page.locator('#region-isolation').isChecked(), true);
   assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-specimen-clip'),
+    'logical-box'
+  );
   assert.equal(await page.locator('#bone-mode').isDisabled(), false);
   assert.equal(await page.locator('#bone-mode').inputValue(), 'off');
   assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
