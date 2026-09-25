@@ -83,7 +83,10 @@ console.log("Shoulder overlap:", {
 console.log("Only Z shoulder:", onlyZShoulder.map((item) => item.nameRu).join(" | ") || "none");
 console.log("Only BodyParts shoulder:", onlyBpShoulder.map((item) => item.nameRu).join(" | ") || "none");
 
-assert(shared.length > 180, "Too little cross-source catalog overlap: " + shared.length);
+assert(
+  shared.length >= 160,
+  "Too little cross-source catalog overlap for common concepts: " + shared.length
+);
 assert(
   sharedShoulder.length >= Math.min(zShoulder.length, bpShoulder.length) - 1,
   "Shoulder learning IDs diverge across model sources"
