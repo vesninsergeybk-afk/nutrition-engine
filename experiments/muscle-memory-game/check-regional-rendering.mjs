@@ -49,8 +49,13 @@ assert(
 );
 assert(
   app.includes("function applyStudyLayerPreset") &&
-    app.includes("function peelVisibleMuscleLayer"),
+    app.includes("function peelAnatomicalMuscleLayer") &&
+    app.includes("function nextRegionalAnatomicalLayer"),
   "Layered anatomy study controls are incomplete"
+);
+assert(
+  !app.includes("function peelVisibleMuscleLayer"),
+  "Camera-visible peeling must not return as the anatomical layer engine"
 );
 assert(
   app.includes("data-bone-training-hidden") ||
