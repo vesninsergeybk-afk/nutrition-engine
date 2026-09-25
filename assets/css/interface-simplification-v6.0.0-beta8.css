@@ -581,6 +581,7 @@ html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/nutrients"][data-ivory-ration="empty"] #workspaceNutrientsPanel .workspace-analysis-quality,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/nutrients"][data-ivory-ration="empty"] #workspaceNutrientsPanel .workspace-analysis-actions,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-analysis-summary,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiDashboardHF2,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-guardrails,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-analysis-toolbar,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-analysis-list,
