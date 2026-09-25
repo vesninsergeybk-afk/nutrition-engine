@@ -40,6 +40,15 @@ assert(
   "Deeper-here can cross from one body side to the contralateral side"
 );
 assert(
+  app.includes("function targetDisplayNameForSid") &&
+    app.includes("name.textContent = targetDisplayNameForSid(target, sid);"),
+  "Deeper-here labels can describe one mesh while isolating the whole muscle"
+);
+assert(
+  /function isolateDeeperMuscle[\s\S]*?anatomyMesh\.material\.opacity = 1/.test(app),
+  "An isolated deeper muscle can remain ghosted by the previous display preset"
+);
+assert(
   app.includes("const keepIsolation =") &&
     app.includes("isolated = keepIsolation;"),
   "Re-clicking an isolated muscle can desynchronize the isolate button from the scene"
