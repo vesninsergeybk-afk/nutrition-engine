@@ -17,6 +17,8 @@ assert(
   "Dedicated deeper-muscle panel is missing"
 );
 for (const symbol of [
+  "targetSideStructureIds",
+  "deeperMuscleKey",
   "deeperMuscleIdsFromHits",
   "renderDeeperStructures",
   "isolateDeeperMuscle",
@@ -38,10 +40,16 @@ assert(
   "Re-clicking an isolated muscle can desynchronize the isolate button from the scene"
 );
 assert(
-  app.includes("setVisibleStructures([sid])") &&
+  app.includes("setVisibleStructures(muscleIds)") &&
+  app.includes("highlightStructures(muscleIds") &&
   app.includes("setAllStudyStructuresVisible(false)") &&
   app.includes("skeletonMesh.visible = false"),
-  "Clicking a deeper muscle does not isolate it from the other anatomy layers"
+  "Clicking a deeper muscle does not isolate the complete unilateral muscle"
+);
+assert(
+  app.includes("seenTargets.has(candidateKey)") &&
+  app.includes("seenTargets.add(candidateKey)"),
+  "Deeper-muscle links are not deduplicated by muscle and side"
 );
 assert(
   app.includes("applyBoneDisplayMode();") &&
@@ -61,3 +69,9 @@ assert(
 console.log("Deeper-muscle panel: visible, clickable, isolating");
 console.log("Non-muscle leakage guard: ok");
 console.log("Region restore after deep focus: ok");
+
+assert(
+  app.includes("canvas.dataset.deeperFocusComponentCount"),
+  "Deep focus does not expose component-count diagnostics for browser verification"
+);
+console.log("Deep links: whole unilateral muscle, not one mesh subdivision");
