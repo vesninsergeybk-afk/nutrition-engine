@@ -5,6 +5,7 @@ import {
   confusionPairs,
   filterCatalogByRegion,
   learningHistory,
+  learningConceptSourceName,
   learningSummary,
   loadLearningStore,
   migrateLearningStoreAliases,
