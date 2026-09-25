@@ -1432,6 +1432,18 @@ function completeCurrentSessionItem(result) {
   }
 
   completeSessionItem(learningSession, result);
+  const progress = sessionProgress(learningSession);
+
+  // A finished session belongs in history as soon as the final answer is fixed.
+  // Opening the summary is optional UI; leaving before pressing “Итоги” must not
+  // discard the completed session from progress history.
+  if (progress.finished) {
+    recordSessionHistory(learningStore, learningSession, {
+      regionId: selectedLearningRegion,
+      modelSource: currentModelSource,
+    });
+  }
+
   updateTodayAction();
   renderProgressPanel();
   renderSessionProgress();
@@ -1439,8 +1451,6 @@ function completeCurrentSessionItem(result) {
   answerButton.hidden = true;
   quizActions.hidden = false;
   quizActions.classList.add("next-only");
-
-  const progress = sessionProgress(learningSession);
   nextButton.disabled = false;
   nextButton.textContent = progress.finished ? "Итоги" : "Следующая";
 }
