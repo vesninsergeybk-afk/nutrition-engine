@@ -52,3 +52,15 @@ assert(
 
 console.log("Regional isolation: muscles default + opt-in regional bones ok");
 console.log("Depth exploration: regional anatomical peeling + constrained click stack ok");
+
+
+assert(
+  app.includes('activeDepthAvailability?.reason === "source-incomplete"') &&
+    app.includes("Послойный режим отключён"),
+  "Incomplete anatomy-source coverage is not explained to the learner"
+);
+assert(
+  app.includes("layerUnavailable") &&
+    app.includes("peelSurfaceLayerButton.title"),
+  "Unsupported anatomical depth can still look like an available layer action"
+);

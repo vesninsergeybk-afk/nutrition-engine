@@ -1517,16 +1517,22 @@ function updateLayerButtons() {
       ? nextRegionalAnatomicalLayer()
       : null;
 
+  const layerUnavailable =
+    Boolean(nextLayer) && nextLayer.supported === false;
+
   peelSurfaceLayerButton.disabled =
     appMode !== "explore" ||
     !anatomyMesh ||
     !regionIsolationActive() ||
-    !structureVisibility.some(Boolean);
+    !structureVisibility.some(Boolean) ||
+    layerUnavailable;
 
   peelSurfaceLayerButton.textContent =
     nextLayer?.supported && nextLayer?.ids?.length
       ? "Снять: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
       : "Снять анатомический слой";
+  peelSurfaceLayerButton.title =
+    layerUnavailable ? nextLayer.reason || "Послойность пока недоступна." : "";
   undoHideButton.disabled =
     hiddenStack.length === 0 && exploreHiddenActions.length === 0;
 
@@ -2155,9 +2161,19 @@ function applyLearningRegion() {
   currentTarget = null;
   syncLearningSessionSizes();
 
+  const activeSpecimen = specimenById(selectedLearningRegion);
+  const activeDepthAvailability = activeSpecimen?.depthProfile
+    ? specimenDepthAvailability(learningCatalog, selectedLearningRegion)
+    : null;
+  const sourceCoverageNote =
+    activeDepthAvailability?.reason === "source-incomplete"
+      ? ` В этой 3D-базе препарат неполон для достоверной послойности: ${activeDepthAvailability.actual} из ${activeDepthAvailability.required} обязательных мышечных целей. Послойный режим отключён; для полного препарата переключите источник анатомии.`
+      : "";
+
   targetStatusEl.textContent =
     `Учебный каталог: ${learningCatalog.length} мышечных целей. ` +
-    `Сейчас: ${regionNameRu(selectedLearningRegion)} — ${availableTargets.length} целей.`;
+    `Сейчас: ${regionNameRu(selectedLearningRegion)} — ${availableTargets.length} целей.` +
+    sourceCoverageNote;
 
   canvas.dataset.learningRegion = selectedLearningRegion;
   canvas.dataset.learningScope = selectedLearningRegion;
