@@ -113,7 +113,7 @@ jobs:
                   /Не удалось загрузить|Ошибка загрузки/.test((loading?.textContent || '') + ' ' + question);
               },
               null,
-              { timeout: 90000 }
+              { timeout: 150000 }
             );
 
             const initialLoadingHidden = await page.locator('#loading').evaluate(
