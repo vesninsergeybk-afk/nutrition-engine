@@ -263,7 +263,9 @@ jobs:
             assert.equal(await page.locator('#today-learning-session').isVisible(), true);
             assert.match(await page.locator('#today-learning-session').innerText(), /Повторить сегодня/i);
             assert.equal(await page.locator('#learning-progress').isVisible(), true);
-            await page.locator('#learning-progress > summary').click();
+            if (!(await page.locator('#learning-progress').evaluate(el => el.open))) {
+              await page.locator('#learning-progress > summary').click();
+            }
             assert.match(await page.locator('#learning-progress-content').innerText(), /Найти:|Назвать:/i);
             assert.ok((await page.locator('.progress-confusion').count()) > 0);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-progress.png', fullPage: true });
