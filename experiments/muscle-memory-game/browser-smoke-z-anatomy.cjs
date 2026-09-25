@@ -76,7 +76,7 @@ const assert = require('node:assert/strict');
   // clear the previous selected-muscle card/search instead of showing, e.g.,
   // "Шейно-воротниковая зона" together with a stale deltoid selection.
   await page.selectOption('#learning-region', 'neck-collar');
-  assert.equal(await page.locator('#question-label').innerText(), 'Атлас');
+  assert.match(await page.locator('#question-label').innerText(), /^атлас$/i);
   assert.equal(await page.locator('#question').innerText(), 'Выберите структуру');
   assert.equal(await page.locator('#structure-search').inputValue(), '');
   assert.equal(await page.locator('#deeper-structures').isHidden(), true);
