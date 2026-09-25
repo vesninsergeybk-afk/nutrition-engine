@@ -9,6 +9,7 @@ import {
   filterCatalogForSpecimen,
   specimenSceneTargets,
   specimenDepthAvailability,
+  specimenDepthProfileId,
   specimenVerticalWindow,
 } from "./virtual-specimens.js";
 
