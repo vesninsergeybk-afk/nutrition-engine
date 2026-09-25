@@ -92,7 +92,9 @@ const diagnosticsEl = document.querySelector("#diagnostics");
 const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
 const learningControls = document.querySelector("#learning-controls");
+const scopeControls = document.querySelector("#scope-controls");
 const learningRegion = document.querySelector("#learning-region");
+const regionIsolation = document.querySelector("#region-isolation");
 const learningSummaryEl = document.querySelector("#learning-summary");
 const todayLearningSessionButton = document.querySelector("#today-learning-session");
 const learningProgressEl = document.querySelector("#learning-progress");
@@ -127,6 +129,9 @@ const referenceLayerInputs = [
 const debugPanel = document.querySelector("#debug-panel");
 const viewerSettings = document.querySelector(".viewer-settings");
 const modelSource = document.querySelector("#model-source");
+const layerPresetField = document.querySelector("#layer-preset-field");
+const layerPreset = document.querySelector("#layer-preset");
+const layerPresetNote = document.querySelector("#layer-preset-note");
 const focusShoulderButton = document.querySelector("#focus-shoulder");
 const focusFullButton = document.querySelector("#focus-full");
 const focusSelectedButton = document.querySelector("#focus-selected");
@@ -248,6 +253,8 @@ let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
 let connectiveDisplayMode = "anatomical";
 let skinDisplayMode = "off";
+let muscleDisplayMode = "anatomical";
+let currentLayerPreset = "muscles";
 let currentModelSource = "z-anatomy";
 let initialQueryApplied = false;
 
@@ -759,6 +766,228 @@ function focusSelectedStructures(padding = 1.65, direction = null) {
   if (!box.isEmpty()) focusBox(box, padding, direction || currentViewDirection());
 }
 
+function regionIsolationActive() {
+  return Boolean(
+    regionIsolation?.checked &&
+    selectedLearningRegion !== "all" &&
+    availableTargets.length
+  );
+}
+
+function activeRegionStructureIds() {
+  return [
+    ...new Set(
+      availableTargets.flatMap((target) => target.sids || [])
+    ),
+  ];
+}
+
+function activeRegionConceptKeys() {
+  const keys = new Set();
+  for (const target of availableTargets) {
+    for (const sourceName of target.sourceNames || []) {
+      keys.add(learningConceptSourceName(sourceName));
+    }
+  }
+  return keys;
+}
+
+function studyStructureMatchesActiveRegion(entry) {
+  if (!regionIsolationActive()) return true;
+  if (!entry?.nearestMuscleSourceName) return false;
+  return activeRegionConceptKeys().has(
+    learningConceptSourceName(entry.nearestMuscleSourceName)
+  );
+}
+
+function writeVisibleStructures(ids = null) {
+  if (!anatomyMesh) return;
+
+  const attr = anatomyMesh.geometry.getAttribute("structureVisible");
+  if (!attr) return;
+
+  if (ids === null) {
+    attr.array.fill(1);
+    structureVisibility = structureNames.map(() => true);
+  } else {
+    attr.array.fill(0);
+    structureVisibility = structureNames.map(() => false);
+    for (const sid of ids) {
+      const range = structureRanges[sid];
+      if (!range) continue;
+      attr.array.fill(1, range.start, range.start + range.count);
+      structureVisibility[sid] = true;
+    }
+  }
+
+  attr.needsUpdate = true;
+}
+
+function applyRegionMuscleVisibility() {
+  writeVisibleStructures(
+    regionIsolationActive() ? activeRegionStructureIds() : null
+  );
+  isolated = false;
+  canvas.dataset.regionIsolation = regionIsolationActive() ? "true" : "false";
+  canvas.dataset.regionVisibleMuscles = String(
+    structureVisibility.filter(Boolean).length
+  );
+}
+
+function applyRegionStudyVisibility() {
+  for (const entry of studyStructures) {
+    setStudyStructureVisible(
+      entry.id,
+      studyStructureMatchesActiveRegion(entry)
+    );
+  }
+}
+
+function applyMuscleDisplayMode() {
+  if (!anatomyMesh) return;
+
+  const material = anatomyMesh.material;
+  anatomyMesh.visible = muscleDisplayMode !== "off";
+
+  if (muscleDisplayMode === "ghost") {
+    material.transparent = true;
+    material.opacity = 0.2;
+    material.depthWrite = false;
+  } else {
+    material.transparent = false;
+    material.opacity = 1;
+    material.depthWrite = true;
+  }
+
+  material.depthTest = true;
+  material.needsUpdate = true;
+  canvas.dataset.muscleMode = muscleDisplayMode;
+}
+
+function setConnectiveLayerSelection(keys) {
+  const enabled = new Set(keys);
+  for (const input of connectiveLayerInputs) {
+    input.checked = enabled.has(input.dataset.connectiveLayer);
+  }
+}
+
+function applyStudyLayerPreset(preset = "muscles") {
+  currentLayerPreset = preset;
+  if (layerPreset) layerPreset.value = preset;
+
+  muscleDisplayMode = "anatomical";
+  skinDisplayMode = "off";
+  connectiveDisplayMode = "off";
+  setConnectiveLayerSelection([]);
+  boneDisplayMode = "off";
+  boneMode.value = "off";
+
+  if (preset === "skin") {
+    muscleDisplayMode = "ghost";
+    skinDisplayMode = "anatomical";
+  } else if (preset === "subcutaneous") {
+    muscleDisplayMode = "ghost";
+    connectiveDisplayMode = "anatomical";
+    setConnectiveLayerSelection(["subcutaneous"]);
+  } else if (preset === "fascia") {
+    muscleDisplayMode = "ghost";
+    connectiveDisplayMode = "anatomical";
+    setConnectiveLayerSelection(["fascia"]);
+  } else if (preset === "attachments") {
+    muscleDisplayMode = "ghost";
+    connectiveDisplayMode = "anatomical";
+    setConnectiveLayerSelection(["tendon", "ligament", "joint", "cartilage"]);
+  } else if (preset === "all-tissues") {
+    muscleDisplayMode = "anatomical";
+    skinDisplayMode = "ghost";
+    connectiveDisplayMode = "ghost";
+    setConnectiveLayerSelection([
+      "subcutaneous",
+      "fascia",
+      "tendon",
+      "ligament",
+      "joint",
+      "cartilage",
+    ]);
+  }
+
+  skinMode.value = skinDisplayMode;
+  connectiveMode.value = connectiveDisplayMode;
+
+  applyRegionStudyVisibility();
+  applyMuscleDisplayMode();
+  applyBoneDisplayMode();
+  applyConnectiveDisplayMode();
+  applySkinDisplayMode();
+
+  canvas.dataset.layerPreset = preset;
+}
+
+function syncLayerPresetAvailability() {
+  const available = currentModelSource === "bodyparts4";
+  layerPresetField.hidden = !available;
+  layerPresetNote.hidden = !available;
+  layerPreset.disabled = !available;
+  if (!available) {
+    currentLayerPreset = "muscles";
+    canvas.dataset.layerPreset = "muscles";
+  }
+}
+
+function resetRegionSupportLayers() {
+  currentLayerPreset = "muscles";
+  if (layerPreset) layerPreset.value = "muscles";
+  muscleDisplayMode = "anatomical";
+  skinDisplayMode = "off";
+  connectiveDisplayMode = "off";
+  boneDisplayMode = "off";
+  if (skinMode) skinMode.value = "off";
+  if (connectiveMode) connectiveMode.value = "off";
+  if (boneMode) boneMode.value = "off";
+  setConnectiveLayerSelection([]);
+  for (const input of referenceLayerInputs) input.checked = false;
+}
+
+function applyRegionScene({ resetLayers = false, focus = false } = {}) {
+  if (resetLayers && regionIsolationActive()) resetRegionSupportLayers();
+
+  if (anatomyMesh) anatomyMesh.visible = true;
+  applyRegionMuscleVisibility();
+  applyRegionStudyVisibility();
+  applyMuscleDisplayMode();
+
+  const regional = regionIsolationActive();
+  if (skeletonMesh) {
+    if (regional) {
+      skeletonMesh.visible = false;
+      boneMode.disabled = true;
+      boneOpacity.disabled = true;
+      boneOpacityField.hidden = true;
+      canvas.dataset.boneMode = "regional-hidden";
+    } else {
+      boneMode.disabled = false;
+      applyBoneDisplayMode();
+    }
+  }
+
+  if (regional) {
+    for (const mesh of referenceMeshes.values()) mesh.visible = false;
+    setReferenceLayerAvailability(false);
+    canvas.dataset.referenceTrainingHidden = "false";
+  } else {
+    setReferenceLayerAvailability(currentModelSource === "z-anatomy");
+    restoreReferenceLayerVisibility();
+  }
+
+  applyConnectiveDisplayMode();
+  applySkinDisplayMode();
+
+  if (focus) {
+    if (regional) focusLearningRegion();
+    else setFullBodyView();
+  }
+}
+
 function focusLearningRegion() {
   if (!availableTargets.length) {
     setFullBodyView();
@@ -891,48 +1120,29 @@ function setStructureVisible(sid, visible) {
 }
 
 function setVisibleStructures(ids = null) {
-  if (!anatomyMesh) return;
-
-  const attr = anatomyMesh.geometry.getAttribute("structureVisible");
-  if (!attr) return;
-
-  if (ids === null) {
-    attr.array.fill(1);
-    structureVisibility = structureNames.map(() => true);
-    isolated = false;
-  } else {
-    attr.array.fill(0);
-    structureVisibility = structureNames.map(() => false);
-
-    for (const sid of ids) {
-      const range = structureRanges[sid];
-      if (!range) continue;
-      attr.array.fill(1, range.start, range.start + range.count);
-      structureVisibility[sid] = true;
-    }
-    isolated = true;
-  }
-
-  attr.needsUpdate = true;
+  writeVisibleStructures(ids);
+  isolated = ids !== null;
   updateLayerButtons();
 }
 
 function showAllStructures() {
-  setVisibleStructures(null);
+  applyRegionMuscleVisibility();
   hiddenStack.length = 0;
   updateLayerButtons();
 }
 
 function restoreExploreContext() {
   if (anatomyMesh) anatomyMesh.visible = true;
-  setVisibleStructures(null);
+  applyRegionMuscleVisibility();
   setAllStudyStructuresVisible(true);
+  applyRegionStudyVisibility();
   hiddenStack.length = 0;
   exploreHiddenActions.length = 0;
   isolated = false;
+  applyMuscleDisplayMode();
   applyConnectiveDisplayMode();
   applySkinDisplayMode();
-  restoreReferenceLayerVisibility();
+  if (!regionIsolationActive()) restoreReferenceLayerVisibility();
   updateLayerButtons();
 }
 
@@ -1474,6 +1684,7 @@ function applyLearningRegion() {
   updateLearningSummary();
   updateTodayAction();
   renderProgressPanel();
+  applyRegionScene({ resetLayers: true });
 
   if (!availableTargets.length) {
     resetLearningSessionUi("В этом учебном блоке нет целей. Выберите другой блок.");
@@ -2319,6 +2530,7 @@ function setMode(mode) {
 
   quizActions.hidden = mode !== "quiz";
   exploreControls.hidden = mode !== "explore";
+  scopeControls.hidden = false;
   learningControls.hidden = mode !== "quiz";
   learningSummaryEl.hidden = mode !== "quiz";
   sessionProgressEl.hidden = mode !== "quiz" || !learningSession;
@@ -2382,6 +2594,11 @@ function renderSearchResults(query) {
 
   const matches = [];
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
+    if (
+      regionIsolationActive() &&
+      !activeRegionStructureIds().includes(sid)
+    ) continue;
+
     if (structureSearchText(structureNames[sid]).includes(q)) {
       matches.push({ kind: "muscle", id: sid });
     }
@@ -2390,6 +2607,7 @@ function renderSearchResults(query) {
   if (appMode === "explore" && matches.length < 10) {
     for (const entry of studyStructures) {
       if (matches.length >= 10) break;
+      if (!studyStructureMatchesActiveRegion(entry)) continue;
       if (studyStructureSearchText(entry.sourceName, entry.layerKey).includes(q)) {
         matches.push({ kind: "study", id: entry.id });
       }
@@ -2636,6 +2854,16 @@ function applyBoneDisplayMode() {
     return;
   }
 
+  if (regionIsolationActive()) {
+    skeletonMesh.visible = false;
+    boneOpacity.disabled = true;
+    boneOpacityField.hidden = true;
+    canvas.dataset.boneMode = "regional-hidden";
+    canvas.dataset.boneTransparent = "false";
+    canvas.dataset.boneStencil = "off";
+    return;
+  }
+
   const mode = boneDisplayMode;
   const material = skeletonMesh.material;
 
@@ -2868,6 +3096,10 @@ function resetLoadedModel() {
   canvas.dataset.boneStencil = "";
   canvas.dataset.learningRegion = "";
   canvas.dataset.learningScope = "";
+  canvas.dataset.regionIsolation = "";
+  canvas.dataset.regionVisibleMuscles = "";
+  canvas.dataset.layerPreset = "";
+  canvas.dataset.muscleMode = "";
   canvas.dataset.learningTargetCount = "";
   canvas.dataset.learningCatalogCount = "";
   canvas.dataset.learningSessionMode = "";
@@ -3115,6 +3347,7 @@ function selectedConnectiveLayers() {
 
 function applyConnectiveDisplayMode() {
   if (!connectiveMeshes.size) {
+    syncLayerPresetAvailability();
     connectiveMode.disabled = true;
     connectiveField.hidden = true;
     connectiveLayersField.hidden = true;
@@ -3128,6 +3361,7 @@ function applyConnectiveDisplayMode() {
   layerTrainingNote.hidden = false;
   connectiveMode.disabled = false;
 
+  applyRegionStudyVisibility();
   const mode = connectiveDisplayMode;
   const enabled = selectedConnectiveLayers();
   const visibleLayers = [];
@@ -3174,6 +3408,7 @@ function applySkinDisplayMode() {
   skinField.hidden = false;
   layerTrainingNote.hidden = false;
   skinMode.disabled = false;
+  applyRegionStudyVisibility();
   const mode = skinDisplayMode;
   const material = skinMesh.material;
   const isolatedEntry =
@@ -3210,17 +3445,11 @@ function applySkinDisplayMode() {
 }
 
 function applyTrainingDisplayOverride() {
-  if (skeletonMesh) {
-    const material = skeletonMesh.material;
-    skeletonMesh.visible = true;
-    material.transparent = false;
-    material.opacity = 1;
-    material.depthTest = true;
-    material.depthWrite = true;
-    skeletonMesh.renderOrder = 1;
-    material.needsUpdate = true;
-  }
+  applyRegionMuscleVisibility();
+  muscleDisplayMode = "anatomical";
+  applyMuscleDisplayMode();
 
+  if (skeletonMesh) skeletonMesh.visible = false;
   for (const mesh of connectiveMeshes.values()) mesh.visible = false;
   if (skinMesh) skinMesh.visible = false;
   for (const mesh of referenceMeshes.values()) mesh.visible = false;
@@ -3229,18 +3458,17 @@ function applyTrainingDisplayOverride() {
   canvas.dataset.connectiveTrainingHidden = String(connectiveMeshes.size > 0);
   canvas.dataset.skinTrainingHidden = String(Boolean(skinMesh));
   canvas.dataset.referenceTrainingHidden = String(referenceMeshes.size > 0);
+  canvas.dataset.boneTrainingHidden = String(Boolean(skeletonMesh));
 }
 
 function restoreDisplayAfterTraining() {
-  if (skeletonMesh) applyBoneDisplayMode();
-  applyConnectiveDisplayMode();
-  applySkinDisplayMode();
-  restoreReferenceLayerVisibility();
+  applyRegionScene();
 
   canvas.dataset.trainingDisplay = "false";
   canvas.dataset.connectiveTrainingHidden = "false";
   canvas.dataset.skinTrainingHidden = "false";
   canvas.dataset.referenceTrainingHidden = "false";
+  canvas.dataset.boneTrainingHidden = "false";
 }
 
 function connectiveSubtype(name) {
@@ -3473,6 +3701,7 @@ async function loadZAnatomyModel() {
 
 async function loadBodyParts4Model() {
   setReferenceLayerAvailability(false);
+  syncLayerPresetAvailability();
   const response = await fetch(BODYPARTS_ATLAS_URL);
   if (!response.ok) throw new Error("Не удалось получить каталог BodyParts3D 4.0.");
   const atlas = await response.json();
@@ -3731,6 +3960,7 @@ async function loadSelectedModel(source) {
   resetLoadedModel();
   currentModelSource = requestedSource;
   canvas.dataset.modelSource = requestedSource;
+  syncLayerPresetAvailability();
 
   try {
     if (requestedSource === "bodyparts4") {
@@ -3799,12 +4029,21 @@ modelSource.addEventListener("change", () => {
   void loadSelectedModel(modelSource.value);
 });
 
+layerPreset.addEventListener("change", () => {
+  applyStudyLayerPreset(layerPreset.value);
+});
+
+regionIsolation.addEventListener("change", () => {
+  applyRegionScene({ resetLayers: regionIsolation.checked, focus: true });
+  renderSearchResults(searchInput.value);
+});
+
 learningRegion.addEventListener("change", () => {
   selectedLearningRegion = learningRegion.value;
   applyLearningRegion();
   syncLearningAreaQuery();
-  if (selectedLearningRegion === "all") setFullBodyView();
-  else focusLearningRegion();
+  applyRegionScene({ resetLayers: true, focus: true });
+  renderSearchResults(searchInput.value);
 });
 
 learningSessionMode.addEventListener("change", () => {
@@ -3828,7 +4067,11 @@ exitLearningSessionButton.addEventListener("click", () => {
 });
 
 focusShoulderButton.addEventListener("click", focusLearningRegion);
-focusFullButton.addEventListener("click", () => setFullBodyView());
+focusFullButton.addEventListener("click", () => {
+  regionIsolation.checked = false;
+  applyRegionScene();
+  setFullBodyView();
+});
 focusSelectedButton.addEventListener("click", focusSelectedStructures);
 viewPreset.addEventListener("change", () => setViewPreset(viewPreset.value));
 modeQuizButton.addEventListener("click", () => setMode("quiz"));

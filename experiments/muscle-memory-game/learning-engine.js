@@ -60,6 +60,12 @@ export const LEARNING_SCOPES = Object.freeze([
     regionIds: ["gluteal", "thigh", "leg-foot"],
   },
   {
+    id: "neck",
+    nameRu: "Шея",
+    descriptionRu: "Мышцы шеи и подзатылочной области без мышц лица и лопаточного комплекса.",
+    match: "neck",
+  },
+  {
     id: "neck-collar",
     nameRu: "Шейно-воротниковая зона",
     descriptionRu: "Мышцы шеи, подзатылочной области и лопаточно-шейного перехода.",
@@ -493,8 +499,16 @@ function targetScopeText(target) {
 function matchesNamedScope(target, matchId) {
   const text = targetScopeText(target);
 
+  const neckPattern =
+    /sternocleidomastoid|scalenus|splenius|semispinalis (?:capitis|cervicis|colli)|longissimus (?:capitis|cervicis|colli)|iliocostalis (?:cervicis|colli)|longus (?:capitis|colli)|rectus (?:posterior (?:major|minor)|lateralis|anterior) capitis|obliquus (?:capitis|inferior capitis|superior capitis)|multifidus (?:cervicis|colli)|interspinales cervicis|intertransversarii cervicis|грудино-ключично-сосцевид|лестничн|ременн.*(?:голов|ше)|полуостист.*(?:голов|ше)|длиннейш.*(?:голов|ше)|подвздошно-р[её]берн.*ше|длинн.*мышц.*(?:голов|ше)|прям.*мышц.*голов|кос.*мышц.*голов|многораздельн.*ше|межостист.*ше|межпоперечн.*ше/u;
+
+  if (matchId === "neck") {
+    return neckPattern.test(text);
+  }
+
   if (matchId === "neck-collar") {
-    return /trapezius|levator scapulae|rhomboid|sternocleidomastoid|scalenus|splenius|semispinalis (?:capitis|cervicis|colli)|longissimus (?:capitis|cervicis|colli)|iliocostalis (?:cervicis|colli)|rectus (?:posterior (?:major|minor)|lateralis|anterior) capitis|obliquus (?:capitis|inferior capitis|superior capitis)|multifidus (?:cervicis|colli)|interspinales cervicis|intertransversarii cervicis|трапециевид|поднимающ.*лопат|ромбовид|грудино-ключично-сосцевид|лестничн|ременн.*(?:голов|ше)|полуостист.*(?:голов|ше)|длиннейш.*(?:голов|ше)|подвздошно-р[её]берн.*ше|прям.*мышц.*голов|кос.*мышц.*голов|многораздельн.*ше|межостист.*ше|межпоперечн.*ше/u.test(text);
+    return neckPattern.test(text) ||
+      /trapezius|levator scapulae|rhomboid|трапециевид|поднимающ.*лопат|ромбовид/u.test(text);
   }
 
   if (matchId === "foot") {

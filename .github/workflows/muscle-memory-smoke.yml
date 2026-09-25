@@ -188,6 +188,13 @@ jobs:
               '47'
             );
             assert.match(await page.locator('#learning-summary').innerText(), /Верхняя конечность/);
+            assert.equal(await page.locator('#region-isolation').isChecked(), true);
+            assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
+            assert.ok(
+              Number(await page.locator('#viewer').getAttribute('data-region-visible-muscles')) >=
+              Number(await page.locator('#viewer').getAttribute('data-learning-target-count'))
+            );
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'regional-hidden');
 
             await page.selectOption('#learning-region', 'rotator-cuff');
             assert.equal(
@@ -456,7 +463,18 @@ jobs:
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'off');
 
-            assert.equal(await page.locator('#connective-mode').isDisabled(), false);
+            assert.equal(await page.locator('#layer-preset').isDisabled(), false);
+            await page.selectOption('#layer-preset', 'fascia');
+            assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'fascia');
+            assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
+            assert.equal(await page.locator('#connective-mode').inputValue(), 'anatomical');
+            assert.match(
+              await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
+              /fascia/
+            );
+            await page.selectOption('#layer-preset', 'muscles');
+
+                        assert.equal(await page.locator('#connective-mode').isDisabled(), false);
             assert.equal(await page.locator('#connective-mode').inputValue(), 'anatomical');
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
             assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');

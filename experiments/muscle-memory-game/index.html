@@ -62,6 +62,20 @@
                   <option value="bodyparts4">BodyParts3D</option>
                 </select>
               </label>
+              <label id="layer-preset-field" class="viewer-setting-field" hidden>
+                <span>Послойное изучение</span>
+                <select id="layer-preset" aria-label="Учебный слой">
+                  <option value="muscles" selected>Мышцы</option>
+                  <option value="skin">Кожа и наружные покровы</option>
+                  <option value="subcutaneous">Подкожная клетчатка</option>
+                  <option value="fascia">Фасции</option>
+                  <option value="attachments">Сухожилия и связки</option>
+                  <option value="all-tissues">Мышцы + соединительные ткани</option>
+                </select>
+              </label>
+              <p id="layer-preset-note" class="viewer-setting-note" hidden>
+                Послойные тканевые режимы доступны в BodyParts3D. В выбранном учебном блоке показываются только структуры этой области.
+              </p>
               <label class="viewer-setting-field">
                 <span>Кости</span>
                 <select id="bone-mode" aria-label="Режим костного слоя" disabled>
@@ -125,13 +139,20 @@
 
     <aside class="panel">
       <section class="question-card">
-        <div id="learning-controls" class="learning-controls">
-          <label class="learning-field">
+        <div id="scope-controls" class="scope-controls">
+          <label class="learning-field scope-field">
             <span>Учебный блок</span>
             <select id="learning-region" aria-label="Учебный блок или анатомическая область" disabled>
               <option value="all">Всё тело</option>
             </select>
           </label>
+          <label id="region-isolation-field" class="scope-isolation">
+            <input id="region-isolation" type="checkbox" checked />
+            <span>Только выбранный блок</span>
+          </label>
+        </div>
+
+        <div id="learning-controls" class="learning-controls">
           <div class="learning-mode-field">
             <span>Как тренируемся</span>
             <div class="learning-mode-buttons" role="group" aria-label="Режим учебной сессии">

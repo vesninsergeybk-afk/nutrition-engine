@@ -144,3 +144,26 @@ assert(
   "Atlas search can leave the model stuck in study-structure isolation"
 );
 console.log("Study-layer deduplication and navigation state: ok");
+
+
+assert(
+  html.includes('id="layer-preset"') &&
+    html.includes('value="skin"') &&
+    html.includes('value="subcutaneous"') &&
+    html.includes('value="fascia"') &&
+    html.includes('value="attachments"'),
+  "Layered study presets are incomplete"
+);
+assert(
+  app.includes("function applyStudyLayerPreset") &&
+    app.includes('preset === "skin"') &&
+    app.includes('preset === "subcutaneous"') &&
+    app.includes('preset === "fascia"') &&
+    app.includes('preset === "attachments"'),
+  "Layered study presets are not wired to the renderer"
+);
+assert(
+  app.includes("applyRegionStudyVisibility();") &&
+    app.includes("studyStructureMatchesActiveRegion"),
+  "Study layers ignore the active regional block"
+);

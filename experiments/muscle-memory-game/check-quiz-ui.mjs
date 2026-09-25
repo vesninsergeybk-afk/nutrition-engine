@@ -21,6 +21,7 @@ assert(
 for (const scope of [
   "upper-limb",
   "lower-limb",
+  "neck",
   "neck-collar",
   "foot",
   "erector-spinae",
@@ -33,6 +34,18 @@ for (const scope of [
   );
 }
 
+assert(
+  html.includes('id="scope-controls"') &&
+    html.includes('id="region-isolation"') &&
+    /scope-controls[\s\S]*learning-region/.test(html),
+  "Learning block selector is not a persistent scene control"
+);
+assert(
+  app.includes("function regionIsolationActive()") &&
+    app.includes("applyRegionScene({ resetLayers: true, focus: true })") &&
+    app.includes("applyRegionMuscleVisibility()"),
+  "Learning block does not control real scene isolation"
+);
 assert(
   app.includes("buildSmartChoices(item.target, availableTargets"),
   "Recognition choices are not restricted to the active learning block"
@@ -65,3 +78,15 @@ assert(
 );
 
 console.log("Quiz UI contract: course scopes + active-block choices + adaptive size + deep links");
+
+
+assert(
+  app.includes("if (regionIsolationActive())") &&
+    app.includes('canvas.dataset.boneMode = "regional-hidden"'),
+  "Whole-body bones can leak into an isolated regional scene"
+);
+assert(
+  app.includes("studyStructureMatchesActiveRegion") &&
+    app.includes("applyRegionStudyVisibility"),
+  "Tissue layers are not filtered to the selected learning block"
+);

@@ -192,6 +192,7 @@ for (const required of [
   "shoulder",
   "upper-limb",
   "lower-limb",
+  "neck",
   "neck-collar",
   "foot",
   "erector-spinae",
@@ -246,8 +247,19 @@ assert(
   "Semispinalis leaked into erector-spinae scope"
 );
 
+const neckScope = filterCatalogByRegion(catalog, "neck");
+assert(neckScope.length >= 8, "Neck scope is unexpectedly small");
+assert(
+  !neckScope.some((item) =>
+    /trapezius|rhomboid|levator scapulae|masseter|pterygoid|orbicularis|pharynge|трапециевид|ромбовид|поднимающ.*лопат|жеватель|крыловид|круговая мышца|глот/u.test(
+      [item.nameRu, ...(item.sourceNames || [])].join(" ").toLocaleLowerCase("ru-RU")
+    )
+  ),
+  "Neck scope leaked collar/face/pharyngeal muscles"
+);
+
 const neckCollar = filterCatalogByRegion(catalog, "neck-collar");
-assert(neckCollar.length >= 12, "Neck-collar scope is unexpectedly small");
+assert(neckCollar.length > neckScope.length, "Neck-collar scope must extend the neck scope");
 assert(
   !neckCollar.some((item) =>
     /masseter|pterygoid|orbicularis|pharynge|жеватель|крыловид|круговая мышца|глот/u.test(
@@ -263,6 +275,7 @@ console.log("Learning scopes:", {
   shoulder: shoulderScope.length,
   upperLimb: upperLimb.length,
   lowerLimb: lowerLimb.length,
+  neck: neckScope.length,
   neckCollar: neckCollar.length,
   foot: footScope.length,
   erectorSpinae: erectorScope.length,

@@ -961,3 +961,39 @@ button:disabled {
 .session-active .name-choice:disabled:not(.correct):not(.wrong) {
   opacity: .72;
 }
+
+
+.scope-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.scope-isolation {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 2px;
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.scope-isolation input {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .scope-controls {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .scope-isolation {
+    min-height: 28px;
+  }
+}
