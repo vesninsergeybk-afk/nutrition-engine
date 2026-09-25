@@ -786,3 +786,116 @@ button:disabled {
 .session-active .today-start {
   display: none !important;
 }
+
+
+.learning-progress {
+  margin: -2px 0 14px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.learning-progress > summary {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.learning-progress > summary::-webkit-details-marker {
+  display: none;
+}
+
+.learning-progress-content {
+  display: grid;
+  gap: 14px;
+  padding: 0 0 14px;
+}
+
+.progress-block {
+  display: grid;
+  gap: 7px;
+}
+
+.progress-block h3 {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.progress-line,
+.progress-history-line {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.progress-region-list {
+  display: grid;
+  gap: 5px;
+}
+
+.progress-region-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) 1fr;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(27,27,29,.065);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.progress-region-row:first-child {
+  border-top: 0;
+}
+
+.progress-region-name {
+  font-weight: 650;
+}
+
+.progress-region-stats {
+  color: var(--muted);
+  text-align: right;
+}
+
+.progress-weak-list,
+.progress-confusion-list {
+  display: grid;
+  gap: 6px;
+}
+
+.progress-weak-item {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.progress-weak-item strong {
+  font-weight: 680;
+}
+
+.progress-confusion {
+  width: 100%;
+  min-height: 38px;
+  text-align: left;
+  background: #fff;
+  border-color: var(--line);
+  font-size: 12px;
+}
+
+.session-active .learning-progress {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  .progress-region-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .progress-region-stats {
+    text-align: left;
+  }
+}
