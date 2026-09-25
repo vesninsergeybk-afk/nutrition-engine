@@ -364,6 +364,53 @@ for (const specimen of VIRTUAL_SPECIMENS) {
   }
 }
 
+
+function depthRuleIdForTarget(target, profileId) {
+  for (const sourceName of target?.sourceNames || []) {
+    const info = muscleDepthInfo(
+      profileId,
+      learningConceptSourceName(sourceName)
+    );
+    if (info) return info.ruleId;
+  }
+  return null;
+}
+
+const zAbdomen = filterCatalogForSpecimen(sources.z, "abdomen", "question");
+const zExternal = zAbdomen.find(
+  (target) => depthRuleIdForTarget(target, "abdomen") === "external-oblique"
+);
+const zInternal = zAbdomen.find(
+  (target) => depthRuleIdForTarget(target, "abdomen") === "internal-oblique"
+);
+assert(zExternal, "Z-Anatomy abdomen has no mapped external-oblique target");
+assert(zInternal, "Z-Anatomy abdomen has no mapped internal-oblique target");
+
+const zExternalSides = ["right", "left", "midline"].filter(
+  (side) => zExternal.sidsBySide?.[side]?.length
+);
+const zInternalSides = ["right", "left", "midline"].filter(
+  (side) => zInternal.sidsBySide?.[side]?.length
+);
+console.log(
+  "Z abdomen depth path:",
+  JSON.stringify({
+    external: zExternal.sourceNames,
+    internal: zInternal.sourceNames,
+    externalSides: zExternalSides,
+    internalSides: zInternalSides,
+  })
+);
+assert(
+  zExternalSides.some(
+    (side) =>
+      zInternalSides.includes(side) ||
+      side === "midline" ||
+      zInternalSides.includes("midline")
+  ),
+  "Z-Anatomy external/internal obliques have no side-compatible depth path"
+);
+
 assert(emptyTotal === 0, "At least one virtual specimen is empty in an anatomy source");
 assert(
   semanticMismatchTotal === 0,
