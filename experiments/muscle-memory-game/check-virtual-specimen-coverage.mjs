@@ -107,6 +107,77 @@ const EXPECTED_EXACT_BOTH = Object.freeze({
   "hip-flexors": 4,
 });
 
+const REQUIRED_SHARED_MUSCLES = Object.freeze({
+  shoulder: [
+    /\bdeltoid\b/i,
+    /\bsupraspinatus\b/i,
+    /\binfraspinatus\b/i,
+    /\bsubscapularis\b/i,
+    /\bteres major\b/i,
+    /\bteres minor\b/i,
+    /\blevator scapulae\b/i,
+    /\brhomboid major\b/i,
+    /\brhomboid minor\b/i,
+    /\btrapezius\b/i,
+    /\bserratus anterior\b/i,
+    /\bpectoralis minor\b/i,
+    /\bsubclavius\b/i,
+  ],
+  "rotator-cuff": [
+    /\bsupraspinatus\b/i,
+    /\binfraspinatus\b/i,
+    /\bsubscapularis\b/i,
+    /\bteres minor\b/i,
+  ],
+  "neck-collar": [
+    /\btrapezius\b/i,
+    /\blevator scapulae\b/i,
+    /\brhomboid major\b/i,
+    /\brhomboid minor\b/i,
+    /sternocleidomastoid/i,
+    /scalen/i,
+    /splenius capitis/i,
+    /splenius (?:cervicis|colli)/i,
+  ],
+  "thigh-posterior": [
+    /\bbiceps femoris\b/i,
+    /\bsemitendinosus\b/i,
+    /\bsemimembranosus\b/i,
+  ],
+  quadriceps: [
+    /\brectus femoris\b/i,
+    /\bvastus lateralis\b/i,
+    /\bvastus medialis\b/i,
+    /\bvastus intermedius\b/i,
+  ],
+  "calf-complex": [
+    /\bgastrocnemius\b/i,
+    /\bsoleus\b/i,
+    /\bplantaris\b/i,
+  ],
+});
+
+function assertRequiredMuscles(specimenId, targets, sourceLabel) {
+  const patterns = REQUIRED_SHARED_MUSCLES[specimenId] || [];
+  if (!patterns.length) return;
+
+  const text = targets
+    .flatMap((target) => target.sourceNames || [])
+    .join("\n");
+
+  for (const pattern of patterns) {
+    assert(
+      pattern.test(text),
+      specimenId +
+        ": " +
+        sourceLabel +
+        " is missing required muscle " +
+        String(pattern)
+    );
+  }
+}
+
+
 for (const specimen of VIRTUAL_SPECIMENS) {
   const zQuestion = filterCatalogForSpecimen(sources.z, specimen.id, "question");
   const bpQuestion = filterCatalogForSpecimen(sources.bp, specimen.id, "question");
@@ -167,6 +238,9 @@ for (const specimen of VIRTUAL_SPECIMENS) {
     zScene.length >= zQuestion.length && bpScene.length >= bpQuestion.length,
     specimen.id + ": scene targets cannot be smaller than question targets"
   );
+
+  assertRequiredMuscles(specimen.id, zQuestion, "Z-Anatomy");
+  assertRequiredMuscles(specimen.id, bpQuestion, "BodyParts3D");
 
   const expectedExact = EXPECTED_EXACT_BOTH[specimen.id];
   if (expectedExact != null) {

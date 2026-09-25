@@ -61,6 +61,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-learning-blocks.mjs
           node --check experiments/muscle-memory-game/check-virtual-specimen-coverage.mjs
           node --check experiments/muscle-memory-game/check-specimen-bone-context.mjs
+          node --check experiments/muscle-memory-game/check-muscle-bone-context.mjs
           node --check experiments/muscle-memory-game/check-specimen-clipping.mjs
           node --check experiments/muscle-memory-game/check-regional-performance.mjs
           node --check experiments/muscle-memory-game/check-anatomical-depth.mjs
@@ -127,6 +128,7 @@ jobs:
           node experiments/muscle-memory-game/check-learning-blocks.mjs
           node experiments/muscle-memory-game/check-virtual-specimen-coverage.mjs
           node experiments/muscle-memory-game/check-specimen-bone-context.mjs
+          node experiments/muscle-memory-game/check-muscle-bone-context.mjs
           node experiments/muscle-memory-game/check-specimen-clipping.mjs
           node experiments/muscle-memory-game/check-regional-performance.mjs
           node experiments/muscle-memory-game/check-anatomical-depth.mjs

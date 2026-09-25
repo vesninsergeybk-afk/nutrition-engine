@@ -57,7 +57,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionRegionIds: ["arm"],
       contextPatterns: [/deltoid/i],
-      supportBonePatterns: [/humerus|radius|ulna/i],
+      supportBonePatterns: [/scapula|humerus|radius|ulna/i],
       defaultViews: ["front", "threeQuarter", "back"],
     }
   ),
@@ -167,7 +167,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       supportBonePatterns: [/scapula|clavicle|humerus|rib|thoracic vertebra/i],
       depthProfile: "shoulder",
       minDepthQuestionTargets: 13,
-      defaultViews: ["back", "threeQuarter", "front"],
+      defaultViews: ["threeQuarter", "back", "front"],
       padding: 1.22,
     }
   ),
@@ -179,7 +179,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionPatterns: [/biceps brachii|brachialis|coracobrachialis/i],
       contextPatterns: [/deltoid/i],
-      supportBonePatterns: [/humerus|radius|ulna/i],
+      supportBonePatterns: [/scapula|humerus|radius|ulna/i],
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -191,7 +191,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionPatterns: [/triceps brachii|anconeus/i],
       contextPatterns: [/deltoid/i],
-      supportBonePatterns: [/humerus|radius|ulna|olecranon/i],
+      supportBonePatterns: [/scapula|humerus|radius|ulna|olecranon/i],
       defaultViews: ["back", "threeQuarter"],
     }
   ),

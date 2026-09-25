@@ -277,6 +277,7 @@ const activePointers = new Map();
 let tapBlocked = false;
 let focusedStructureIds = [];
 let boneDisplayMode = "anatomical";
+let boneDisplayModeBeforeMuscleIsolation = null;
 let connectiveDisplayMode = "anatomical";
 let skinDisplayMode = "off";
 let muscleDisplayMode = "anatomical";
@@ -1090,8 +1091,8 @@ function applyStudyLayerPreset(preset = "muscles") {
   connectiveDisplayMode = "off";
   setConnectiveLayerSelection([]);
   boneDisplayMode =
-    preset === "muscles" && !regionIsolationActive()
-      ? "anatomical"
+    preset === "muscles"
+      ? (regionIsolationActive() ? "xray" : "anatomical")
       : "off";
   boneMode.value = boneDisplayMode;
 
@@ -1162,10 +1163,10 @@ function resetRegionSupportLayers() {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  boneDisplayMode = "off";
+  boneDisplayMode = "xray";
   if (skinMode) skinMode.value = "off";
   if (connectiveMode) connectiveMode.value = "off";
-  if (boneMode) boneMode.value = "off";
+  if (boneMode) boneMode.value = "xray";
   setConnectiveLayerSelection([]);
   for (const input of referenceLayerInputs) input.checked = false;
 }
@@ -1733,8 +1734,8 @@ function isolateDeeperMuscle(sid) {
 
   for (const mesh of connectiveMeshes.values()) mesh.visible = false;
   if (skinMesh) skinMesh.visible = false;
-  if (skeletonMesh) skeletonMesh.visible = false;
   for (const mesh of referenceMeshes.values()) mesh.visible = false;
+  showSelectedMuscleBoneContext(muscleIds);
 
   highlightStructures(muscleIds, "selected");
   isolated = true;
@@ -1870,6 +1871,12 @@ function showAllStructures() {
 
 function restoreExploreContext() {
   clearDeeperStructures();
+  if (boneDisplayModeBeforeMuscleIsolation != null) {
+    boneDisplayMode = boneDisplayModeBeforeMuscleIsolation;
+    boneMode.value = boneDisplayMode;
+    boneDisplayModeBeforeMuscleIsolation = null;
+  }
+  canvas.dataset.selectedMuscleVisibleBones = "";
   if (anatomyMesh) anatomyMesh.visible = true;
   applyRegionMuscleVisibility();
   setAllStudyStructuresVisible(true);
@@ -3800,6 +3807,81 @@ function applyRegionBoneVisibility() {
   canvas.dataset.regionVisibleBones = String(visibleCount);
 }
 
+function selectedMuscleBoneContextBox(ids) {
+  const box = unclippedBoxForStructures(ids);
+  if (box.isEmpty()) return box;
+
+  const body = worldBodyBox();
+  const size = box.getSize(new THREE.Vector3());
+  const bodySizeNow = body.getSize(new THREE.Vector3());
+  const expand = new THREE.Vector3(
+    Math.max(size.x * 0.30, bodySizeNow.x * 0.035),
+    Math.max(size.y * 0.24, bodySizeNow.y * 0.025),
+    Math.max(size.z * 0.34, bodySizeNow.z * 0.045)
+  );
+  box.min.sub(expand);
+  box.max.add(expand);
+  return box;
+}
+
+function applySelectedMuscleBoneVisibility(ids) {
+  if (!skeletonMesh || !ids?.length) return 0;
+
+  const context = selectedMuscleBoneContextBox(ids);
+  if (context.isEmpty()) return 0;
+
+  const specimen = specimenById(selectedLearningRegion);
+  const hasNamedBoneMatches =
+    Boolean(specimen) &&
+    boneNames.some((name) => specimenSupportBoneMatches(specimen.id, name));
+
+  let visibleCount = 0;
+  const fallback = [];
+
+  for (let boneId = 0; boneId < boneNames.length; boneId += 1) {
+    const boneBox = boneWorldBox(boneId);
+    const namedMatch =
+      !hasNamedBoneMatches ||
+      specimenSupportBoneMatches(specimen.id, boneNames[boneId]);
+    const visible = namedMatch && context.intersectsBox(boneBox);
+    setBoneVisible(boneId, visible);
+    if (visible) visibleCount += 1;
+
+    if (namedMatch) {
+      const center = boneBox.getCenter(new THREE.Vector3());
+      const targetCenter = context.getCenter(new THREE.Vector3());
+      fallback.push({
+        boneId,
+        distance: center.distanceToSquared(targetCenter),
+      });
+    }
+  }
+
+  if (!visibleCount && fallback.length) {
+    fallback.sort((a, b) => a.distance - b.distance);
+    for (const item of fallback.slice(0, 3)) {
+      setBoneVisible(item.boneId, true);
+      visibleCount += 1;
+    }
+  }
+
+  canvas.dataset.selectedMuscleVisibleBones = String(visibleCount);
+  return visibleCount;
+}
+
+function showSelectedMuscleBoneContext(ids) {
+  if (!skeletonMesh || !ids?.length) return;
+
+  if (boneDisplayModeBeforeMuscleIsolation == null) {
+    boneDisplayModeBeforeMuscleIsolation = boneDisplayMode;
+  }
+
+  boneDisplayMode = "xray";
+  boneMode.value = "xray";
+  applyBoneDisplayMode();
+  applySelectedMuscleBoneVisibility(ids);
+}
+
 function applyBoneDisplayMode() {
   if (!skeletonMesh) {
     boneOpacityField.hidden = true;
@@ -3964,6 +4046,7 @@ function resetLoadedModel() {
 
   anatomyMesh = null;
   skeletonMesh = null;
+  boneDisplayModeBeforeMuscleIsolation = null;
   boneNames = [];
   boneRanges = [];
   boneVisibility = [];
@@ -4009,7 +4092,7 @@ function resetLoadedModel() {
   connectiveDisplayMode = "off";
   boneDisplayMode =
     regionIsolation?.checked && selectedLearningRegion !== "all"
-      ? "off"
+      ? "xray"
       : "anatomical";
   layerPreset.value = "muscles";
   skinMode.value = "off";
@@ -5219,7 +5302,11 @@ isolateButton.addEventListener("click", () => {
       highlightStructures([sid], "selected");
     }
   } else {
-    setVisibleStructures([selectedExploreSid]);
+    const target = learningTargetBySid.get(selectedExploreSid) || null;
+    const muscleIds = targetSideStructureIds(target, selectedExploreSid);
+    setVisibleStructures(muscleIds);
+    focusedStructureIds = [...muscleIds];
+    showSelectedMuscleBoneContext(muscleIds);
     isolated = true;
     focusSelectedStructures();
     updateLayerButtons();
