@@ -123,6 +123,7 @@ const learningControls = document.querySelector("#learning-controls");
 const scopeControls = document.querySelector("#scope-controls");
 const learningRegion = document.querySelector("#learning-region");
 const regionIsolation = document.querySelector("#region-isolation");
+const regionIsolationField = document.querySelector("#region-isolation-field");
 const learningSummaryEl = document.querySelector("#learning-summary");
 const sourceCoverageNoteEl = document.querySelector("#source-coverage-note");
 const todayLearningSessionButton = document.querySelector("#today-learning-session");
@@ -2612,6 +2613,7 @@ function applyLearningRegion() {
   canvas.dataset.learningScope = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
+  regionIsolationField.hidden = selectedLearningRegion === "all";
   focusShoulderButton.textContent = "К блоку";
   focusShoulderButton.hidden = selectedLearningRegion === "all";
 

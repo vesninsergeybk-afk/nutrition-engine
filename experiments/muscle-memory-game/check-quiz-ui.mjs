@@ -106,3 +106,8 @@ assert(
     app.includes('"Показать все структуры"'),
   "Restore-scene action does not distinguish regional block from whole-atlas context"
 );
+
+assert(
+  app.includes('regionIsolationField.hidden = selectedLearningRegion === "all"'),
+  "Irrelevant region-isolation control remains visible for the whole-body scope"
+);
