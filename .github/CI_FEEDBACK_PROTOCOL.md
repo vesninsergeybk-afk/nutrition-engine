@@ -22,10 +22,11 @@ Ready PRs run the canonical release-candidate boundary:
 - full core and safety suite;
 - Chromium, Firefox and WebKit functional browser contract;
 - empty-state UI audit and filled real user journey in Chromium;
-- WCAG audit in Chromium.
+- WCAG audit in Chromium and Firefox.
 
-Firefox repeats the full WCAG matrix after merge to `main` (and in manual
-browser/full runs). WebKit remains an obligatory functional browser contract.
+The WCAG route matrix reuses one browser state per viewport, so cross-browser
+accessibility remains a pre-merge boundary without repeated app bootstraps. WebKit
+remains an obligatory functional browser contract.
 
 ## 3. Main remains the final verification boundary
 
