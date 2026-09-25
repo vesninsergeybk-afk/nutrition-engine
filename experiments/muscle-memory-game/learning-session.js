@@ -239,6 +239,45 @@ function spreadReviewItems(items, rng = Math.random) {
   return ordered;
 }
 
+function practiceRecordForMode(store, target, mode) {
+  const find = skillRecord(store, target.id, "find");
+  const name = skillRecord(store, target.id, "name");
+
+  if (mode === "find") return find;
+  if (mode === "name") return name;
+
+  return {
+    attempts: Math.min(find.attempts, name.attempts),
+    wrong: find.wrong + name.wrong,
+    correct: find.correct + name.correct,
+  };
+}
+
+function balancedPracticeTargets(catalog, store, mode, size, rng = Math.random) {
+  const ranked = (catalog || [])
+    .map((target) => {
+      const record = practiceRecordForMode(store, target, mode);
+      return {
+        target,
+        attempts: Number(record.attempts) || 0,
+        wrong: Number(record.wrong) || 0,
+        tie: rng(),
+      };
+    })
+    .sort(
+      (a, b) =>
+        a.attempts - b.attempts ||
+        b.wrong - a.wrong ||
+        a.tie - b.tie
+    );
+
+  const selected = ranked
+    .slice(0, Math.min(size, ranked.length))
+    .map((entry) => entry.target);
+
+  return spreadSimilarTargets(selected, rng);
+}
+
 export function createLearningSession({
   mode = "find",
   catalog = [],
@@ -266,9 +305,12 @@ export function createLearningSession({
       skillId: entry.skillId,
     }));
   } else {
-    const pool = spreadSimilarTargets(catalog, rng).slice(
-      0,
-      Math.min(safeSize, catalog.length)
+    const pool = balancedPracticeTargets(
+      catalog,
+      store,
+      mode,
+      Math.min(safeSize, catalog.length),
+      rng
     );
 
     if (mode === "practical" || mode === "exam") {

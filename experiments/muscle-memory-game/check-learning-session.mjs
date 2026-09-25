@@ -180,6 +180,25 @@ assert(
   "Today session lost a due find skill"
 );
 
+const coverageStore = {
+  records: {
+    "a::find": { attempts: 5, correct: 5, wrong: 0 },
+    "b::find": { attempts: 4, correct: 4, wrong: 0 },
+    "c::find": { attempts: 3, correct: 3, wrong: 0 },
+  },
+};
+const coverageSession = createLearningSession({
+  mode: "find",
+  catalog,
+  store: coverageStore,
+  size: 3,
+  rng: deterministic,
+});
+assert(
+  coverageSession.items.every((item) => !["a", "b", "c"].includes(item.target.id)),
+  "Ordinary practice did not prioritize untouched targets"
+);
+
 const exam = createLearningSession({
   mode: "exam",
   catalog,
@@ -214,6 +233,7 @@ assert(summary.total === 4 && summary.clean === 4, "Practical summary is wrong")
 assert(sessionProgress(practical).finished, "Practical session did not finish");
 
 console.log("Learning sessions: finite unique targets ok");
+console.log("Coverage-first practice: ok");
 console.log("Confusable target spacing: ok");
 console.log("Smart distractors: ok");
 console.log("Mistake debt retirement: ok");

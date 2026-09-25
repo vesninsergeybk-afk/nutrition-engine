@@ -55,6 +55,12 @@ assert(
   "Deltoid subdivisions/sides were not grouped into one learning target"
 );
 assert(
+  deltoid.sidsBySide?.right?.length >= 3 &&
+    deltoid.sidsBySide?.left?.length >= 3,
+  "Whole-muscle recognition cannot reconstruct complete unilateral deltoid"
+);
+
+assert(
   !catalog.some((item) => /часть дельтовидной мышцы/i.test(item.nameRu)),
   "Deltoid anatomical parts leaked into the base learning target list"
 );
