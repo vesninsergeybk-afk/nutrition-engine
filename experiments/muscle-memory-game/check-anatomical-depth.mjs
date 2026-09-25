@@ -81,6 +81,45 @@ const shoulderCoverage = depthProfileCoverage("shoulder", [
 ]);
 assert(shoulderCoverage.complete, "Shoulder 13/13 depth map is incomplete");
 
-console.log("Regional anatomical depth maps: shoulder/back/abdomen ok");
+assert(regionHasDepthProfile("gluteal"), "Gluteal depth profile is missing");
+assert(regionHasDepthProfile("medial-thigh"), "Medial-thigh depth profile is missing");
+assert(regionHasDepthProfile("posterior-thigh"), "Posterior-thigh depth profile is missing");
+assert(regionHasDepthProfile("posterior-leg"), "Posterior-leg depth profile is missing");
+
+assert(
+  muscleDepthInfo("gluteal", "gluteus maximus")?.rank === 1 &&
+    muscleDepthInfo("gluteal", "gluteus medius")?.rank === 2 &&
+    muscleDepthInfo("gluteal", "gluteus minimus")?.rank === 3,
+  "Gluteal depth order is broken"
+);
+assert(
+  isKnownDeeperRelation("gluteal", "gluteus-maximus", "piriformis") &&
+    isKnownDeeperRelation("gluteal", "gluteus-medius", "gluteus-minimus"),
+  "Gluteal local cover graph is incomplete"
+);
+
+assert(
+  muscleDepthInfo("medial-thigh", "adductor longus")?.rank === 1 &&
+    muscleDepthInfo("medial-thigh", "adductor brevis")?.rank === 2 &&
+    muscleDepthInfo("medial-thigh", "adductor magnus")?.rank === 3,
+  "Medial-thigh adductor layering is broken"
+);
+assert(
+  isKnownDeeperRelation("medial-thigh", "adductor-longus", "adductor-magnus"),
+  "Medial-thigh cover graph must be transitive"
+);
+
+assert(
+  muscleDepthInfo("posterior-leg", "gastrocnemius")?.rank === 1 &&
+    muscleDepthInfo("posterior-leg", "soleus")?.rank === 2 &&
+    muscleDepthInfo("posterior-leg", "tibialis posterior")?.rank === 3,
+  "Posterior-leg layering is broken"
+);
+assert(
+  isKnownDeeperRelation("posterior-leg", "gastrocnemius", "tibialis-posterior"),
+  "Posterior-leg cover graph must be transitive"
+);
+
+console.log("Regional anatomical depth maps: shoulder/back/abdomen/gluteal/thigh/leg ok");
 console.log("Deep-but-exposed muscle preservation: ok");
 console.log("Local cover graph: ok");
