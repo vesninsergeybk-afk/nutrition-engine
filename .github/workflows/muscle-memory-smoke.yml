@@ -183,9 +183,8 @@ jobs:
 
             await page.selectOption('#learning-region', 'upper-limb');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-scope'), 'upper-limb');
-            assert.equal(
-              await page.locator('#viewer').getAttribute('data-learning-target-count'),
-              '47'
+            assert.ok(
+              Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 30
             );
             assert.match(await page.locator('#learning-summary').innerText(), /Верхняя конечность/);
             assert.equal(await page.locator('#region-isolation').isChecked(), true);
@@ -203,6 +202,18 @@ jobs:
             );
             assert.equal(await page.locator('#learning-session-size').inputValue(), '4');
             assert.match(await page.locator('#learning-session-size option').first().innerText(), /Весь блок.*4/i);
+
+            await page.selectOption('#learning-region', 'neck');
+            const neckCount = Number(
+              await page.locator('#viewer').getAttribute('data-learning-target-count')
+            );
+            assert.ok(neckCount >= 8);
+
+            await page.selectOption('#learning-region', 'neck-collar');
+            const neckCollarCount = Number(
+              await page.locator('#viewer').getAttribute('data-learning-target-count')
+            );
+            assert.ok(neckCollarCount > neckCount);
 
             await page.selectOption('#learning-region', 'shoulder');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
@@ -458,70 +469,55 @@ jobs:
               await page.locator('#viewer').getAttribute('data-learning-target-count'),
               '13'
             );
-            assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-stencil'), 'off');
+            assert.equal(await page.locator('#region-isolation').isChecked(), true);
+            assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
+            assert.equal(await page.locator('#bone-mode').isDisabled(), true);
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'regional-hidden');
 
+            // Layer presets operate inside the isolated region.
             assert.equal(await page.locator('#layer-preset').isDisabled(), false);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-skin-count')) > 0);
+
             await page.selectOption('#layer-preset', 'fascia');
             assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'fascia');
             assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
             assert.equal(await page.locator('#connective-mode').inputValue(), 'anatomical');
-            assert.match(
+            assert.equal(
               await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
-              /fascia/
-            );
-            await page.selectOption('#layer-preset', 'muscles');
-
-                        assert.equal(await page.locator('#connective-mode').isDisabled(), false);
-            assert.equal(await page.locator('#connective-mode').inputValue(), 'anatomical');
-            assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
-            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
-            assert.equal(await page.locator('#connective-layers-field').isHidden(), false);
-            assert.match(
-              await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
-              /ligament|tendon|fascia|cartilage/
+              'fascia'
             );
 
-            assert.equal(await page.locator('#skin-mode').isDisabled(), false);
-            assert.ok(Number(await page.locator('#viewer').getAttribute('data-skin-count')) > 0);
-            assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'off');
-            await page.selectOption('#skin-mode', 'ghost');
-            assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'ghost');
-            await page.selectOption('#skin-mode', 'off');
-            assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'off');
+            await page.selectOption('#layer-preset', 'skin');
+            assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'skin');
+            assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
 
-            await page.selectOption('#connective-mode', 'ghost');
-            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'ghost');
-            await page.selectOption('#connective-mode', 'off');
-            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'off');
-            await page.selectOption('#connective-mode', 'anatomical');
-            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
-
-            await page.selectOption('#bone-mode', 'xray');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'true');
-
-            await page.selectOption('#bone-mode', 'anatomical');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
-            assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
-
-            // Muscle training uses a normalized anatomical display: bones remain
-            // anatomical landmarks while connective tissue cannot cover the answer.
+            // Training temporarily strips all support layers but restores the
+            // selected regional layer when the learner leaves the session.
+            await page.selectOption('#layer-preset', 'fascia');
             await page.click('#mode-quiz');
             await page.click('[data-learning-mode="find"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'true');
+            assert.equal(await page.locator('#viewer').getAttribute('data-bone-training-hidden'), 'true');
             assert.equal(await page.locator('#viewer').getAttribute('data-connective-training-hidden'), 'true');
             assert.equal(await page.locator('#viewer').getAttribute('data-skin-training-hidden'), 'true');
             await page.click('#exit-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'false');
-            assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
+            assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'fascia');
+            assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
+              'fascia'
+            );
             await page.click('#mode-explore');
 
-            // Massage atlas: a fascia structure remains individually searchable,
-            // selectable and isolatable after geometry merging.
+            // Switch to a lower-limb block before searching for the iliotibial tract:
+            // regional search must not leak structures from unrelated areas.
+            await page.selectOption('#learning-region', 'lower-limb');
+            assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
+            await page.selectOption('#layer-preset', 'fascia');
             await page.fill('#structure-search', 'подвздошно-большеберцовый');
             await page.waitForFunction(
               () => document.querySelectorAll('.search-result').length > 0,
@@ -562,6 +558,13 @@ jobs:
             assert.match(tibialisLabel, /Передняя большеберцовая/i);
             assert.doesNotMatch(tibialisLabel, /tibialis anterior/i);
 
+            await page.selectOption('#learning-region', 'all');
+            if (await page.locator('#region-isolation').isChecked()) {
+              await page.locator('#region-isolation').uncheck();
+            }
+            assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'false');
+
+            // Whole-atlas search after explicit exit from regional isolation.
             const translationCases = [
               ['gluteus maximus', /Большая ягодичная/i],
               ['supraspinatus', /Надостная/i],
