@@ -61,7 +61,9 @@ console.log("Depth exploration: regional anatomical peeling + constrained click 
 
 assert(
   app.includes('activeDepthAvailability?.reason === "source-incomplete"') &&
-    app.includes("Послойный режим отключён"),
+    app.includes("sourceCoverageNoteEl.hidden = !sourceCoverageIncomplete") &&
+    app.includes("sourceCoverageNoteEl.textContent = sourceCoverageMessage") &&
+    app.includes("Для полного препарата выберите Z-Anatomy"),
   "Incomplete anatomy-source coverage is not explained to the learner"
 );
 assert(
