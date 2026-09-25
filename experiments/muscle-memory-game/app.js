@@ -657,7 +657,7 @@ function discoverTargets() {
       .join("\n");
 
   if (!learningCatalog.length) {
-    questionEl.textContent = "Не удалось построить учебный каталог";
+    questionEl.textContent = "Не удалось подготовить тренировку";
     feedbackEl.textContent =
       "Попробуйте перезагрузить страницу или выбрать другую анатомическую модель в разделе «Отображение».";
   }
