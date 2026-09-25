@@ -478,8 +478,8 @@ function updateLearningSummary() {
   const skillName = skillId === "name" ? "название" : "поиск на модели";
 
   learningSummaryEl.textContent =
-    \`\${regionNameRu(selectedLearningRegion)}: \${summary.muscles} целей · \` +
-    \`\${skillName}: встречались \${summary.touched} · попыток \${summary.attempts} · точность \${accuracy}.\`;
+    `${regionNameRu(selectedLearningRegion)}: ${summary.muscles} целей · ` +
+    `${skillName}: встречались ${summary.touched} · попыток ${summary.attempts} · точность ${accuracy}.`;
 }
 
 function resetLearningSessionUi(message = "Выберите режим и начните сессию.") {
@@ -517,8 +517,8 @@ function applyLearningRegion() {
   sessionDifficulty.clear();
 
   targetStatusEl.textContent =
-    \`Учебный каталог: \${learningCatalog.length} мышц и частей мышц. \` +
-    \`Сейчас: \${regionNameRu(selectedLearningRegion)} — \${availableTargets.length} целей.\`;
+    `Учебный каталог: ${learningCatalog.length} мышц и частей мышц. ` +
+    `Сейчас: ${regionNameRu(selectedLearningRegion)} — ${availableTargets.length} целей.`;
 
   canvas.dataset.learningRegion = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
@@ -544,17 +544,17 @@ function discoverTargets() {
   const counts = regionCounts(learningCatalog);
   const lines = LEARNING_REGIONS
     .filter((region) => region.id !== "all" && (counts[region.id] || 0) > 0)
-    .map((region) => \`\${region.nameRu}: \${counts[region.id]}\`);
+    .map((region) => `${region.nameRu}: ${counts[region.id]}`);
 
   updateDiagnostics(
-    \`Учебных целей после объединения правой и левой сторон: \${learningCatalog.length}. \` +
-    \`Регионы: \${lines.join("; ")}.\`
+    `Учебных целей после объединения правой и левой сторон: ${learningCatalog.length}. ` +
+    `Регионы: ${lines.join("; ")}.`
   );
 
   meshNamesEl.textContent =
     learningCatalog
       .slice(0, 220)
-      .map((target) => \`\${target.nameRu} [\${target.region}] ← \${target.sourceNames.join(" | ")}\`)
+      .map((target) => `${target.nameRu} [${target.region}] ← ${target.sourceNames.join(" | ")}`)
       .join("\n");
 
   if (!learningCatalog.length) {
@@ -570,7 +570,7 @@ function updateDiagnostics(extra = "") {
     : "костные ориентиры ещё не загружены";
 
   diagnosticsEl.textContent =
-    \`Мышечных структур после исключения фасциальных покрытий: \${structureNames.length}. Для рендера они объединены в один mesh; \${skeletonState}.\${extra ? " " + extra : ""}\`;
+    `Мышечных структур после исключения фасциальных покрытий: ${structureNames.length}. Для рендера они объединены в один mesh; ${skeletonState}.${extra ? " " + extra : ""}`;
 }
 
 function recordDifficulty(target, wasCorrect) {
@@ -589,8 +589,8 @@ function renderSessionProgress() {
   const modeName = SESSION_MODES[learningSession.mode]?.nameRu || "Сессия";
   sessionProgressEl.hidden = false;
   sessionProgressEl.textContent =
-    \`\${modeName} · \${regionNameRu(selectedLearningRegion)} · \` +
-    \`\${progress.done}/\${progress.total} выполнено\`;
+    `${modeName} · ${regionNameRu(selectedLearningRegion)} · ` +
+    `${progress.done}/${progress.total} выполнено`;
 
   canvas.dataset.learningSessionMode = learningSession.mode;
   canvas.dataset.learningSessionDone = String(progress.done);
@@ -643,8 +643,8 @@ function prepareSessionItem() {
   const progress = sessionProgress(learningSession);
   const prefix =
     learningSession.mode === "practical"
-      ? \`Практикум · \${progress.current}/\${progress.total}\`
-      : \`\${SESSION_MODES[learningSession.mode]?.nameRu || "Задание"} · \${progress.current}/\${progress.total}\`;
+      ? `Практикум · ${progress.current}/${progress.total}`
+      : `${SESSION_MODES[learningSession.mode]?.nameRu || "Задание"} · ${progress.current}/${progress.total}`;
 
   questionLabelEl.textContent = prefix;
 
@@ -662,7 +662,7 @@ function prepareSessionItem() {
   } else {
     nameChoicesEl.replaceChildren();
     nameChoicesEl.hidden = true;
-    questionEl.textContent = \`Найдите на модели: «\${item.target.nameRu}»\`;
+    questionEl.textContent = `Найдите на модели: «${item.target.nameRu}»`;
     feedbackEl.textContent = "Коснитесь нужной мышцы на модели.";
   }
 }
@@ -725,15 +725,15 @@ function finishLearningSession() {
 
   questionLabelEl.textContent = "Сессия завершена";
   questionEl.textContent =
-    \`\${summary.clean} из \${summary.total} заданий выполнены без ошибок и подсказки\`;
+    `${summary.clean} из ${summary.total} заданий выполнены без ошибок и подсказки`;
   feedbackEl.className = "feedback";
   feedbackEl.textContent =
-    \`Правильно завершено: \${summary.correct}. Показан ответ: \${summary.revealed}. \` +
-    \`Неверных попыток: \${summary.wrongAttempts}.\`;
+    `Правильно завершено: ${summary.correct}. Показан ответ: ${summary.revealed}. ` +
+    `Неверных попыток: ${summary.wrongAttempts}.`;
 
   sessionProgressEl.hidden = false;
   sessionProgressEl.textContent =
-    \`Итог · \${regionNameRu(selectedLearningRegion)} · \${summary.completed}/\${summary.total}\`;
+    `Итог · ${regionNameRu(selectedLearningRegion)} · ${summary.completed}/${summary.total}`;
 
   const hasMistakes =
     mistakeTargets(learningStore, availableTargets).length > 0 ||
@@ -764,7 +764,7 @@ function revealAnswer() {
   }
 
   feedbackEl.className = "feedback correct";
-  feedbackEl.textContent = \`Ответ: «\${currentTarget.nameRu}».\`;
+  feedbackEl.textContent = `Ответ: «${currentTarget.nameRu}».`;
 
   wrong += 1;
   wrongEl.textContent = String(wrong);
@@ -803,7 +803,7 @@ function chooseQuiz(sid) {
     focusedStructureIds = [sid];
     focusSelectedButton.disabled = false;
     feedbackEl.className = "feedback correct";
-    feedbackEl.textContent = \`Верно. Вы выбрали: \${displayStructureName(sid)}.\`;
+    feedbackEl.textContent = `Верно. Вы выбрали: ${displayStructureName(sid)}.`;
     recordDifficulty(currentTarget, true);
     recordLearningAttempt(
       learningStore,
@@ -830,7 +830,7 @@ function chooseQuiz(sid) {
     highlightStructures([sid], "wrong");
     feedbackEl.className = "feedback wrong";
     feedbackEl.textContent =
-      \`Это «\${displayStructureName(sid)}». Можно продолжить поиск или скрыть эту структуру, если цель лежит глубже.\`;
+      `Это «${displayStructureName(sid)}». Можно продолжить поиск или скрыть эту структуру, если цель лежит глубже.`;
     recordDifficulty(currentTarget, false);
     recordLearningAttempt(
       learningStore,
@@ -861,7 +861,7 @@ function chooseNameAnswer(targetId, button) {
     button.classList.add("correct");
     for (const option of nameChoicesEl.querySelectorAll(".name-choice")) option.disabled = true;
     feedbackEl.className = "feedback correct";
-    feedbackEl.textContent = \`Верно: «\${currentTarget.nameRu}».\`;
+    feedbackEl.textContent = `Верно: «${currentTarget.nameRu}».`;
     recordLearningAttempt(
       learningStore,
       currentTarget.id,
@@ -909,7 +909,7 @@ function revealDeeperAfterMistake() {
 
   feedbackEl.className = "feedback";
   feedbackEl.textContent =
-    \`«\${displayStructureName(sid)}» скрыта. Продолжайте искать целевую мышцу глубже.\`;
+    `«${displayStructureName(sid)}» скрыта. Продолжайте искать целевую мышцу глубже.`;
 
   lastWrongSid = null;
   revealDeeperButton.hidden = true;
