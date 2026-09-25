@@ -73,6 +73,14 @@ for(const specimen of VIRTUAL_SPECIMENS){
   }));
   if(!z.length && !bp.length) neither+=1;
 
+  if (specimen.id === "forearm-hand-anterior" || specimen.id === "forearm-hand-posterior") {
+    assert(
+      !z.some((name) => /toe|foot/i.test(name)) &&
+      !bp.some((name) => /toe|foot/i.test(name)),
+      specimen.id + ": foot phalanges leaked into hand bone anchors"
+    );
+  }
+
   if (pelvicAnchorSpecimens.has(specimen.id)) {
     assert(
       bp.some((name) => /hip bone/i.test(name)),
