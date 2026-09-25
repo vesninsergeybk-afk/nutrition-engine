@@ -245,6 +245,8 @@ function emptyStore() {
     version: STORE_VERSION,
     updatedAt: 0,
     records: {},
+    confusions: {},
+    sessionHistory: [],
   };
 }
 
@@ -261,6 +263,13 @@ export function loadLearningStore(storage = globalThis.localStorage) {
       version: STORE_VERSION,
       updatedAt: Number(parsed.updatedAt) || 0,
       records: parsed.records || {},
+      confusions:
+        parsed.confusions && typeof parsed.confusions === "object"
+          ? parsed.confusions
+          : {},
+      sessionHistory: Array.isArray(parsed.sessionHistory)
+        ? parsed.sessionHistory.slice(-60)
+        : [],
     };
   } catch {
     return emptyStore();
