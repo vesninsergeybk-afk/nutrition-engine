@@ -12,9 +12,11 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: muscle-memory-smoke-${{ github.ref }}
-  cancel-in-progress: true
+# Ordinary pushes run the fast deterministic checks only. The expensive
+# Chromium + two-model journey is reserved for explicit checkpoints:
+# workflow_dispatch or a commit message containing [full-smoke].
+# There is intentionally no workflow-level concurrency group: a later fast
+# push must not cancel an already-running checkpoint browser test.
 
 jobs:
   smoke:
@@ -88,6 +90,7 @@ jobs:
           node experiments/muscle-memory-game/check-learning-cross-source.mjs
 
       - name: Install browser
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') }}
         run: |
           cd /tmp
           npm init -y >/dev/null 2>&1
@@ -95,6 +98,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Verify one interface for both anatomy sources
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') }}
         shell: bash
         run: |
           python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
@@ -500,7 +504,7 @@ jobs:
           node /tmp/smoke.cjs
 
       - name: Upload screenshot
-        if: always()
+        if: ${{ always() && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) }}
         uses: actions/upload-artifact@v4
         with:
           name: muscle-memory-bodyparts-smoke
