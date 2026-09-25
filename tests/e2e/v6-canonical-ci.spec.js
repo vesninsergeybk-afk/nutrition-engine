@@ -261,8 +261,29 @@ test('desktop workspace exposes only the canonical settings control', async ({ p
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
   await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
   await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+  await expect(page.locator('#interfaceSettingsPass1')).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#themeSwitcher')).toBeHidden();
   await expect(page.locator('#interfaceSettingsHF2')).toBeHidden();
   await expect(page.locator('#navigationShell [data-navshell-settings-toggle]')).toBeHidden();
+});
+
+test('collapsed settings stay collapsed across workspace route changes', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  const routes = ['profile', 'ration', 'analysis/overview', 'analysis/nutrients', 'analysis/hei', 'correction', 'report'];
+  for (const route of routes) {
+    await page.evaluate(name => window.NavigationShellV1.navigate(name), route);
+    await page.waitForTimeout(180);
+    await expect(page.locator('#interfaceSettingsPass1')).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#themeSwitcher')).toBeHidden();
+  }
+
+  await page.locator('#interfaceSettingsPass1').click();
+  await expect(page.locator('#interfaceSettingsPass1')).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('#themeSwitcher')).toBeVisible();
 });
 
 test('861-899px seam uses the desktop shell without mobile search overlay', async ({ page, loadApp }) => {
