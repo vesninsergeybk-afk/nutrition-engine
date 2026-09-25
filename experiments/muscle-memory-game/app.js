@@ -758,7 +758,7 @@ function applyLearningRegion() {
   updateLearningSummary();
 
   if (!availableTargets.length) {
-    resetLearningSessionUi("В этом регионе нет учебных целей. Выберите другой регион.");
+    resetLearningSessionUi("В этой области нет учебных целей. Выберите другую область тела.");
     return;
   }
 
@@ -930,7 +930,7 @@ function startLearningSession() {
   if (!learningSession.items.length) {
     resetLearningSessionUi(
       selectedSessionMode === "mistakes"
-        ? "В выбранном регионе пока нет сохранённых ошибок. Сначала пройдите обычную сессию."
+        ? "В выбранной области пока нет сохранённых ошибок. Сначала пройдите обычную тренировку."
         : "Для этой сессии не удалось подобрать задания."
     );
     return;
