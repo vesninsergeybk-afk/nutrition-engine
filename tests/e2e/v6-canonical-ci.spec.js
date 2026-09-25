@@ -302,6 +302,60 @@ test('861-899px seam uses the desktop shell without mobile search overlay', asyn
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
 });
 
+test('mobile ration has no painted empty strip between route context and search', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+
+  const gapElements = await page.evaluate(() => {
+    const context = document.getElementById('navigationShellContext');
+    const search = document.getElementById('globalSearchSection');
+    if (!context || !search) return [{ error: 'missing anchors' }];
+    const a = context.getBoundingClientRect();
+    const b = search.getBoundingClientRect();
+    return Array.from(document.querySelectorAll('body *')).map(node => {
+      const rect = node.getBoundingClientRect();
+      const cs = getComputedStyle(node);
+      const painted = cs.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
+        cs.backgroundImage !== 'none' ||
+        parseFloat(cs.borderTopWidth) > 0 ||
+        parseFloat(cs.borderBottomWidth) > 0 ||
+        cs.boxShadow !== 'none';
+      return {
+        node,
+        rect,
+        cs,
+        painted
+      };
+    }).filter(x =>
+      x.painted &&
+      x.cs.display !== 'none' &&
+      x.cs.visibility !== 'hidden' &&
+      x.rect.width > 100 &&
+      x.rect.height > 3 &&
+      x.rect.top >= a.bottom - 1 &&
+      x.rect.bottom <= b.top + 1
+    ).map(x => ({
+      tag: x.node.tagName,
+      id: x.node.id || '',
+      cls: typeof x.node.className === 'string' ? x.node.className : '',
+      top: Math.round(x.rect.top),
+      bottom: Math.round(x.rect.bottom),
+      width: Math.round(x.rect.width),
+      height: Math.round(x.rect.height),
+      background: x.cs.backgroundColor,
+      borderTop: x.cs.borderTop,
+      borderBottom: x.cs.borderBottom,
+      radius: x.cs.borderRadius,
+      shadow: x.cs.boxShadow
+    }));
+  });
+
+  expect(gapElements, JSON.stringify(gapElements, null, 2)).toEqual([]);
+});
+
 test('mobile ration starts with text search and keeps alternatives collapsed', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
