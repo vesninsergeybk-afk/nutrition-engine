@@ -366,7 +366,8 @@ button:disabled {
 }
 
 .session-active .learning-controls,
-.session-active .learning-summary {
+.session-active .learning-summary,
+.session-active #model-source-field {
   display: none;
 }
 
