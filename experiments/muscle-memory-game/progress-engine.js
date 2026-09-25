@@ -82,9 +82,9 @@ function weakReason(record, status) {
   const wrong = Math.max(0, Number(record.wrong) || 0);
   const errorRate = attempts ? wrong / attempts : 0;
 
-  if (record.lapses >= 2) return "повторные затруднения";
-  if (attempts >= 2 && errorRate >= 0.4) return "частые ошибки";
-  return "давно не повторялась";
+  if (record.lapses >= 2 && record.cleanStreak < 2) return "повторные затруднения";
+  if (attempts >= 2 && errorRate >= 0.4 && record.cleanStreak < 2) return "частые ошибки";
+  return "нужна дополнительная проверка";
 }
 
 function weakPriority(record, status, now) {
@@ -122,10 +122,16 @@ export function weakSkills(
 
       // A skill is not a "weak spot" merely because its scheduled
       // review date arrived. Due-only work belongs in the Today queue.
+      // Two clean recalls are enough to retire an old weak-spot label even
+      // though cumulative lapse history is retained for analysis.
+      const recovered = record.cleanStreak >= 2;
+      const recurringDifficulty = record.lapses >= 2 && !recovered;
+      const frequentErrors = attempts >= 2 && errorRate >= 0.4 && !recovered;
+
       if (
         record.reviewDebt <= 0 &&
-        record.lapses < 2 &&
-        !(attempts >= 2 && errorRate >= 0.4)
+        !recurringDifficulty &&
+        !frequentErrors
       ) {
         continue;
       }
