@@ -94,3 +94,15 @@ assert(
     app.includes("applyRegionStudyVisibility"),
   "Tissue layers are not filtered to the selected learning block"
 );
+
+assert(
+  html.includes(">Тканевые слои<") &&
+    !html.includes(">Послойное изучение<"),
+  "Tissue-layer selector is still confused with anatomical muscle depth"
+);
+assert(
+  html.includes('id="show-all"') &&
+    app.includes('"Показать весь блок"') &&
+    app.includes('"Показать все структуры"'),
+  "Restore-scene action does not distinguish regional block from whole-atlas context"
+);

@@ -1875,6 +1875,9 @@ function renderDeeperStructures(ids, { pointSpecific = true } = {}) {
 
 function updateLayerButtons() {
   isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
+  showAllButton.textContent = regionIsolationActive()
+    ? "Показать весь блок"
+    : "Показать все структуры";
 
   const nextLayer =
     appMode === "explore" && anatomyMesh && regionIsolationActive()

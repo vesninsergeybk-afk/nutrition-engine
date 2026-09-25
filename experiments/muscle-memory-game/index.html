@@ -63,8 +63,8 @@
                 </select>
               </label>
               <label id="layer-preset-field" class="viewer-setting-field" hidden>
-                <span>Послойное изучение</span>
-                <select id="layer-preset" aria-label="Учебный слой">
+                <span>Тканевые слои</span>
+                <select id="layer-preset" aria-label="Тканевый слой">
                   <option value="muscles" selected>Мышцы</option>
                   <option value="bones">Кости и мышечные ориентиры</option>
                   <option value="skin">Кожа и наружные покровы</option>
@@ -75,7 +75,7 @@
                 </select>
               </label>
               <p id="layer-preset-note" class="viewer-setting-note" hidden>
-                Послойные тканевые режимы доступны в BodyParts3D. В выбранном учебном блоке показываются только структуры этой области.
+                Тканевые слои доступны в BodyParts3D и применяются только внутри выбранного блока. Мышечная глубина управляется отдельно в атласе.
               </p>
               <label class="viewer-setting-field">
                 <span>Кости</span>
@@ -234,7 +234,7 @@
             <button id="peel-surface-layer" type="button">Снять анатомический слой</button>
             <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
             <button id="undo-hide" type="button" disabled>Вернуть последнюю</button>
-            <button id="show-all" type="button">Показать все структуры</button>
+            <button id="show-all" type="button">Показать весь блок</button>
           </div>
         </div>
       </section>
