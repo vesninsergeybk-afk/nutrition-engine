@@ -110,6 +110,7 @@ function validationEntryForName(name) {
 
 function validationNameRu(entry) {
   if (!entry) return "";
+  if (entry.name_ru) return entry.name_ru;
   const term = structureTerm("right " + entry.canonical_key);
   return term?.nameRu || entry.canonical_key;
 }

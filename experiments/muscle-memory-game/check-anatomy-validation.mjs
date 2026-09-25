@@ -40,6 +40,17 @@ for (const entry of structures) {
   assert(REVIEW_VALUES.has(entry.geometry_review), entry.canonical_key + ": invalid geometry_review");
   assert(REVIEW_VALUES.has(entry.relation_review), entry.canonical_key + ": invalid relation_review");
 
+  if (entry.terminology_review === "verified") {
+    assert(entry.name_ru, entry.canonical_key + ": verified terminology requires name_ru");
+    assert(
+      entry.terminology_source?.source_id === "fipat_ta2" &&
+      Number(entry.terminology_source?.ta2_entry) > 0 &&
+      entry.terminology_source?.latin &&
+      entry.terminology_source?.english,
+      entry.canonical_key + ": verified terminology requires a complete FIPAT TA2 reference"
+    );
+  }
+
   if (entry.status === "verified_for_teaching") {
     assert(
       entry.terminology_review === "verified" &&
@@ -53,9 +64,16 @@ for (const entry of structures) {
 const verifiedCount = structures.filter(
   (entry) => entry.status === "verified_for_teaching"
 ).length;
+const terminologyVerified = structures.filter(
+  (entry) => entry.terminology_review === "verified"
+).length;
 assert(
   manifest.audit_status?.verified_for_teaching === verifiedCount,
   "Audit verified count does not match structure statuses"
+);
+assert(
+  manifest.audit_status?.terminology_verified === terminologyVerified,
+  "Audit terminology count does not match structure statuses"
 );
 
 const response = await fetch(ATLAS_URL);
@@ -91,6 +109,7 @@ assert(
 );
 
 console.log("Shoulder validation manifest: 19/19 entries structurally valid");
+console.log("FIPAT TA2 terminology:", terminologyVerified + "/19");
 console.log("BodyParts3D direct canonical coverage:", covered.length + "/19");
 if (missing.length) {
   console.log(

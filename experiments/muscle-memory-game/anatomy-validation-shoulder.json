@@ -63,160 +63,298 @@
     {
       "canonical_key": "deltoid",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Дельтовидная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2452,
+        "latin": "Musculus deltoideus",
+        "english": "Deltoid muscle"
+      }
     },
     {
       "canonical_key": "supraspinatus",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Надостная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2457,
+        "latin": "Musculus supraspinatus",
+        "english": "Supraspinatus muscle"
+      }
     },
     {
       "canonical_key": "infraspinatus",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Подостная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2458,
+        "latin": "Musculus infraspinatus",
+        "english": "Infraspinatus muscle"
+      }
     },
     {
       "canonical_key": "subscapularis",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Подлопаточная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2460,
+        "latin": "Musculus subscapularis",
+        "english": "Subscapularis muscle"
+      }
     },
     {
       "canonical_key": "teres minor",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Малая круглая мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2459,
+        "latin": "Musculus teres minor",
+        "english": "Teres minor muscle"
+      }
     },
     {
       "canonical_key": "teres major",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Большая круглая мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2462,
+        "latin": "Musculus teres major",
+        "english": "Teres major muscle"
+      }
     },
     {
       "canonical_key": "pectoralis major",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Большая грудная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2301,
+        "latin": "Musculus pectoralis major",
+        "english": "Pectoralis major muscle"
+      }
     },
     {
       "canonical_key": "latissimus dorsi",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [
+        "Pinned BodyParts3D 4.0 web atlas has no direct canonical match under the current classifier; source/alias coverage requires separate review."
+      ],
+      "name_ru": "Широчайшая мышца спины",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2231,
+        "latin": "Musculus latissimus dorsi",
+        "english": "Latissimus dorsi muscle"
+      }
     },
     {
       "canonical_key": "biceps brachii",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Двуглавая мышца плеча",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2464,
+        "latin": "Musculus biceps brachii",
+        "english": "Biceps brachii muscle"
+      }
     },
     {
       "canonical_key": "triceps brachii",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Трёхглавая мышца плеча",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2471,
+        "latin": "Musculus triceps brachii",
+        "english": "Triceps brachii muscle"
+      }
     },
     {
       "canonical_key": "trapezius",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Трапециевидная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2226,
+        "latin": "Musculus trapezius",
+        "english": "Trapezius muscle"
+      }
     },
     {
       "canonical_key": "levator scapulae",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Мышца, поднимающая лопатку",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2234,
+        "latin": "Levator scapulae",
+        "english": "Levator scapulae"
+      }
     },
     {
       "canonical_key": "rhomboid major",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Большая ромбовидная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2232,
+        "latin": "Musculus rhomboideus major",
+        "english": "Rhomboid major muscle"
+      }
     },
     {
       "canonical_key": "rhomboid minor",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Малая ромбовидная мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2233,
+        "latin": "Musculus rhomboideus minor",
+        "english": "Rhomboid minor muscle"
+      }
     },
     {
       "canonical_key": "serratus anterior",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Передняя зубчатая мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2307,
+        "latin": "Musculus serratus anterior",
+        "english": "Serratus anterior muscle"
+      }
     },
     {
       "canonical_key": "coracobrachialis",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Клювовидно-плечевая мышца",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 2468,
+        "latin": "Musculus coracobrachialis",
+        "english": "Coracobrachialis muscle"
+      }
     },
     {
       "canonical_key": "scapula",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Лопатка",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 1143,
+        "latin": "Scapula",
+        "english": "Scapula"
+      }
     },
     {
       "canonical_key": "clavicle",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Ключица",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 1168,
+        "latin": "Clavicula",
+        "english": "Clavicle"
+      }
     },
     {
       "canonical_key": "humerus",
       "status": "pending_geometry_review",
-      "terminology_review": "pending",
+      "terminology_review": "verified",
       "geometry_review": "pending",
       "relation_review": "pending",
-      "notes": []
+      "notes": [],
+      "name_ru": "Плечевая кость",
+      "terminology_source": {
+        "source_id": "fipat_ta2",
+        "ta2_entry": 1180,
+        "latin": "Humerus",
+        "english": "Humerus"
+      }
     }
   ],
   "audit_status": {
     "verified_for_teaching": 0,
     "total_structures": 19,
     "state": "no_structure_verified_yet",
-    "note": "Sources and criteria are defined, but independent per-structure anatomical validation has not yet been completed."
+    "note": "Terminology is verified 19/19 against FIPAT TA2; geometry and spatial relations remain pending, so no structure is yet verified_for_teaching.",
+    "terminology_verified": 19,
+    "geometry_verified": 0,
+    "relation_verified": 0
   }
 }
