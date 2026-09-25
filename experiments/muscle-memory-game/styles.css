@@ -430,7 +430,7 @@ button:disabled {
 
 
 .learning-controls {
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) 88px auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 .learning-start {
