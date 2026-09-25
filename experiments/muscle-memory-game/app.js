@@ -692,10 +692,15 @@ function updateLearningSummary() {
 
   const skillId = summarySkillForMode();
   const summary = learningSummary(learningStore, availableTargets, skillId);
+  const modeHint =
+    selectedSessionMode === "name"
+      ? "назвать выделенную мышцу"
+      : selectedSessionMode === "practical"
+        ? "вперемешку: найти и назвать"
+        : "найти мышцу по названию";
 
   learningSummaryEl.textContent =
-    `${regionNameRu(selectedLearningRegion)} · ${summary.muscles} мышц` +
-    (summary.touched ? ` · уже встречались: ${summary.touched}` : "");
+    `${regionNameRu(selectedLearningRegion)} · ${summary.muscles} мышц · ${modeHint}`;
 }
 
 function resetLearningSessionUi(message = "Выберите режим и начните сессию.") {
