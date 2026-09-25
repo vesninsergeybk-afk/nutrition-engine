@@ -27,6 +27,11 @@ export const SESSION_MODES = Object.freeze({
     nameRu: "На сегодня",
     descriptionRu: "Повторить навыки, срок которых подошёл по истории ответов.",
   },
+  exam: {
+    id: "exam",
+    nameRu: "Контроль",
+    descriptionRu: "Одна попытка на задание и ограниченное время.",
+  },
 });
 
 function shuffled(items, rng = Math.random) {
@@ -220,7 +225,7 @@ export function createLearningSession({
       Math.min(safeSize, catalog.length)
     );
 
-    if (mode === "practical") {
+    if (mode === "practical" || mode === "exam") {
       const startWithName = rng() >= 0.5;
       items = pool.map((target, index) => ({
         target,
