@@ -963,6 +963,7 @@ function finishLearningSession() {
   currentTarget = null;
   lastWrongSid = null;
   restoreHighlights();
+  showAllStructures();
   nameChoicesEl.replaceChildren();
   nameChoicesEl.hidden = true;
   revealDeeperButton.hidden = true;
