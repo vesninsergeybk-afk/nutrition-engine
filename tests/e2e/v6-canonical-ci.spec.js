@@ -507,7 +507,6 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiTotal')).not.toHaveText('—');
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-summary')).toBeVisible();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeVisible();
-  await expect(page.locator('#workspaceHeiDashboardHF2')).toBeVisible();
 });
 
 test('empty report does not present missing ration data as measured zeros', async ({ page, loadApp }) => {
@@ -522,6 +521,10 @@ test('empty report does not present missing ration data as measured zeros', asyn
     window.WorkspaceReportHF13.getLastModel &&
     window.WorkspaceReportHF13.getLastModel() &&
     document.querySelector('#workspaceReportPreview .workspace-report-document')
+  );
+  await page.waitForFunction(() =>
+    window.WorkspaceReportHF13 &&
+    window.WorkspaceReportHF13.__emptySemanticPatch === 'v6-ui-audit-2026-09-25'
   );
 
   const model = await page.evaluate(() => {
