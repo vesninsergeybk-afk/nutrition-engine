@@ -912,6 +912,7 @@ function restoreExploreContext() {
   if (anatomyMesh) anatomyMesh.visible = true;
   setVisibleStructures(null);
   setAllStudyStructuresVisible(true);
+  hiddenStack.length = 0;
   exploreHiddenActions.length = 0;
   isolated = false;
   applyConnectiveDisplayMode();
@@ -2177,6 +2178,8 @@ function selectStudyStructure(studyId) {
   const entry = studyEntry(studyId);
   if (!entry) return;
 
+  const keepIsolation = isolated && selectedStudyId === studyId;
+
   restoreHighlights();
   restoreStudyHighlight();
 
@@ -2184,7 +2187,7 @@ function selectStudyStructure(studyId) {
   focusedStructureIds = [];
   selectedStudyId = studyId;
   highlightedStudyId = studyId;
-  isolated = false;
+  isolated = keepIsolation;
 
   paintStudyStructure(studyId, new THREE.Color(0x245da8));
 
@@ -2995,9 +2998,13 @@ function applyConnectiveDisplayMode() {
   const mode = connectiveDisplayMode;
   const enabled = selectedConnectiveLayers();
   const visibleLayers = [];
+  const isolatedEntry =
+    isolated && selectedStudyId != null ? studyEntry(selectedStudyId) : null;
 
   for (const [layerKey, mesh] of connectiveMeshes) {
-    const show = mode !== "off" && enabled.has(layerKey);
+    const show = isolatedEntry
+      ? isolatedEntry.layerKey !== "skin" && layerKey === isolatedEntry.layerKey
+      : mode !== "off" && enabled.has(layerKey);
     mesh.visible = show;
     if (show) visibleLayers.push(layerKey);
 
@@ -3036,6 +3043,14 @@ function applySkinDisplayMode() {
   skinMode.disabled = false;
   const mode = skinDisplayMode;
   const material = skinMesh.material;
+  const isolatedEntry =
+    isolated && selectedStudyId != null ? studyEntry(selectedStudyId) : null;
+
+  if (isolatedEntry && isolatedEntry.layerKey !== "skin") {
+    skinMesh.visible = false;
+    canvas.dataset.skinMode = mode;
+    return;
+  }
 
   if (mode === "off") {
     skinMesh.visible = false;

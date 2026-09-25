@@ -97,3 +97,20 @@ assert(
   "Joint study layer label is wrong"
 );
 console.log("Study-layer Russian terminology: representative contract ok");
+
+
+assert(
+  app.includes("hiddenStack.length = 0") &&
+    app.includes("exploreHiddenActions.length = 0"),
+  "Restoring atlas context must clear both hide stacks"
+);
+assert(
+  app.includes("const keepIsolation = isolated && selectedStudyId === studyId"),
+  "Selecting an isolated study structure must preserve isolation state"
+);
+assert(
+  app.includes('isolatedEntry.layerKey !== "skin"') &&
+    app.includes("layerKey === isolatedEntry.layerKey"),
+  "Layer controls can break study-structure isolation"
+);
+console.log("Study-layer state restoration: ok");

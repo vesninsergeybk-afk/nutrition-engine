@@ -254,6 +254,9 @@ jobs:
             assert.equal(await page.locator('.name-choice').count(), 4);
             assert.match(await page.locator('#question').innerText(), /Назовите выделенную мышцу/);
             assert.equal(await page.locator('#viewer').getAttribute('data-name-target-visible'), 'true');
+            assert.ok(
+              Number(await page.locator('#viewer').getAttribute('data-name-target-component-count')) >= 1
+            );
             assert.match(
               await page.locator('#viewer').getAttribute('data-name-target-presentation'),
               /^(context|isolated)$/
@@ -269,10 +272,18 @@ jobs:
               }
             }
             assert.ok(wrongIndex >= 0);
+            const wrongLabel = await wrongButtons.nth(wrongIndex).innerText();
+            const correctLabel = await page.locator(
+              '.name-choice[data-target-id="' + currentTargetId + '"]'
+            ).innerText();
             await wrongButtons.nth(wrongIndex).click();
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-done'), '0');
+            const correctionFeedback = await page.locator('#feedback').innerText();
+            assert.ok(correctionFeedback.includes(wrongLabel));
+            assert.equal(correctionFeedback.includes(correctLabel), false);
             await page.locator('.name-choice[data-target-id="' + currentTargetId + '"]').click();
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-done'), '1');
+            assert.match(await page.locator('#feedback').innerText(), /Верно после коррекции/i);
             storedLearning = await page.evaluate(() =>
               localStorage.getItem('muscle-memory-learning-v1')
             );
@@ -467,10 +478,43 @@ jobs:
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'true');
             assert.equal(await page.locator('#viewer').getAttribute('data-connective-training-hidden'), 'true');
+            assert.equal(await page.locator('#viewer').getAttribute('data-skin-training-hidden'), 'true');
             await page.click('#exit-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'false');
             assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'anatomical');
             await page.click('#mode-explore');
+
+            // Massage atlas: a fascia structure remains individually searchable,
+            // selectable and isolatable after geometry merging.
+            await page.fill('#structure-search', 'подвздошно-большеберцовый');
+            await page.waitForFunction(
+              () => document.querySelectorAll('.search-result').length > 0,
+              null,
+              { timeout: 15000 }
+            );
+            const fasciaResult = page.locator('.search-result').first();
+            const fasciaLabel = await fasciaResult.innerText();
+            assert.match(fasciaLabel, /Подвздошно-большеберцовый тракт/i);
+            assert.doesNotMatch(fasciaLabel, /iliotibial/i);
+            await fasciaResult.click();
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-selected-study-layer'),
+              'fascia'
+            );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-selected-study-specific'),
+              'true'
+            );
+            assert.match(await page.locator('#question').innerText(), /Подвздошно-большеберцовый тракт/i);
+            assert.equal(await page.locator('#show-nearest-muscle').isVisible(), true);
+            assert.match(await page.locator('#feedback').innerText(), /пространственный ориентир/i);
+
+            await page.click('#isolate-selected');
+            assert.match(await page.locator('#isolate-selected').innerText(), /Показать окружение/i);
+            await page.click('#isolate-selected');
+            assert.match(await page.locator('#isolate-selected').innerText(), /Изолировать/i);
+            await page.click('#show-nearest-muscle');
+            assert.match(await page.locator('#question-label').innerText(), /Мышца/i);
 
             await page.fill('#structure-search', 'передняя большеберцовая');
             await page.waitForFunction(
