@@ -518,28 +518,24 @@ function canStartLearningSession() {
 function updateLearningSummary() {
   if (selectedSessionMode === "mistakes") {
     const queue = mistakeTargets(learningStore, availableTargets);
-    const findCount = queue.filter((item) => item.skillId === "find").length;
-    const nameCount = queue.filter((item) => item.skillId === "name").length;
-
-    learningSummaryEl.textContent =
-      `${regionNameRu(selectedLearningRegion)}: к повторению ${queue.length} · ` +
-      `найти ${findCount} · назвать ${nameCount}.`;
+    learningSummaryEl.textContent = queue.length
+      ? `${regionNameRu(selectedLearningRegion)} · к повторению: ${queue.length}`
+      : `${regionNameRu(selectedLearningRegion)} · ошибок для повторения пока нет`;
     return;
   }
 
   const skillId = summarySkillForMode();
   const summary = learningSummary(learningStore, availableTargets, skillId);
-  const accuracy = summary.accuracy == null ? "—" : summary.accuracy + "%";
-  const skillName = skillId === "name" ? "название" : "поиск на модели";
 
   learningSummaryEl.textContent =
-    `${regionNameRu(selectedLearningRegion)}: ${summary.muscles} целей · ` +
-    `${skillName}: встречались ${summary.touched} · попыток ${summary.attempts} · точность ${accuracy}.`;
+    `${regionNameRu(selectedLearningRegion)} · ${summary.muscles} мышц` +
+    (summary.touched ? ` · уже встречались: ${summary.touched}` : "");
 }
 
 function resetLearningSessionUi(message = "Выберите режим и начните сессию.") {
   learningSession = null;
   sessionSummaryShown = false;
+  document.body.classList.remove("session-active");
   currentTarget = null;
   currentItemWrongAttempts = 0;
   lastWrongSid = null;
@@ -558,11 +554,13 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   startLearningSessionButton.textContent = "Начать";
 
   if (appMode === "quiz") {
-    questionLabelEl.textContent = "Учебная сессия";
+    questionLabelEl.textContent = "Тренировка";
     questionEl.textContent = regionNameRu(selectedLearningRegion);
     feedbackEl.className = "feedback";
     feedbackEl.textContent = message;
   }
+
+  syncQuestionCardPlacement();
 }
 
 function applyLearningRegion() {
