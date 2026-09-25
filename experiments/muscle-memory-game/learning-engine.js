@@ -246,7 +246,7 @@ function emptyStore() {
     updatedAt: 0,
     records: {},
     confusions: {},
-    sessionHistory: [],
+    sessions: [],
   };
 }
 
@@ -267,9 +267,11 @@ export function loadLearningStore(storage = globalThis.localStorage) {
         parsed.confusions && typeof parsed.confusions === "object"
           ? parsed.confusions
           : {},
-      sessionHistory: Array.isArray(parsed.sessionHistory)
-        ? parsed.sessionHistory.slice(-60)
-        : [],
+      sessions: Array.isArray(parsed.sessions)
+        ? parsed.sessions.slice(-100)
+        : Array.isArray(parsed.sessionHistory)
+          ? parsed.sessionHistory.slice(-100)
+          : [],
     };
   } catch {
     return emptyStore();
