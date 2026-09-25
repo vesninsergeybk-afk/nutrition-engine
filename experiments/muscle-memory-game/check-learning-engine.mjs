@@ -47,13 +47,33 @@ assert(
   "Right/left supraspinatus were not grouped into one learning target"
 );
 
-const deltoidAcromial = catalog.find((item) =>
-  /Акромиальная часть дельтовидной мышцы/i.test(item.nameRu)
-);
-assert(deltoidAcromial, "Acromial deltoid learning target is missing");
+const deltoid = catalog.find((item) => item.nameRu === "Дельтовидная мышца");
+assert(deltoid, "Deltoid learning target is missing");
 assert(
-  deltoidAcromial.sids.length >= 2,
-  "Right/left acromial deltoid parts were not grouped"
+  deltoid.sids.length >= 6,
+  "Deltoid subdivisions/sides were not grouped into one learning target"
+);
+assert(
+  !catalog.some((item) => /часть дельтовидной мышцы/i.test(item.nameRu)),
+  "Deltoid anatomical parts leaked into the base learning target list"
+);
+
+const trapezius = catalog.find((item) => item.nameRu === "Трапециевидная мышца");
+assert(trapezius && trapezius.sids.length >= 6, "Trapezius parts were not grouped");
+
+for (const wholeName of [
+  "Двуглавая мышца плеча",
+  "Трёхглавая мышца плеча",
+]) {
+  const target = catalog.find((item) => item.nameRu === wholeName);
+  assert(target && target.sids.length >= 4, wholeName + ": heads were not grouped");
+}
+
+const latinNames = catalog.filter((item) => /[A-Za-z]/.test(item.nameRu));
+assert(
+  latinNames.length === 0,
+  "Learning catalog contains Latin user-facing names: " +
+    latinNames.map((item) => item.nameRu).join(" | ")
 );
 
 const counts = regionCounts(catalog);
