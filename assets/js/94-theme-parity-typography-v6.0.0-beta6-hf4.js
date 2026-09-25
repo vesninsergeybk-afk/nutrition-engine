@@ -34,8 +34,15 @@
 
   function stabilizeHeader(){
     var theme=byId('themeSwitcher'),status=byId('themeStatus'),options=theme&&theme.querySelector('.theme-switcher__options'),label=theme&&theme.querySelector('.theme-switcher__label');
+    var header=d.querySelector('#mainContent>header'),simplified=d.documentElement.getAttribute('data-interface-simplification')==='1',settingsOpen=!!(header&&header.classList.contains('interface-settings-pass1-open'));
     if(status){setImportant(status,'position','absolute');setImportant(status,'width','1px');setImportant(status,'height','1px');setImportant(status,'overflow','hidden');setImportant(status,'clip-path','inset(50%)');setImportant(status,'white-space','nowrap');}
-    if(theme){setImportant(theme,'display','grid');setImportant(theme,'grid-template-columns','58px minmax(0,1fr)');setImportant(theme,'grid-template-rows','1fr');}
+    if(theme){
+      /* Interface simplification owns whether settings are expanded. Older theme
+         parity code must not force the switcher back into view after a route event. */
+      setImportant(theme,'display',simplified&&!settingsOpen?'none':'grid');
+      setImportant(theme,'grid-template-columns','58px minmax(0,1fr)');
+      setImportant(theme,'grid-template-rows','1fr');
+    }
     if(label){setText(label,'Дизайн');setImportant(label,'grid-column','1');setImportant(label,'grid-row','1');setImportant(label,'width','auto');}
     if(options){setImportant(options,'grid-column','2');setImportant(options,'grid-row','1');setImportant(options,'display','grid');setImportant(options,'grid-template-columns','repeat(3,minmax(76px,1fr))');setImportant(options,'width','100%');}
     var buttons=theme?theme.querySelectorAll('.theme-switcher__option'):[],visible=['Modern','2-bit','Ivory'],full=['Современное оформление','Двухбитное оформление','Ivory & Brass — премиальное оформление'],i,span;
