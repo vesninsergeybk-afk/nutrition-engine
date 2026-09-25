@@ -2036,7 +2036,10 @@ function chooseNameAnswer(targetId, button) {
     button.classList.add("correct");
     for (const option of nameChoicesEl.querySelectorAll(".name-choice")) option.disabled = true;
     feedbackEl.className = "feedback correct";
-    feedbackEl.textContent = `Верно: «${currentTarget.nameRu}».`;
+    feedbackEl.textContent =
+      currentItemWrongAttempts > 0
+        ? `Верно после коррекции: «${currentTarget.nameRu}».`
+        : `Верно: «${currentTarget.nameRu}».`;
     recordLearningAttempt(
       learningStore,
       currentTarget.id,
@@ -2074,7 +2077,10 @@ function chooseNameAnswer(targetId, button) {
     button.classList.add("wrong");
     button.disabled = true;
     feedbackEl.className = "feedback wrong";
-    feedbackEl.textContent = "Не эта мышца. Сравните варианты и попробуйте ещё раз.";
+    const chosen = learningCatalog.find((target) => target.id === targetId);
+    feedbackEl.textContent =
+      "Вы выбрали «" + (chosen?.nameRu || "другую мышцу") +
+      "». Это не она. Сопоставьте форму и положение и попробуйте ещё раз.";
     recordLearningAttempt(
       learningStore,
       currentTarget.id,

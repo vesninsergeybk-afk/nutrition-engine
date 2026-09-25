@@ -242,3 +242,16 @@ console.log("Retention-driven today session: ok");
 console.log("Mixed practical retrieval: ok");
 console.log("Timed control session mix: ok");
 console.log("Session summary: ok");
+
+const choiceLabels = confusionAwareChoices.map((item) =>
+  item.nameRu.toLocaleLowerCase("ru-RU")
+);
+assert(
+  new Set(choiceLabels).size === choiceLabels.length,
+  "Recognition question contains duplicate visible answer labels"
+);
+assert(
+  confusionAwareChoices.filter((item) => item.id === target.id).length === 1,
+  "Recognition question must contain exactly one correct answer"
+);
+console.log("Recognition-choice uniqueness: ok");

@@ -50,6 +50,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-learning-cross-source.mjs
           node --check experiments/muscle-memory-game/check-anatomy-validation.mjs
           node --check experiments/muscle-memory-game/check-study-layers.mjs
+          node --check experiments/muscle-memory-game/study-layer-terms-ru.js
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'

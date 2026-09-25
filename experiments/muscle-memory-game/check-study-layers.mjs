@@ -1,3 +1,8 @@
+import {
+  studyLayerNameRu,
+  studyStructureSearchText,
+  studyStructureTerm,
+} from "./study-layer-terms-ru.js";
 import { readFile } from "node:fs/promises";
 
 const root = new URL("./", import.meta.url);
@@ -71,3 +76,24 @@ assert(
   "Nearest-muscle relation is not qualified carefully enough"
 );
 console.log("Study-layer interaction: selectable, isolatable, searchable");
+
+const studyTermCases = [
+  ["right iliotibial tract", "fascia", /Подвздошно-большеберцовый тракт \(справа\)/],
+  ["left thoracolumbar fascia", "fascia", /Грудопоясничная фасция \(слева\)/],
+  ["right calcaneal tendon", "tendon", /Пяточное \(ахиллово\) сухожилие \(справа\)/],
+  ["left coracoacromial ligament", "ligament", /Клювовидно-акромиальная связка \(слева\)/],
+];
+for (const [source, layer, expected] of studyTermCases) {
+  const term = studyStructureTerm(source, layer);
+  assert(expected.test(term.nameRu), source + ": unexpected Russian study label " + term.nameRu);
+  assert(!/[A-Za-z]/.test(term.nameRu), source + ": Latin leaked into visible study label");
+  assert(
+    studyStructureSearchText(source, layer).includes(source.toLowerCase()),
+    source + ": English source alias must remain searchable without being user-facing"
+  );
+}
+assert(
+  studyLayerNameRu("joint") === "Суставные капсулы и сумки",
+  "Joint study layer label is wrong"
+);
+console.log("Study-layer Russian terminology: representative contract ok");
