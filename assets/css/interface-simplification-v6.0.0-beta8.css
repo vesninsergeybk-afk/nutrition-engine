@@ -614,3 +614,15 @@ html[data-interface-simplification="1"] #navigationShell [data-navshell-settings
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"] #workspaceRationSecondary{
   display:none!important;
 }
+
+
+/* Workspace legacy needs-summary cleanup (UI audit 2026-09-25).
+   The needs checkpoint inserts #consultationNeedsSummary after #needsCompact for the
+   long technical canvas. In workspace mode its hidden state can be overridden by
+   route visibility, leaving an empty painted card between the route context and the
+   ration search before needs are calculated. Workspace already projects the relevant
+   person/needs context through its own route UI, so keep this legacy summary out of
+   workspace mode while leaving the long fallback untouched. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"] #consultationNeedsSummary{
+  display:none!important;
+}
