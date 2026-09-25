@@ -56,6 +56,13 @@ assert(first.stabilityDays === 1, "First clean review should start at policy sta
 assert(first.dueAt > t0, "Clean review did not schedule the next review");
 assert(retentionStatus(store, "a", "find", t0) === "scheduled", "Fresh review must be scheduled");
 
+// Ordinary click-level attempt accounting must not erase the new scheduler fields.
+recordLearningAttempt(store, "a", "find", true, storage);
+store = loadLearningStore(storage);
+const afterAttempt = retentionRecord(store, "a", "find");
+assert(afterAttempt.reviewCount === 1, "Ordinary attempt erased review count");
+assert(afterAttempt.dueAt === first.dueAt, "Ordinary attempt erased due date");
+
 const second = recordReviewOutcome(
   store,
   "a",
@@ -96,5 +103,6 @@ assert(summary.new + summary.due + summary.scheduled === 2, "Retention summary c
 
 console.log("Retention scheduling: adaptive intervals ok");
 console.log("Legacy progress migration: ok");
+console.log("Retention metadata survives ordinary attempts: ok");
 console.log("Today queue priority: ok");
 console.log("Retention summary: ok");
