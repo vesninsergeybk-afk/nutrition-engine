@@ -218,6 +218,39 @@ async function waitForInterfacePass1(page) {
   );
 }
 
+test('visual grammar layer keeps core workspace affordances and compact mobile chrome', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await expect(page.locator('link[data-ui-v6="visual-grammar-pass1"]')).toHaveCount(1);
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'ration');
+  await expect(page.locator('#globalSearchInput')).toBeVisible();
+  await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+  await expect(page.locator('#navigationShell')).toBeVisible();
+
+  const geometry = await page.evaluate(() => {
+    const header = document.querySelector('#mainContent>header');
+    const input = document.getElementById('globalSearchInput');
+    const hr = header && header.getBoundingClientRect();
+    const ir = input && input.getBoundingClientRect();
+    return {
+      headerHeight: hr ? hr.height : null,
+      searchHeight: ir ? ir.height : null,
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth
+    };
+  });
+  expect(geometry.headerHeight).not.toBeNull();
+  expect(geometry.headerHeight).toBeLessThanOrEqual(110);
+  expect(geometry.searchHeight).toBeGreaterThanOrEqual(44);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+});
+
 test('mobile interface keeps secondary display controls behind one settings action', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
