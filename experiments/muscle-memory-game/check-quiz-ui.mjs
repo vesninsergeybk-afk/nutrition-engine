@@ -1,10 +1,11 @@
 import { readFile } from "node:fs/promises";
 
 const root = new URL("./", import.meta.url);
-const [html, app, engine, session] = await Promise.all([
+const [html, app, engine, specimens, session] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("app.js", root), "utf8"),
   readFile(new URL("learning-engine.js", root), "utf8"),
+  readFile(new URL("virtual-specimens.js", root), "utf8"),
   readFile(new URL("learning-session.js", root), "utf8"),
 ]);
 
@@ -29,8 +30,9 @@ for (const scope of [
   "scapular-stabilizers",
 ]) {
   assert(
-    engine.includes('id: "' + scope + '"'),
-    "Missing course-ready scope: " + scope
+    engine.includes('id: "' + scope + '"') ||
+      specimens.includes('"' + scope + '"'),
+    "Missing course-ready scope/specimen: " + scope
   );
 }
 
