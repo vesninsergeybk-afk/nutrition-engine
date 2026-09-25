@@ -502,7 +502,7 @@ function matchesNamedScope(target, matchId) {
   }
 
   if (matchId === "erector-spinae") {
-    return /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|остист.*мышц/u.test(text);
+    return /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|(?:^|\s)остист(?:ая|ые)\s+мышц/u.test(text);
   }
 
   if (matchId === "rotator-cuff") {

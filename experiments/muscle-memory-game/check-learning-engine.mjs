@@ -233,11 +233,17 @@ const erectorScope = filterCatalogByRegion(catalog, "erector-spinae");
 assert(erectorScope.length >= 6, "Erector-spinae scope is unexpectedly small");
 assert(
   erectorScope.every((item) =>
-    /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|остист.*мышц/iu.test(
+    /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|(?:^|\s)остист(?:ая|ые)\s+мышц/iu.test(
       [item.nameRu, ...(item.sourceNames || [])].join(" ")
     )
   ),
   "Erector-spinae scope leaked unrelated muscles"
+);
+assert(
+  !erectorScope.some((item) =>
+    /semispinalis|полуостист/iu.test([item.nameRu, ...(item.sourceNames || [])].join(" "))
+  ),
+  "Semispinalis leaked into erector-spinae scope"
 );
 
 const neckCollar = filterCatalogByRegion(catalog, "neck-collar");

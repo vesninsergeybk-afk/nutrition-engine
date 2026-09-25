@@ -1476,7 +1476,7 @@ function applyLearningRegion() {
   renderProgressPanel();
 
   if (!availableTargets.length) {
-    resetLearningSessionUi("В этой области нет учебных целей. Выберите другую область тела.");
+    resetLearningSessionUi("В этом учебном блоке нет целей. Выберите другой блок.");
     return;
   }
 
@@ -1825,7 +1825,7 @@ function startLearningSession(modeOverride = null) {
       sessionMode === "today"
         ? "На сегодня повторений нет."
         : selectedSessionMode === "mistakes"
-          ? "В выбранной области пока нет сохранённых ошибок. Сначала пройдите обычную тренировку."
+          ? "В выбранном учебном блоке пока нет сохранённых ошибок. Сначала пройдите обычную тренировку."
           : "Для этой сессии не удалось подобрать задания."
     );
     return;
@@ -2831,7 +2831,7 @@ function resetLoadedModel() {
   nameChoicesEl.replaceChildren();
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
-  learningSummaryEl.textContent = "После загрузки выберите область и режим тренировки.";
+  learningSummaryEl.textContent = "После загрузки выберите учебный блок и режим тренировки.";
 
   nextButton.disabled = true;
   answerButton.disabled = true;
@@ -3823,7 +3823,7 @@ for (const button of learningModeButtons) {
 startLearningSessionButton.addEventListener("click", () => startLearningSession());
 todayLearningSessionButton.addEventListener("click", () => startLearningSession("today"));
 exitLearningSessionButton.addEventListener("click", () => {
-  resetLearningSessionUi("Выберите область и способ тренировки.");
+  resetLearningSessionUi("Выберите учебный блок и способ тренировки.");
   focusLearningRegion();
 });
 
