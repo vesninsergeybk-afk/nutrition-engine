@@ -146,6 +146,7 @@ jobs:
             assert.equal(await page.locator('#learning-session-mode').isHidden(), true);
             assert.equal(await page.locator('#model-source option').count(), 2);
             assert.equal(await page.locator('.status-card').count(), 0);
+            assert.equal(await page.locator('#focus-shoulder').isHidden(), true);
 
             const visibleInitialText = await page.locator('body').innerText();
             assert.doesNotMatch(visibleInitialText, /Учебный каталог|треугольник|mesh|FMA\d+/i);
@@ -155,6 +156,7 @@ jobs:
 
             await page.selectOption('#learning-region', 'shoulder');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
+            assert.equal(await page.locator('#focus-shoulder').isVisible(), true);
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 0);
             assert.match(await page.locator('#learning-summary').innerText(), /Плечевой пояс/);
 
@@ -170,6 +172,8 @@ jobs:
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'find');
             assert.equal(await page.locator('#model-source-field').isHidden(), true);
+            assert.equal(await page.locator('.viewer-settings').isHidden(), true);
+            assert.equal(await page.locator('.viewer-hint').isHidden(), true);
             assert.equal(await page.locator('#exit-learning-session').isVisible(), true);
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-total'), '5');
             assert.match(await page.locator('#question').innerText(), /Найдите:/);
