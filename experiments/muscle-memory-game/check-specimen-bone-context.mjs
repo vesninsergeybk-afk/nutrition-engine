@@ -72,6 +72,21 @@ for(const specimen of VIRTUAL_SPECIMENS){
     bpSample:bp.slice(0,3),
   }));
   if(!z.length && !bp.length) neither+=1;
+  assert(z.length > 0, specimen.id + ": Z-Anatomy has no named bone anchors");
+  assert(bp.length > 0, specimen.id + ": BodyParts3D has no named bone anchors");
+
+  if (specimen.id === "shoulder" || specimen.id === "rotator-cuff") {
+    for (const required of [/scapula/i, /clavicle/i, /humerus/i]) {
+      assert(
+        z.some((name) => required.test(name)),
+        specimen.id + ": Z-Anatomy shoulder anchors are incomplete"
+      );
+      assert(
+        bp.some((name) => required.test(name)),
+        specimen.id + ": BodyParts3D shoulder anchors are incomplete"
+      );
+    }
+  }
 
   if (specimen.id === "forearm-hand-anterior" || specimen.id === "forearm-hand-posterior") {
     assert(
