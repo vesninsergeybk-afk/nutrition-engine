@@ -72,6 +72,10 @@ assert(
   "Explicit review debt must lead weak-skill ordering"
 );
 assert(/ошибка|повторения/.test(weak[0].reason), "Weak-skill reason is missing");
+assert(
+  !weak.some((item) => item.target.id === "b" && item.skillId === "find"),
+  "A routine scheduled review was mislabeled as a weak spot"
+);
 
 const session = {
   mode: "practical",
