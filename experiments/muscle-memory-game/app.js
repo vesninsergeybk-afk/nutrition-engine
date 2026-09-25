@@ -1330,8 +1330,6 @@ function prepareSessionItem() {
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
   canvas.dataset.nameView = "";
-  canvas.dataset.trainingDisplay = "";
-  canvas.dataset.connectiveTrainingHidden = "";
   canvas.dataset.examSeconds = "";
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
@@ -2284,6 +2282,8 @@ function resetLoadedModel() {
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
   canvas.dataset.nameView = "";
+  canvas.dataset.trainingDisplay = "false";
+  canvas.dataset.connectiveTrainingHidden = "false";
 }
 
 function createMuscleMaterial() {
