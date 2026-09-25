@@ -79,6 +79,7 @@ console.log("Unclassified targets:", other.length);
 if (other.length) {
   console.log("Unclassified names:", other.map((item) => item.nameRu).join(" | "));
 }
+assert(other.length === 0, "Learning catalog still has unclassified muscles");
 
 // Storage model: progress is per (muscle, skill), not per whole muscle.
 const memory = new Map();
