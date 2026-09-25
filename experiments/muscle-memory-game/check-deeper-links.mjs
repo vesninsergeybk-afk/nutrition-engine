@@ -31,7 +31,8 @@ assert(
   "Non-muscle atlas structures may leak into the deeper-muscle list"
 );
 assert(
-  app.includes("if (!selectedTarget || !selectedInfo) return [];"),
+  app.includes("if (!selectedTarget || !selectedInfo) return [];") &&
+    app.includes("if (!candidateInfo) continue;"),
   "Unverified ray hits can still masquerade as anatomical depth"
 );
 assert(
