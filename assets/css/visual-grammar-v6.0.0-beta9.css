@@ -361,3 +361,34 @@ html[data-theme="modern"][data-interface-simplification="1"] .workspace-group-ov
 html[data-theme="modern"][data-interface-simplification="1"] .workspace-hei-dashboard-hf2__head>button{
   min-height:44px!important;
 }
+
+
+/* Acceptance follow-up: route-specific legacy rules still compressed a few real
+   controls below the shared touch target floor. Override only those concrete
+   controls; no visibility or routing behavior changes. */
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent #rationSection #workspaceRationEmpty [data-workspace-focus-search]{
+  min-height:44px!important;
+  height:auto!important;
+  padding:9px 14px!important;
+  box-sizing:border-box!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="correction"] #workspacePersonContext #workspacePersonEdit{
+  min-height:44px!important;
+  height:auto!important;
+  padding:9px 12px!important;
+  font-size:12px!important;
+  box-sizing:border-box!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] #workspaceCorrectionPanel .workspace-correction-method>summary,
+html[data-theme="modern"][data-interface-simplification="1"] #workspaceCorrectionPanel .workspace-correction-ai .link-button{
+  min-height:36px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:860px){
+  html[data-theme="modern"][data-interface-simplification="1"] #workspaceCorrectionPanel .workspace-correction-method>summary,
+  html[data-theme="modern"][data-interface-simplification="1"] #workspaceCorrectionPanel .workspace-correction-ai .link-button{
+    min-height:44px!important;
+  }
+}
