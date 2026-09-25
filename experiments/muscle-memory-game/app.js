@@ -955,6 +955,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
 
   syncQuestionCardPlacement();
   updateTodayAction();
+  renderProgressPanel();
 }
 
 function applyLearningRegion() {
@@ -976,6 +977,7 @@ function applyLearningRegion() {
   startLearningSessionButton.disabled = !canStartLearningSession();
   updateLearningSummary();
   updateTodayAction();
+  renderProgressPanel();
 
   if (!availableTargets.length) {
     resetLearningSessionUi("В этой области нет учебных целей. Выберите другую область тела.");
@@ -1207,6 +1209,7 @@ function completeCurrentSessionItem(result) {
 
   completeSessionItem(learningSession, result);
   updateTodayAction();
+  renderProgressPanel();
   renderSessionProgress();
 
   answerButton.hidden = true;
@@ -1230,6 +1233,7 @@ function finishLearningSession() {
     wrongAttempts: summary.wrongAttempts,
     revealed: summary.revealed,
   });
+  renderProgressPanel();
   sessionSummaryShown = true;
   locked = true;
   currentTarget = null;
@@ -1566,6 +1570,7 @@ function setMode(mode) {
   scoreEl.hidden = true;
   document.body.classList.toggle("explore-mode", mode === "explore");
   updateTodayAction();
+  renderProgressPanel();
   if (mode !== "quiz") document.body.classList.remove("session-active");
   syncQuestionCardPlacement();
 
@@ -1942,6 +1947,8 @@ function resetLoadedModel() {
   for (const button of learningModeButtons) button.disabled = true;
   startLearningSessionButton.disabled = true;
   sessionProgressEl.hidden = true;
+  learningProgressEl.hidden = true;
+  learningProgressContentEl.replaceChildren();
   nameChoicesEl.hidden = true;
   nameChoicesEl.replaceChildren();
   revealDeeperButton.hidden = true;
