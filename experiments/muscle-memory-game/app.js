@@ -1935,12 +1935,26 @@ function finishLearningSession() {
   const visibleReviewLabels = uniqueReviewLabels.slice(0, 6);
   const hiddenReviewCount = Math.max(0, uniqueReviewLabels.length - visibleReviewLabels.length);
 
+  const skillLines = [];
+  if (summary.bySkill?.find) {
+    skillLines.push(
+      `Найти на модели: без ошибок ${summary.bySkill.find.clean} из ${summary.bySkill.find.total}`
+    );
+  }
+  if (summary.bySkill?.name) {
+    skillLines.push(
+      `Назвать: без ошибок ${summary.bySkill.name.clean} из ${summary.bySkill.name.total}`
+    );
+  }
+
   feedbackEl.className = "feedback";
-  feedbackEl.textContent = visibleReviewLabels.length
-    ? "К повторению:\n" +
-      visibleReviewLabels.map((label) => `• ${label}`).join("\n") +
-      (hiddenReviewCount ? `\n• ещё ${hiddenReviewCount}` : "")
-    : "Все задания выполнены без ошибок и подсказки.";
+  feedbackEl.textContent =
+    (skillLines.length ? skillLines.join("\n") + "\n" : "") +
+    (visibleReviewLabels.length
+      ? "\nК повторению:\n" +
+        visibleReviewLabels.map((label) => `• ${label}`).join("\n") +
+        (hiddenReviewCount ? `\n• ещё ${hiddenReviewCount}` : "")
+      : "\nВсе задания выполнены без ошибок и подсказки.");
 
   sessionProgressEl.hidden = false;
   exitLearningSessionButton.hidden = true;

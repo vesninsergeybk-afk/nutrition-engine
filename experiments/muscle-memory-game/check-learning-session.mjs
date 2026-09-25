@@ -273,6 +273,13 @@ while (currentSessionItem(practical)) {
 }
 const summary = sessionSummary(practical);
 assert(summary.total === 4 && summary.clean === 4, "Practical summary is wrong");
+assert(
+  summary.bySkill.find?.total === 2 &&
+    summary.bySkill.find?.clean === 2 &&
+    summary.bySkill.name?.total === 2 &&
+    summary.bySkill.name?.clean === 2,
+  "Mixed-session summary does not separate find/name skills"
+);
 assert(sessionProgress(practical).finished, "Practical session did not finish");
 
 console.log("Learning sessions: finite unique targets ok");

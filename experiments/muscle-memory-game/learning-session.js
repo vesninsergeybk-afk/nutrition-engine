@@ -459,6 +459,28 @@ export function sessionSummary(session) {
   const correct = results.filter((result) => result.correct).length;
   const revealed = results.filter((result) => result.revealed).length;
   const wrongAttempts = results.reduce((sum, result) => sum + result.wrongAttempts, 0);
+  const cleanResults = results.filter(
+    (result) => result.correct && result.wrongAttempts === 0 && !result.revealed
+  );
+
+  const bySkill = {};
+  for (const skillId of ["find", "name"]) {
+    const skillResults = results.filter((result) => result.skillId === skillId);
+    if (!skillResults.length) continue;
+
+    bySkill[skillId] = {
+      total: skillResults.length,
+      correct: skillResults.filter((result) => result.correct).length,
+      clean: skillResults.filter(
+        (result) => result.correct && result.wrongAttempts === 0 && !result.revealed
+      ).length,
+      revealed: skillResults.filter((result) => result.revealed).length,
+      wrongAttempts: skillResults.reduce(
+        (sum, result) => sum + result.wrongAttempts,
+        0
+      ),
+    };
+  }
 
   return {
     total: session?.items?.length || 0,
@@ -466,8 +488,7 @@ export function sessionSummary(session) {
     correct,
     revealed,
     wrongAttempts,
-    clean: results.filter(
-      (result) => result.correct && result.wrongAttempts === 0 && !result.revealed
-    ).length,
+    clean: cleanResults.length,
+    bySkill,
   };
 }
