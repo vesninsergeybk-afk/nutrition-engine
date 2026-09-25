@@ -3075,6 +3075,7 @@ function applyBoneDisplayMode() {
     boneOpacity.disabled = true;
     boneOpacityField.hidden = true;
     canvas.dataset.boneMode = mode;
+    canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full";
     canvas.dataset.boneTransparent = "false";
     canvas.dataset.boneStencil = "off";
     return;
