@@ -153,7 +153,34 @@ for (const specimen of VIRTUAL_SPECIMENS) {
   if (clippedOutTargets.length) {
     clippedWindowFailures.push({
       specimenId: specimen.id,
-      targets: clippedOutTargets.map((target) => target.nameRu),
+      window: windowFractions,
+      targets: clippedOutTargets.map((target) => {
+        const parts = (target.sourceNames || [])
+          .map((name) => bpPartByName.get(name))
+          .filter(Boolean);
+        const mins = parts
+          .map((part) => Number(part.bounds?.[0]?.[1]))
+          .filter(Number.isFinite);
+        const maxs = parts
+          .map((part) => Number(part.bounds?.[1]?.[1]))
+          .filter(Number.isFinite);
+        const minFraction = mins.length
+          ? (Math.min(...mins) - bpBodyMinY) / bpBodyHeight
+          : null;
+        const maxFraction = maxs.length
+          ? (Math.max(...maxs) - bpBodyMinY) / bpBodyHeight
+          : null;
+        return {
+          nameRu: target.nameRu,
+          range:
+            minFraction == null || maxFraction == null
+              ? null
+              : [
+                  Math.round(minFraction * 1000) / 1000,
+                  Math.round(maxFraction * 1000) / 1000,
+                ],
+        };
+      }),
     });
   }
 
@@ -198,7 +225,17 @@ assert(
     clippedWindowFailures
       .map(
         (entry) =>
-          entry.specimenId + " => " + entry.targets.join(" | ")
+          entry.specimenId +
+          " window=" +
+          entry.window.join(":") +
+          " => " +
+          entry.targets
+            .map(
+              (target) =>
+                target.nameRu +
+                (target.range ? " [" + target.range.join(":") + "]" : "")
+            )
+            .join(" | ")
       )
       .join(" || ")
 );
