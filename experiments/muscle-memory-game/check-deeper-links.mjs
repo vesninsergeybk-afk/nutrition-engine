@@ -55,12 +55,22 @@ assert(
     app.includes("isolated = keepIsolation;"),
   "Re-clicking an isolated muscle can desynchronize the isolate button from the scene"
 );
+const isolateDeeperStart = app.indexOf("function isolateDeeperMuscle");
+const isolateDeeperEnd = app.indexOf("function renderDeeperStructures", isolateDeeperStart);
+const isolateDeeperBlock = app.slice(isolateDeeperStart, isolateDeeperEnd);
+
 assert(
-  app.includes("setVisibleStructures(muscleIds)") &&
-  app.includes("highlightStructures(muscleIds") &&
-  app.includes("setAllStudyStructuresVisible(false)") &&
-  app.includes("skeletonMesh.visible = false"),
-  "Clicking a deeper muscle does not isolate the complete unilateral muscle"
+  isolateDeeperStart >= 0 &&
+  isolateDeeperBlock.includes("setVisibleStructures(muscleIds)") &&
+  isolateDeeperBlock.includes("highlightStructures(muscleIds") &&
+  isolateDeeperBlock.includes("setAllStudyStructuresVisible(false)") &&
+  isolateDeeperBlock.includes("showSelectedMuscleBoneContext(muscleIds)") &&
+  !isolateDeeperBlock.includes("skeletonMesh.visible = false"),
+  "Clicking a deeper muscle must isolate the complete unilateral muscle while keeping relevant bone landmarks"
+);
+assert(
+  /isolateButton\.addEventListener[\s\S]*?setVisibleStructures\(muscleIds\)[\s\S]*?showSelectedMuscleBoneContext\(muscleIds\)/.test(app),
+  "Ordinary muscle isolation does not keep the same relevant bone context"
 );
 assert(
   app.includes("seenTargets.has(candidateKey)") &&

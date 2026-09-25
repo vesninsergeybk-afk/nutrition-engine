@@ -245,6 +245,25 @@ const assert = require('node:assert/strict');
   await page.click('#show-nearest-muscle');
   assert.match(await page.locator('#question-label').innerText(), /Мышца/i);
 
+  await page.click('#isolate-selected');
+  assert.match(await page.locator('#isolate-selected').innerText(), /Показать окружение/i);
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-bone-mode'),
+    'xray'
+  );
+  assert.ok(
+    Number(
+      await page.locator('#viewer').getAttribute('data-selected-muscle-visible-bones')
+    ) > 0,
+    'Ordinary muscle isolation must keep relevant BodyParts3D bone landmarks'
+  );
+  await page.click('#isolate-selected');
+  assert.match(await page.locator('#isolate-selected').innerText(), /Изолировать/i);
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-muscle-visible-bones'),
+    ''
+  );
+
   await page.fill('#structure-search', 'передняя большеберцовая');
   await page.waitForFunction(
     () => document.querySelectorAll('.search-result').length > 0,

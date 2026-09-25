@@ -148,6 +148,16 @@ const assert = require('node:assert/strict');
       await page.locator('#viewer').getAttribute('data-deeper-focus-component-count')
     ) >= 1
   );
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-bone-mode'),
+    'xray'
+  );
+  assert.ok(
+    Number(
+      await page.locator('#viewer').getAttribute('data-selected-muscle-visible-bones')
+    ) > 0,
+    'Deep-muscle isolation must keep at least one relevant bone landmark'
+  );
   assert.match(
     await page.locator('#isolate-selected').innerText(),
     /Показать окружение/i
@@ -156,6 +166,10 @@ const assert = require('node:assert/strict');
   assert.equal(
     await page.locator('#viewer').getAttribute('data-deeper-focus'),
     'false'
+  );
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-muscle-visible-bones'),
+    ''
   );
   assert.match(
     await page.locator('#isolate-selected').innerText(),
