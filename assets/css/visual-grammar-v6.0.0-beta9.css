@@ -222,6 +222,36 @@ html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearch
   font-size:16px!important;
 }
 
+/* Search is the first work object on the ration route. Keep its structure and
+   behaviour intact, but stop each nested layer from reading as another primary card. */
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection .search-hero-head h2{
+  color:var(--vg-text)!important;
+  font-weight:700!important;
+  letter-spacing:-.015em!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection .search-field-card,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection .search-grams-card{
+  border-color:var(--vg-border)!important;
+  border-radius:var(--vg-radius-inner)!important;
+  background:var(--vg-surface-soft)!important;
+  box-shadow:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection .quick-searches button,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection .quick-grams button{
+  border-color:var(--vg-border)!important;
+  background:var(--vg-surface)!important;
+  color:var(--vg-accent)!important;
+  box-shadow:none!important;
+  font-weight:650!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchClear{
+  min-height:44px!important;
+  border-color:var(--vg-border-strong)!important;
+  background:transparent!important;
+  color:var(--vg-muted)!important;
+  box-shadow:none!important;
+}
+
 /* Report toolbar has one primary action (Print); exports stay visually secondary. */
 html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-actions button[data-workspace-report-pdf],
 html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-report-actions button[data-workspace-report-json]{
@@ -254,9 +284,9 @@ html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-re
     grid-row:1!important;
     align-self:center!important;
     justify-self:end!important;
-    min-height:38px!important;
+    min-height:44px!important;
     margin:0!important;
-    padding:6px 9px!important;
+    padding:7px 10px!important;
     font-size:12px!important;
   }
   html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent>header.interface-settings-pass1-open #workspaceViewSwitcher,
@@ -272,6 +302,19 @@ html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-re
   html[data-interface-simplification="1"]:not([data-theme^="retro"]) .navigation-shell-context__copy h2{
     font-size:21px!important;
     line-height:1.16!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection .search-hero-head h2,
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection h2{
+    font-size:clamp(24px,6.5vw,27px)!important;
+    line-height:1.14!important;
+    letter-spacing:-.018em!important;
+    color:var(--vg-text)!important;
+    font-weight:700!important;
+  }
+  html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection .search-lead{
+    color:var(--vg-muted)!important;
+    font-size:13.5px!important;
+    line-height:1.45!important;
   }
   html[data-interface-simplification="1"]:not([data-theme^="retro"]) #needsCompact,
   html[data-interface-simplification="1"]:not([data-theme^="retro"]) #globalSearchSection,
