@@ -302,7 +302,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
     {
       questionPatterns: [
-        /\biliocostalis\b|\blongissimus thoracis\b|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|остистая мышца груди|остистая мышца$)|подвздошно-р[её]бер|длиннейш.*груди/iu,
+        /\biliocostalis\b|\blongissimus thoracis\b|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|(?:^|\s)остистая мышца груди|(?:^|\s)остистая мышца$)|подвздошно-р[её]бер|длиннейш.*груди/iu,
       ],
       contextPatterns: [/latissimus dorsi|serratus posterior/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
