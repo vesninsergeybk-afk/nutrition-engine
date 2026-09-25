@@ -244,6 +244,19 @@ test('mobile interface keeps secondary display controls behind one settings acti
   await expect(page.locator('#themeSwitcher')).toBeHidden();
 });
 
+test('desktop workspace exposes only the canonical settings control', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+  await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+  await expect(page.locator('#interfaceSettingsHF2')).toBeHidden();
+  await expect(page.locator('#navigationShell [data-navshell-settings-toggle]')).toBeHidden();
+});
+
 test('mobile ration starts with text search and keeps alternatives collapsed', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
