@@ -1098,11 +1098,11 @@ function setMode(mode) {
     }
   } else {
     locked = true;
-    questionLabelEl.textContent = "Исследование";
+    questionLabelEl.textContent = "Атлас";
     questionEl.textContent = "Выберите мышцу";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Коснитесь структуры на модели или найдите её по русскому или исходному названию. Ответы здесь не оцениваются.";
+      "Коснитесь мышцы на модели или найдите её по названию. Здесь можно свободно изучать слои и взаимное расположение структур.";
     searchInput.focus({ preventScroll: true });
   }
 
@@ -1438,6 +1438,7 @@ function resetLoadedModel() {
   availableTargets = [];
   learningSession = null;
   sessionSummaryShown = false;
+  document.body.classList.remove("session-active");
   currentItemWrongAttempts = 0;
   lastWrongSid = null;
   currentTarget = null;
@@ -1461,7 +1462,7 @@ function resetLoadedModel() {
   nameChoicesEl.replaceChildren();
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
-  learningSummaryEl.textContent = "Учебный каталог появится после загрузки модели.";
+  learningSummaryEl.textContent = "После загрузки выберите область и режим тренировки.";
 
   nextButton.disabled = true;
   answerButton.disabled = true;
@@ -1472,7 +1473,9 @@ function resetLoadedModel() {
 
   boneMode.disabled = true;
   boneOpacity.disabled = true;
+  boneOpacityField.hidden = true;
   connectiveMode.disabled = true;
+  connectiveField.hidden = true;
   canvas.dataset.connectiveMode = "";
   canvas.dataset.connectiveCount = "";
   canvas.dataset.boneMode = "";
@@ -1807,7 +1810,7 @@ async function loadBodyParts4Model() {
   for (let chunkPosition = 0; chunkPosition < chunkIds.length; chunkPosition += 1) {
     const chunkId = chunkIds[chunkPosition];
     loadingEl.textContent =
-      "BodyParts3D: загружаю всё тело — блок " +
+      "Загружаю анатомическую модель — часть " +
       (chunkPosition + 1) +
       " из " +
       chunkIds.length +
@@ -1963,11 +1966,11 @@ async function loadSelectedModel(source) {
     modelSource.disabled = false;
 
     if (appMode === "explore") {
-      questionLabelEl.textContent = "Исследование";
+      questionLabelEl.textContent = "Атлас";
       questionEl.textContent = "Выберите мышцу";
       feedbackEl.className = "feedback";
       feedbackEl.textContent =
-        "Коснитесь структуры на модели или найдите её по русскому, латинскому или исходному названию.";
+        "Коснитесь мышцы на модели или найдите её по названию.";
     }
 
     applyInitialQueryState();
