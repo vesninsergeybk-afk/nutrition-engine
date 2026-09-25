@@ -152,6 +152,20 @@ assert(
   "Today session lost a due find skill"
 );
 
+const exam = createLearningSession({
+  mode: "exam",
+  catalog,
+  store,
+  size: 6,
+  rng: deterministic,
+});
+assert(exam.items.length === 6, "Control session size is wrong");
+assert(
+  exam.items.some((item) => item.skillId === "find") &&
+    exam.items.some((item) => item.skillId === "name"),
+  "Control session must test both find and name skills"
+);
+
 const practical = createLearningSession({
   mode: "practical",
   catalog,
@@ -178,4 +192,5 @@ console.log("Mistake debt retirement: ok");
 console.log("Independent skill review: ok");
 console.log("Retention-driven today session: ok");
 console.log("Mixed practical retrieval: ok");
+console.log("Timed control session mix: ok");
 console.log("Session summary: ok");
