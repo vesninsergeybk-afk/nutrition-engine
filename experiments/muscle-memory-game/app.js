@@ -14,6 +14,7 @@ import {
   learningConceptSourceName,
   learningSummary,
   loadLearningStore,
+  migrateLearningStoreAliases,
   recordLearningAttempt,
   recordConfusion,
   regionCounts,
@@ -1068,6 +1069,7 @@ function applyLearningRegion() {
 
 function discoverTargets() {
   learningCatalog = buildMuscleCatalog(structureNames);
+  migrateLearningStoreAliases(learningStore, learningCatalog);
   learningTargetBySid = new Map();
   for (const target of learningCatalog) {
     for (const sid of target.sids) learningTargetBySid.set(sid, target);
