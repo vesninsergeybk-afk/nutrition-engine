@@ -70,20 +70,20 @@ const storage = {
 };
 
 let store = loadLearningStore(storage);
-recordLearningAttempt(store, "a", "find", false, storage);
-recordLearningAttempt(store, "a", "find", false, storage);
-recordLearningAttempt(store, "a", "find", true, storage);
-recordLearningAttempt(store, "b", "name", false, storage);
+recordLearningAttempt(store, "a", "find", false, storage, { addReviewDebt: true });
+recordLearningAttempt(store, "a", "find", false, storage, { addReviewDebt: false });
+recordLearningAttempt(store, "a", "find", true, storage, { retireMistake: false });
+recordLearningAttempt(store, "b", "name", false, storage, { addReviewDebt: true });
 store = loadLearningStore(storage);
 
 let mistakes = mistakeTargets(store, catalog);
 const aMistake = mistakes.find((item) => item.target.id === "a");
 const bMistake = mistakes.find((item) => item.target.id === "b");
-assert(aMistake?.debt === 1 && aMistake.skillId === "find", "Find mistake debt is wrong");
+assert(aMistake?.debt === 1 && aMistake.skillId === "find", "One failed item must create one find review debt");
 assert(bMistake?.debt === 1 && bMistake.skillId === "name", "Name mistake debt is wrong");
 
-recordLearningAttempt(store, "a", "find", true, storage);
-recordLearningAttempt(store, "b", "name", true, storage);
+recordLearningAttempt(store, "a", "find", true, storage, { retireMistake: true });
+recordLearningAttempt(store, "b", "name", true, storage, { retireMistake: true });
 store = loadLearningStore(storage);
 mistakes = mistakeTargets(store, catalog);
 assert(!mistakes.some((item) => item.target.id === "a"), "Resolved find mistake stayed in queue");
