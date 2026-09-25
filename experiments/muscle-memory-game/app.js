@@ -626,13 +626,17 @@ function applyRegionalClipWindow() {
     regionalClipBounds.maxFraction.toFixed(2);
 }
 
-function hitWithinRegionalClip(hit) {
-  if (!regionalClipBounds || !hit?.point) return true;
+function pointWithinRegionalClip(point) {
+  if (!regionalClipBounds || !point) return true;
   const epsilon = Math.max(bodySize.y, 1) * 1e-5;
   return (
-    hit.point.y >= regionalClipBounds.minY - epsilon &&
-    hit.point.y <= regionalClipBounds.maxY + epsilon
+    point.y >= regionalClipBounds.minY - epsilon &&
+    point.y <= regionalClipBounds.maxY + epsilon
   );
+}
+
+function hitWithinRegionalClip(hit) {
+  return pointWithinRegionalClip(hit?.point);
 }
 
 function worldBodyBox() {
@@ -692,6 +696,7 @@ function boxForStructures(ids) {
 
     for (let i = range.start; i < range.start + range.count; i += 1) {
       navPoint.fromBufferAttribute(position, i).applyMatrix4(anatomyMesh.matrixWorld);
+      if (!pointWithinRegionalClip(navPoint)) continue;
       box.expandByPoint(navPoint);
     }
   }
@@ -748,6 +753,7 @@ function nearestTargetPointToCamera(ids) {
     const stride = Math.max(1, Math.floor(range.count / 1200));
     for (let i = range.start; i < range.start + range.count; i += stride) {
       point.fromBufferAttribute(position, i).applyMatrix4(anatomyMesh.matrixWorld);
+      if (!pointWithinRegionalClip(point)) continue;
       const distance = point.distanceToSquared(camera.position);
       if (distance < bestDistance) {
         bestDistance = distance;
