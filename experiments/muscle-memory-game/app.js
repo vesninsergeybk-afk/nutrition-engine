@@ -853,6 +853,10 @@ function prepareSessionItem() {
   currentTarget = item.target;
   currentItemWrongAttempts = 0;
   lastWrongSid = null;
+  canvas.dataset.nameTargetVisible = "";
+  canvas.dataset.nameTargetPresentation = "";
+  canvas.dataset.nameOccludersHidden = "";
+  canvas.dataset.nameView = "";
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
   revealDeeperButton.hidden = true;
