@@ -176,7 +176,7 @@ jobs:
               );
             }
             await page.click('#next-question');
-            assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/ii);
+            assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/i);
             assert.match(await page.locator('#next-question').innerText(), /Повторить ошибки/);
 
             // The result screen must start a mistake-review session directly.
