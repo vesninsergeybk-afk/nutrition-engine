@@ -1,7 +1,11 @@
 import {
   buildMuscleCatalog,
+  appendSessionHistory,
+  confusionPairs,
+  learningHistory,
   learningSummary,
   loadLearningStore,
+  recordConfusion,
   recordLearningAttempt,
   regionCounts,
 } from "./learning-engine.js";
@@ -107,4 +111,41 @@ assert(findSummary.correct === 1 && findSummary.wrong === 1, "Find result counts
 assert(nameSummary.attempts === 1 && nameSummary.correct === 1, "Name skill is not independent");
 assert(findSummary.accuracy === 50, "Find accuracy should be 50%");
 
+const secondSample =
+  catalog.find((item) => item.region === sample.region && item.id !== sample.id) ||
+  catalog.find((item) => item.id !== sample.id);
+assert(secondSample, "A second learning target is required for confusion tests");
+
+recordConfusion(store, sample.id, secondSample.id, "name", storage);
+recordConfusion(store, sample.id, secondSample.id, "name", storage);
+appendSessionHistory(
+  store,
+  {
+    completedAt: 1000,
+    mode: "name",
+    region: sample.region,
+    total: 5,
+    clean: 3,
+    wrongAttempts: 2,
+    revealed: 0,
+  },
+  storage
+);
+
+store = loadLearningStore(storage);
+const confusions = confusionPairs(store, { skillId: "name", limit: 5 });
+assert(confusions.length === 1, "Confusion pair was not persisted");
+assert(confusions[0].count === 2, "Repeated confusion count is wrong");
+assert(
+  confusions[0].expectedMuscleId === sample.id &&
+    confusions[0].chosenMuscleId === secondSample.id,
+  "Confusion direction was not preserved"
+);
+
+const history = learningHistory(store, 5);
+assert(history.length === 1, "Session history was not persisted");
+assert(history[0].total === 5 && history[0].clean === 3, "Session history summary is wrong");
+
 console.log("Per-skill persistence: ok");
+console.log("Confusion persistence: ok");
+console.log("Compact session history: ok");
