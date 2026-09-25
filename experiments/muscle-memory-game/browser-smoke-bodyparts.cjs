@@ -115,7 +115,7 @@ const assert = require('node:assert/strict');
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip'),
-    'vertical'
+    'box'
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip-y'),
@@ -128,7 +128,7 @@ const assert = require('node:assert/strict');
   await page.selectOption('#learning-region', 'shoulder');
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip'),
-    'vertical'
+    'box'
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip-y'),

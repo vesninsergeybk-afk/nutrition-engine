@@ -575,7 +575,27 @@ function applyClipPlanesToLoadedAnatomy() {
   }
 }
 
-function activeSpecimenVerticalClipBounds() {
+function unclippedBoxForStructures(ids) {
+  const box = new THREE.Box3().makeEmpty();
+  if (!anatomyMesh || !ids.length) return box;
+
+  anatomyMesh.updateMatrixWorld(true);
+  const position = anatomyMesh.geometry.getAttribute("position");
+
+  for (const sid of ids) {
+    const range = structureRanges[sid];
+    if (!range) continue;
+
+    for (let i = range.start; i < range.start + range.count; i += 1) {
+      navPoint.fromBufferAttribute(position, i).applyMatrix4(anatomyMesh.matrixWorld);
+      box.expandByPoint(navPoint);
+    }
+  }
+
+  return box;
+}
+
+function activeSpecimenClipBounds() {
   if (!regionIsolationActive()) return null;
 
   const fractions = specimenVerticalWindow(selectedLearningRegion);
@@ -587,51 +607,103 @@ function activeSpecimenVerticalClipBounds() {
   const height = body.max.y - body.min.y;
   if (!(height > 0)) return null;
 
+  const ids = [
+    ...new Set(availableTargets.flatMap((target) => target.sids || [])),
+  ];
+  const targetBox = unclippedBoxForStructures(ids);
+  if (targetBox.isEmpty()) return null;
+
+  const bodySpan = body.getSize(new THREE.Vector3());
+  const targetSpan = targetBox.getSize(new THREE.Vector3());
+  const padX = Math.max(targetSpan.x * 0.12, bodySpan.x * 0.025);
+  const padZ = Math.max(targetSpan.z * 0.18, bodySpan.z * 0.04);
   const [minFraction, maxFraction] = fractions;
+
+  const minX = Math.max(body.min.x, targetBox.min.x - padX);
+  const maxX = Math.min(body.max.x, targetBox.max.x + padX);
+  const minZ = Math.max(body.min.z, targetBox.min.z - padZ);
+  const maxZ = Math.min(body.max.z, targetBox.max.z + padZ);
+
   return {
+    minX,
+    maxX,
     minY: body.min.y + height * minFraction,
     maxY: body.min.y + height * maxFraction,
+    minZ,
+    maxZ,
     minFraction,
     maxFraction,
+    minXFraction:
+      bodySpan.x > 0 ? (minX - body.min.x) / bodySpan.x : 0,
+    maxXFraction:
+      bodySpan.x > 0 ? (maxX - body.min.x) / bodySpan.x : 1,
+    minZFraction:
+      bodySpan.z > 0 ? (minZ - body.min.z) / bodySpan.z : 0,
+    maxZFraction:
+      bodySpan.z > 0 ? (maxZ - body.min.z) / bodySpan.z : 1,
+  };
+}
+
+function activeSpecimenVerticalClipBounds() {
+  const bounds = activeSpecimenClipBounds();
+  if (!bounds) return null;
+  return {
+    minY: bounds.minY,
+    maxY: bounds.maxY,
+    minFraction: bounds.minFraction,
+    maxFraction: bounds.maxFraction,
   };
 }
 
 function applyRegionalClipWindow() {
-  regionalClipBounds = activeSpecimenVerticalClipBounds();
+  regionalClipBounds = activeSpecimenClipBounds();
 
   if (!regionalClipBounds) {
     regionalClipPlanes = [];
     applyClipPlanesToLoadedAnatomy();
     canvas.dataset.specimenClip = "none";
+    canvas.dataset.specimenClipX = "";
     canvas.dataset.specimenClipY = "";
+    canvas.dataset.specimenClipZ = "";
     return;
   }
 
   regionalClipPlanes = [
-    new THREE.Plane(
-      new THREE.Vector3(0, 1, 0),
-      -regionalClipBounds.minY
-    ),
-    new THREE.Plane(
-      new THREE.Vector3(0, -1, 0),
-      regionalClipBounds.maxY
-    ),
+    new THREE.Plane(new THREE.Vector3(1, 0, 0), -regionalClipBounds.minX),
+    new THREE.Plane(new THREE.Vector3(-1, 0, 0), regionalClipBounds.maxX),
+    new THREE.Plane(new THREE.Vector3(0, 1, 0), -regionalClipBounds.minY),
+    new THREE.Plane(new THREE.Vector3(0, -1, 0), regionalClipBounds.maxY),
+    new THREE.Plane(new THREE.Vector3(0, 0, 1), -regionalClipBounds.minZ),
+    new THREE.Plane(new THREE.Vector3(0, 0, -1), regionalClipBounds.maxZ),
   ];
   applyClipPlanesToLoadedAnatomy();
 
-  canvas.dataset.specimenClip = "vertical";
+  canvas.dataset.specimenClip = "box";
+  canvas.dataset.specimenClipX =
+    regionalClipBounds.minXFraction.toFixed(2) +
+    ":" +
+    regionalClipBounds.maxXFraction.toFixed(2);
   canvas.dataset.specimenClipY =
     regionalClipBounds.minFraction.toFixed(2) +
     ":" +
     regionalClipBounds.maxFraction.toFixed(2);
+  canvas.dataset.specimenClipZ =
+    regionalClipBounds.minZFraction.toFixed(2) +
+    ":" +
+    regionalClipBounds.maxZFraction.toFixed(2);
 }
 
 function pointWithinRegionalClip(point) {
   if (!regionalClipBounds || !point) return true;
-  const epsilon = Math.max(bodySize.y, 1) * 1e-5;
+  const epsilon =
+    Math.max(bodySize.x, bodySize.y, bodySize.z, 1) * 1e-5;
   return (
+    point.x >= regionalClipBounds.minX - epsilon &&
+    point.x <= regionalClipBounds.maxX + epsilon &&
     point.y >= regionalClipBounds.minY - epsilon &&
-    point.y <= regionalClipBounds.maxY + epsilon
+    point.y <= regionalClipBounds.maxY + epsilon &&
+    point.z >= regionalClipBounds.minZ - epsilon &&
+    point.z <= regionalClipBounds.maxZ + epsilon
   );
 }
 
@@ -3871,7 +3943,9 @@ function resetLoadedModel() {
   regionalClipPlanes = [];
   regionalClipBounds = null;
   canvas.dataset.specimenClip = "";
+  canvas.dataset.specimenClipX = "";
   canvas.dataset.specimenClipY = "";
+  canvas.dataset.specimenClipZ = "";
   clearDeeperStructures();
   canvas.dataset.deeperFocus = "";
   canvas.dataset.deeperFocusComponentCount = "";
