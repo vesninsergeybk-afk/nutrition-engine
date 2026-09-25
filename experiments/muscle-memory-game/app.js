@@ -983,6 +983,7 @@ function updateLearningSummary() {
 
 function resetLearningSessionUi(message = "Выберите режим и начните сессию.") {
   clearExamTimer();
+  clearExamTaskMetadata();
   learningSession = null;
   sessionSummaryShown = false;
   document.body.classList.remove("session-active");
@@ -1144,6 +1145,9 @@ function clearExamTimer() {
   }
   examDeadline = 0;
   canvas.dataset.examSeconds = "";
+}
+
+function clearExamTaskMetadata() {
   canvas.dataset.examFindAccessible = "";
   canvas.dataset.examOccludersHidden = "";
   canvas.dataset.examFindFallback = "";
