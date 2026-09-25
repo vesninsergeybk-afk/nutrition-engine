@@ -899,3 +899,8 @@ button:disabled {
     text-align: left;
   }
 }
+
+
+.learning-mode-buttons [data-learning-mode="exam"] {
+  grid-column: 1 / -1;
+}
