@@ -239,6 +239,21 @@ html[data-theme="modern"][data-interface-simplification="1"] #heiRecommendations
   border-radius:10px!important;
 }
 
+/* HF2 overview buttons are navigational data cards. The legacy global button rule
+   paints them primary blue, leaving their muted <small> copy below AA in Firefox.
+   Keep state meaning on the existing left border and return the card itself to a
+   neutral surface. */
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-group-overview-hf2__list>button,
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-hei-dashboard-hf2__list>button{
+  background:#fff!important;
+  color:var(--vg-ink)!important;
+  border-color:var(--vg-line)!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-group-overview-hf2__list>button small,
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent .workspace-hei-dashboard-hf2__list>button small{
+  color:#475467!important;
+}
+
 /* 6. Tables and repeated data should read as data, not a stack of floating objects. */
 html[data-theme="modern"][data-interface-simplification="1"] .ration-table thead th{
   color:#667085!important;
