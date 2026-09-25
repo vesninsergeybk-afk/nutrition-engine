@@ -1,4 +1,5 @@
 import { structureTerm } from "./anatomy-terms-ru.js";
+import { buildMuscleCatalog, regionCounts } from "./learning-engine.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
@@ -55,5 +56,28 @@ console.log("Russian names:", names.length - missing.length + "/" + names.length
 if (missing.length) {
   console.log("Missing Russian names:");
   for (const name of missing) console.log(name);
+  process.exitCode = 1;
+}
+
+
+const learningCatalog = buildMuscleCatalog(names);
+const represented = learningCatalog.reduce((sum, item) => sum + item.sids.length, 0);
+const learningRegions = regionCounts(learningCatalog);
+const unclassified = learningCatalog.filter((item) => item.region === "other");
+
+console.log("Z-Anatomy learning targets:", learningCatalog.length);
+console.log("Z-Anatomy learning regions:", JSON.stringify(learningRegions));
+console.log("Z-Anatomy unclassified targets:", unclassified.length);
+
+if (represented !== names.length) {
+  console.error("Z-Anatomy learning catalog lost meshes:", represented + "/" + names.length);
+  process.exitCode = 1;
+}
+
+if (unclassified.length) {
+  console.error(
+    "Z-Anatomy unclassified learning targets:",
+    unclassified.map((item) => item.nameRu).join(" | ")
+  );
   process.exitCode = 1;
 }
