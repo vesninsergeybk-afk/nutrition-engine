@@ -166,7 +166,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Поверхностные и собственные мышцы нижней части спины.",
     {
       questionPatterns: [
-        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|остистая мышца груди|остистая мышца$)|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
+        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|(?:^|\s)остистая мышца груди|(?:^|\s)остистая мышца$)|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
       ],
       supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium|hip bone|os cox/i],
       depthProfile: "back",
