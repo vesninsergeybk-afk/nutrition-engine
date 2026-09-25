@@ -116,6 +116,7 @@ function neutralSourceName(value) {
     .replace(/\bleft ventricle\b/gi, LEFT_VENTRICLE)
     .replace(/\.(l|r)$/i, "")
     .replace(/\b(right|left)\b/gi, "")
+    .replace(/\bmuscle\s*$/i, "")
     .replace(new RegExp(RIGHT_VENTRICLE, "g"), "right ventricle")
     .replace(new RegExp(LEFT_VENTRICLE, "g"), "left ventricle")
     .replace(/\s+/g, " ")
