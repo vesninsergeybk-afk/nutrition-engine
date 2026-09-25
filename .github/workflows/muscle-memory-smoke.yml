@@ -15,8 +15,13 @@ permissions:
 # Ordinary pushes run the fast deterministic checks only. The expensive
 # Chromium + two-model journey is reserved for explicit checkpoints:
 # workflow_dispatch or a commit message containing [full-smoke].
-# There is intentionally no workflow-level concurrency group: a later fast
-# push must not cancel an already-running checkpoint browser test.
+#
+# Fast runs use a unique concurrency group, so they never cancel or wait for
+# checkpoints. Full-smoke runs share one group: a newer checkpoint supersedes
+# an older checkpoint, but ordinary pushes cannot cancel it.
+concurrency:
+  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') }}
 
 jobs:
   smoke:
