@@ -146,7 +146,11 @@ function spreadReviewItems(items, rng = Math.random) {
 
   while (remaining.length) {
     const previous = ordered[ordered.length - 1];
-    let candidates = remaining.map((item, index) => ({ item, index }));
+    let candidates = remaining.map((item, index) => ({
+      item,
+      index,
+      tie: rng(),
+    }));
 
     if (previous) {
       const differentTarget = candidates.filter(
@@ -155,13 +159,19 @@ function spreadReviewItems(items, rng = Math.random) {
       if (differentTarget.length) candidates = differentTarget;
     }
 
-    candidates.sort(
-      (a, b) =>
-        b.item.debt - a.item.debt ||
-        similarityScore(previous?.target || a.item.target, a.item.target) -
-          similarityScore(previous?.target || b.item.target, b.item.target) ||
-        rng() - 0.5
-    );
+    candidates.sort((a, b) => {
+      const debtOrder = b.item.debt - a.item.debt;
+      if (debtOrder) return debtOrder;
+
+      if (previous) {
+        const similarityOrder =
+          similarityScore(previous.target, a.item.target) -
+          similarityScore(previous.target, b.item.target);
+        if (similarityOrder) return similarityOrder;
+      }
+
+      return a.tie - b.tie;
+    });
 
     const chosenIndex = candidates[0].index;
     ordered.push(remaining.splice(chosenIndex, 1)[0]);
