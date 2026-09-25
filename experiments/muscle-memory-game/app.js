@@ -1092,6 +1092,8 @@ function setMode(mode) {
 
   if (mode === "quiz") {
     if (learningSession && !sessionSummaryShown) {
+      document.body.classList.add("session-active");
+      syncQuestionCardPlacement();
       prepareSessionItem();
     } else {
       resetLearningSessionUi();
