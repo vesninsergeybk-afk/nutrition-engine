@@ -107,6 +107,14 @@ export function learningConceptSourceName(sourceName) {
   return neutral;
 }
 
+function detailedRussianName(sourceName) {
+  const neutralSource = neutralSourceName(sourceName);
+  const neutralTranslation = bodyPartsMuscleNameRu(neutralSource);
+  if (neutralTranslation) return stripRussianSide(neutralTranslation);
+
+  return stripRussianSide(structureTerm(sourceName).nameRu || sourceName);
+}
+
 function canonicalRussianName(sourceName) {
   const conceptSource = learningConceptSourceName(sourceName);
   const neutralTranslation = bodyPartsMuscleNameRu(conceptSource);
@@ -220,13 +228,21 @@ export function inferMuscleRegion(sourceName, nameRu = "") {
 }
 
 function makeTarget(group) {
-  const first = group.items[0];
+  const legacyIds = [
+    ...new Set(
+      group.items
+        .map((item) => item.legacyId)
+        .filter((id) => id && id !== group.id)
+    ),
+  ];
+
   return {
     id: group.id,
     nameRu: group.nameRu,
     region: group.region,
     sids: group.items.map((item) => item.sid),
     sourceNames: group.items.map((item) => item.sourceName),
+    legacyIds,
     skillIds: ["find", "name"],
   };
 }
@@ -247,6 +263,7 @@ export function buildMuscleCatalog(structureNames) {
     group.items.push({
       sid,
       sourceName,
+      legacyId: stableIdFromRussian(detailedRussianName(sourceName)),
       side: /\bright\b|\.r$/i.test(sourceName)
         ? "right"
         : /\bleft\b|\.l$/i.test(sourceName)
@@ -260,6 +277,140 @@ export function buildMuscleCatalog(structureNames) {
   return [...grouped.values()]
     .map(makeTarget)
     .sort((a, b) => a.nameRu.localeCompare(b.nameRu, "ru"));
+}
+
+function positiveMin(values) {
+  const positive = values
+    .map((value) => Number(value) || 0)
+    .filter((value) => value > 0);
+  return positive.length ? Math.min(...positive) : 0;
+}
+
+function mergeProgressRecords(records) {
+  const items = (records || []).filter(Boolean);
+  if (!items.length) return {};
+
+  const latest = [...items].sort(
+    (a, b) =>
+      Math.max(Number(b.lastReviewedAt) || 0, Number(b.lastSeen) || 0) -
+      Math.max(Number(a.lastReviewedAt) || 0, Number(a.lastSeen) || 0)
+  )[0];
+
+  const reviewed = items.filter((item) => (Number(item.reviewCount) || 0) > 0);
+  const cleanStreak = reviewed.length
+    ? Math.min(...reviewed.map((item) => Math.max(0, Number(item.cleanStreak) || 0)))
+    : 0;
+
+  return {
+    ...latest,
+    attempts: items.reduce((sum, item) => sum + (Number(item.attempts) || 0), 0),
+    correct: items.reduce((sum, item) => sum + (Number(item.correct) || 0), 0),
+    wrong: items.reduce((sum, item) => sum + (Number(item.wrong) || 0), 0),
+    lastSeen: Math.max(...items.map((item) => Number(item.lastSeen) || 0)),
+    reviewDebt: Math.max(...items.map((item) => Number(item.reviewDebt) || 0)),
+    reviewCount: items.reduce((sum, item) => sum + (Number(item.reviewCount) || 0), 0),
+    cleanStreak,
+    lapses: items.reduce((sum, item) => sum + (Number(item.lapses) || 0), 0),
+    stabilityDays: positiveMin(items.map((item) => item.stabilityDays)),
+    lastReviewedAt: Math.max(
+      ...items.map((item) => Number(item.lastReviewedAt) || 0)
+    ),
+    dueAt: positiveMin(items.map((item) => item.dueAt)),
+    lastOutcome: latest?.lastOutcome || null,
+  };
+}
+
+export function migrateLearningStoreAliases(
+  store,
+  catalog,
+  storage = globalThis.localStorage
+) {
+  if (!store || !Array.isArray(catalog)) return false;
+
+  const aliasToCanonical = new Map();
+  for (const target of catalog) {
+    for (const legacyId of target.legacyIds || []) {
+      if (legacyId && legacyId !== target.id) {
+        aliasToCanonical.set(legacyId, target.id);
+      }
+    }
+  }
+
+  if (!aliasToCanonical.size) return false;
+  let changed = false;
+
+  for (const target of catalog) {
+    const ids = [target.id, ...(target.legacyIds || [])];
+
+    for (const skillId of target.skillIds || ["find", "name"]) {
+      const keys = ids.map((id) => id + "::" + skillId);
+      const existing = keys
+        .map((key) => ({ key, record: store.records?.[key] }))
+        .filter((item) => item.record);
+
+      const legacyExisting = existing.filter(
+        (item) => item.key !== target.id + "::" + skillId
+      );
+      if (!legacyExisting.length) continue;
+
+      if (!store.records || typeof store.records !== "object") store.records = {};
+      const merged = mergeProgressRecords(existing.map((item) => item.record));
+      for (const item of existing) delete store.records[item.key];
+      store.records[target.id + "::" + skillId] = merged;
+      changed = true;
+    }
+  }
+
+  if (store.confusions && typeof store.confusions === "object") {
+    const migrated = {};
+
+    for (const entry of Object.values(store.confusions)) {
+      if (!entry) continue;
+      const expectedMuscleId =
+        aliasToCanonical.get(entry.expectedMuscleId) || entry.expectedMuscleId;
+      const chosenMuscleId =
+        aliasToCanonical.get(entry.chosenMuscleId) || entry.chosenMuscleId;
+
+      if (!expectedMuscleId || !chosenMuscleId || expectedMuscleId === chosenMuscleId) {
+        if (
+          expectedMuscleId !== entry.expectedMuscleId ||
+          chosenMuscleId !== entry.chosenMuscleId
+        ) changed = true;
+        continue;
+      }
+
+      const key = [entry.skillId, expectedMuscleId, chosenMuscleId].join("::");
+      const current = migrated[key];
+
+      migrated[key] = current
+        ? {
+            ...current,
+            count: (Number(current.count) || 0) + (Number(entry.count) || 0),
+            lastSeen: Math.max(
+              Number(current.lastSeen) || 0,
+              Number(entry.lastSeen) || 0
+            ),
+          }
+        : {
+            ...entry,
+            expectedMuscleId,
+            chosenMuscleId,
+          };
+
+      if (
+        expectedMuscleId !== entry.expectedMuscleId ||
+        chosenMuscleId !== entry.chosenMuscleId ||
+        key !== [entry.skillId, entry.expectedMuscleId, entry.chosenMuscleId].join("::")
+      ) {
+        changed = true;
+      }
+    }
+
+    if (changed) store.confusions = migrated;
+  }
+
+  if (changed) saveLearningStore(store, storage);
+  return changed;
 }
 
 export function filterCatalogByRegion(catalog, regionId) {
