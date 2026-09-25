@@ -38,6 +38,11 @@ assert(
   app.includes("canvas.dataset.regionVisibleBones"),
   "Regional bone visibility is not observable"
 );
+assert(
+  app.includes('boneDisplayMode = "anatomical"') &&
+  app.includes('boneMode.value = "anatomical"'),
+  "Regional reset must keep filtered bone landmarks visible"
+);
 
 console.log("Regional isolation: muscle + bone contract ok");
 console.log("Depth exploration: view-dependent surface peeling + click stack ok");
