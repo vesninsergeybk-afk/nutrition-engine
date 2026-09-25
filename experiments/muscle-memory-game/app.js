@@ -574,8 +574,8 @@ function applyLearningRegion() {
   canvas.dataset.learningRegion = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
-  focusShoulderButton.textContent =
-    selectedLearningRegion === "all" ? "К области" : "К региону";
+  focusShoulderButton.hidden = selectedLearningRegion === "all";
+  focusShoulderButton.textContent = "К региону";
 
   learningSessionMode.disabled = availableTargets.length === 0;
   startLearningSessionButton.disabled = !canStartLearningSession();
