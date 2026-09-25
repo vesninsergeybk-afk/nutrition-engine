@@ -44,6 +44,11 @@ assert(
   "Regional bone visibility is not observable"
 );
 assert(
+  app.includes("sourceCoverageNoteEl.hidden = !sourceCoverageIncomplete") &&
+    html.includes('id="source-coverage-note"'),
+  "Source-incomplete anatomy warning is hidden in diagnostics instead of the user UI"
+);
+assert(
   app.includes('boneDisplayMode = "off"') &&
     app.includes('preset === "bones"') &&
     app.includes("applyRegionBoneVisibility()"),

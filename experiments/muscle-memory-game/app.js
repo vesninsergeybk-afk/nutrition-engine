@@ -114,6 +114,7 @@ const scopeControls = document.querySelector("#scope-controls");
 const learningRegion = document.querySelector("#learning-region");
 const regionIsolation = document.querySelector("#region-isolation");
 const learningSummaryEl = document.querySelector("#learning-summary");
+const sourceCoverageNoteEl = document.querySelector("#source-coverage-note");
 const todayLearningSessionButton = document.querySelector("#today-learning-session");
 const learningProgressEl = document.querySelector("#learning-progress");
 const learningProgressContentEl = document.querySelector("#learning-progress-content");
@@ -2198,10 +2199,17 @@ function applyLearningRegion() {
   const activeDepthAvailability = activeSpecimen?.depthProfile
     ? specimenDepthAvailability(learningCatalog, selectedLearningRegion)
     : null;
-  const sourceCoverageNote =
-    activeDepthAvailability?.reason === "source-incomplete"
-      ? ` В этой 3D-базе препарат неполон для достоверной послойности: ${activeDepthAvailability.actual} из ${activeDepthAvailability.required} обязательных мышечных целей. Послойный режим отключён; для полного препарата переключите источник анатомии.`
-      : "";
+  const sourceCoverageIncomplete =
+    activeDepthAvailability?.reason === "source-incomplete";
+  const sourceCoverageMessage = sourceCoverageIncomplete
+    ? `В этой 3D-базе препарат неполон для достоверной послойности: ${activeDepthAvailability.actual} из ${activeDepthAvailability.required} обязательных мышечных целей. Для полного препарата выберите Z-Anatomy.`
+    : "";
+  const sourceCoverageNote = sourceCoverageMessage
+    ? " " + sourceCoverageMessage
+    : "";
+
+  sourceCoverageNoteEl.hidden = !sourceCoverageIncomplete;
+  sourceCoverageNoteEl.textContent = sourceCoverageMessage;
 
   targetStatusEl.textContent =
     `Учебный каталог: ${learningCatalog.length} мышечных целей. ` +
@@ -3754,6 +3762,8 @@ function resetLoadedModel() {
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   learningSummaryEl.textContent = "После загрузки выберите учебный блок и режим тренировки.";
+  sourceCoverageNoteEl.hidden = true;
+  sourceCoverageNoteEl.textContent = "";
 
   nextButton.disabled = true;
   answerButton.disabled = true;
