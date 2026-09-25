@@ -1,6 +1,8 @@
 import {
   buildMuscleCatalog,
+  learningConceptSourceName,
 } from "./learning-engine.js";
+import { muscleDepthInfo } from "./regional-depth-map.js";
 import { bodyPartsAnatomyKind } from "./bodyparts4-classification.js";
 import {
   VIRTUAL_SPECIMENS,
@@ -216,6 +218,48 @@ for (const specimen of VIRTUAL_SPECIMENS) {
       );
     });
   });
+
+  const profileId = specimenDepthProfileId(specimen.id);
+  if (profileId) {
+    for (const [sourceId, catalog, sceneTargets] of [
+      ["Z-Anatomy", sources.z, zScene],
+      ["BodyParts3D", sources.bp, bpScene],
+    ]) {
+      const questionCount = filterCatalogForSpecimen(catalog, specimen.id, "question").length;
+      const required = Math.max(1, Number(specimen.minDepthQuestionTargets) || 1);
+      if (questionCount < required) continue;
+
+      const missingDepth = sceneTargets.filter((target) =>
+        !(target.sourceNames || []).some((sourceName) =>
+          muscleDepthInfo(
+            profileId,
+            learningConceptSourceName(sourceName)
+          )
+        )
+      );
+
+      if (missingDepth.length) {
+        console.log(
+          "Depth source-name mismatch:",
+          specimen.id,
+          sourceId,
+          missingDepth
+            .map((target) =>
+              target.nameRu + " <= " + (target.sourceNames || []).join(" / ")
+            )
+            .join(" | ")
+        );
+      }
+
+      assert(
+        missingDepth.length === 0,
+        specimen.id +
+          ": " +
+          sourceId +
+          " has targets that do not map to the verified depth profile"
+      );
+    }
+  }
 
   const row = {
     id: specimen.id,

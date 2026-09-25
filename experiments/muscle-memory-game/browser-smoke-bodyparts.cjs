@@ -113,9 +113,18 @@ const assert = require('node:assert/strict');
     await page.locator('#source-coverage-note').innerText(),
     /неполон.*1 из 5.*Z-Anatomy/i
   );
-  assert.equal(await page.locator('#peel-surface-layer').isDisabled(), true);
+  assert.equal(await page.locator('#peel-surface-layer').isDisabled(), false);
+  assert.match(
+    await page.locator('#peel-surface-layer').innerText(),
+    /Почему послойность недоступна/i
+  );
   assert.match(
     (await page.locator('#peel-surface-layer').getAttribute('title')) || '',
+    /неполон.*1 из 5|послойност/i
+  );
+  await page.click('#peel-surface-layer');
+  assert.match(
+    await page.locator('#feedback').innerText(),
     /неполон.*1 из 5|послойност/i
   );
   assert.equal(
