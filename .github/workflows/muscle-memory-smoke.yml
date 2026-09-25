@@ -295,6 +295,15 @@ jobs:
               );
               if (done < 4) await page.click('#next-question');
             }
+            const storedAfterPracticalCompletion = await page.evaluate(() =>
+              JSON.parse(localStorage.getItem('muscle-memory-learning-v1') || '{}')
+            );
+            assert.ok(
+              (storedAfterPracticalCompletion.sessions || []).some(
+                entry => entry.mode === 'practical' && entry.total === 5
+              ),
+              'Completed session must be in history before the learner opens the summary'
+            );
             await page.click('#next-question');
             assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/i);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-summary.png', fullPage: true });
