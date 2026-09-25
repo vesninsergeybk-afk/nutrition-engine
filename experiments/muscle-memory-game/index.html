@@ -25,7 +25,7 @@
 
         <div class="topbar-tools">
           <div class="mode-switch" role="group" aria-label="Режим работы">
-            <button id="mode-quiz" type="button" class="active" aria-pressed="true">Тренажёр</button>
+            <button id="mode-quiz" type="button" class="active" aria-pressed="true">Обучение</button>
             <button id="mode-explore" type="button" aria-pressed="false">Исследование</button>
           </div>
 
@@ -74,6 +74,20 @@
 
     <aside class="panel">
       <section class="question-card">
+        <div id="learning-controls" class="learning-controls">
+          <label class="learning-field">
+            <span>Регион</span>
+            <select id="learning-region" aria-label="Учебный регион" disabled>
+              <option value="all">Всё тело</option>
+            </select>
+          </label>
+          <div class="learning-skill">
+            <span>Навык</span>
+            <strong>Найти на модели</strong>
+          </div>
+        </div>
+        <p id="learning-summary" class="learning-summary">Учебный каталог появится после загрузки модели.</p>
+
         <p id="question-label" class="question-label">Задание</p>
         <h2 id="question">После загрузки появится первая мышца</h2>
         <p id="feedback" class="feedback">Нажмите на нужную мышцу прямо на модели.</p>
