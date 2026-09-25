@@ -139,11 +139,16 @@ async function main() {
     return el && el.classList.contains('has-query') && el.getBoundingClientRect().height > 0;
   }, null, { timeout: 20000 });
   const found = await page.evaluate(() => {
+    const root = document.getElementById('globalResults');
     const rows = Array.from(document.querySelectorAll('#globalResults [data-role="add-search"], #globalResults [data-role="add"]'));
-    const first = document.querySelector('#globalResults .search-result, #globalResults li');
-    return { candidates: rows.length, firstText: first ? first.textContent.replace(/\s+/g, ' ').trim().slice(0, 80) : null };
+    let node = rows[0] || null;
+    while (node && node !== root && !/банан/i.test(node.textContent || '')) node = node.parentElement;
+    const firstText = node && node !== root ? (node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120) : '';
+    const resultText = root ? (root.textContent || '').replace(/\s+/g, ' ').trim() : '';
+    return { candidates: rows.length, firstText, hasQueryText: /банан/i.test(resultText) };
   });
-  record('поиск находит продукт', found.candidates > 0, `вариантов=${found.candidates}, первый="${found.firstText}"`);
+  record('поиск находит продукт', found.candidates > 0 && found.hasQueryText,
+    `вариантов=${found.candidates}, первый="${found.firstText || 'текст результата не найден'}"`);
 
   const addButton = page.locator('#globalResults button[data-role="add-search"]:not([disabled]), #globalResults button[data-role="add"]:not([disabled])').first();
   await addButton.click();
@@ -210,7 +215,10 @@ async function main() {
     consoleErrors,
     pageErrors,
     failedRequests,
-    ok: steps.every(s => s.ok) && pageErrors.length === 0
+    ok: steps.every(s => s.ok) &&
+      consoleErrors.length === 0 &&
+      pageErrors.length === 0 &&
+      failedRequests.length === 0
   };
   fs.writeFileSync(path.join(OUT, 'summary.json'), JSON.stringify(summary, null, 2) + '\n', 'utf8');
 
