@@ -367,18 +367,17 @@ console.log("Per-skill persistence: ok");
 console.log("Confusion persistence: ok");
 console.log("Compact session history: ok");
 
-assert.equal(
-  learningConceptSourceName("Supraspinatus muscle.l"),
-  "Supraspinatus",
+assert(
+  learningConceptSourceName("Supraspinatus muscle.l") === "Supraspinatus",
   "Z-Anatomy generic 'muscle' suffix must not leak into the learning concept"
 );
-assert.equal(
-  learningConceptSourceName("Clavicular head of pectoralis major muscle.r"),
-  "pectoralis major",
+assert(
+  learningConceptSourceName("Clavicular head of pectoralis major muscle.r") ===
+    "pectoralis major",
   "Z-Anatomy subdivision + generic 'muscle' suffix must collapse to the parent muscle"
 );
-assert.equal(
-  learningConceptSourceName("Scapular spinal part of deltoid muscle.l"),
-  "deltoid",
+assert(
+  learningConceptSourceName("Scapular spinal part of deltoid muscle.l") ===
+    "deltoid",
   "Z-Anatomy deltoid subdivision must collapse to the parent muscle"
 );
