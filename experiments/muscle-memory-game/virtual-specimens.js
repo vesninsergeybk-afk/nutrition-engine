@@ -282,6 +282,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       contextPatterns: [/deltoid|latissimus dorsi|pectoralis major|pectoralis minor/i],
       supportBonePatterns: [/scapula|clavicle|rib|thoracic vertebra/i],
       depthProfile: "shoulder",
+      minDepthQuestionTargets: 5,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
