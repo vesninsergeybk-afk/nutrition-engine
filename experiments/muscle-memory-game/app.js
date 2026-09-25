@@ -305,10 +305,135 @@ function boxForStructures(ids) {
   return box;
 }
 
-function focusSelectedStructures(padding = 1.65) {
+function bestViewDirectionForBox(box) {
+  const body = worldBodyBox();
+  if (!box || box.isEmpty() || body.isEmpty()) return currentViewDirection();
+
+  const center = box.getCenter(new THREE.Vector3());
+  const candidates = [
+    {
+      distance: Math.abs(body.max.z - center.z),
+      direction: new THREE.Vector3(0, 0.02, 1).normalize(),
+      label: "front",
+    },
+    {
+      distance: Math.abs(center.z - body.min.z),
+      direction: new THREE.Vector3(0, 0.02, -1).normalize(),
+      label: "back",
+    },
+    {
+      distance: Math.abs(center.x - body.min.x),
+      direction: new THREE.Vector3(-1, 0.02, 0).normalize(),
+      label: "left",
+    },
+    {
+      distance: Math.abs(body.max.x - center.x),
+      direction: new THREE.Vector3(1, 0.02, 0).normalize(),
+      label: "right",
+    },
+  ];
+
+  candidates.sort((a, b) => a.distance - b.distance);
+  return candidates[0];
+}
+
+function nearestTargetPointToCamera(ids) {
+  if (!anatomyMesh || !ids.length) return null;
+
+  anatomyMesh.updateMatrixWorld(true);
+  const position = anatomyMesh.geometry.getAttribute("position");
+  const point = new THREE.Vector3();
+  const best = new THREE.Vector3();
+  let bestDistance = Infinity;
+  let found = false;
+
+  for (const sid of ids) {
+    const range = structureRanges[sid];
+    if (!range) continue;
+
+    const stride = Math.max(1, Math.floor(range.count / 1200));
+    for (let i = range.start; i < range.start + range.count; i += stride) {
+      point.fromBufferAttribute(position, i).applyMatrix4(anatomyMesh.matrixWorld);
+      const distance = point.distanceToSquared(camera.position);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best.copy(point);
+        found = true;
+      }
+    }
+  }
+
+  return found ? best : null;
+}
+
+function firstVisibleStructureOnRay(point) {
+  if (!anatomyMesh || !point) return null;
+
+  const direction = point.clone().sub(camera.position);
+  if (direction.lengthSq() < 1e-10) return null;
+  raycaster.set(camera.position, direction.normalize());
+
+  const hits = raycaster.intersectObject(anatomyMesh, false);
+  for (const hit of hits) {
+    const sid = structureIdFromHit(hit);
+    if (sid == null || structureVisibility[sid] === false) continue;
+    return sid;
+  }
+
+  return null;
+}
+
+function revealNamedTarget(ids, maxOccluders = 10) {
+  if (!anatomyMesh || !ids.length) {
+    return { hidden: 0, visible: false, isolated: false };
+  }
+
+  const targetSet = new Set(ids);
+  const targetPoint = nearestTargetPointToCamera(ids);
+  if (!targetPoint) {
+    setVisibleStructures(ids);
+    return { hidden: 0, visible: true, isolated: true };
+  }
+
+  const direction = targetPoint.clone().sub(camera.position).normalize();
+  raycaster.set(camera.position, direction);
+  const hits = raycaster.intersectObject(anatomyMesh, false);
+
+  const occluders = [];
+  let reachesTarget = false;
+
+  for (const hit of hits) {
+    const sid = structureIdFromHit(hit);
+    if (sid == null || structureVisibility[sid] === false) continue;
+    if (targetSet.has(sid)) {
+      reachesTarget = true;
+      break;
+    }
+    if (!occluders.includes(sid)) occluders.push(sid);
+  }
+
+  if (reachesTarget) {
+    for (const sid of occluders.slice(0, maxOccluders)) {
+      hiddenStack.push(sid);
+      setStructureVisible(sid, false);
+    }
+
+    const visibleSid = firstVisibleStructureOnRay(targetPoint);
+    if (visibleSid != null && targetSet.has(visibleSid)) {
+      return { hidden: Math.min(occluders.length, maxOccluders), visible: true, isolated: false };
+    }
+  }
+
+  // Fairness matters more than preserving every surrounding muscle: if the
+  // selected structure is still occluded, show it with skeletal landmarks.
+  setVisibleStructures(ids);
+  return { hidden: 0, visible: true, isolated: true };
+}
+
+function focusSelectedStructures(padding = 1.65, direction = null) {
   if (!focusedStructureIds.length) return;
   const box = boxForStructures(focusedStructureIds);
-  if (!box.isEmpty()) focusBox(box, padding);
+  if (!box.isEmpty()) focusBox(box, padding, direction || currentViewDirection());
 }
 
 function focusLearningRegion() {
@@ -752,10 +877,20 @@ function prepareSessionItem() {
     const ids = targetStructureIds(item.target);
     const sid = ids.length ? ids[learningSession.index % ids.length] : null;
     if (sid != null) {
-      highlightStructures([sid], "selected");
       focusedStructureIds = [sid];
       focusSelectedButton.disabled = false;
-      focusSelectedStructures(2.35);
+
+      const targetBox = boxForStructures([sid]);
+      const preferredView = bestViewDirectionForBox(targetBox);
+      focusSelectedStructures(2.45, preferredView.direction);
+
+      const presentation = revealNamedTarget([sid]);
+      highlightStructures([sid], "selected");
+
+      canvas.dataset.nameTargetVisible = String(presentation.visible);
+      canvas.dataset.nameTargetPresentation = presentation.isolated ? "isolated" : "context";
+      canvas.dataset.nameOccludersHidden = String(presentation.hidden);
+      canvas.dataset.nameView = preferredView.label;
     }
     questionEl.textContent = "Назовите выделенную мышцу";
     feedbackEl.textContent = "Выберите название.";
@@ -1545,6 +1680,10 @@ function resetLoadedModel() {
   canvas.dataset.learningSessionDone = "";
   canvas.dataset.learningSessionTotal = "";
   canvas.dataset.learningSessionFinished = "";
+  canvas.dataset.nameTargetVisible = "";
+  canvas.dataset.nameTargetPresentation = "";
+  canvas.dataset.nameOccludersHidden = "";
+  canvas.dataset.nameView = "";
 }
 
 function createMuscleMaterial() {
