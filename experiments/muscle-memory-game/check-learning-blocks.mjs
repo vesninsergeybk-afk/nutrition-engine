@@ -11,6 +11,10 @@ const Z_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
 const BP_URL =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public/models/atlas.json";
+const COVER_RE =
+  /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
+const NON_MUSCLE_RE =
+  /bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|fibrous sheath|iliopectineal arch|common tendinous ring/i;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -40,7 +44,13 @@ assert(zr.ok && bpr.ok, "Could not fetch pinned anatomy sources");
 const zJson = parseGlbJson(await zr.arrayBuffer());
 const zNames = [...new Set(
   (zJson.nodes || [])
-    .filter((node) => node.mesh !== undefined && node.name)
+    .filter(
+      (node) =>
+        node.mesh !== undefined &&
+        node.name &&
+        !COVER_RE.test(node.name) &&
+        !NON_MUSCLE_RE.test(node.name)
+    )
     .map((node) => node.name.trim())
 )];
 const bpAtlas = await bpr.json();
