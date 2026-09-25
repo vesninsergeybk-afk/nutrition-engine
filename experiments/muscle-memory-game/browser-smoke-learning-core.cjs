@@ -244,6 +244,76 @@ const assert = require('node:assert/strict');
   assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-session-total')) > 0);
   assert.match(await page.locator('#question-label').innerText(), /На сегодня/i);
   await page.click('#exit-learning-session');
+
+  // TOPOGRAPHY: only verified depth maps expose this mode. A shoulder
+  // session must ask a real deeper-relation question, accept the correct
+  // relation, finish independently of find/name mistakes, and not pollute
+  // the spaced-repetition records.
+  assert.equal(
+    await page.locator('[data-learning-mode="topography"]').isDisabled(),
+    false
+  );
+  await page.click('[data-learning-mode="topography"]');
+  assert.match(await page.locator('#learning-summary').innerText(), /топограф/i);
+  await page.click('#start-learning-session');
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-learning-session-mode'),
+    'topography'
+  );
+  let topoTotal = Number(
+    await page.locator('#viewer').getAttribute('data-learning-session-total')
+  );
+  assert.ok(topoTotal > 0);
+  assert.match(
+    await page.locator('#question').innerText(),
+    /Что находится глубже относительно/i
+  );
+  assert.ok((await page.locator('.topography-choice').count()) >= 2);
+
+  for (let done = 0; done < topoTotal; done += 1) {
+    const topoTargetId = await page
+      .locator('#viewer')
+      .getAttribute('data-learning-current-target-id');
+    assert.ok(topoTargetId);
+    const correctTopologyChoice = page.locator(
+      '.topography-choice[data-target-id="' + topoTargetId + '"]'
+    );
+    assert.equal(await correctTopologyChoice.count(), 1);
+    await correctTopologyChoice.click();
+    assert.equal(
+      await page.locator('#viewer').getAttribute('data-learning-session-done'),
+      String(done + 1)
+    );
+    assert.match(await page.locator('#feedback').innerText(), /Верно/i);
+    if (done + 1 < topoTotal) await page.click('#next-question');
+  }
+
+  await page.click('#next-question');
+  assert.match(
+    await page.locator('#question-label').innerText(),
+    /Сессия завершена/i
+  );
+  assert.match(
+    await page.locator('#next-question').innerText(),
+    /Новая топографическая сессия/i
+  );
+  const topologyStore = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem('muscle-memory-learning-v1') || '{}')
+  );
+  assert.equal(
+    Object.keys(topologyStore.records || {}).some((key) =>
+      key.endsWith('::topography')
+    ),
+    false
+  );
+
+  await page.click('#next-question');
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-learning-session-mode'),
+    'topography'
+  );
+  await page.click('#exit-learning-session');
+
     if (errors.length) throw new Error(errors.join('\n'));
     console.log('[smoke:learning-core] passed');
     await browser.close();
