@@ -276,7 +276,7 @@
   function init(){
     d.addEventListener('click',handleClick,false);
     w.addEventListener('resize',schedule,false);
-    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','navigation-shell:mode-changed','workspace-entry-ux:ready','needs:computed','ration:changed'].forEach(function(name){
+    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','navigation-shell:mode-changed','workspace-entry-ux:ready','workspace-report:ready','needs:computed','ration:changed'].forEach(function(name){
       w.addEventListener(name,schedule,false);
     });
     if(w.MutationObserver){
