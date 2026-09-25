@@ -821,6 +821,7 @@ function revealAnswer() {
   );
   updateLearningSummary();
   locked = true;
+  answerButton.disabled = true;
 
   completeCurrentSessionItem({
     correct: false,
@@ -857,6 +858,7 @@ function chooseQuiz(sid) {
     );
     updateLearningSummary();
     locked = true;
+    answerButton.disabled = true;
     revealDeeperButton.hidden = true;
     revealDeeperButton.disabled = true;
 
