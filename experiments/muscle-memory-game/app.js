@@ -822,10 +822,12 @@ function activeRegionConceptKeys() {
   return keys;
 }
 
-function studyStructureMatchesActiveRegion(entry) {
+function studyStructureMatchesActiveRegion(entry, conceptKeys = null) {
   if (!regionIsolationActive()) return true;
   if (!entry?.nearestMuscleSourceName) return false;
-  return activeRegionConceptKeys().has(
+
+  const activeKeys = conceptKeys || activeRegionConceptKeys();
+  return activeKeys.has(
     learningConceptSourceName(entry.nearestMuscleSourceName)
   );
 }
@@ -865,10 +867,14 @@ function applyRegionMuscleVisibility() {
 }
 
 function applyRegionStudyVisibility() {
+  const conceptKeys = regionIsolationActive()
+    ? activeRegionConceptKeys()
+    : null;
+
   for (const entry of studyStructures) {
     setStudyStructureVisible(
       entry.id,
-      studyStructureMatchesActiveRegion(entry)
+      studyStructureMatchesActiveRegion(entry, conceptKeys)
     );
   }
 }
@@ -1055,13 +1061,15 @@ function specimenViewDirection(viewId) {
 }
 
 function focusLearningRegion() {
-  const sceneTargets = activeSceneTargets();
-  if (!sceneTargets.length) {
+  const focusTargets = availableTargets;
+  if (!focusTargets.length) {
     setFullBodyView();
     return;
   }
 
-  const ids = [...new Set(sceneTargets.flatMap((target) => target.sids || []))];
+  // Covers and neighboring context remain visible in the specimen, but they
+  // must not enlarge the camera framing beyond the structures being learned.
+  const ids = [...new Set(focusTargets.flatMap((target) => target.sids || []))];
   const box = boxForStructures(ids);
   if (box.isEmpty()) {
     setFullBodyView();
@@ -3046,11 +3054,16 @@ function renderSearchResults(query) {
   if (q.length < 2 || !structureNames.length) return;
 
   const matches = [];
+  const regional = regionIsolationActive();
+  const activeSidSet = regional
+    ? new Set(activeRegionStructureIds())
+    : null;
+  const activeConcepts = regional
+    ? activeRegionConceptKeys()
+    : null;
+
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
-    if (
-      regionIsolationActive() &&
-      !activeRegionStructureIds().includes(sid)
-    ) continue;
+    if (activeSidSet && !activeSidSet.has(sid)) continue;
 
     if (structureSearchText(structureNames[sid]).includes(q)) {
       matches.push({ kind: "muscle", id: sid });
@@ -3060,7 +3073,7 @@ function renderSearchResults(query) {
   if (appMode === "explore" && matches.length < 10) {
     for (const entry of studyStructures) {
       if (matches.length >= 10) break;
-      if (!studyStructureMatchesActiveRegion(entry)) continue;
+      if (!studyStructureMatchesActiveRegion(entry, activeConcepts)) continue;
       if (studyStructureSearchText(entry.sourceName, entry.layerKey).includes(q)) {
         matches.push({ kind: "study", id: entry.id });
       }
@@ -3355,7 +3368,11 @@ function boneWorldBox(boneId) {
 }
 
 function regionalBoneContextBox() {
-  const ids = activeRegionStructureIds();
+  const ids = [
+    ...new Set(
+      availableTargets.flatMap((target) => target.sids || [])
+    ),
+  ];
   const box = boxForStructures(ids);
   if (box.isEmpty()) return box;
 
