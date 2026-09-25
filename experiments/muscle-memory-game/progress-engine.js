@@ -16,14 +16,18 @@ export function topConfusions(
   { limit = 5, skillId = null } = {}
 ) {
   const byId = new Map((catalog || []).map((item) => [item.id, item]));
+  const safeLimit = Math.max(1, Number(limit) || 5);
 
-  return confusionPairs(store, { skillId, limit: Math.max(1, Number(limit) || 5) })
+  // Resolve against the current model before applying the visible limit.
+  // Otherwise model-specific historical pairs can crowd out valid shared pairs.
+  return confusionPairs(store, { skillId, limit: Math.max(100, safeLimit * 10) })
     .map((entry) => ({
       ...entry,
       target: byId.get(entry.expectedMuscleId),
       chosen: byId.get(entry.chosenMuscleId),
     }))
-    .filter((entry) => entry.target && entry.chosen);
+    .filter((entry) => entry.target && entry.chosen)
+    .slice(0, safeLimit);
 }
 
 export function skillProgress(store, catalog, skillId, now = Date.now()) {
