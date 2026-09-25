@@ -25,6 +25,13 @@ import {
   recordReviewOutcome,
 } from "./retention-engine.js";
 import {
+  currentAreaProgress,
+  recentSessionHistory,
+  regionProgress,
+  topConfusions,
+  weakSkills,
+} from "./progress-engine.js";
+import {
   SESSION_MODES,
   buildSmartChoices,
   completeSessionItem,
@@ -67,6 +74,8 @@ const learningControls = document.querySelector("#learning-controls");
 const learningRegion = document.querySelector("#learning-region");
 const learningSummaryEl = document.querySelector("#learning-summary");
 const todayLearningSessionButton = document.querySelector("#today-learning-session");
+const learningProgressEl = document.querySelector("#learning-progress");
+const learningProgressContentEl = document.querySelector("#learning-progress-content");
 const learningSessionMode = document.querySelector("#learning-session-mode");
 const learningModeButtons = [...document.querySelectorAll("[data-learning-mode]")];
 const learningSessionSize = document.querySelector("#learning-session-size");
