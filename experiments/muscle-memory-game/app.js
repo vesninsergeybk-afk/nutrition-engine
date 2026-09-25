@@ -711,14 +711,14 @@ function prepareSessionItem() {
       focusSelectedButton.disabled = false;
       focusSelectedStructures(2.35);
     }
-    questionEl.textContent = "Как называется выделенная мышца?";
+    questionEl.textContent = "Назовите выделенную мышцу";
     feedbackEl.textContent = "Выберите название. Неправильный вариант не завершает задание.";
     renderNameChoices(item);
   } else {
     nameChoicesEl.replaceChildren();
     nameChoicesEl.hidden = true;
     focusLearningRegion();
-    questionEl.textContent = `Найдите на модели: «${item.target.nameRu}»`;
+    questionEl.textContent = `Найдите: «${item.target.nameRu}»`;
     feedbackEl.textContent = "Коснитесь нужной мышцы на модели.";
   }
 }
@@ -791,8 +791,7 @@ function finishLearningSession() {
   focusLearningRegion();
 
   questionLabelEl.textContent = "Сессия завершена";
-  questionEl.textContent =
-    `${summary.clean} из ${summary.total} заданий выполнены без ошибок и подсказки`;
+  questionEl.textContent = `Без ошибок: ${summary.clean} из ${summary.total}`;
   const reviewLabels = learningSession.results
     .filter((result) => result.wrongAttempts > 0 || result.revealed)
     .map((result) => {
