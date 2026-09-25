@@ -1422,6 +1422,7 @@ function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
     if (seenTargets.has(candidateKey)) continue;
 
     const candidateInfo = targetDepthInfo(candidateTarget);
+    if (!candidateInfo) continue;
 
     if (selectedInfo && candidateInfo) {
       const depthRegionId = activeDepthProfileId(selectedTarget);
