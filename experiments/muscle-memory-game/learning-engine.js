@@ -416,14 +416,24 @@ export function appendSessionHistory(
   if (!Array.isArray(store.sessions)) store.sessions = [];
 
   const normalized = {
+    sessionId: entry?.sessionId ? String(entry.sessionId) : "",
+    startedAt: Math.max(0, Number(entry?.startedAt) || 0),
     completedAt: Number(entry?.completedAt) || Date.now(),
     mode: String(entry?.mode || ""),
     region: String(entry?.region || "all"),
+    modelSource: String(entry?.modelSource || ""),
     total: Math.max(0, Number(entry?.total) || 0),
     clean: Math.max(0, Number(entry?.clean) || 0),
     wrongAttempts: Math.max(0, Number(entry?.wrongAttempts) || 0),
     revealed: Math.max(0, Number(entry?.revealed) || 0),
   };
+
+  if (
+    normalized.sessionId &&
+    store.sessions.some((item) => item?.sessionId === normalized.sessionId)
+  ) {
+    return store.sessions.find((item) => item?.sessionId === normalized.sessionId);
+  }
 
   store.sessions.push(normalized);
   if (store.sessions.length > 100) store.sessions = store.sessions.slice(-100);
