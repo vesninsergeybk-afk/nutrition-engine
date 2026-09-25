@@ -605,3 +605,12 @@ html[data-interface-simplification="1"] #interfaceSettingsHF2,
 html[data-interface-simplification="1"] #navigationShell [data-navshell-settings-toggle]{
   display:none!important;
 }
+
+
+/* Ration duplicate-disclosure cleanup (UI audit 2026-09-25).
+   Beta 8 already exposes photo, voice and audio through #workspaceAltEntryMethods
+   inside the primary search surface. The older workspaceRationSecondary disclosure
+   is redundant and, on narrow layouts, can collapse into an empty rounded strip. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"] #workspaceRationSecondary{
+  display:none!important;
+}
