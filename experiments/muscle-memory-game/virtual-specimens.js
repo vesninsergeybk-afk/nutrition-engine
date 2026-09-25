@@ -170,8 +170,9 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Поверхностные и собственные мышцы нижней части спины.",
     {
       questionPatterns: [
-        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|(?:^|\s)остистая мышца груди|(?:^|\s)остистая мышца$)|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
+        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|(?:\bspinalis thoracis\b|(?:^|\s)остистая мышца груди)|quadratus lumborum|multifidus (?:thoracis|lumborum)|lumbar rotator|(?:set of )?interspinales lumborum|interspinalis thoracis|interspinales thoracis|(?:lateral|medial) lumbar intertransversarius|(?:dorsal|ventral) parts of lateral intertransversarii lumborum/iu,
       ],
+      excludePatterns: [/cervic|colli|шеи|шея/iu],
       supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium|hip bone|os cox/i],
       depthProfile: "back",
       minDepthQuestionTargets: 6,
@@ -197,8 +198,9 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Четырёхглавая мышца, портняжная и передний тазобедренный переход.",
     {
       questionPatterns: [
-        /rectus femoris|vastus (?:lateralis|medialis|intermedius)|sartorius|tensor fasciae latae|iliacus|psoas major|pectineus/i,
+        /rectus femoris|vastus (?:lateralis|medialis|intermedius)|sartorius|tensor fasciae latae/i,
       ],
+      contextPatterns: [/iliacus|psoas major|pectineus/i],
       supportBonePatterns: [/femur|patella|ilium|pubis|hip bone|os cox/i],
       defaultViews: ["front", "threeQuarter"],
     }
@@ -306,7 +308,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
     {
       questionPatterns: [
-        /\biliocostalis\b|\blongissimus thoracis\b|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|(?:^|\s)остистая мышца груди|(?:^|\s)остистая мышца$)|подвздошно-р[её]бер|длиннейш.*груди/iu,
+        /\biliocostalis\b|\blongissimus thoracis\b|\bspinalis thoracis\b|(?:^|\s)остистая мышца груди|подвздошно-р[её]бер|длиннейш.*груди/iu,
       ],
       contextPatterns: [/latissimus dorsi|serratus posterior/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
@@ -324,6 +326,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /multifidus|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
       ],
+      excludePatterns: [/cervic|colli|шеи|шея/iu],
       contextPatterns: [/erector|iliocostalis|longissimus thoracis|spinalis|latissimus dorsi/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
       depthProfile: "back",
