@@ -188,6 +188,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionRegionIds: ["gluteal"],
       contextPatterns: [/tensor fasciae latae/i],
       supportBonePatterns: [/sacrum|ilium|ischium|hip bone|os cox|femur/i],
+      depthProfile: "gluteal",
+      minDepthQuestionTargets: 9,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -213,6 +215,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionPatterns: [/adductor (?:longus|brevis|magnus|minimus)|gracilis|pectineus/i],
       supportBonePatterns: [/femur|pubis|ischium|hip bone|os cox/i],
+      depthProfile: "medial-thigh",
+      minDepthQuestionTargets: 6,
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -225,6 +229,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [/biceps femoris|semitendinosus|semimembranosus/i],
       contextPatterns: [/gluteus maximus|adductor magnus/i],
       supportBonePatterns: [/femur|ischium|hip bone|os cox|tibia|fibula/i],
+      depthProfile: "posterior-thigh",
+      minDepthQuestionTargets: 3,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -251,6 +257,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
         /gastrocnemius|soleus|plantaris|popliteus|tibialis posterior|flexor digitorum longus|flexor hallucis longus/i,
       ],
       supportBonePatterns: [/tibia|fibula|talus|calcaneus/i],
+      depthProfile: "posterior-leg",
+      minDepthQuestionTargets: 7,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -343,6 +351,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [/biceps femoris|semitendinosus|semimembranosus/i],
       contextPatterns: [/gluteus maximus|adductor magnus/i],
       supportBonePatterns: [/femur|ischium|hip bone|os cox|tibia|fibula/i],
+      depthProfile: "posterior-thigh",
+      minDepthQuestionTargets: 3,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -379,6 +389,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
         /gluteus|tensor fasciae latae|piriformis|gemellus|obturator|quadratus femoris/i,
       ],
       supportBonePatterns: [/sacrum|ilium|ischium|hip bone|os cox|femur/i],
+      depthProfile: "gluteal",
+      minDepthQuestionTargets: 9,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -391,6 +403,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [/gastrocnemius|soleus|plantaris/i],
       contextPatterns: [/popliteus|tibialis posterior/i],
       supportBonePatterns: [/tibia|fibula|calcaneus/i],
+      depthProfile: "posterior-leg",
+      minDepthQuestionTargets: 3,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
