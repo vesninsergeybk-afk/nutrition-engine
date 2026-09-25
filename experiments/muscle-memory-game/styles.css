@@ -422,15 +422,17 @@ button:disabled {
 }
 
 .session-exit {
-  margin: -6px 0 13px;
-  padding: 0;
+  width: fit-content;
+  min-height: 36px;
+  margin: -6px 0 9px;
+  padding: 7px 2px;
   border: 0;
   background: transparent;
   color: var(--muted);
   text-align: left;
-  font-size: 11px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  font-size: 12px;
+  font-weight: 620;
+  text-decoration: none;
 }
 
 .session-exit:hover {
@@ -664,7 +666,7 @@ button:disabled {
   .viewer-tools button,
   .viewer-tools > select,
   .viewer-settings > summary {
-    min-height: 33px;
+    min-height: 36px;
     padding: 6px 9px;
     font-size: 11px;
   }
@@ -683,6 +685,10 @@ button:disabled {
 
   .learning-start {
     width: 100%;
+  }
+
+  .session-exit {
+    min-height: 40px;
   }
 
   .actions,
