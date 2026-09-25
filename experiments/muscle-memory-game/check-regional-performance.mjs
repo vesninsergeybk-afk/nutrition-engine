@@ -35,3 +35,15 @@ assert(
   "Changing a specimen no longer focuses the already-updated scene"
 );
 console.log("Single-pass specimen switching: ok");
+
+
+assert(
+  app.includes("function pointWithinRegionalClip") &&
+    /function boxForStructures[\s\S]*?pointWithinRegionalClip\(navPoint\)/.test(app),
+  "Camera bounds still include geometry outside the virtual specimen clip"
+);
+assert(
+  /function nearestTargetPointToCamera[\s\S]*?pointWithinRegionalClip\(point\)/.test(app),
+  "Quiz/reveal targeting can still choose a clipped-away part of a long muscle"
+);
+console.log("Specimen clipping is shared by rendering, framing and target access");
