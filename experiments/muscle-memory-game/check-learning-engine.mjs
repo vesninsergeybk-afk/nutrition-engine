@@ -5,6 +5,7 @@ import {
   learningHistory,
   learningSummary,
   loadLearningStore,
+  migrateLearningStoreAliases,
   recordConfusion,
   recordLearningAttempt,
   regionCounts,
@@ -75,6 +76,61 @@ assert(
   "Learning catalog contains Latin user-facing names: " +
     latinNames.map((item) => item.nameRu).join(" | ")
 );
+
+
+const migrationTarget = catalog.find(
+  (item) => item.nameRu === "Дельтовидная мышца" && item.legacyIds?.length
+);
+assert(migrationTarget, "A grouped target with legacy IDs is required");
+const migrationPeer =
+  catalog.find((item) => item.region === "shoulder" && item.id !== migrationTarget.id) ||
+  catalog.find((item) => item.id !== migrationTarget.id);
+assert(migrationPeer, "A peer target is required for migration tests");
+
+const migrationMemory = new Map();
+const migrationStorage = {
+  getItem(key) {
+    return migrationMemory.has(key) ? migrationMemory.get(key) : null;
+  },
+  setItem(key, value) {
+    migrationMemory.set(key, String(value));
+  },
+};
+let migrationStore = loadLearningStore(migrationStorage);
+const legacyId = migrationTarget.legacyIds[0];
+recordLearningAttempt(migrationStore, legacyId, "find", false, migrationStorage);
+recordConfusion(
+  migrationStore,
+  legacyId,
+  migrationPeer.id,
+  "find",
+  migrationStorage
+);
+assert(
+  migrateLearningStoreAliases(migrationStore, catalog, migrationStorage),
+  "Legacy subdivision progress was not migrated"
+);
+
+migrationStore = loadLearningStore(migrationStorage);
+assert(
+  !migrationStore.records[legacyId + "::find"],
+  "Legacy subdivision record was not retired after migration"
+);
+assert(
+  migrationStore.records[migrationTarget.id + "::find"]?.attempts === 1 &&
+    migrationStore.records[migrationTarget.id + "::find"]?.reviewDebt === 1,
+  "Legacy subdivision attempts/debt were not preserved"
+);
+const migratedConfusion = confusionPairs(migrationStore, {
+  skillId: "find",
+  limit: 5,
+})[0];
+assert(
+  migratedConfusion?.expectedMuscleId === migrationTarget.id &&
+    migratedConfusion?.chosenMuscleId === migrationPeer.id,
+  "Legacy confusion pair was not remapped to the whole-muscle target"
+);
+console.log("Subdivision progress migration: ok");
 
 const counts = regionCounts(catalog);
 assert(counts.all === catalog.length, "Region totals do not match catalog size");
