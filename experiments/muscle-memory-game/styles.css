@@ -558,6 +558,10 @@ button:disabled {
     backdrop-filter: blur(16px);
   }
 
+  .task-docked:not(.session-active) .viewer-wrap > .question-card {
+    max-height: min(46dvh, 52%);
+  }
+
   .task-docked .viewer-hint {
     display: none;
   }
