@@ -141,6 +141,14 @@ jobs:
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-catalog-count')) > 140);
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 140);
             assert.equal(await page.locator('#learning-controls').isHidden(), true);
+            assert.equal(await page.locator('#debug-panel').isHidden(), true);
+            assert.equal(await page.locator('#score').isHidden(), true);
+            assert.equal(await page.locator('#learning-session-mode').isHidden(), true);
+            assert.equal(await page.locator('#model-source option').count(), 2);
+            assert.equal(await page.locator('.status-card').count(), 0);
+
+            const visibleInitialText = await page.locator('body').innerText();
+            assert.doesNotMatch(visibleInitialText, /Учебный каталог|треугольник|mesh|FMA\d+/i);
 
             await page.click('#mode-quiz');
             assert.equal(await page.locator('#learning-controls').isVisible(), true);
@@ -161,6 +169,8 @@ jobs:
             await page.click('[data-learning-mode="find"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'find');
+            assert.equal(await page.locator('#model-source-field').isHidden(), true);
+            assert.equal(await page.locator('#exit-learning-session').isVisible(), true);
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-total'), '5');
             assert.match(await page.locator('#question').innerText(), /Найдите:/);
             await page.click('#show-answer');
@@ -243,10 +253,21 @@ jobs:
               true
             );
             assert.equal(await page.locator('#score').isHidden(), true);
+            assert.equal(await page.locator('.topbar').isHidden(), true);
+            assert.equal(await page.locator('.attribution').isHidden(), true);
+            assert.match(await page.locator('#session-progress').innerText(), /1 из 5/i);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-mobile-name.png', fullPage: true });
-            await page.setViewportSize({ width: 1440, height: 1000 });
 
             await page.click('#mode-explore');
+            assert.equal(
+              await page.locator('.question-card').evaluate(el => el.parentElement?.classList.contains('viewer-wrap')),
+              true
+            );
+            assert.equal(await page.locator('#explore-controls').isVisible(), true);
+            assert.equal(await page.locator('#structure-search').isVisible(), true);
+            await page.screenshot({ path: '/tmp/muscle-memory-atlas-mobile.png', fullPage: true });
+
+            await page.setViewportSize({ width: 1440, height: 1000 });
             assert.equal(await page.locator('#learning-controls').isHidden(), true);
 
             await page.fill('#structure-search', 'deltoid');
