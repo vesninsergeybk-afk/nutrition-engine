@@ -635,7 +635,11 @@ function renderSessionProgress() {
   sessionProgressEl.hidden = false;
   sessionProgressEl.textContent =
     `${modeName} · ${regionNameRu(selectedLearningRegion)} · ` +
-    `${progress.done}/${progress.total} выполнено`;
+    `${progress.done}/${progress.total} · верно ${correct} · ошибок ${wrong}`;
+  sessionProgressEl.style.setProperty(
+    "--session-progress",
+    progress.total ? `${Math.round((progress.done / progress.total) * 100)}%` : "0%"
+  );
 
   canvas.dataset.learningSessionMode = learningSession.mode;
   canvas.dataset.learningSessionDone = String(progress.done);
@@ -742,8 +746,14 @@ function startLearningSession() {
   correctEl.textContent = "0";
   wrongEl.textContent = "0";
   sessionSummaryShown = false;
-  startLearningSessionButton.textContent = "Начать заново";
+  document.body.classList.add("session-active");
+  startLearningSessionButton.textContent = "Перезапустить";
+  syncQuestionCardPlacement();
   prepareSessionItem();
+
+  if (mobileTaskMedia.matches) {
+    viewerWrap.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
 }
 
 function completeCurrentSessionItem(result) {
@@ -771,6 +781,7 @@ function finishLearningSession() {
   revealDeeperButton.disabled = true;
   answerButton.disabled = true;
   focusSelectedButton.disabled = true;
+  focusLearningRegion();
 
   questionLabelEl.textContent = "Сессия завершена";
   questionEl.textContent =
@@ -788,12 +799,9 @@ function finishLearningSession() {
   const hiddenReviewCount = Math.max(0, uniqueReviewLabels.length - visibleReviewLabels.length);
 
   feedbackEl.className = "feedback";
-  feedbackEl.textContent =
-    `Правильно завершено: ${summary.correct}. Показан ответ: ${summary.revealed}. ` +
-    `Неверных попыток: ${summary.wrongAttempts}.` +
-    (visibleReviewLabels.length
-      ? ` Повторить: ${visibleReviewLabels.join("; ")}${hiddenReviewCount ? `; ещё ${hiddenReviewCount}` : ""}.`
-      : " Все задания выполнены без ошибок и показа ответа.");
+  feedbackEl.textContent = visibleReviewLabels.length
+    ? `К повторению: ${visibleReviewLabels.join("; ")}${hiddenReviewCount ? `; ещё ${hiddenReviewCount}` : ""}.`
+    : "Все задания выполнены без ошибок и подсказки.";
 
   sessionProgressEl.hidden = false;
   sessionProgressEl.textContent =
