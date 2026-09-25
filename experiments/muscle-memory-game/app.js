@@ -2024,15 +2024,14 @@ function undoLastHide() {
 }
 
 function renderLearningRegionOptions() {
-  const counts = regionCounts(learningCatalog);
   const previous = selectedLearningRegion;
 
   learningRegion.replaceChildren();
 
   const groups = [
     { id: "overview", label: "Обзорные учебные блоки" },
-    { id: "specimen-region", label: "Виртуальные препараты — области" },
-    { id: "specimen-group", label: "Виртуальные препараты — комплексы" },
+    { id: "specimen-region", label: "Анатомические области" },
+    { id: "specimen-group", label: "Мышечные комплексы" },
   ];
 
   for (const group of groups) {
@@ -2053,21 +2052,6 @@ function renderLearningRegionOptions() {
 
     if (optgroup.children.length) learningRegion.appendChild(optgroup);
   }
-
-  const scopeIds = new Set(LEARNING_SCOPES.map((scope) => scope.id));
-  const exactGroup = document.createElement("optgroup");
-  exactGroup.label = "Полные анатомические области";
-  for (const region of LEARNING_REGIONS) {
-    if (scopeIds.has(region.id)) continue;
-    const count = counts[region.id] || 0;
-    if (!count) continue;
-
-    const option = document.createElement("option");
-    option.value = region.id;
-    option.textContent = `${region.nameRu} · ${count}`;
-    exactGroup.appendChild(option);
-  }
-  if (exactGroup.children.length) learningRegion.appendChild(exactGroup);
 
   const stillAvailable = [...learningRegion.options].some(
     (option) => option.value === previous

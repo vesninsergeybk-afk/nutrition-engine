@@ -34,6 +34,111 @@ function specimen(
 
 export const VIRTUAL_SPECIMENS = Object.freeze([
   // Topographic specimens
+  // Curated broad learning blocks. These intentionally shadow the raw
+  // internal region IDs: user-facing anatomy must be defined pedagogically,
+  // not by whichever bucket the source-name classifier happened to choose.
+  specimen(
+    "head-neck",
+    "region",
+    "Голова и шея",
+    "Мышцы головы, лица и шеи как единый обзорный анатомический блок.",
+    {
+      questionRegionIds: ["head-neck"],
+      supportBonePatterns: [/occip|skull|cranium|mandible|hyoid|cervical|vertebra|clavicle/i],
+      defaultViews: ["front", "threeQuarter", "back"],
+      padding: 1.22,
+    }
+  ),
+  specimen(
+    "arm",
+    "region",
+    "Плечо",
+    "Вся мышечная область плеча от плечевого сустава до локтя.",
+    {
+      questionRegionIds: ["arm"],
+      contextPatterns: [/deltoid/i],
+      supportBonePatterns: [/humerus|radius|ulna/i],
+      defaultViews: ["front", "threeQuarter", "back"],
+    }
+  ),
+  specimen(
+    "forearm-hand",
+    "region",
+    "Предплечье и кисть",
+    "Сгибатели, разгибатели, пронаторы, супинаторы и собственные мышцы кисти.",
+    {
+      questionRegionIds: ["forearm-hand"],
+      supportBonePatterns: [
+        /radius|ulna|carpal|metacarp/i,
+        /^(?!.*(?:toe|foot)).*phalanx.*(?:finger|thumb)/i,
+      ],
+      defaultViews: ["front", "threeQuarter", "back"],
+    }
+  ),
+  specimen(
+    "thorax",
+    "region",
+    "Грудная клетка",
+    "Мышцы грудной стенки и поверхностные мышцы, связанные с грудной клеткой и плечевым поясом.",
+    {
+      questionRegionIds: ["thorax"],
+      questionPatterns: [/pectoralis minor|subclavius|serratus anterior/i],
+      supportBonePatterns: [/sternum|rib|clavicle|thoracic vertebra|scapula/i],
+      defaultViews: ["front", "threeQuarter"],
+    }
+  ),
+  specimen(
+    "back",
+    "region",
+    "Спина",
+    "Поверхностные, промежуточные и глубокие мышцы спины от лопаточной области до поясницы.",
+    {
+      questionRegionIds: ["back"],
+      questionPatterns: [/trapezius|rhomboid|levator scapulae/i],
+      contextPatterns: [/deltoid|infraspinatus|teres major|teres minor/i],
+      supportBonePatterns: [/vertebra|rib|scapula|sacrum|ilium|hip bone|os cox/i],
+      defaultViews: ["back", "threeQuarter"],
+      padding: 1.18,
+    }
+  ),
+  specimen(
+    "pelvis",
+    "region",
+    "Таз и промежность",
+    "Мышцы тазового дна, промежности и основные мышцы стенок таза.",
+    {
+      questionRegionIds: ["pelvis"],
+      questionPatterns: [/obturator internus|piriformis/i],
+      contextPatterns: [/gluteus/i],
+      supportBonePatterns: [/sacrum|coccyx|ilium|ischium|pubis|hip bone|os cox/i],
+      defaultViews: ["threeQuarter", "back"],
+    }
+  ),
+  specimen(
+    "thigh",
+    "region",
+    "Бедро",
+    "Передняя, медиальная и задняя мышечные группы бедра.",
+    {
+      questionRegionIds: ["thigh"],
+      questionPatterns: [/tensor fasciae latae|напрягател.*широк.*фасц/iu],
+      contextPatterns: [/gluteus maximus/i],
+      supportBonePatterns: [/femur|patella|ilium|ischium|pubis|hip bone|os cox|tibia|fibula/i],
+      defaultViews: ["front", "threeQuarter", "back"],
+    }
+  ),
+  specimen(
+    "leg-foot",
+    "region",
+    "Голень и стопа",
+    "Передняя, латеральная и задняя группы голени вместе с собственными мышцами стопы.",
+    {
+      questionRegionIds: ["leg-foot"],
+      supportBonePatterns: [/tibia|fibula|talus|calcaneus|tarsal|metatars/i],
+      defaultViews: ["front", "threeQuarter", "back"],
+    }
+  ),
+
   specimen(
     "neck-collar",
     "region",
@@ -450,6 +555,14 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
 
 
 const SPECIMEN_VERTICAL_WINDOWS = Object.freeze({
+  "head-neck": Object.freeze([0.70, 1.00]),
+  arm: Object.freeze([0.42, 0.80]),
+  "forearm-hand": Object.freeze([0.18, 0.66]),
+  thorax: Object.freeze([0.43, 0.89]),
+  back: Object.freeze([0.42, 0.97]),
+  pelvis: Object.freeze([0.38, 0.62]),
+  thigh: Object.freeze([0.10, 0.62]),
+  "leg-foot": Object.freeze([0.00, 0.33]),
   "neck-collar": Object.freeze([0.70, 1.00]),
   shoulder: Object.freeze([0.54, 0.90]),
   "arm-anterior": Object.freeze([0.42, 0.80]),
