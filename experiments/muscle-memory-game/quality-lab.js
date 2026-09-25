@@ -160,7 +160,18 @@ function renderValidationAudit() {
       " · геометрия: " + reviewLabel(entry.geometry_review) +
       " · отношения: " + reviewLabel(entry.relation_review);
 
-    row.append(title, state, checks);
+    const sourceCoverage = document.createElement("span");
+    sourceCoverage.className = "quality-validation-source";
+    const directMatches = visibleMeshes.filter(
+      (mesh) =>
+        validationEntryForName(mesh.userData.part?.name)?.canonical_key ===
+        entry.canonical_key
+    );
+    sourceCoverage.textContent = directMatches.length
+      ? "BodyParts3D 4.0: найдено " + directMatches.length + " представл."
+      : "BodyParts3D 4.0: прямого совпадения нет";
+
+    row.append(title, state, checks, sourceCoverage);
     validationListEl.appendChild(row);
   }
 }
