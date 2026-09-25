@@ -123,6 +123,59 @@ for (const [sourceName, catalog] of Object.entries(sources)) {
     assert(has(leg, re), sourceName + " leg/foot block lost a major compartment");
   }
 
+  function ids(specimenId) {
+    return new Set(
+      filterCatalogForSpecimen(catalog, specimenId, "question").map((item) => item.id)
+    );
+  }
+  function assertSubset(childId, parentId) {
+    const child = ids(childId);
+    const parent = ids(parentId);
+    const missing = [...child].filter((id) => !parent.has(id));
+    assert(
+      missing.length === 0,
+      sourceName + " " + childId + " is not contained in " + parentId +
+        ": " + missing.join(" | ")
+    );
+  }
+
+  for (const childId of ["arm-anterior", "arm-posterior"]) {
+    assertSubset(childId, "arm");
+  }
+  for (const childId of ["forearm-hand-anterior", "forearm-hand-posterior"]) {
+    assertSubset(childId, "forearm-hand");
+  }
+  assertSubset("thorax-anterior", "thorax");
+  assertSubset("lower-back", "back");
+  assertSubset("erector-spinae", "back");
+  assertSubset("deep-back", "back");
+  assertSubset("rotator-cuff", "shoulder");
+  assertSubset("scapular-stabilizers", "shoulder");
+  for (const childId of ["thigh-anterior", "thigh-medial", "thigh-posterior", "quadriceps", "hip-flexors"]) {
+    assertSubset(childId, "thigh");
+  }
+  for (const childId of ["leg-anterior-lateral", "leg-posterior", "foot", "calf-complex"]) {
+    assertSubset(childId, "leg-foot");
+  }
+
+  const broadIds = [
+    "head-neck", "shoulder", "arm", "forearm-hand", "thorax", "back",
+    "abdomen", "pelvis", "gluteal", "thigh", "leg-foot",
+  ];
+  const covered = new Set(
+    broadIds.flatMap((id) =>
+      filterCatalogForSpecimen(catalog, id, "question").map((item) => item.id)
+    )
+  );
+  const uncoveredMassageTargets = catalog.filter(
+    (target) => target.region !== "heart" && !covered.has(target.id)
+  );
+  assert(
+    uncoveredMassageTargets.length === 0,
+    sourceName + " has muscle targets outside every curated broad block: " +
+      uncoveredMassageTargets.map((item) => item.nameRu).join(" | ")
+  );
+
   console.log(
     "Curated broad blocks:",
     sourceName,
@@ -135,6 +188,7 @@ for (const [sourceName, catalog] of Object.entries(sources)) {
       pelvis: filterCatalogForSpecimen(catalog, "pelvis").length,
       thigh: thigh.length,
       legFoot: leg.length,
+      uncoveredNonHeart: uncoveredMassageTargets.length,
     })
   );
 }

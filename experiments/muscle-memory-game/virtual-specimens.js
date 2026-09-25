@@ -291,7 +291,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Ягодичные мышцы и глубокие наружные ротаторы тазобедренной области.",
     {
       questionRegionIds: ["gluteal"],
-      contextPatterns: [/tensor fasciae latae/i],
+      questionPatterns: [/tensor fasciae latae|напрягател.*широк.*фасц/iu],
       supportBonePatterns: [/sacrum|ilium|ischium|hip bone|os cox|femur/i],
       depthProfile: "gluteal",
       minDepthQuestionTargets: 9,
@@ -448,20 +448,6 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     }
   ),
   specimen(
-    "hamstrings",
-    "group",
-    "Мышцы задней поверхности бедра",
-    "Двуглавая, полусухожильная и полуперепончатая мышцы.",
-    {
-      questionPatterns: [/biceps femoris|semitendinosus|semimembranosus/i],
-      contextPatterns: [/gluteus maximus|adductor magnus/i],
-      supportBonePatterns: [/femur|ischium|hip bone|os cox|tibia|fibula/i],
-      depthProfile: "posterior-thigh",
-      minDepthQuestionTargets: 3,
-      defaultViews: ["back", "threeQuarter"],
-    }
-  ),
-  specimen(
     "quadriceps",
     "group",
     "Четырёхглавая мышца бедра",
@@ -471,32 +457,6 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       contextPatterns: [/sartorius|tensor fasciae latae/i],
       supportBonePatterns: [/femur|patella|ilium|hip bone|os cox/i],
       defaultViews: ["front", "threeQuarter"],
-    }
-  ),
-  specimen(
-    "adductors",
-    "group",
-    "Приводящая группа бедра",
-    "Приводящие мышцы, тонкая и гребенчатая.",
-    {
-      questionPatterns: [/adductor (?:longus|brevis|magnus|minimus)|gracilis|pectineus/i],
-      supportBonePatterns: [/femur|pubis|ischium|hip bone|os cox/i],
-      defaultViews: ["front", "threeQuarter"],
-    }
-  ),
-  specimen(
-    "gluteal-complex",
-    "group",
-    "Ягодичный комплекс",
-    "Ягодичные мышцы, напрягатель широкой фасции и глубокие наружные ротаторы.",
-    {
-      questionPatterns: [
-        /gluteus|tensor fasciae latae|piriformis|gemellus|obturator|quadratus femoris/i,
-      ],
-      supportBonePatterns: [/sacrum|ilium|ischium|hip bone|os cox|femur/i],
-      depthProfile: "gluteal",
-      minDepthQuestionTargets: 9,
-      defaultViews: ["back", "threeQuarter"],
     }
   ),
   specimen(
@@ -511,19 +471,6 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       depthProfile: "posterior-leg",
       minDepthQuestionTargets: 3,
       defaultViews: ["back", "threeQuarter"],
-    }
-  ),
-  specimen(
-    "anterior-abdominal-wall",
-    "group",
-    "Переднебоковая брюшная стенка",
-    "Прямая, наружная и внутренняя косые, поперечная и пирамидальная мышцы.",
-    {
-      questionRegionIds: ["abdomen"],
-      supportBonePatterns: [/rib|sternum|ilium|pubis|hip bone|os cox|lumbar vertebra/i],
-      depthProfile: "abdomen",
-      minDepthQuestionTargets: 5,
-      defaultViews: ["front", "threeQuarter"],
     }
   ),
   specimen(
@@ -585,12 +532,8 @@ const SPECIMEN_VERTICAL_WINDOWS = Object.freeze({
   "scapular-stabilizers": Object.freeze([0.49, 0.89]),
   "erector-spinae": Object.freeze([0.45, 0.96]),
   "deep-back": Object.freeze([0.48, 0.92]),
-  hamstrings: Object.freeze([0.11, 0.43]),
   quadriceps: Object.freeze([0.11, 0.43]),
-  adductors: Object.freeze([0.11, 0.56]),
-  "gluteal-complex": Object.freeze([0.47, 0.66]),
   "calf-complex": Object.freeze([0.01, 0.30]),
-  "anterior-abdominal-wall": Object.freeze([0.31, 0.62]),
   suboccipital: Object.freeze([0.83, 1.00]),
   "hip-flexors": Object.freeze([0.20, 0.53]),
 });

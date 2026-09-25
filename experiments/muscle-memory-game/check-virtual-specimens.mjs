@@ -145,7 +145,6 @@ for (const required of [
   "erector-spinae",
   "thigh-anterior",
   "thigh-posterior",
-  "hamstrings",
   "quadriceps",
   "gluteal",
   "leg-posterior",
@@ -157,3 +156,15 @@ for (const required of [
 console.log("Virtual anatomy specimens:", VIRTUAL_SPECIMENS.length);
 console.log("Topographic + thematic specimen contract: ok");
 console.log("Question targets are separated from scene context: ok");
+
+for (const removedDuplicateId of [
+  "hamstrings",
+  "adductors",
+  "gluteal-complex",
+  "anterior-abdominal-wall",
+]) {
+  assert(
+    !specimenById(removedDuplicateId),
+    "Redundant teaching block returned: " + removedDuplicateId
+  );
+}
