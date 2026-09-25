@@ -1538,7 +1538,6 @@ function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
       }
 
       if (
-        hasCoverageRules(depthRegionId, selectedInfo.ruleId) &&
         !isKnownDeeperRelation(
           depthRegionId,
           selectedInfo.ruleId,

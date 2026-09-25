@@ -90,6 +90,26 @@ let semanticMismatchTotal = 0;
 let emptyTotal = 0;
 const clippedWindowFailures = [];
 
+const EXPECTED_EXACT_BOTH = Object.freeze({
+  shoulder: 13,
+  "arm-anterior": 3,
+  "arm-posterior": 2,
+  "thigh-medial": 6,
+  "thigh-posterior": 3,
+  "leg-anterior-lateral": 6,
+  "leg-posterior": 7,
+  "rotator-cuff": 4,
+  "scapular-stabilizers": 5,
+  "erector-spinae": 5,
+  hamstrings: 3,
+  quadriceps: 4,
+  adductors: 6,
+  "gluteal-complex": 9,
+  "calf-complex": 3,
+  suboccipital: 4,
+  "hip-flexors": 4,
+});
+
 for (const specimen of VIRTUAL_SPECIMENS) {
   const zQuestion = filterCatalogForSpecimen(sources.z, specimen.id, "question");
   const bpQuestion = filterCatalogForSpecimen(sources.bp, specimen.id, "question");
@@ -150,6 +170,21 @@ for (const specimen of VIRTUAL_SPECIMENS) {
     zScene.length >= zQuestion.length && bpScene.length >= bpQuestion.length,
     specimen.id + ": scene targets cannot be smaller than question targets"
   );
+
+  const expectedExact = EXPECTED_EXACT_BOTH[specimen.id];
+  if (expectedExact != null) {
+    assert(
+      zQuestion.length === expectedExact && bpQuestion.length === expectedExact,
+      specimen.id +
+        ": compact specimen cardinality changed (Z=" +
+        zQuestion.length +
+        ", BodyParts=" +
+        bpQuestion.length +
+        ", expected=" +
+        expectedExact +
+        ")"
+    );
+  }
   if (clippedOutTargets.length) {
     clippedWindowFailures.push({
       specimenId: specimen.id,

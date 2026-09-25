@@ -135,8 +135,13 @@ const assert = require('node:assert/strict');
     '0.54:0.90'
   );
 
-  // Layer presets operate inside the isolated region.
+  // Layer presets operate inside the isolated region. The field itself must
+  // exist and be enabled; a closed "Отображение" disclosure is ordinary UI
+  // state and should be reopened rather than mistaken for a missing control.
+  assert.equal(await page.locator('#layer-preset-field').getAttribute('hidden'), null);
   assert.equal(await page.locator('#layer-preset').isDisabled(), false);
+  const settingsOpen = await page.locator('.viewer-settings').evaluate(el => el.open);
+  if (!settingsOpen) await page.locator('.viewer-settings > summary').click();
 
   await page.selectOption('#layer-preset', 'bones');
   assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'bones');
