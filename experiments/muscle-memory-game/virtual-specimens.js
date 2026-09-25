@@ -93,7 +93,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Сгибатели, пронаторы и ладонный мышечный контекст.",
     {
       questionPatterns: [
-        /pronator|flexor carpi|flexor digitorum|flexor pollicis|palmaris longus|lumbrical.*hand|palmar interosse|interosse.*hand|opponens|adductor pollicis|abductor pollicis brevis|ладонн.*межкостн.*кист/iu,
+        /pronator|flexor carpi|flexor digitorum (?:profundus|superficialis)|flexor pollicis|palmaris longus|lumbrical.*hand|palmar interosse|interosse.*hand|opponens pollicis|opponens digiti minimi(?! of foot)|adductor pollicis|abductor pollicis brevis|flexor digiti minimi(?!.*foot)|abductor digiti minimi(?!.*foot)|ладонн.*межкостн.*кист/iu,
       ],
       supportBonePatterns: [
         /radius|ulna|carpal|metacarp/i,
