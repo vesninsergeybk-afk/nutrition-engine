@@ -77,6 +77,34 @@ assert(
   "Similar same-region distractor was not preferred"
 );
 
+const confusionAwareStore = {
+  records: {},
+  confusions: {
+    "name::a::e": {
+      skillId: "name",
+      expectedMuscleId: "a",
+      chosenMuscleId: "e",
+      count: 3,
+      lastSeen: 100,
+    },
+  },
+};
+const confusionAwareChoices = buildSmartChoices(
+  target,
+  catalog,
+  4,
+  () => 0.25,
+  { store: confusionAwareStore }
+);
+assert(
+  confusionAwareChoices.some((item) => item.id === "e"),
+  "A repeatedly confused same-region answer was not reused as a distractor"
+);
+assert(
+  confusionAwareChoices.every((item) => item.region === "shoulder"),
+  "Name choices leaked out of the selected region despite enough local distractors"
+);
+
 const memory = new Map();
 const storage = {
   getItem(key) {

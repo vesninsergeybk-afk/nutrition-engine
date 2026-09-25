@@ -1,4 +1,4 @@
-import { skillRecord } from "./learning-engine.js";
+import { confusionPairs, skillRecord } from "./learning-engine.js";
 import { buildTodayQueue } from "./retention-engine.js";
 
 export const SESSION_MODES = Object.freeze({
@@ -104,19 +104,65 @@ function spreadSimilarTargets(items, rng = Math.random) {
   return ordered;
 }
 
-export function buildSmartChoices(target, catalog, count = 4, rng = Math.random) {
-  const distractors = (catalog || [])
-    .filter((item) => item.id !== target.id)
+function confusionWeight(store, targetId, candidateId) {
+  if (!store) return 0;
+
+  return confusionPairs(store, { skillId: "name", limit: 50 })
+    .filter(
+      (entry) =>
+        entry.expectedMuscleId === targetId &&
+        entry.chosenMuscleId === candidateId
+    )
+    .reduce((sum, entry) => sum + Math.min(4, Number(entry.count) || 0), 0);
+}
+
+export function buildSmartChoices(
+  target,
+  catalog,
+  count = 4,
+  rng = Math.random,
+  { store = null } = {}
+) {
+  const pool = (catalog || []).filter((item) => item.id !== target.id);
+  const sameRegion = pool.filter((item) => item.region === target.region);
+  const primaryPool =
+    sameRegion.length >= Math.max(3, count - 1) ? sameRegion : pool;
+
+  const ranked = primaryPool
     .map((item) => ({
       item,
-      score: similarityScore(target, item),
+      score:
+        similarityScore(target, item) +
+        confusionWeight(store, target.id, item.id) * 6,
       tie: rng(),
     }))
-    .sort((a, b) => b.score - a.score || a.tie - b.tie)
-    .slice(0, Math.max(0, count - 1))
-    .map((entry) => entry.item);
+    .sort((a, b) => b.score - a.score || a.tie - b.tie);
 
-  return shuffled([target, ...distractors], rng);
+  const selected = [];
+  for (const entry of ranked) {
+    if (selected.length >= Math.max(0, count - 1)) break;
+
+    // Avoid choices that collapse to the same visible Russian label.
+    if (
+      selected.some(
+        (other) =>
+          other.nameRu.toLocaleLowerCase("ru-RU") ===
+          entry.item.nameRu.toLocaleLowerCase("ru-RU")
+      )
+    ) continue;
+
+    selected.push(entry.item);
+  }
+
+  if (selected.length < Math.max(0, count - 1)) {
+    for (const item of pool) {
+      if (selected.length >= Math.max(0, count - 1)) break;
+      if (selected.some((other) => other.id === item.id)) continue;
+      selected.push(item);
+    }
+  }
+
+  return shuffled([target, ...selected], rng);
 }
 
 export function mistakeTargets(store, catalog) {

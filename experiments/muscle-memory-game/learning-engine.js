@@ -236,12 +236,19 @@ function makeTarget(group) {
     ),
   ];
 
+  const sidsBySide = {
+    right: group.items.filter((item) => item.side === "right").map((item) => item.sid),
+    left: group.items.filter((item) => item.side === "left").map((item) => item.sid),
+    midline: group.items.filter((item) => !item.side).map((item) => item.sid),
+  };
+
   return {
     id: group.id,
     nameRu: group.nameRu,
     region: group.region,
     sids: group.items.map((item) => item.sid),
     sourceNames: group.items.map((item) => item.sourceName),
+    sidsBySide,
     legacyIds,
     skillIds: ["find", "name"],
   };

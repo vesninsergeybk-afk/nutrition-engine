@@ -617,6 +617,23 @@ function targetStructureIds(target) {
   return target?.sids ? [...target.sids] : [];
 }
 
+function recognitionStructureIds(target, seed = 0) {
+  if (!target) return [];
+
+  const sideGroups = [
+    target.sidsBySide?.right || [],
+    target.sidsBySide?.left || [],
+  ].filter((ids) => ids.length);
+
+  if (sideGroups.length) {
+    return [...sideGroups[Math.abs(Number(seed) || 0) % sideGroups.length]];
+  }
+
+  const midline = target.sidsBySide?.midline || [];
+  if (midline.length) return [...midline];
+  return targetStructureIds(target);
+}
+
 function paintStructure(sid, color) {
   if (!anatomyMesh || !structureRanges[sid]) return;
 
@@ -1198,7 +1215,9 @@ function renderSessionProgress() {
 
 function renderNameChoices(item) {
   nameChoicesEl.replaceChildren();
-  const choices = buildSmartChoices(item.target, learningCatalog, 4);
+  const choices = buildSmartChoices(item.target, learningCatalog, 4, Math.random, {
+    store: learningStore,
+  });
 
   for (const choice of choices) {
     const button = document.createElement("button");
@@ -1359,6 +1378,7 @@ function prepareSessionItem() {
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
   canvas.dataset.nameView = "";
+  canvas.dataset.nameTargetComponentCount = "";
   canvas.dataset.examSeconds = "";
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
@@ -1406,23 +1426,23 @@ function prepareSessionItem() {
   questionLabelEl.textContent = modeLabel;
 
   if (item.skillId === "name") {
-    const ids = targetStructureIds(item.target);
-    const sid = ids.length ? ids[learningSession.index % ids.length] : null;
-    if (sid != null) {
-      focusedStructureIds = [sid];
+    const ids = recognitionStructureIds(item.target, learningSession.index);
+    if (ids.length) {
+      focusedStructureIds = ids;
       focusSelectedButton.disabled = false;
 
-      const targetBox = boxForStructures([sid]);
+      const targetBox = boxForStructures(ids);
       const preferredView = bestViewDirectionForBox(targetBox);
-      focusSelectedStructures(2.45, preferredView.direction);
+      focusSelectedStructures(2.05, preferredView.direction);
 
-      const presentation = revealNamedTarget([sid]);
-      highlightStructures([sid], "selected");
+      const presentation = revealNamedTarget(ids);
+      highlightStructures(ids, "selected");
 
       canvas.dataset.nameTargetVisible = String(presentation.visible);
       canvas.dataset.nameTargetPresentation = presentation.isolated ? "isolated" : "context";
       canvas.dataset.nameOccludersHidden = String(presentation.hidden);
       canvas.dataset.nameView = preferredView.label;
+      canvas.dataset.nameTargetComponentCount = String(ids.length);
     }
     questionEl.textContent = "Назовите выделенную мышцу";
     feedbackEl.textContent = "Выберите название.";
@@ -2327,6 +2347,7 @@ function resetLoadedModel() {
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
   canvas.dataset.nameView = "";
+  canvas.dataset.nameTargetComponentCount = "";
   canvas.dataset.trainingDisplay = "false";
   canvas.dataset.connectiveTrainingHidden = "false";
   canvas.dataset.skinTrainingHidden = "false";
