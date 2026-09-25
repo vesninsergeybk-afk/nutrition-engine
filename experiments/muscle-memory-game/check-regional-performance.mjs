@@ -15,7 +15,7 @@ assert(
   "Bone context is still enlarged by cover/context muscles"
 );
 assert(
-  /function focusLearningRegion\(\)[\s\S]{0,220}const focusTargets = availableTargets/.test(app),
+  /function focusLearningRegion\([^)]*\)[\s\S]{0,260}const focusTargets = availableTargets/.test(app),
   "Camera focus is still enlarged by cover/context muscles"
 );
 console.log("Regional performance/framing contract: ok");
