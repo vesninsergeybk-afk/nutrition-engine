@@ -693,7 +693,7 @@ function setLearningMode(mode, { reset = true } = {}) {
   }
 }
 
-function todayQueueForCurrentRegion(limit = 30) {
+function todayQueueForCurrentRegion(limit = 1000) {
   return buildTodayQueue(learningStore, availableTargets, {
     now: Date.now(),
     limit,
@@ -708,6 +708,187 @@ function updateTodayAction() {
     due.length === 1
       ? "Повторить сегодня · 1 задание"
       : `Повторить сегодня · ${due.length} заданий`;
+}
+
+
+function progressBlock(title) {
+  const section = document.createElement("section");
+  section.className = "progress-block";
+
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  section.appendChild(heading);
+  return section;
+}
+
+function progressLine(text, className = "progress-line") {
+  const line = document.createElement("p");
+  line.className = className;
+  line.textContent = text;
+  return line;
+}
+
+function compareConfusionTargets(target, chosen, skillId) {
+  if (!target || !chosen) return;
+
+  setMode("explore");
+  showAllStructures();
+  restoreHighlights();
+
+  const targetIds = targetStructureIds(target);
+  const chosenIds = targetStructureIds(chosen);
+  const ids = [...new Set([...targetIds, ...chosenIds])];
+  if (!ids.length) return;
+
+  setVisibleStructures(ids);
+  highlightStructures(targetIds, "selected");
+  highlightStructures(chosenIds, "answer");
+
+  focusedStructureIds = ids;
+  focusSelectedButton.disabled = false;
+  const box = boxForStructures(ids);
+  if (!box.isEmpty()) {
+    const view = bestViewDirectionForBox(box);
+    focusBox(box, 1.65, view.direction);
+  }
+
+  questionLabelEl.textContent = "Сравнение";
+  questionEl.textContent = target.nameRu + " и " + chosen.nameRu;
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    "Синяя структура — та, которую нужно было " +
+    (skillId === "name" ? "назвать" : "найти") +
+    ". Зелёная — структура, с которой её путали. Сравните положение, форму и соседние ориентиры.";
+  updateLayerButtons();
+}
+
+function renderProgressPanel() {
+  if (!learningProgressEl || !learningProgressContentEl) return;
+
+  const now = Date.now();
+  const area = currentAreaProgress(learningStore, availableTargets, now);
+  const weak = weakSkills(learningStore, availableTargets, { limit: 6, now });
+  const confusions = topConfusions(learningStore, availableTargets, { limit: 4 });
+  const history = recentSessionHistory(learningStore, 4);
+  const rows = regionProgress(learningStore, learningCatalog, now)
+    .filter((row) => row.find.seen > 0 || row.name.seen > 0 || row.due > 0);
+
+  const hasProgress =
+    area.find.seen > 0 ||
+    area.name.seen > 0 ||
+    weak.length > 0 ||
+    confusions.length > 0 ||
+    history.length > 0;
+
+  learningProgressEl.hidden = !hasProgress || appMode !== "quiz";
+  if (!hasProgress) {
+    learningProgressContentEl.replaceChildren();
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  const current = progressBlock(regionNameRu(selectedLearningRegion));
+  current.appendChild(
+    progressLine(
+      "Найти: встречались " + area.find.seen + " из " + area.find.total +
+      (area.find.due ? " · повторить " + area.find.due : "")
+    )
+  );
+  current.appendChild(
+    progressLine(
+      "Назвать: встречались " + area.name.seen + " из " + area.name.total +
+      (area.name.due ? " · повторить " + area.name.due : "")
+    )
+  );
+  fragment.appendChild(current);
+
+  if (weak.length) {
+    const weakBlock = progressBlock("Слабые места");
+    const list = document.createElement("div");
+    list.className = "progress-weak-list";
+
+    for (const item of weak) {
+      const row = document.createElement("div");
+      row.className = "progress-weak-item";
+      const strong = document.createElement("strong");
+      strong.textContent =
+        item.target.nameRu + (item.skillId === "name" ? " — назвать" : " — найти");
+      row.appendChild(strong);
+      row.appendChild(document.createTextNode(" · " + item.reason));
+      list.appendChild(row);
+    }
+
+    weakBlock.appendChild(list);
+    fragment.appendChild(weakBlock);
+  }
+
+  if (confusions.length) {
+    const confusionBlock = progressBlock("Пары, которые путались");
+    const list = document.createElement("div");
+    list.className = "progress-confusion-list";
+
+    for (const item of confusions) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "progress-confusion";
+      button.textContent =
+        "Сравнить: " + item.target.nameRu + " / " + item.chosen.nameRu +
+        (item.count > 1 ? " · " + item.count + " раза" : "");
+      button.addEventListener("click", () =>
+        compareConfusionTargets(item.target, item.chosen, item.skillId)
+      );
+      list.appendChild(button);
+    }
+
+    confusionBlock.appendChild(list);
+    fragment.appendChild(confusionBlock);
+  }
+
+  if (rows.length) {
+    const regions = progressBlock("По областям");
+    const list = document.createElement("div");
+    list.className = "progress-region-list";
+
+    for (const row of rows) {
+      const line = document.createElement("div");
+      line.className = "progress-region-row";
+
+      const name = document.createElement("span");
+      name.className = "progress-region-name";
+      name.textContent = row.nameRu;
+
+      const stats = document.createElement("span");
+      stats.className = "progress-region-stats";
+      stats.textContent =
+        "найти " + row.find.seen + "/" + row.total +
+        " · назвать " + row.name.seen + "/" + row.total +
+        (row.due ? " · повторить " + row.due : "");
+
+      line.append(name, stats);
+      list.appendChild(line);
+    }
+
+    regions.appendChild(list);
+    fragment.appendChild(regions);
+  }
+
+  if (history.length) {
+    const historyBlock = progressBlock("Последние тренировки");
+    for (const entry of history) {
+      const modeName = SESSION_MODES[entry.mode]?.nameRu || "Тренировка";
+      historyBlock.appendChild(
+        progressLine(
+          modeName + " · " + regionNameRu(entry.region) +
+          " · без ошибок " + entry.clean + "/" + entry.total,
+          "progress-history-line"
+        )
+      );
+    }
+    fragment.appendChild(historyBlock);
+  }
+
+  learningProgressContentEl.replaceChildren(fragment);
 }
 
 function canStartLearningSession() {
