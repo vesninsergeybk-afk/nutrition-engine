@@ -144,7 +144,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       ],
       contextPatterns: [/latissimus dorsi|deltoid/i],
       supportBonePatterns: [/scapula|clavicle|rib|thoracic vertebra|humerus/i],
-      depthProfile: "shoulder",
+      depthProfile: null,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -284,7 +284,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Мышца, выпрямляющая позвоночник",
     "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
     {
-      questionPatterns: [/iliocostalis|longissimus thoracis|spinalis(?: thoracis)?/i],
+      questionPatterns: [/\biliocostalis\b|\blongissimus thoracis\b|\bspinalis(?: thoracis)?\b/i],
       contextPatterns: [/latissimus dorsi|serratus posterior/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
       depthProfile: "back",
