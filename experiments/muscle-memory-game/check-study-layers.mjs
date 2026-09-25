@@ -54,3 +54,20 @@ console.log("Massage study layers: static contract ok");
 console.log("Skin: opt-in");
 console.log("Connective sublayers: 7");
 console.log("Lazy safety-reference layers: 3");
+
+assert(
+  html.includes('id="show-nearest-muscle"'),
+  "Nearest-muscle navigation is missing from the atlas"
+);
+assert(
+  app.includes("studyStructureIdFromHit") &&
+  app.includes("selectStudyStructure") &&
+  app.includes("isolateSelectedStudyStructure"),
+  "Study-layer structures are not individually selectable/isolatable"
+);
+assert(
+  app.includes("Ближайшая мышечная структура в этой 3D-модели") &&
+  app.includes("Это пространственный ориентир, а не утверждение о прикреплении"),
+  "Nearest-muscle relation is not qualified carefully enough"
+);
+console.log("Study-layer interaction: selectable, isolatable, searchable");

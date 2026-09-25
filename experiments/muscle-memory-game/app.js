@@ -137,6 +137,7 @@ const searchInput = document.querySelector("#structure-search");
 const searchResults = document.querySelector("#search-results");
 const isolateButton = document.querySelector("#isolate-selected");
 const hideSelectedButton = document.querySelector("#hide-selected");
+const showNearestMuscleButton = document.querySelector("#show-nearest-muscle");
 const undoHideButton = document.querySelector("#undo-hide");
 const showAllButton = document.querySelector("#show-all");
 
@@ -454,9 +455,12 @@ function nearestMuscleForPart(part, muscleParts) {
     }
   }
 
-  if (!best) return "";
+  if (!best) return { sourceName: "", nameRu: "" };
   const term = structureTerm(best.name);
-  return normalizeRussianSideLabel(term.nameRu || best.name, best.name);
+  return {
+    sourceName: best.name,
+    nameRu: normalizeRussianSideLabel(term.nameRu || best.name, best.name),
+  };
 }
 
 
@@ -727,6 +731,14 @@ function prepareFindTargetAccess(target, maxOccluders = 10) {
 }
 
 function focusSelectedStructures(padding = 1.65, direction = null) {
+  if (appMode === "explore" && selectedStudyId != null) {
+    const box = boxForStudyStructure(selectedStudyId);
+    if (!box.isEmpty()) {
+      focusBox(box, Math.max(padding, 1.9), direction || currentViewDirection());
+    }
+    return;
+  }
+
   if (!focusedStructureIds.length) return;
   const box = boxForStructures(focusedStructureIds);
   if (!box.isEmpty()) focusBox(box, padding, direction || currentViewDirection());
@@ -831,7 +843,20 @@ function highlightStructures(ids, kind = "answer") {
 
 function updateLayerButtons() {
   isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
-  undoHideButton.disabled = hiddenStack.length === 0;
+  undoHideButton.disabled =
+    hiddenStack.length === 0 && exploreHiddenActions.length === 0;
+
+  if (selectedStudyId != null) {
+    hideSelectedButton.disabled =
+      isolated || !studyStructureIsVisible(selectedStudyId);
+    isolateButton.disabled = false;
+    showNearestMuscleButton.hidden = !studyEntry(selectedStudyId)?.nearestMuscleSourceName;
+    showNearestMuscleButton.disabled = showNearestMuscleButton.hidden;
+    return;
+  }
+
+  showNearestMuscleButton.hidden = true;
+  showNearestMuscleButton.disabled = true;
   hideSelectedButton.disabled =
     selectedExploreSid == null ||
     isolated ||
@@ -883,9 +908,75 @@ function showAllStructures() {
   updateLayerButtons();
 }
 
+function restoreExploreContext() {
+  if (anatomyMesh) anatomyMesh.visible = true;
+  setVisibleStructures(null);
+  setAllStudyStructuresVisible(true);
+  exploreHiddenActions.length = 0;
+  isolated = false;
+  applyConnectiveDisplayMode();
+  applySkinDisplayMode();
+  restoreReferenceLayerVisibility();
+  updateLayerButtons();
+}
+
+function isolateSelectedStudyStructure() {
+  if (selectedStudyId == null) return;
+
+  if (isolated) {
+    const studyId = selectedStudyId;
+    restoreExploreContext();
+    selectStudyStructure(studyId);
+    return;
+  }
+
+  const entry = studyEntry(selectedStudyId);
+  if (!entry) return;
+
+  if (anatomyMesh) anatomyMesh.visible = false;
+  setAllStudyStructuresVisible(false);
+  setStudyStructureVisible(selectedStudyId, true);
+
+  for (const [layerKey, mesh] of connectiveMeshes) {
+    mesh.visible = entry.layerKey !== "skin" && layerKey === entry.layerKey;
+  }
+  if (skinMesh) skinMesh.visible = entry.layerKey === "skin";
+  for (const mesh of referenceMeshes.values()) mesh.visible = false;
+
+  isolated = true;
+  focusSelectedStructures(2.05);
+  updateLayerButtons();
+}
+
 function hideSelectedStructure() {
+  if (appMode !== "explore") return;
+
+  if (selectedStudyId != null) {
+    if (isolated || !studyStructureIsVisible(selectedStudyId)) return;
+
+    const studyId = selectedStudyId;
+    const label = studyDisplayName(studyId);
+    setStudyStructureVisible(studyId, false);
+    exploreHiddenActions.push({ kind: "study", id: studyId });
+    restoreStudyHighlight();
+
+    selectedStudyId = null;
+    focusSelectedButton.disabled = true;
+    isolateButton.disabled = true;
+    hideSelectedButton.disabled = true;
+    showNearestMuscleButton.hidden = true;
+    showNearestMuscleButton.disabled = true;
+
+    questionLabelEl.textContent = "Структура скрыта";
+    questionEl.textContent = label;
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent =
+      "Структура скрыта. Теперь можно изучать лежащие глубже ткани или вернуть её.";
+    updateLayerButtons();
+    return;
+  }
+
   if (
-    appMode !== "explore" ||
     selectedExploreSid == null ||
     isolated ||
     structureVisibility[selectedExploreSid] === false
@@ -893,6 +984,7 @@ function hideSelectedStructure() {
 
   const sid = selectedExploreSid;
   hiddenStack.push(sid);
+  exploreHiddenActions.push({ kind: "muscle", id: sid });
   setStructureVisible(sid, false);
   restoreHighlights();
 
@@ -909,12 +1001,34 @@ function hideSelectedStructure() {
 }
 
 function undoLastHide() {
-  const sid = hiddenStack.pop();
-  if (sid == null) return;
+  const action = exploreHiddenActions.pop();
+
+  if (action?.kind === "study") {
+    setStudyStructureVisible(action.id, true);
+    selectStudyStructure(action.id);
+    questionLabelEl.textContent = "Возвращена структура";
+    updateLayerButtons();
+    return;
+  }
+
+  const sid = action?.kind === "muscle" ? action.id : hiddenStack.pop();
+  if (sid == null) {
+    updateLayerButtons();
+    return;
+  }
+
+  for (let i = hiddenStack.length - 1; i >= 0; i -= 1) {
+    if (hiddenStack[i] === sid) {
+      hiddenStack.splice(i, 1);
+      break;
+    }
+  }
 
   setStructureVisible(sid, true);
   selectedExploreSid = sid;
+  selectedStudyId = null;
   focusedStructureIds = [sid];
+  restoreStudyHighlight();
   restoreHighlights();
   highlightStructures([sid], "selected");
 
@@ -2031,12 +2145,17 @@ function nextSessionStep() {
 function selectExploreStructure(sid) {
   if (sid == null || !structureNames[sid]) return;
 
+  restoreStudyHighlight();
   restoreHighlights();
+  selectedStudyId = null;
+  canvas.dataset.selectedStudyLayer = "";
+  canvas.dataset.selectedStudySpecific = "";
   selectedExploreSid = sid;
   focusedStructureIds = [sid];
+  isolated = false;
   highlightStructures([sid], "selected");
 
-  questionLabelEl.textContent = "Выбрана структура";
+  questionLabelEl.textContent = "Мышца";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
   feedbackEl.textContent =
@@ -2044,14 +2163,53 @@ function selectExploreStructure(sid) {
 
   focusSelectedButton.disabled = false;
   isolateButton.disabled = false;
+  updateLayerButtons();
+}
+
+function selectStudyStructure(studyId) {
+  if (appMode !== "explore") return;
+  const entry = studyEntry(studyId);
+  if (!entry) return;
+
+  restoreHighlights();
+  restoreStudyHighlight();
+
+  selectedExploreSid = null;
+  focusedStructureIds = [];
+  selectedStudyId = studyId;
+  highlightedStudyId = studyId;
+  isolated = false;
+
+  paintStudyStructure(studyId, new THREE.Color(0x245da8));
+
+  const term = studyStructureTerm(entry.sourceName, entry.layerKey);
+  questionLabelEl.textContent = studyLayerNameRu(entry.layerKey);
+  questionEl.textContent = term.nameRu;
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent = entry.nearestMuscleNameRu
+    ? "Ближайшая мышечная структура в этой 3D-модели: " +
+      entry.nearestMuscleNameRu +
+      ". Это пространственный ориентир, а не утверждение о прикреплении."
+    : term.specific
+      ? "Структура выбрана. Можно изолировать её или вернуть окружающие ткани."
+      : "Структура выбрана в соответствующем анатомическом слое; точный русский термин для этой записи источника ещё не подтверждён.";
+
+  focusSelectedButton.disabled = false;
+  isolateButton.disabled = false;
+  hideSelectedButton.disabled = false;
+  canvas.dataset.selectedStudyLayer = entry.layerKey;
+  canvas.dataset.selectedStudySpecific = String(term.specific);
+  updateLayerButtons();
 }
 
 function setMode(mode) {
   if (mode !== "quiz" && mode !== "explore") return;
 
   appMode = mode;
+  restoreStudyHighlight();
   restoreHighlights();
-  showAllStructures();
+  restoreExploreContext();
+  selectedStudyId = null;
   selectedExploreSid = null;
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
@@ -2088,27 +2246,59 @@ function setMode(mode) {
     locked = true;
     restoreDisplayAfterTraining();
     questionLabelEl.textContent = "Атлас";
-    questionEl.textContent = "Выберите мышцу";
+    questionEl.textContent = "Выберите структуру";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Коснитесь мышцы на модели или найдите её по названию. Здесь можно свободно изучать слои и взаимное расположение структур.";
+      "Коснитесь мышцы, связки, сухожилия, фасциальной структуры или наружного слоя. Здесь можно свободно изучать их взаимное расположение.";
     searchInput.focus({ preventScroll: true });
   }
 
   notifyEmbedHeight();
 }
 
+function ensureStudyLayerShown(entry) {
+  if (!entry) return;
+
+  if (entry.layerKey === "skin") {
+    if (skinDisplayMode === "off") {
+      skinDisplayMode = "ghost";
+      skinMode.value = skinDisplayMode;
+    }
+    applySkinDisplayMode();
+    return;
+  }
+
+  const input = connectiveLayerInputs.find(
+    (item) => item.dataset.connectiveLayer === entry.layerKey
+  );
+  if (input) input.checked = true;
+  if (connectiveDisplayMode === "off") {
+    connectiveDisplayMode = "anatomical";
+    connectiveMode.value = connectiveDisplayMode;
+  }
+  applyConnectiveDisplayMode();
+}
+
 function renderSearchResults(query) {
   searchResults.replaceChildren();
-  const q = query.trim().toLowerCase();
+  const q = query.trim().toLocaleLowerCase("ru-RU");
 
   if (q.length < 2 || !structureNames.length) return;
 
   const matches = [];
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
-    const source = structureNames[sid];
-    const haystack = structureSearchText(source);
-    if (haystack.includes(q.toLocaleLowerCase("ru-RU"))) matches.push(sid);
+    if (structureSearchText(structureNames[sid]).includes(q)) {
+      matches.push({ kind: "muscle", id: sid });
+    }
+  }
+
+  if (appMode === "explore" && matches.length < 10) {
+    for (const entry of studyStructures) {
+      if (matches.length >= 10) break;
+      if (studyStructureSearchText(entry.sourceName, entry.layerKey).includes(q)) {
+        matches.push({ kind: "study", id: entry.id });
+      }
+    }
   }
 
   if (!matches.length) {
@@ -2119,24 +2309,40 @@ function renderSearchResults(query) {
     return;
   }
 
-  for (const sid of matches) {
+  for (const match of matches) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "search-result";
-    button.textContent = displayStructureName(sid);
-    button.addEventListener("click", () => {
-      if (structureVisibility[sid] === false) {
-        setStructureVisible(sid, true);
-        for (let i = hiddenStack.length - 1; i >= 0; i -= 1) {
-          if (hiddenStack[i] === sid) hiddenStack.splice(i, 1);
+
+    if (match.kind === "muscle") {
+      const sid = match.id;
+      button.textContent = displayStructureName(sid);
+      button.addEventListener("click", () => {
+        if (structureVisibility[sid] === false) {
+          setStructureVisible(sid, true);
+          for (let i = hiddenStack.length - 1; i >= 0; i -= 1) {
+            if (hiddenStack[i] === sid) hiddenStack.splice(i, 1);
+          }
         }
-        updateLayerButtons();
-      }
-      selectExploreStructure(sid);
-      focusSelectedStructures();
-      searchResults.replaceChildren();
-      searchInput.value = structureTerm(structureNames[sid]).nameRu;
-    });
+        selectExploreStructure(sid);
+        focusSelectedStructures();
+        searchResults.replaceChildren();
+        searchInput.value = displayStructureName(sid);
+      });
+    } else {
+      const entry = studyEntry(match.id);
+      button.textContent =
+        studyDisplayName(match.id) + " · " + studyLayerNameRu(entry?.layerKey);
+      button.addEventListener("click", () => {
+        ensureStudyLayerShown(entry);
+        setStudyStructureVisible(match.id, true);
+        selectStudyStructure(match.id);
+        focusSelectedStructures();
+        searchResults.replaceChildren();
+        searchInput.value = studyDisplayName(match.id);
+      });
+    }
+
     searchResults.appendChild(button);
   }
 }
@@ -2190,20 +2396,41 @@ function onPointerUp(event) {
   pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
   raycaster.setFromCamera(pointer, camera);
-  const hits = raycaster.intersectObject(anatomyMesh, false);
-  let sid = null;
 
-  for (const hit of hits) {
-    const candidate = structureIdFromHit(hit);
-    if (candidate != null && structureVisibility[candidate] !== false) {
-      sid = candidate;
-      break;
+  if (appMode === "quiz") {
+    const hits = raycaster.intersectObject(anatomyMesh, false);
+    for (const hit of hits) {
+      const candidate = structureIdFromHit(hit);
+      if (candidate != null && structureVisibility[candidate] !== false) {
+        chooseQuiz(candidate);
+        return;
+      }
     }
+    return;
   }
 
-  if (sid == null) return;
-  if (appMode === "quiz") chooseQuiz(sid);
-  else selectExploreStructure(sid);
+  const pickables = [
+    anatomyMesh,
+    ...studyMeshes().filter((mesh) => mesh.visible),
+  ].filter(Boolean);
+  const hits = raycaster.intersectObjects(pickables, false);
+
+  for (const hit of hits) {
+    if (hit.object === anatomyMesh) {
+      const sid = structureIdFromHit(hit);
+      if (sid != null && structureVisibility[sid] !== false) {
+        selectExploreStructure(sid);
+        return;
+      }
+      continue;
+    }
+
+    const studyId = studyStructureIdFromHit(hit);
+    if (studyId != null && studyStructureIsVisible(studyId)) {
+      selectStudyStructure(studyId);
+      return;
+    }
+  }
 }
 
 function onPointerCancel(event) {
@@ -3190,12 +3417,14 @@ async function loadBodyParts4Model() {
           CONNECTIVE_LAYER_COLORS[layerKey] || CONNECTIVE_LAYER_COLORS.other
         );
         const geometry = bodyPartsGeometry(part, buffer, studyId, color);
+        const nearestMuscle = nearestMuscleForPart(part, muscleAnatomyParts);
         studyStructures.push({
           id: studyId,
           sourceName: part.name,
           conceptId: part.conceptId || "",
           layerKey,
-          nearestMuscleNameRu: nearestMuscleForPart(part, muscleAnatomyParts),
+          nearestMuscleNameRu: nearestMuscle.nameRu,
+          nearestMuscleSourceName: nearestMuscle.sourceName,
         });
         connectiveTriangleCount += Math.floor(part.indexCount / 3);
         return geometry;
@@ -3218,12 +3447,14 @@ async function loadBodyParts4Model() {
           studyId,
           new THREE.Color(0xc69c84)
         );
+        const nearestMuscle = nearestMuscleForPart(part, muscleAnatomyParts);
         studyStructures.push({
           id: studyId,
           sourceName: part.name,
           conceptId: part.conceptId || "",
           layerKey: "skin",
-          nearestMuscleNameRu: nearestMuscleForPart(part, muscleAnatomyParts),
+          nearestMuscleNameRu: nearestMuscle.nameRu,
+          nearestMuscleSourceName: nearestMuscle.sourceName,
         });
         skinTriangleCount += Math.floor(part.indexCount / 3);
         return geometry;
@@ -3354,10 +3585,10 @@ async function loadSelectedModel(source) {
 
     if (appMode === "explore") {
       questionLabelEl.textContent = "Атлас";
-      questionEl.textContent = "Выберите мышцу";
+      questionEl.textContent = "Выберите структуру";
       feedbackEl.className = "feedback";
       feedbackEl.textContent =
-        "Коснитесь мышцы на модели или найдите её по названию.";
+        "Коснитесь структуры на модели или найдите её по названию.";
     }
 
     applyInitialQueryState();
@@ -3454,6 +3685,11 @@ searchInput.addEventListener("keydown", (event) => {
 });
 
 isolateButton.addEventListener("click", () => {
+  if (selectedStudyId != null) {
+    isolateSelectedStudyStructure();
+    return;
+  }
+
   if (selectedExploreSid == null) return;
 
   if (isolated) {
@@ -3463,16 +3699,36 @@ isolateButton.addEventListener("click", () => {
     }
   } else {
     setVisibleStructures([selectedExploreSid]);
+    isolated = true;
     focusSelectedStructures();
+    updateLayerButtons();
   }
 });
 
 hideSelectedButton.addEventListener("click", hideSelectedStructure);
+showNearestMuscleButton.addEventListener("click", () => {
+  const entry = studyEntry(selectedStudyId);
+  if (!entry?.nearestMuscleSourceName) return;
+
+  const concept = learningConceptSourceName(entry.nearestMuscleSourceName);
+  const sid = structureNames.findIndex(
+    (name) => learningConceptSourceName(name) === concept
+  );
+  if (sid < 0) return;
+
+  restoreExploreContext();
+  selectExploreStructure(sid);
+  focusSelectedStructures(1.9);
+});
 undoHideButton.addEventListener("click", undoLastHide);
 
 showAllButton.addEventListener("click", () => {
-  showAllStructures();
-  if (selectedExploreSid != null) {
+  restoreExploreContext();
+  if (selectedStudyId != null) {
+    restoreStudyHighlight();
+    highlightedStudyId = selectedStudyId;
+    paintStudyStructure(selectedStudyId, new THREE.Color(0x245da8));
+  } else if (selectedExploreSid != null) {
     restoreHighlights();
     highlightStructures([selectedExploreSid], "selected");
   }
