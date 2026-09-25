@@ -16,6 +16,19 @@ assert(regionHasDepthProfile("back"), "Back depth profile is missing");
 assert(regionHasDepthProfile("abdomen"), "Abdominal depth profile is missing");
 assert(!regionHasDepthProfile("forearm-hand"), "Unverified forearm depth profile must not be invented");
 
+for (const concept of [
+  "multifidus thoracis",
+  "thoracic rotator",
+  "lateral lumbar intertransversarius",
+  "set of interspinales lumborum",
+  "dorsal parts of lateral intertransversarii lumborum",
+]) {
+  assert(
+    muscleDepthInfo("back", concept)?.rank === 4,
+    "Deep back source-name variant is not mapped: " + concept
+  );
+}
+
 const trapezius = muscleDepthInfo("shoulder", "trapezius");
 const infraspinatus = muscleDepthInfo("shoulder", "infraspinatus");
 const subscapularis = muscleDepthInfo("shoulder", "subscapularis");
