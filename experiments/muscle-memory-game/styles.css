@@ -944,3 +944,20 @@ button:disabled {
   line-height: 1.4;
   color: var(--muted);
 }
+
+
+.learning-summary {
+  white-space: pre-line;
+}
+
+.learning-field select optgroup {
+  font-weight: 700;
+}
+
+.learning-field select option {
+  font-weight: 400;
+}
+
+.session-active .name-choice:disabled:not(.correct):not(.wrong) {
+  opacity: .72;
+}

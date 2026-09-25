@@ -1099,6 +1099,40 @@ function renderLearningRegionOptions() {
   learningRegion.disabled = learningCatalog.length === 0;
 }
 
+function syncLearningSessionSizes() {
+  const count = availableTargets.length;
+  const previous = Number(learningSessionSize.value) || 10;
+  const standard = [5, 10, 20].filter((size) => size <= count);
+  const sizes = [...standard];
+
+  if (count > 0 && count <= 30 && !sizes.includes(count)) sizes.push(count);
+  sizes.sort((a, b) => a - b);
+
+  learningSessionSize.replaceChildren();
+  for (const size of sizes) {
+    const option = document.createElement("option");
+    option.value = String(size);
+    option.textContent = size === count && count <= 30
+      ? `Весь блок · ${size}`
+      : String(size);
+    learningSessionSize.appendChild(option);
+  }
+
+  if (!sizes.length) {
+    const option = document.createElement("option");
+    option.value = "1";
+    option.textContent = "1";
+    learningSessionSize.appendChild(option);
+  }
+
+  const nextValue = sizes.includes(previous)
+    ? previous
+    : sizes.includes(10)
+      ? 10
+      : sizes[sizes.length - 1] || 1;
+  learningSessionSize.value = String(nextValue);
+}
+
 function summarySkillForMode() {
   return selectedSessionMode === "name" ? "name" : "find";
 }
@@ -1112,6 +1146,7 @@ function syncLearningModeButtons() {
     const active = mode === selectedSessionMode;
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", String(active));
+    button.title = SESSION_MODES[mode]?.descriptionRu || "";
     button.disabled = noTargets || (mode === "mistakes" && !hasMistakes);
   }
 }
@@ -1420,6 +1455,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
 function applyLearningRegion() {
   availableTargets = filterCatalogByRegion(learningCatalog, selectedLearningRegion);
   currentTarget = null;
+  syncLearningSessionSizes();
 
   targetStatusEl.textContent =
     `Учебный каталог: ${learningCatalog.length} мышечных целей. ` +

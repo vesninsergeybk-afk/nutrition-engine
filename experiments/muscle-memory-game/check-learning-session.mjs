@@ -84,6 +84,21 @@ assert(
   "Rotator-cuff distractors were not prioritized anatomically"
 );
 
+const restrictedShoulder = catalog.slice(0, 5);
+const restrictedChoices = buildSmartChoices(
+  restrictedShoulder[0],
+  restrictedShoulder,
+  4,
+  () => 0.25
+);
+assert(
+  restrictedChoices.every((item) =>
+    restrictedShoulder.some((allowed) => allowed.id === item.id)
+  ),
+  "Recognition choices escaped the active learning block"
+);
+console.log("Active-block recognition choices: ok");
+
 const confusionAwareStore = {
   records: {},
   confusions: {
