@@ -867,6 +867,7 @@ function prepareSessionItem() {
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   quizActions.hidden = false;
+  quizActions.classList.remove("next-only");
   answerButton.hidden = false;
   answerButton.disabled = false;
   nextButton.disabled = true;
@@ -957,6 +958,9 @@ function completeCurrentSessionItem(result) {
   if (!learningSession) return;
   completeSessionItem(learningSession, result);
   renderSessionProgress();
+
+  answerButton.hidden = true;
+  quizActions.classList.add("next-only");
 
   const progress = sessionProgress(learningSession);
   nextButton.disabled = false;
@@ -1668,6 +1672,8 @@ function resetLoadedModel() {
 
   nextButton.disabled = true;
   answerButton.disabled = true;
+  answerButton.hidden = true;
+  quizActions.classList.add("next-only");
   focusSelectedButton.disabled = true;
   isolateButton.disabled = true;
   hideSelectedButton.disabled = true;
