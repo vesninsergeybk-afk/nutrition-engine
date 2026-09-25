@@ -391,7 +391,7 @@ function indexStudyRanges(mesh) {
 
 
 function studyStructureIdFromHit(hit) {
-  if (!hitWithinRegionalClip(hit)) return null;
+  // Supporting anatomy is also rendered as whole visible structures.
   if (!hit?.object?.geometry || hit.faceIndex == null) return null;
   const geometry = hit.object.geometry;
   const ids = geometry.getAttribute("structureId");
@@ -2442,6 +2442,15 @@ function applyLearningRegion() {
     focusSelectedButton.disabled = true;
     isolateButton.disabled = true;
     hideSelectedButton.disabled = true;
+    searchInput.value = "";
+    searchResults.replaceChildren();
+    questionLabelEl.textContent = "Атлас";
+    questionEl.textContent = "Выберите структуру";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent =
+      selectedLearningRegion === "all"
+        ? "Исследуйте модель целиком или выберите учебный блок."
+        : "Исследуйте выбранный анатомический препарат: вращайте модель, выбирайте структуры и переходите к более глубоким мышцам.";
     canvas.dataset.selectedStudyLayer = "";
     canvas.dataset.selectedStudySpecific = "";
     canvas.dataset.deeperFocus = "false";
@@ -3489,7 +3498,8 @@ function renderSearchResults(query) {
 }
 
 function structureIdFromHit(hit) {
-  if (!hitWithinRegionalClip(hit)) return null;
+  // Regional isolation now renders whole anatomical structures. Do not create
+  // a visible-but-unclickable zone outside the logical specimen framing box.
   if (!hit || hit.faceIndex == null || !anatomyMesh) return null;
   const geometry = anatomyMesh.geometry;
   const corner = hit.faceIndex * 3;

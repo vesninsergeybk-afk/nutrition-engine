@@ -38,9 +38,9 @@ for (const symbol of [
   assert(app.includes(symbol), "Missing specimen clipping symbol: " + symbol);
 }
 assert(
-  /function structureIdFromHit\(hit\)[\s\S]{0,180}hitWithinRegionalClip/.test(app) &&
-    /function studyStructureIdFromHit\(hit\)[\s\S]{0,180}hitWithinRegionalClip/.test(app),
-  "Raycaster can still select visually clipped anatomy"
+  !/function structureIdFromHit\(hit\)[\s\S]{0,220}hitWithinRegionalClip/.test(app) &&
+    !/function studyStructureIdFromHit\(hit\)[\s\S]{0,220}hitWithinRegionalClip/.test(app),
+  "Whole visible structures still contain unclickable regions outside the logical specimen box"
 );
 assert(
   app.includes('canvas.dataset.specimenClip = "logical-box"') &&
@@ -51,7 +51,7 @@ assert(
 );
 
 console.log("Virtual specimen spatial windows:", VIRTUAL_SPECIMENS.length);
-console.log("Render clipping + ray-hit clipping: ok");
+console.log("Whole-structure rendering + whole-structure hit testing: ok");
 
 assert(
   /function pointWithinRegionalClip[\s\S]*?point\.x[\s\S]*?point\.y[\s\S]*?point\.z/.test(app),
@@ -67,3 +67,9 @@ assert(
   "Logical specimen bounds no longer constrain interaction in 3D"
 );
 console.log("Whole-structure specimen rendering with logical 3D bounds: ok");
+
+assert(
+  /function applyLearningRegion\(\)[\s\S]*?selectedExploreSid = null[\s\S]*?questionLabelEl\.textContent = "Атлас"[\s\S]*?questionEl\.textContent = "Выберите структуру"/.test(app),
+  "Changing virtual specimens can leave stale selected-muscle text in the Atlas card"
+);
+console.log("Atlas card resets when the virtual specimen changes");

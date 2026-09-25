@@ -98,3 +98,8 @@ assert(
     app.includes("isKnownDeeperRelation("),
   "Verified graph fallback for deeper anatomy is missing"
 );
+
+assert(
+  /function applyLearningRegion\(\)[\s\S]*?searchInput\.value = ""[\s\S]*?searchResults\.replaceChildren\(\)[\s\S]*?questionEl\.textContent = "Выберите структуру"/.test(app),
+  "Changing the specimen can preserve stale Atlas search/selection UI"
+);
