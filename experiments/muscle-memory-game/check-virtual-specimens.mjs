@@ -37,6 +37,23 @@ for (const item of VIRTUAL_SPECIMENS) {
   assert(item.supportBonePatterns.length > 0, item.id + ": missing bone landmarks");
 }
 
+const handVsFootCatalog = [
+  target("opponens digiti minimi of hand", "forearm-hand"),
+  target("opponens digiti minimi of foot", "leg-foot"),
+  target("flexor digitorum profundus", "forearm-hand"),
+  target("flexor digitorum brevis", "leg-foot"),
+];
+const anteriorHand = filterCatalogForSpecimen(
+  handVsFootCatalog,
+  "forearm-hand-anterior",
+  "question"
+);
+assert(
+  anteriorHand.length === 2 &&
+    anteriorHand.every((item) => !/foot|стоп/i.test([...(item.sourceNames || []), item.nameRu].join(" "))),
+  "Foot muscles leaked into the anterior forearm/hand specimen"
+);
+
 const shoulderCatalog = [
   target("deltoid", "shoulder"),
   target("supraspinatus", "shoulder"),
