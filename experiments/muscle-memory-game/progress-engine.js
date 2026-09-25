@@ -1,45 +1,13 @@
 import {
   LEARNING_REGIONS,
+  confusionPairs,
   filterCatalogByRegion,
-  regionNameRu,
-  saveLearningStore,
-  skillRecord,
+  learningHistory,
 } from "./learning-engine.js";
 import {
   retentionRecord,
   retentionStatus,
 } from "./retention-engine.js";
-
-function confusionKey(targetId, chosenId, skillId) {
-  return [skillId, targetId, chosenId].join("::");
-}
-
-export function recordConfusion(
-  store,
-  targetId,
-  chosenId,
-  skillId,
-  storage = globalThis.localStorage,
-  now = Date.now()
-) {
-  if (!store || !targetId || !chosenId || targetId === chosenId) return null;
-  if (skillId !== "find" && skillId !== "name") return null;
-
-  store.confusions ||= {};
-  const key = confusionKey(targetId, chosenId, skillId);
-  const current = store.confusions[key] || {};
-
-  store.confusions[key] = {
-    targetId,
-    chosenId,
-    skillId,
-    count: Math.max(0, Number(current.count) || 0) + 1,
-    lastSeen: Math.max(0, Number(now) || Date.now()),
-  };
-
-  saveLearningStore(store, storage);
-  return store.confusions[key];
-}
 
 export function topConfusions(
   store,
@@ -47,21 +15,14 @@ export function topConfusions(
   { limit = 5, skillId = null } = {}
 ) {
   const byId = new Map((catalog || []).map((item) => [item.id, item]));
-  return Object.values(store?.confusions || {})
-    .filter((entry) => !skillId || entry.skillId === skillId)
+
+  return confusionPairs(store, { skillId, limit: Math.max(1, Number(limit) || 5) })
     .map((entry) => ({
       ...entry,
-      target: byId.get(entry.targetId),
-      chosen: byId.get(entry.chosenId),
+      target: byId.get(entry.expectedMuscleId),
+      chosen: byId.get(entry.chosenMuscleId),
     }))
-    .filter((entry) => entry.target && entry.chosen)
-    .sort(
-      (a, b) =>
-        (Number(b.count) || 0) - (Number(a.count) || 0) ||
-        (Number(b.lastSeen) || 0) - (Number(a.lastSeen) || 0) ||
-        a.target.nameRu.localeCompare(b.target.nameRu, "ru")
-    )
-    .slice(0, Math.max(1, Number(limit) || 5));
+    .filter((entry) => entry.target && entry.chosen);
 }
 
 export function skillProgress(store, catalog, skillId, now = Date.now()) {
@@ -183,59 +144,8 @@ export function weakSkills(
     .slice(0, Math.max(1, Number(limit) || 6));
 }
 
-export function recordSessionHistory(
-  store,
-  session,
-  {
-    regionId = "all",
-    modelSource = null,
-    storage = globalThis.localStorage,
-  } = {}
-) {
-  if (!store || !session || !session.finishedAt) return null;
-
-  store.sessionHistory ||= [];
-  const existing = store.sessionHistory.find(
-    (entry) => Number(entry.startedAt) === Number(session.startedAt)
-  );
-  if (existing) return existing;
-
-  const results = session.results || [];
-  const entry = {
-    startedAt: Number(session.startedAt) || 0,
-    finishedAt: Number(session.finishedAt) || Date.now(),
-    mode: session.mode,
-    regionId,
-    regionNameRu: regionNameRu(regionId),
-    modelSource,
-    total: session.items?.length || 0,
-    completed: results.length,
-    clean: results.filter(
-      (result) =>
-        result.correct &&
-        (Number(result.wrongAttempts) || 0) === 0 &&
-        !result.revealed
-    ).length,
-    wrongAttempts: results.reduce(
-      (sum, result) => sum + Math.max(0, Number(result.wrongAttempts) || 0),
-      0
-    ),
-    revealed: results.filter((result) => result.revealed).length,
-  };
-
-  store.sessionHistory.push(entry);
-  store.sessionHistory = store.sessionHistory
-    .sort((a, b) => Number(a.startedAt) - Number(b.startedAt))
-    .slice(-60);
-
-  saveLearningStore(store, storage);
-  return entry;
-}
-
 export function recentSessionHistory(store, limit = 5) {
-  return [...(store?.sessionHistory || [])]
-    .sort((a, b) => Number(b.startedAt) - Number(a.startedAt))
-    .slice(0, Math.max(1, Number(limit) || 5));
+  return learningHistory(store, limit);
 }
 
 export function currentAreaProgress(store, catalog, now = Date.now()) {
