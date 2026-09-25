@@ -14,7 +14,7 @@ export const SESSION_MODES = Object.freeze({
   practical: {
     id: "practical",
     nameRu: "Практикум",
-    descriptionRu: "Последовательно найти небольшой набор мышц региона.",
+    descriptionRu: "Смешанная практика: поочерёдно находить мышцы и называть выделенные.",
   },
   mistakes: {
     id: "mistakes",
