@@ -636,8 +636,8 @@ function prepareSessionItem() {
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   answerButton.disabled = false;
-  nextButton.disabled = false;
-  nextButton.textContent = "Пропустить";
+  nextButton.disabled = true;
+  nextButton.textContent = "Следующая";
   feedbackEl.className = "feedback";
 
   renderSessionProgress();
@@ -707,6 +707,7 @@ function completeCurrentSessionItem(result) {
   renderSessionProgress();
 
   const progress = sessionProgress(learningSession);
+  nextButton.disabled = false;
   nextButton.textContent = progress.finished ? "Итоги" : "Следующая";
 }
 
