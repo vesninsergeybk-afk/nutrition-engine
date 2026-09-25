@@ -451,6 +451,49 @@ function revealNamedTarget(ids, maxOccluders = 10) {
   return { hidden: 0, visible: true, isolated: true };
 }
 
+
+function prepareFindTargetAccess(target, maxOccluders = 10) {
+  const ids = targetStructureIds(target);
+  if (!anatomyMesh || !ids.length) {
+    return { accessible: false, hidden: 0 };
+  }
+
+  const targetSet = new Set(ids);
+  const targetPoint = nearestTargetPointToCamera(ids);
+  if (!targetPoint) return { accessible: false, hidden: 0 };
+
+  const direction = targetPoint.clone().sub(camera.position);
+  if (direction.lengthSq() < 1e-10) return { accessible: false, hidden: 0 };
+
+  raycaster.set(camera.position, direction.normalize());
+  const hits = raycaster.intersectObject(anatomyMesh, false);
+  const occluders = [];
+  let reachesTarget = false;
+
+  for (const hit of hits) {
+    const sid = structureIdFromHit(hit);
+    if (sid == null || structureVisibility[sid] === false) continue;
+    if (targetSet.has(sid)) {
+      reachesTarget = true;
+      break;
+    }
+    if (!occluders.includes(sid)) occluders.push(sid);
+  }
+
+  if (!reachesTarget) return { accessible: false, hidden: 0 };
+
+  for (const sid of occluders.slice(0, maxOccluders)) {
+    hiddenStack.push(sid);
+    setStructureVisible(sid, false);
+  }
+
+  const visibleSid = firstVisibleStructureOnRay(targetPoint);
+  return {
+    accessible: visibleSid != null && targetSet.has(visibleSid),
+    hidden: Math.min(occluders.length, maxOccluders),
+  };
+}
+
 function focusSelectedStructures(padding = 1.65, direction = null) {
   if (!focusedStructureIds.length) return;
   const box = boxForStructures(focusedStructureIds);
@@ -1090,6 +1133,9 @@ function clearExamTimer() {
   }
   examDeadline = 0;
   canvas.dataset.examSeconds = "";
+  canvas.dataset.examFindAccessible = "";
+  canvas.dataset.examOccludersHidden = "";
+  canvas.dataset.examFindFallback = "";
 }
 
 function startExamTimer() {
@@ -1230,6 +1276,28 @@ function prepareSessionItem() {
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   const examMode = learningSession.mode === "exam";
+
+  if (examMode && item.skillId === "find") {
+    focusLearningRegion();
+    const access = prepareFindTargetAccess(item.target);
+    canvas.dataset.examFindAccessible = String(access.accessible);
+    canvas.dataset.examOccludersHidden = String(access.hidden);
+
+    if (!access.accessible) {
+      // A control task must never require clicking through an occluding layer.
+      // Fall back to recognition for this target instead of exposing its answer.
+      showAllStructures();
+      item.skillId = "name";
+      canvas.dataset.examFindFallback = "name";
+    } else {
+      canvas.dataset.examFindFallback = "";
+    }
+  } else {
+    canvas.dataset.examFindAccessible = "";
+    canvas.dataset.examOccludersHidden = "";
+    canvas.dataset.examFindFallback = "";
+  }
+
   quizActions.hidden = examMode;
   quizActions.classList.remove("next-only");
   answerButton.hidden = examMode;
@@ -1272,9 +1340,12 @@ function prepareSessionItem() {
   } else {
     nameChoicesEl.replaceChildren();
     nameChoicesEl.hidden = true;
-    focusLearningRegion();
+    if (!examMode) focusLearningRegion();
     questionEl.textContent = `Найдите: «${item.target.nameRu}»`;
-    feedbackEl.textContent = "Коснитесь нужной мышцы на модели.";
+    feedbackEl.textContent =
+      examMode && Number(canvas.dataset.examOccludersHidden || 0) > 0
+        ? "Поверхностный слой подготовлен. Коснитесь нужной мышцы."
+        : "Коснитесь нужной мышцы на модели.";
   }
 
   if (examMode) startExamTimer();
