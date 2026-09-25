@@ -1,7 +1,9 @@
 import {
+  LEARNING_SCOPES,
   buildMuscleCatalog,
   appendSessionHistory,
   confusionPairs,
+  filterCatalogByRegion,
   learningHistory,
   learningSummary,
   loadLearningStore,
@@ -184,6 +186,83 @@ if (other.length) {
   console.log("Unclassified names:", other.map((item) => item.nameRu).join(" | "));
 }
 assert(other.length === 0, "Learning catalog still has unclassified muscles");
+
+const scopeIds = new Set(LEARNING_SCOPES.map((scope) => scope.id));
+for (const required of [
+  "shoulder",
+  "upper-limb",
+  "lower-limb",
+  "neck-collar",
+  "foot",
+  "erector-spinae",
+  "rotator-cuff",
+  "scapular-stabilizers",
+]) {
+  assert(scopeIds.has(required), "Missing first-class learning scope: " + required);
+}
+
+const shoulderScope = filterCatalogByRegion(catalog, "shoulder");
+assert(shoulderScope.length === 13, "Shoulder scope contract changed: " + shoulderScope.length);
+
+const upperLimb = filterCatalogByRegion(catalog, "upper-limb");
+assert(
+  upperLimb.length ===
+    (counts.shoulder || 0) + (counts.arm || 0) + (counts["forearm-hand"] || 0),
+  "Upper-limb scope does not equal shoulder + arm + forearm/hand"
+);
+
+const lowerLimb = filterCatalogByRegion(catalog, "lower-limb");
+assert(
+  lowerLimb.length ===
+    (counts.gluteal || 0) + (counts.thigh || 0) + (counts["leg-foot"] || 0),
+  "Lower-limb scope does not equal gluteal + thigh + leg/foot"
+);
+
+const footScope = filterCatalogByRegion(catalog, "foot");
+assert(footScope.length >= 8, "Foot scope is unexpectedly small: " + footScope.length);
+assert(
+  footScope.length < (counts["leg-foot"] || 0) &&
+    footScope.every((item) => item.region === "leg-foot"),
+  "Foot scope is not a strict subset of leg/foot"
+);
+
+const cuffScope = filterCatalogByRegion(catalog, "rotator-cuff");
+assert(cuffScope.length === 4, "Rotator-cuff scope must contain four muscles");
+
+const erectorScope = filterCatalogByRegion(catalog, "erector-spinae");
+assert(erectorScope.length >= 6, "Erector-spinae scope is unexpectedly small");
+assert(
+  erectorScope.every((item) =>
+    /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|остист.*мышц/iu.test(
+      [item.nameRu, ...(item.sourceNames || [])].join(" ")
+    )
+  ),
+  "Erector-spinae scope leaked unrelated muscles"
+);
+
+const neckCollar = filterCatalogByRegion(catalog, "neck-collar");
+assert(neckCollar.length >= 12, "Neck-collar scope is unexpectedly small");
+assert(
+  !neckCollar.some((item) =>
+    /masseter|pterygoid|orbicularis|pharynge|жеватель|крыловид|круговая мышца|глот/u.test(
+      [item.nameRu, ...(item.sourceNames || [])].join(" ").toLocaleLowerCase("ru-RU")
+    )
+  ),
+  "Neck-collar scope leaked face/pharyngeal muscles"
+);
+
+const scapularScope = filterCatalogByRegion(catalog, "scapular-stabilizers");
+assert(scapularScope.length >= 5, "Scapular-complex scope is unexpectedly small");
+console.log("Learning scopes:", {
+  shoulder: shoulderScope.length,
+  upperLimb: upperLimb.length,
+  lowerLimb: lowerLimb.length,
+  neckCollar: neckCollar.length,
+  foot: footScope.length,
+  erectorSpinae: erectorScope.length,
+  rotatorCuff: cuffScope.length,
+  scapularComplex: scapularScope.length,
+});
 
 // Storage model: progress is per (muscle, skill), not per whole muscle.
 const memory = new Map();

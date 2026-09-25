@@ -31,7 +31,68 @@ export const LEARNING_REGIONS = Object.freeze([
   { id: "other", nameRu: "Другие мышцы" },
 ]);
 
+// Course-facing scopes are filters over the stable muscle catalog, not new
+// muscle identities. A learner can move between a regional lesson, a whole
+// limb and the full atlas without fragmenting progress for the same muscle.
+export const LEARNING_SCOPES = Object.freeze([
+  {
+    id: "all",
+    nameRu: "Всё тело",
+    descriptionRu: "Все доступные мышечные цели.",
+    regionIds: ["all"],
+  },
+  {
+    id: "shoulder",
+    nameRu: "Плечевой пояс",
+    descriptionRu: "Мышцы плечевого пояса и лопаточного комплекса.",
+    regionIds: ["shoulder"],
+  },
+  {
+    id: "upper-limb",
+    nameRu: "Верхняя конечность",
+    descriptionRu: "Плечевой пояс, плечо, предплечье и кисть.",
+    regionIds: ["shoulder", "arm", "forearm-hand"],
+  },
+  {
+    id: "lower-limb",
+    nameRu: "Нижняя конечность",
+    descriptionRu: "Ягодичная область, бедро, голень и стопа.",
+    regionIds: ["gluteal", "thigh", "leg-foot"],
+  },
+  {
+    id: "neck-collar",
+    nameRu: "Шейно-воротниковая зона",
+    descriptionRu: "Мышцы шеи, подзатылочной области и лопаточно-шейного перехода.",
+    match: "neck-collar",
+  },
+  {
+    id: "foot",
+    nameRu: "Стопа",
+    descriptionRu: "Собственные мышцы тыла и подошвы стопы.",
+    match: "foot",
+  },
+  {
+    id: "erector-spinae",
+    nameRu: "Мышца, выпрямляющая позвоночник",
+    descriptionRu: "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
+    match: "erector-spinae",
+  },
+  {
+    id: "rotator-cuff",
+    nameRu: "Ротаторная манжета плеча",
+    descriptionRu: "Надостная, подостная, подлопаточная и малая круглая мышцы.",
+    match: "rotator-cuff",
+  },
+  {
+    id: "scapular-stabilizers",
+    nameRu: "Лопаточный комплекс",
+    descriptionRu: "Трапециевидная, ромбовидные, передняя зубчатая и мышца, поднимающая лопатку.",
+    match: "scapular-stabilizers",
+  },
+]);
+
 const REGION_BY_ID = new Map(LEARNING_REGIONS.map((region) => [region.id, region]));
+const SCOPE_BY_ID = new Map(LEARNING_SCOPES.map((scope) => [scope.id, scope]));
 const STORAGE_KEY = "muscle-memory-learning-v1";
 const STORE_VERSION = 1;
 
@@ -420,9 +481,58 @@ export function migrateLearningStoreAliases(
   return changed;
 }
 
+function targetScopeText(target) {
+  return [
+    target?.nameRu || "",
+    ...(target?.sourceNames || []),
+  ]
+    .join(" ")
+    .toLocaleLowerCase("ru-RU");
+}
+
+function matchesNamedScope(target, matchId) {
+  const text = targetScopeText(target);
+
+  if (matchId === "neck-collar") {
+    return /trapezius|levator scapulae|rhomboid|sternocleidomastoid|scalenus|splenius|semispinalis (?:capitis|cervicis|colli)|longissimus (?:capitis|cervicis|colli)|iliocostalis (?:cervicis|colli)|rectus (?:posterior (?:major|minor)|lateralis|anterior) capitis|obliquus (?:capitis|inferior capitis|superior capitis)|multifidus (?:cervicis|colli)|interspinales cervicis|intertransversarii cervicis|трапециевид|поднимающ.*лопат|ромбовид|грудино-ключично-сосцевид|лестничн|ременн.*(?:голов|ше)|полуостист.*(?:голов|ше)|длиннейш.*(?:голов|ше)|подвздошно-р[её]берн.*ше|прям.*мышц.*голов|кос.*мышц.*голов|многораздельн.*ше|межостист.*ше|межпоперечн.*ше/u.test(text);
+  }
+
+  if (matchId === "foot") {
+    return /abductor hallucis|adductor hallucis|flexor hallucis brevis|extensor hallucis brevis|flexor digitorum brevis|extensor digitorum brevis|quadratus plantae|flexor accessorius|abductor digiti minimi.*foot|flexor digiti minimi.*foot|opponens digiti minimi.*foot|lumbrical.*foot|interosse.*foot|мышц.*больш.*пальц.*стоп|сгибател.*пальц.*стоп.*корот|разгибател.*пальц.*стоп.*корот|квадратн.*мышц.*подошв|мизинц.*стоп|червеобразн.*стоп|межкостн.*стоп/u.test(text);
+  }
+
+  if (matchId === "erector-spinae") {
+    return /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|остист.*мышц/u.test(text);
+  }
+
+  if (matchId === "rotator-cuff") {
+    return /supraspinatus|infraspinatus|subscapularis|teres minor|надостн|подостн|подлопаточн|малая круглая/u.test(text);
+  }
+
+  if (matchId === "scapular-stabilizers") {
+    return /trapezius|rhomboid|levator scapulae|serratus anterior|трапециевид|ромбовид|поднимающ.*лопат|передн.*зубчат/u.test(text);
+  }
+
+  return false;
+}
+
 export function filterCatalogByRegion(catalog, regionId) {
-  if (!regionId || regionId === "all") return [...(catalog || [])];
-  return (catalog || []).filter((item) => item.region === regionId);
+  const items = [...(catalog || [])];
+  if (!regionId || regionId === "all") return items;
+
+  const scope = SCOPE_BY_ID.get(regionId);
+  if (scope) {
+    if (scope.regionIds?.includes("all")) return items;
+    if (scope.regionIds?.length) {
+      const regions = new Set(scope.regionIds);
+      return items.filter((item) => regions.has(item.region));
+    }
+    if (scope.match) {
+      return items.filter((item) => matchesNamedScope(item, scope.match));
+    }
+  }
+
+  return items.filter((item) => item.region === regionId);
 }
 
 export function regionCounts(catalog) {
@@ -435,7 +545,15 @@ export function regionCounts(catalog) {
 }
 
 export function regionNameRu(regionId) {
-  return REGION_BY_ID.get(regionId)?.nameRu || "Другие мышцы";
+  return (
+    SCOPE_BY_ID.get(regionId)?.nameRu ||
+    REGION_BY_ID.get(regionId)?.nameRu ||
+    "Другие мышцы"
+  );
+}
+
+export function learningScopeDescriptionRu(scopeId) {
+  return SCOPE_BY_ID.get(scopeId)?.descriptionRu || "";
 }
 
 function emptyStore() {

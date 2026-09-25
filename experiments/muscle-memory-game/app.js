@@ -14,9 +14,11 @@ import {
 } from "./bodyparts4-classification.js";
 import {
   LEARNING_REGIONS,
+  LEARNING_SCOPES,
   buildMuscleCatalog,
   filterCatalogByRegion,
   learningConceptSourceName,
+  learningScopeDescriptionRu,
   learningSummary,
   loadLearningStore,
   migrateLearningStoreAliases,
@@ -1061,18 +1063,33 @@ function renderLearningRegionOptions() {
 
   learningRegion.replaceChildren();
 
+  const courseGroup = document.createElement("optgroup");
+  courseGroup.label = "Учебные блоки";
+  for (const scope of LEARNING_SCOPES) {
+    const count = filterCatalogByRegion(learningCatalog, scope.id).length;
+    if (scope.id !== "all" && count === 0) continue;
+
+    const option = document.createElement("option");
+    option.value = scope.id;
+    option.textContent = `${scope.nameRu} · ${count}`;
+    courseGroup.appendChild(option);
+  }
+  learningRegion.appendChild(courseGroup);
+
+  const courseIds = new Set(LEARNING_SCOPES.map((scope) => scope.id));
+  const exactGroup = document.createElement("optgroup");
+  exactGroup.label = "Точные анатомические области";
   for (const region of LEARNING_REGIONS) {
+    if (courseIds.has(region.id)) continue;
     const count = counts[region.id] || 0;
-    if (region.id !== "all" && count === 0) continue;
+    if (!count) continue;
 
     const option = document.createElement("option");
     option.value = region.id;
-    option.textContent =
-      region.id === "all"
-        ? `${region.nameRu} · ${counts.all}`
-        : `${region.nameRu} · ${count}`;
-    learningRegion.appendChild(option);
+    option.textContent = `${region.nameRu} · ${count}`;
+    exactGroup.appendChild(option);
   }
+  if (exactGroup.children.length) learningRegion.appendChild(exactGroup);
 
   const stillAvailable = [...learningRegion.options].some(
     (option) => option.value === previous
@@ -1353,8 +1370,10 @@ function updateLearningSummary() {
           ? "одна попытка · время задаётся перед началом"
           : "найти мышцу по названию";
 
+  const scopeDescription = learningScopeDescriptionRu(selectedLearningRegion);
   learningSummaryEl.textContent =
-    `${regionNameRu(selectedLearningRegion)} · ${summary.muscles} мышц · ${modeHint}`;
+    `${regionNameRu(selectedLearningRegion)} · ${summary.muscles} мышц · ${modeHint}` +
+    (scopeDescription ? `\n${scopeDescription}` : "");
 }
 
 function resetLearningSessionUi(message = "Выберите режим и начните сессию.") {
@@ -1403,13 +1422,14 @@ function applyLearningRegion() {
   currentTarget = null;
 
   targetStatusEl.textContent =
-    `Учебный каталог: ${learningCatalog.length} мышц и частей мышц. ` +
+    `Учебный каталог: ${learningCatalog.length} мышечных целей. ` +
     `Сейчас: ${regionNameRu(selectedLearningRegion)} — ${availableTargets.length} целей.`;
 
   canvas.dataset.learningRegion = selectedLearningRegion;
+  canvas.dataset.learningScope = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
-  focusShoulderButton.textContent = "К области";
+  focusShoulderButton.textContent = "К блоку";
   focusShoulderButton.hidden = selectedLearningRegion === "all";
 
   learningSessionMode.disabled = availableTargets.length === 0;
@@ -1500,7 +1520,7 @@ function renderSessionProgress() {
 
 function renderNameChoices(item) {
   nameChoicesEl.replaceChildren();
-  const choices = buildSmartChoices(item.target, learningCatalog, 4, Math.random, {
+  const choices = buildSmartChoices(item.target, availableTargets, 4, Math.random, {
     store: learningStore,
   });
 
@@ -1947,7 +1967,10 @@ function revealAnswer() {
 
   if (item.skillId === "find") commitPendingFindMistake();
   restoreHighlights();
-  const ids = targetStructureIds(currentTarget);
+  const ids =
+    item.skillId === "name"
+      ? recognitionStructureIds(currentTarget, learningSession.index)
+      : targetStructureIds(currentTarget);
   highlightStructures(ids, "answer");
   focusedStructureIds = ids;
   focusSelectedButton.disabled = false;
@@ -2619,14 +2642,57 @@ function notifyEmbedHeight() {
   );
 }
 
+function learningAreaOptionExists(value) {
+  return [...learningRegion.options].some((option) => option.value === value);
+}
+
+function syncLearningAreaQuery() {
+  if (!initialQueryApplied || typeof history?.replaceState !== "function") return;
+
+  const url = new URL(window.location.href);
+  if (selectedLearningRegion && selectedLearningRegion !== "all") {
+    url.searchParams.set("scope", selectedLearningRegion);
+  } else {
+    url.searchParams.delete("scope");
+  }
+  url.searchParams.delete("region");
+  history.replaceState(null, "", url);
+}
+
 function applyInitialQueryState() {
   if (initialQueryApplied) return;
   initialQueryApplied = true;
   const params = new URLSearchParams(window.location.search);
 
   if (debugPanel) debugPanel.hidden = params.get("debug") !== "1";
+
+  const requestedArea = params.get("scope") || params.get("region");
+  if (requestedArea && learningAreaOptionExists(requestedArea)) {
+    selectedLearningRegion = requestedArea;
+    learningRegion.value = requestedArea;
+    applyLearningRegion();
+  }
+
+  const requestedSize = params.get("size");
+  if (
+    requestedSize &&
+    [...learningSessionSize.options].some((option) => option.value === requestedSize)
+  ) {
+    learningSessionSize.value = requestedSize;
+  }
+
+  const requestedPractice = params.get("practice");
+  if (requestedPractice && SESSION_MODES[requestedPractice] && requestedPractice !== "today") {
+    setLearningMode(requestedPractice);
+  }
+
   if (params.get("mode") === "explore") setMode("explore");
-  if (params.get("region") === "shoulder") setShoulderView();
+
+  if (requestedArea && requestedArea !== "all") {
+    focusLearningRegion();
+  } else if (params.get("region") === "shoulder") {
+    setShoulderView();
+  }
 
   if (params.get("embed") === "1") {
     document.body.classList.add("embed-mode");
@@ -2751,6 +2817,7 @@ function resetLoadedModel() {
   canvas.dataset.boneTransparent = "";
   canvas.dataset.boneStencil = "";
   canvas.dataset.learningRegion = "";
+  canvas.dataset.learningScope = "";
   canvas.dataset.learningTargetCount = "";
   canvas.dataset.learningCatalogCount = "";
   canvas.dataset.learningSessionMode = "";
@@ -3633,8 +3700,8 @@ async function loadSelectedModel(source) {
         "Коснитесь структуры на модели или найдите её по названию.";
     }
 
-    applyInitialQueryState();
     setViewPreset(viewPreset.value);
+    applyInitialQueryState();
     notifyEmbedHeight();
   } catch (error) {
     console.error(error);
@@ -3685,6 +3752,9 @@ modelSource.addEventListener("change", () => {
 learningRegion.addEventListener("change", () => {
   selectedLearningRegion = learningRegion.value;
   applyLearningRegion();
+  syncLearningAreaQuery();
+  if (selectedLearningRegion === "all") setFullBodyView();
+  else focusLearningRegion();
 });
 
 learningSessionMode.addEventListener("change", () => {

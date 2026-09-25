@@ -206,6 +206,27 @@ assert(
   "Ordinary practice did not prioritize untouched targets"
 );
 
+const compositeCatalog = [
+  { id: "s1", nameRu: "Надостная мышца", region: "shoulder", sids: [10] },
+  { id: "s2", nameRu: "Подостная мышца", region: "shoulder", sids: [11] },
+  { id: "a1", nameRu: "Двуглавая мышца плеча", region: "arm", sids: [12] },
+  { id: "a2", nameRu: "Трёхглавая мышца плеча", region: "arm", sids: [13] },
+  { id: "f1", nameRu: "Круглый пронатор", region: "forearm-hand", sids: [14] },
+  { id: "f2", nameRu: "Супинатор", region: "forearm-hand", sids: [15] },
+];
+const compositeSession = createLearningSession({
+  mode: "practical",
+  catalog: compositeCatalog,
+  store: { records: {} },
+  size: 6,
+  rng: deterministic,
+});
+assert(
+  new Set(compositeSession.items.map((item) => item.target.region)).size === 3,
+  "Composite-area practice collapsed into one subregion"
+);
+console.log("Composite-area regional coverage: ok");
+
 const exam = createLearningSession({
   mode: "exam",
   catalog,

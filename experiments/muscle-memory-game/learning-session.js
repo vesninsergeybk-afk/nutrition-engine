@@ -68,6 +68,10 @@ const ANATOMICAL_FAMILIES = [
   ["triceps-surae", /gastrocnemius|soleus|plantaris|икронож|камбаловид|подошвен/u],
   ["anterior-leg", /tibialis anterior|extensor digitorum longus|extensor hallucis longus|передн.*большеберцов|длинн.*разгибател.*пальц/u],
   ["lateral-leg", /fibularis (?:longus|brevis)|малоберцов/u],
+  ["erector-spinae", /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|остист.*мышц/u],
+  ["suboccipital-neck", /rectus .*capitis|obliquus .*capitis|прям.*мышц.*голов|кос.*мышц.*голов/u],
+  ["intrinsic-foot", /abductor hallucis|adductor hallucis|flexor hallucis brevis|extensor hallucis brevis|flexor digitorum brevis|extensor digitorum brevis|quadratus plantae|lumbrical.*foot|interosse.*foot|мышц.*пальц.*стоп|квадратн.*подошв|червеобразн.*стоп|межкостн.*стоп/u],
+  ["intrinsic-hand", /thenar|hypothenar|abductor pollicis brevis|flexor pollicis brevis|opponens pollicis|lumbrical.*hand|interosse.*hand|тенар|гипотенар|червеобразн.*кист|межкостн.*кист/u],
 ];
 
 function anatomicalFamilyTags(target) {
@@ -333,9 +337,27 @@ function balancedPracticeTargets(catalog, store, mode, size, rng = Math.random) 
         a.tie - b.tie
     );
 
-  const selected = ranked
-    .slice(0, Math.min(size, ranked.length))
-    .map((entry) => entry.target);
+  const buckets = new Map();
+  for (const entry of ranked) {
+    if (!buckets.has(entry.target.region)) buckets.set(entry.target.region, []);
+    buckets.get(entry.target.region).push(entry);
+  }
+
+  const regionOrder = shuffled([...buckets.keys()], rng);
+  const selected = [];
+  while (selected.length < Math.min(size, ranked.length)) {
+    let progressed = false;
+
+    for (const region of regionOrder) {
+      const bucket = buckets.get(region);
+      if (!bucket?.length) continue;
+      selected.push(bucket.shift().target);
+      progressed = true;
+      if (selected.length >= Math.min(size, ranked.length)) break;
+    }
+
+    if (!progressed) break;
+  }
 
   return spreadSimilarTargets(selected, rng);
 }
