@@ -45,6 +45,7 @@ jobs:
           node --check experiments/muscle-memory-game/progress-engine.js
           node --check experiments/muscle-memory-game/check-learning-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-session.mjs
+          node --check experiments/muscle-memory-game/check-quiz-ui.mjs
           node --check experiments/muscle-memory-game/check-retention-engine.mjs
           node --check experiments/muscle-memory-game/check-progress-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-cross-source.mjs
@@ -96,6 +97,7 @@ jobs:
           node experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node experiments/muscle-memory-game/check-learning-engine.mjs
           node experiments/muscle-memory-game/check-learning-session.mjs
+          node experiments/muscle-memory-game/check-quiz-ui.mjs
           node experiments/muscle-memory-game/check-retention-engine.mjs
           node experiments/muscle-memory-game/check-progress-engine.mjs
           node experiments/muscle-memory-game/check-learning-cross-source.mjs
@@ -178,6 +180,22 @@ jobs:
 
             await page.click('#mode-quiz');
             assert.equal(await page.locator('#learning-controls').isVisible(), true);
+
+            await page.selectOption('#learning-region', 'upper-limb');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-scope'), 'upper-limb');
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-learning-target-count'),
+              '47'
+            );
+            assert.match(await page.locator('#learning-summary').innerText(), /Верхняя конечность/);
+
+            await page.selectOption('#learning-region', 'rotator-cuff');
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-learning-target-count'),
+              '4'
+            );
+            assert.equal(await page.locator('#learning-session-size').inputValue(), '4');
+            assert.match(await page.locator('#learning-session-size option').first().innerText(), /Весь блок.*4/i);
 
             await page.selectOption('#learning-region', 'shoulder');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
