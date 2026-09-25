@@ -1,0 +1,48 @@
+name: Export Current Product Catalog
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - ".github/workflows/export-current-products.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout current production branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Verify product shards
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls data/products.v5.3.210-p1.3.part-*.json
+          python3 - <<'PY'
+          import glob, json
+          files = sorted(glob.glob("data/products.v5.3.210-p1.3.part-*.json"))
+          rows = []
+          for path in files:
+              with open(path, encoding="utf-8") as f:
+                  rows.extend(json.load(f))
+          assert len(rows) == 1105, f"expected 1105 products, got {len(rows)}"
+          with open("current-products.json", "w", encoding="utf-8") as f:
+              json.dump(rows, f, ensure_ascii=False)
+          print(f"products={len(rows)} shards={len(files)}")
+          PY
+
+      - name: Upload exact current catalog
+        uses: actions/upload-artifact@v4
+        with:
+          name: current-production-products
+          path: current-products.json
+          if-no-files-found: error
+          retention-days: 7
