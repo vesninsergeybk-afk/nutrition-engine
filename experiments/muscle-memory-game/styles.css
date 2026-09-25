@@ -767,3 +767,22 @@ button:disabled {
 .session-active .attribution {
   display: none;
 }
+
+
+.today-start {
+  width: 100%;
+  min-height: 40px;
+  margin: -4px 0 14px;
+  border: 1px solid var(--line-strong);
+  background: #fff;
+  font-weight: 700;
+  text-align: left;
+}
+
+.today-start:hover {
+  background: #f8f7f4;
+}
+
+.session-active .today-start {
+  display: none !important;
+}
