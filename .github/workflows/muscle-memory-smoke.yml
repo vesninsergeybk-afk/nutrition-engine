@@ -234,12 +234,20 @@ jobs:
               await page.locator('#viewer').getAttribute('data-name-target-presentation'),
               /^(context|isolated)$/
             );
-            for (let tries = 0; tries < 4; tries += 1) {
-              const enabled = page.locator('.name-choice:not(:disabled)').first();
-              if (!(await enabled.count())) break;
-              await enabled.click();
-              if ((await page.locator('#viewer').getAttribute('data-learning-session-done')) === '1') break;
+            const currentTargetId = await page.locator('#viewer').getAttribute('data-learning-current-target-id');
+            const wrongChoice = page.locator('.name-choice').filter({ hasNot: page.locator('[data-target-id="' + currentTargetId + '"]') }).first();
+            const wrongButtons = page.locator('.name-choice');
+            let wrongIndex = -1;
+            for (let i = 0; i < await wrongButtons.count(); i += 1) {
+              if ((await wrongButtons.nth(i).getAttribute('data-target-id')) !== currentTargetId) {
+                wrongIndex = i;
+                break;
+              }
             }
+            assert.ok(wrongIndex >= 0);
+            await wrongButtons.nth(wrongIndex).click();
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-done'), '0');
+            await page.locator('.name-choice[data-target-id="' + currentTargetId + '"]').click();
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-done'), '1');
             storedLearning = await page.evaluate(() =>
               localStorage.getItem('muscle-memory-learning-v1')
@@ -253,8 +261,13 @@ jobs:
             assert.equal(await page.locator('#learning-progress').isVisible(), true);
             await page.locator('#learning-progress > summary').click();
             assert.match(await page.locator('#learning-progress-content').innerText(), /Найти:|Назвать:/i);
-            await page.locator('#learning-progress > summary').click();
+            assert.ok((await page.locator('.progress-confusion').count()) > 0);
+            await page.locator('.progress-confusion').first().click();
+            assert.equal(await page.locator('#mode-explore').getAttribute('aria-pressed'), 'true');
+            assert.match(await page.locator('#question-label').innerText(), /Сравнение/i);
+            await page.click('#mode-quiz');
 
+            assert.equal(await page.locator('#today-learning-session').isVisible(), true);
             await page.click('#today-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'today');
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-session-total')) > 0);
