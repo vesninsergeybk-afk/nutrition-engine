@@ -126,14 +126,15 @@ for (const specimenId of ["erector-spinae", "lower-back"]) {
 
   assert(
     names.includes("spinalis thoracis") &&
-      names.includes("spinalis") &&
-      names.includes("Остистая мышца груди") &&
-      names.includes("Остистая мышца"),
-    specimenId + ": thoracic/generic spinalis coverage is incomplete"
+      names.includes("Остистая мышца груди"),
+    specimenId + ": thoracic spinalis coverage is incomplete"
   );
   assert(
-    !names.some((name) => /capitis|colli|головы|шеи/i.test(name)),
-    specimenId + ": cervical/head spinalis leaked into back specimen"
+    !names.some((name) =>
+      /^(?:spinalis|Остистая мышца)$/iu.test(name) ||
+      /capitis|colli|головы|шеи/i.test(name)
+    ),
+    specimenId + ": ambiguous/cervical spinalis leaked into back specimen"
   );
 }
 
