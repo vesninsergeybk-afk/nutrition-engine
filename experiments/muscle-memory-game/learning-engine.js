@@ -1,4 +1,5 @@
 import { structureTerm } from "./anatomy-terms-ru.js";
+import { bodyPartsMuscleNameRu } from "./bodyparts4-muscles-ru.js";
 
 export const LEARNING_SKILLS = Object.freeze({
   find: {
@@ -44,10 +45,38 @@ function normalizeSource(value) {
     .trim();
 }
 
-function baseRussianName(value) {
+function stripRussianSide(value) {
   return String(value || "")
     .replace(/\s*\((?:справа|слева)\)\s*$/iu, "")
+    .replace(/^(?:правая|левая)\s+/iu, "")
+    .replace(
+      /\b(?:прав(?:ая|ой|ую|ого|ому|ым|ом)|лев(?:ая|ой|ую|ого|ому|ым|ом))\b/giu,
+      ""
+    )
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
     .trim();
+}
+
+function neutralSourceName(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\.(l|r)$/i, "")
+    .replace(/\b(right|left)\b/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function canonicalRussianName(sourceName) {
+  const neutralSource = neutralSourceName(sourceName);
+  const neutralTranslation = bodyPartsMuscleNameRu(neutralSource);
+  if (neutralTranslation) return stripRussianSide(neutralTranslation);
+
+  return stripRussianSide(structureTerm(sourceName).nameRu || sourceName);
+}
+
+function baseRussianName(value) {
+  return stripRussianSide(value);
 }
 
 function stableIdFromRussian(nameRu) {
@@ -166,8 +195,7 @@ export function buildMuscleCatalog(structureNames) {
   const grouped = new Map();
 
   (structureNames || []).forEach((sourceName, sid) => {
-    const term = structureTerm(sourceName);
-    const nameRu = baseRussianName(term.nameRu || sourceName);
+    const nameRu = canonicalRussianName(sourceName);
     const id = stableIdFromRussian(nameRu);
     const region = inferMuscleRegion(sourceName, nameRu);
 
