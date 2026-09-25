@@ -704,6 +704,7 @@
         '</section>';
       document.body.appendChild(overlay);
     }
+    overlay.removeAttribute('aria-hidden');
     overlay.classList.remove('hide');
     return document.getElementById('runtimeBootStatus');
   }
@@ -792,7 +793,10 @@
       window.__RUNTIME_LOADER_CLOSE_WAITING__=false;
       stopLoaderTicker();
       var overlay=document.getElementById('runtimeBootStatusOverlay');
-      if (overlay) overlay.classList.add('hide');
+      if (overlay) {
+        overlay.setAttribute('aria-hidden','true');
+        overlay.classList.add('hide');
+      }
       var visibleMs=Math.round(now()-startedAt);
       window.__RUNTIME_LOADER_CLOSED__=true;
       if (window.__APP_BOOTSTRAP_META__) window.__APP_BOOTSTRAP_META__.loader_visible_ms=visibleMs;
