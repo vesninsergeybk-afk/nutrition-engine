@@ -77,6 +77,50 @@ assert(
   "A routine scheduled review was mislabeled as a weak spot"
 );
 
+recordReviewOutcome(
+  store,
+  "c",
+  "name",
+  RETENTION_OUTCOMES.corrected,
+  storage,
+  { now: t0 + 1_000 }
+);
+recordReviewOutcome(
+  store,
+  "c",
+  "name",
+  RETENTION_OUTCOMES.corrected,
+  storage,
+  { now: t0 + 2_000 }
+);
+let recoveredCheck = weakSkills(store, catalog, { limit: 10, now: t0 + 3_000 });
+assert(
+  recoveredCheck.some((item) => item.target.id === "c" && item.skillId === "name"),
+  "Repeated difficulty did not create a weak-skill signal"
+);
+
+recordReviewOutcome(
+  store,
+  "c",
+  "name",
+  RETENTION_OUTCOMES.clean,
+  storage,
+  { now: t0 + 3_000 }
+);
+recordReviewOutcome(
+  store,
+  "c",
+  "name",
+  RETENTION_OUTCOMES.clean,
+  storage,
+  { now: t0 + 4_000 }
+);
+recoveredCheck = weakSkills(store, catalog, { limit: 10, now: t0 + 5_000 });
+assert(
+  !recoveredCheck.some((item) => item.target.id === "c" && item.skillId === "name"),
+  "Weak-skill label did not retire after two clean recalls"
+);
+
 const session = {
   mode: "practical",
   startedAt: t0,
@@ -112,5 +156,6 @@ assert(Object.keys(store.confusions).length === 2, "Confusions disappeared after
 
 console.log("Progress by region and skill: ok");
 console.log("Weak-skill prioritization: ok");
+console.log("Weak-skill recovery: ok");
 console.log("Confusion pairs: ok");
 console.log("Session history persistence: ok");
