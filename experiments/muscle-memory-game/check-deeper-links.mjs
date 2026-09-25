@@ -35,6 +35,11 @@ assert(
   "Unverified ray hits can still masquerade as anatomical depth"
 );
 assert(
+  app.includes("function sidesCanShareDepthPath") &&
+    app.includes("if (!sidesCanShareDepthPath(selectedSide, candidateSide)) continue;"),
+  "Deeper-here can cross from one body side to the contralateral side"
+);
+assert(
   app.includes("const keepIsolation =") &&
     app.includes("isolated = keepIsolation;"),
   "Re-clicking an isolated muscle can desynchronize the isolate button from the scene"
