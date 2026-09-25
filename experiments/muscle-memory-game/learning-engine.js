@@ -279,11 +279,19 @@ export function saveLearningStore(store, storage = globalThis.localStorage) {
 
 export function skillRecord(store, muscleId, skillId) {
   const key = muscleId + "::" + skillId;
-  return store.records[key] || {
-    attempts: 0,
-    correct: 0,
-    wrong: 0,
-    lastSeen: 0,
+  const raw = store.records[key] || {};
+  const correct = Number(raw.correct) || 0;
+  const wrong = Number(raw.wrong) || 0;
+
+  return {
+    attempts: Number(raw.attempts) || 0,
+    correct,
+    wrong,
+    lastSeen: Number(raw.lastSeen) || 0,
+    reviewDebt:
+      raw.reviewDebt == null
+        ? Math.max(0, wrong - correct)
+        : Math.max(0, Number(raw.reviewDebt) || 0),
   };
 }
 
@@ -292,15 +300,21 @@ export function recordLearningAttempt(
   muscleId,
   skillId,
   wasCorrect,
-  storage = globalThis.localStorage
+  storage = globalThis.localStorage,
+  options = {}
 ) {
   const key = muscleId + "::" + skillId;
   const current = skillRecord(store, muscleId, skillId);
+  const retireMistake = options.retireMistake !== false;
+
   store.records[key] = {
     attempts: current.attempts + 1,
     correct: current.correct + (wasCorrect ? 1 : 0),
     wrong: current.wrong + (wasCorrect ? 0 : 1),
     lastSeen: Date.now(),
+    reviewDebt: wasCorrect
+      ? Math.max(0, current.reviewDebt - (retireMistake ? 1 : 0))
+      : current.reviewDebt + 1,
   };
   saveLearningStore(store, storage);
   return store.records[key];
