@@ -23,6 +23,7 @@ import {
   specimenPrimaryView,
   specimenSceneTargets,
   specimenSupportBoneMatches,
+  specimenVerticalWindow,
 } from "./virtual-specimens.js";
 import {
   bodyPartsAnatomyKind,
@@ -185,6 +186,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.localClippingEnabled = true;
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -281,6 +283,8 @@ let muscleDisplayMode = "anatomical";
 let currentLayerPreset = "muscles";
 let currentModelSource = "z-anatomy";
 let initialQueryApplied = false;
+let regionalClipPlanes = [];
+let regionalClipBounds = null;
 
 function hashString(value) {
   let hash = 2166136261;
@@ -387,6 +391,7 @@ function indexStudyRanges(mesh) {
 
 
 function studyStructureIdFromHit(hit) {
+  if (!hitWithinRegionalClip(hit)) return null;
   if (!hit?.object?.geometry || hit.faceIndex == null) return null;
   const geometry = hit.object.geometry;
   const ids = geometry.getAttribute("structureId");
@@ -542,6 +547,92 @@ function focusBox(box, padding = 1.22, direction = currentViewDirection()) {
   }
 
   controls.update();
+}
+
+function setMaterialClipPlanes(material, planes) {
+  if (!material) return;
+
+  const materials = Array.isArray(material) ? material : [material];
+  for (const item of materials) {
+    if (!item) continue;
+    item.clippingPlanes = planes.length ? planes : null;
+    item.clipIntersection = false;
+    item.needsUpdate = true;
+  }
+}
+
+function applyClipPlanesToLoadedAnatomy() {
+  const planes = regionalClipPlanes;
+
+  setMaterialClipPlanes(anatomyMesh?.material, planes);
+  setMaterialClipPlanes(skeletonMesh?.material, planes);
+  for (const mesh of connectiveMeshes.values()) {
+    setMaterialClipPlanes(mesh.material, planes);
+  }
+  setMaterialClipPlanes(skinMesh?.material, planes);
+  for (const mesh of referenceMeshes.values()) {
+    setMaterialClipPlanes(mesh.material, planes);
+  }
+}
+
+function activeSpecimenVerticalClipBounds() {
+  if (!regionIsolationActive()) return null;
+
+  const fractions = specimenVerticalWindow(selectedLearningRegion);
+  if (!fractions) return null;
+
+  const body = worldBodyBox();
+  if (body.isEmpty()) return null;
+
+  const height = body.max.y - body.min.y;
+  if (!(height > 0)) return null;
+
+  const [minFraction, maxFraction] = fractions;
+  return {
+    minY: body.min.y + height * minFraction,
+    maxY: body.min.y + height * maxFraction,
+    minFraction,
+    maxFraction,
+  };
+}
+
+function applyRegionalClipWindow() {
+  regionalClipBounds = activeSpecimenVerticalClipBounds();
+
+  if (!regionalClipBounds) {
+    regionalClipPlanes = [];
+    applyClipPlanesToLoadedAnatomy();
+    canvas.dataset.specimenClip = "none";
+    canvas.dataset.specimenClipY = "";
+    return;
+  }
+
+  regionalClipPlanes = [
+    new THREE.Plane(
+      new THREE.Vector3(0, 1, 0),
+      -regionalClipBounds.minY
+    ),
+    new THREE.Plane(
+      new THREE.Vector3(0, -1, 0),
+      regionalClipBounds.maxY
+    ),
+  ];
+  applyClipPlanesToLoadedAnatomy();
+
+  canvas.dataset.specimenClip = "vertical";
+  canvas.dataset.specimenClipY =
+    regionalClipBounds.minFraction.toFixed(2) +
+    ":" +
+    regionalClipBounds.maxFraction.toFixed(2);
+}
+
+function hitWithinRegionalClip(hit) {
+  if (!regionalClipBounds || !hit?.point) return true;
+  const epsilon = Math.max(bodySize.y, 1) * 1e-5;
+  return (
+    hit.point.y >= regionalClipBounds.minY - epsilon &&
+    hit.point.y <= regionalClipBounds.maxY + epsilon
+  );
 }
 
 function worldBodyBox() {
@@ -1030,6 +1121,8 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
   canvas.dataset.depthSourceCapability =
     specimenDepth?.reason || (depthProfileId ? "regional" : "unverified");
 
+  applyRegionalClipWindow();
+
   const regional = regionIsolationActive();
   if (skeletonMesh) {
     applyRegionBoneVisibility();
@@ -1075,6 +1168,11 @@ function focusLearningRegion() {
   if (box.isEmpty()) {
     setFullBodyView();
     return;
+  }
+
+  if (regionalClipBounds) {
+    box.min.y = Math.max(box.min.y, regionalClipBounds.minY);
+    box.max.y = Math.min(box.max.y, regionalClipBounds.maxY);
   }
 
   const specimen = specimenById(selectedLearningRegion);
@@ -3225,6 +3323,7 @@ function renderSearchResults(query) {
 }
 
 function structureIdFromHit(hit) {
+  if (!hitWithinRegionalClip(hit)) return null;
   if (!hit || hit.faceIndex == null || !anatomyMesh) return null;
   const geometry = anatomyMesh.geometry;
   const corner = hit.faceIndex * 3;
@@ -3483,6 +3582,12 @@ function regionalBoneContextBox() {
   box.min.sub(expand);
   box.max.add(expand);
 
+  const clipBounds = activeSpecimenVerticalClipBounds();
+  if (clipBounds) {
+    box.min.y = Math.max(box.min.y, clipBounds.minY);
+    box.max.y = Math.min(box.max.y, clipBounds.maxY);
+  }
+
   // Shoulder-focused blocks need scapula/clavicle/humerus plus a limited
   // thoracic anchor, not the entire rib cage and spine.
   if (
@@ -3676,6 +3781,10 @@ function disposeMaterial(material) {
 }
 
 function resetLoadedModel() {
+  regionalClipPlanes = [];
+  regionalClipBounds = null;
+  canvas.dataset.specimenClip = "";
+  canvas.dataset.specimenClipY = "";
   clearDeeperStructures();
   canvas.dataset.deeperFocus = "";
   canvas.dataset.deeperFocusComponentCount = "";
@@ -4023,6 +4132,7 @@ async function loadReferenceLayer(layerKey) {
     });
 
     const mesh = new THREE.Mesh(merged, createReferenceMaterial(layerKey));
+    setMaterialClipPlanes(mesh.material, regionalClipPlanes);
     mesh.renderOrder = 2;
     mesh.userData.referenceLayer = layerKey;
     mesh.userData.referenceRanges = ranges;

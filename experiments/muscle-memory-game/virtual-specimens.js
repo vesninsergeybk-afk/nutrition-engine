@@ -427,6 +427,45 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
   ),
 ]);
 
+
+const SPECIMEN_VERTICAL_WINDOWS = Object.freeze({
+  "neck-collar": Object.freeze([0.70, 1.00]),
+  shoulder: Object.freeze([0.54, 0.90]),
+  "arm-anterior": Object.freeze([0.42, 0.80]),
+  "arm-posterior": Object.freeze([0.42, 0.80]),
+  "forearm-hand-anterior": Object.freeze([0.22, 0.64]),
+  "forearm-hand-posterior": Object.freeze([0.22, 0.64]),
+  "thorax-anterior": Object.freeze([0.48, 0.80]),
+  abdomen: Object.freeze([0.31, 0.62]),
+  "upper-back": Object.freeze([0.50, 0.82]),
+  "lower-back": Object.freeze([0.29, 0.58]),
+  gluteal: Object.freeze([0.22, 0.47]),
+  "thigh-anterior": Object.freeze([0.11, 0.43]),
+  "thigh-medial": Object.freeze([0.11, 0.43]),
+  "thigh-posterior": Object.freeze([0.11, 0.43]),
+  "leg-anterior-lateral": Object.freeze([0.01, 0.30]),
+  "leg-posterior": Object.freeze([0.01, 0.30]),
+  foot: Object.freeze([0.00, 0.12]),
+
+  "rotator-cuff": Object.freeze([0.55, 0.89]),
+  "scapular-stabilizers": Object.freeze([0.49, 0.89]),
+  "erector-spinae": Object.freeze([0.27, 0.83]),
+  "deep-back": Object.freeze([0.27, 0.78]),
+  hamstrings: Object.freeze([0.11, 0.43]),
+  quadriceps: Object.freeze([0.11, 0.43]),
+  adductors: Object.freeze([0.11, 0.43]),
+  "gluteal-complex": Object.freeze([0.22, 0.47]),
+  "calf-complex": Object.freeze([0.01, 0.30]),
+  "anterior-abdominal-wall": Object.freeze([0.31, 0.62]),
+  suboccipital: Object.freeze([0.83, 1.00]),
+  "hip-flexors": Object.freeze([0.20, 0.53]),
+});
+
+export function specimenVerticalWindow(specimenId) {
+  const window = SPECIMEN_VERTICAL_WINDOWS[specimenId];
+  return window ? [...window] : null;
+}
+
 const SPECIMEN_BY_ID = new Map(VIRTUAL_SPECIMENS.map((item) => [item.id, item]));
 
 function targetText(target) {
