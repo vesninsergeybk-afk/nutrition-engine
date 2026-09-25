@@ -51,19 +51,19 @@ export const LEARNING_SCOPES = Object.freeze([
     id: "upper-limb",
     nameRu: "Верхняя конечность",
     descriptionRu: "Плечевой пояс, плечо, предплечье и кисть.",
-    regionIds: ["shoulder", "arm", "forearm-hand"],
+    specimenIds: ["shoulder", "arm", "forearm-hand"],
     group: "overview",
   },
   {
     id: "lower-limb",
     nameRu: "Нижняя конечность",
     descriptionRu: "Ягодичная область, бедро, голень и стопа.",
-    regionIds: ["gluteal", "thigh", "leg-foot"],
+    specimenIds: ["gluteal", "thigh", "leg-foot"],
     group: "overview",
   },
   {
     id: "neck",
-    nameRu: "Шея",
+    nameRu: "Шея (без мышц лица)",
     descriptionRu: "Мышцы шеи и подзатылочной области без мышц лица.",
     match: "neck",
     group: "overview",
@@ -515,6 +515,15 @@ export function filterCatalogByRegion(catalog, regionId) {
   const scope = SCOPE_BY_ID.get(regionId);
   if (scope) {
     if (scope.regionIds?.includes("all")) return items;
+    if (scope.specimenIds?.length) {
+      const byId = new Map();
+      for (const specimenId of scope.specimenIds) {
+        for (const item of filterCatalogForSpecimen(items, specimenId, "question")) {
+          byId.set(item.id, item);
+        }
+      }
+      return [...byId.values()];
+    }
     if (scope.regionIds?.length) {
       const regions = new Set(scope.regionIds);
       return items.filter((item) => regions.has(item.region));

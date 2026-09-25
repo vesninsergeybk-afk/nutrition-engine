@@ -94,8 +94,10 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Поверхностные, промежуточные и глубокие мышцы спины от лопаточной области до поясницы.",
     {
       questionRegionIds: ["back"],
-      questionPatterns: [/trapezius|rhomboid|levator scapulae/i],
-      contextPatterns: [/deltoid|infraspinatus|teres major|teres minor/i],
+      questionPatterns: [
+        /trapezius|rhomboid|levator scapulae|supraspinatus|infraspinatus|teres major|teres minor/i,
+      ],
+      contextPatterns: [/deltoid/i],
       supportBonePatterns: [/vertebra|rib|scapula|sacrum|ilium|hip bone|os cox/i],
       defaultViews: ["back", "threeQuarter"],
       padding: 1.18,

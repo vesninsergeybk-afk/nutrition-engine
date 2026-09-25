@@ -146,6 +146,7 @@ for (const [sourceName, catalog] of Object.entries(sources)) {
     assertSubset(childId, "forearm-hand");
   }
   assertSubset("thorax-anterior", "thorax");
+  assertSubset("upper-back", "back");
   assertSubset("lower-back", "back");
   assertSubset("erector-spinae", "back");
   assertSubset("deep-back", "back");

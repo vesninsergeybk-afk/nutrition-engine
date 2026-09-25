@@ -205,18 +205,28 @@ for (const required of [
 const shoulderScope = filterCatalogByRegion(catalog, "shoulder");
 assert(shoulderScope.length === 13, "Shoulder scope contract changed: " + shoulderScope.length);
 
+function unionScopeIds(scopeIds) {
+  return new Set(
+    scopeIds.flatMap((scopeId) =>
+      filterCatalogByRegion(catalog, scopeId).map((item) => item.id)
+    )
+  );
+}
+
 const upperLimb = filterCatalogByRegion(catalog, "upper-limb");
+const expectedUpperLimb = unionScopeIds(["shoulder", "arm", "forearm-hand"]);
 assert(
-  upperLimb.length ===
-    (counts.shoulder || 0) + (counts.arm || 0) + (counts["forearm-hand"] || 0),
-  "Upper-limb scope does not equal shoulder + arm + forearm/hand"
+  upperLimb.length === expectedUpperLimb.size &&
+    upperLimb.every((item) => expectedUpperLimb.has(item.id)),
+  "Upper-limb scope does not equal the curated shoulder + arm + forearm/hand blocks"
 );
 
 const lowerLimb = filterCatalogByRegion(catalog, "lower-limb");
+const expectedLowerLimb = unionScopeIds(["gluteal", "thigh", "leg-foot"]);
 assert(
-  lowerLimb.length ===
-    (counts.gluteal || 0) + (counts.thigh || 0) + (counts["leg-foot"] || 0),
-  "Lower-limb scope does not equal gluteal + thigh + leg/foot"
+  lowerLimb.length === expectedLowerLimb.size &&
+    lowerLimb.every((item) => expectedLowerLimb.has(item.id)),
+  "Lower-limb scope does not equal the curated gluteal + thigh + leg/foot blocks"
 );
 
 const footScope = filterCatalogByRegion(catalog, "foot");
