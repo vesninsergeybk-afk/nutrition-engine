@@ -52,9 +52,12 @@ async function waitForCheckpoint(page) {
 }
 
 async function openNeeds(page) {
+  await waitForInterfacePass1(page);
+  const field = page.locator('#needs_sex');
+  if (await field.isVisible()) return;
   const toggle = page.locator('#v40NeedsToggle');
-  if (await toggle.count() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click();
-  await expect(page.locator('#needs_sex')).toBeVisible();
+  if (await toggle.count()) await toggle.click();
+  await expect(field).toBeVisible({ timeout: 12000 });
 }
 
 test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ page, loadApp }) => {
@@ -79,6 +82,11 @@ test('canonical V6 needs checkpoint boots as one continuous canvas', async ({ pa
 
   await expect(page.locator('#themeSwitcher')).toBeHidden();
   await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+
+  const loaderOverlay = page.locator('#runtimeBootStatusOverlay');
+  if (await loaderOverlay.count()) {
+    await expect(loaderOverlay).toHaveAttribute('aria-hidden', 'true');
+  }
   await page.locator('#interfaceSettingsPass1').click();
   await expect(page.locator('#themeSwitcher')).toBeVisible();
   await expect(page.locator('#themeSwitcher [data-theme-value]')).toHaveCount(3);
@@ -383,6 +391,46 @@ test('mobile ration starts with text search and keeps alternatives collapsed', a
   await expect(alternative.locator('[data-ration-entry-method="photo"]')).toBeVisible();
   await expect(alternative.locator('[data-ration-entry-method="voice"]')).toBeVisible();
   await expect(alternative.locator('[data-ration-entry-method="audio"]')).toBeVisible();
+});
+
+test('mobile workspace keeps compact header rhythm and finger-sized ration helpers', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+  await expect(page.locator('#workspacePersonEdit')).toBeVisible();
+  await expect(page.locator('#workspaceFocusSearch')).toBeVisible();
+
+  const geometry = await page.evaluate(() => {
+    const visible = node => {
+      if (!node) return false;
+      const cs = getComputedStyle(node);
+      const r = node.getBoundingClientRect();
+      return !node.hidden && cs.display !== 'none' && cs.visibility !== 'hidden' && r.width > 0 && r.height > 0;
+    };
+    const settings = document.getElementById('interfaceSettingsPass1').getBoundingClientRect();
+    const context = document.getElementById('navigationShellContext').getBoundingClientRect();
+    const person = document.getElementById('workspacePersonEdit').getBoundingClientRect();
+    const focus = document.getElementById('workspaceFocusSearch').getBoundingClientRect();
+    const helpers = Array.from(document.querySelectorAll('.quick-searches button, .quick-grams button'))
+      .filter(visible)
+      .map(node => node.getBoundingClientRect().height);
+    return {
+      headerGap: Math.round(context.top - settings.bottom),
+      personHeight: person.height,
+      focusHeight: focus.height,
+      helperHeights: helpers
+    };
+  });
+
+  expect(geometry.headerGap).toBeLessThanOrEqual(36);
+  expect(geometry.personHeight).toBeGreaterThanOrEqual(44);
+  expect(geometry.focusHeight).toBeGreaterThanOrEqual(44);
+  expect(geometry.helperHeights.length).toBeGreaterThan(0);
+  expect(Math.min(...geometry.helperHeights)).toBeGreaterThanOrEqual(44);
 });
 
 test('mobile search results and help dialog stay inside their usable viewport', async ({ page, loadApp }) => {
