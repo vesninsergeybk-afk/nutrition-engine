@@ -599,7 +599,7 @@ function renderSessionProgress() {
 
 function renderNameChoices(item) {
   nameChoicesEl.replaceChildren();
-  const choices = buildSmartChoices(item.target, availableTargets, 4);
+  const choices = buildSmartChoices(item.target, learningCatalog, 4);
 
   for (const choice of choices) {
     const button = document.createElement("button");
