@@ -19,8 +19,9 @@ assert(
 for (const symbol of [
   "applyRegionBoneVisibility",
   "regionalBoneContextBox",
-  "visibleSurfaceMuscleIdsFromCurrentView",
-  "peelVisibleMuscleLayer",
+  "targetDepthInfo",
+  "nextRegionalAnatomicalLayer",
+  "peelAnatomicalMuscleLayer",
   "deeperMuscleNamesFromHits",
 ]) {
   assert(app.includes(symbol), "Missing regional/depth engine symbol: " + symbol);
@@ -31,8 +32,12 @@ assert(
   "Bone visibility is not structure-aware"
 );
 assert(
-  app.includes('exploreHiddenActions.push({ kind: "surface-layer"'),
-  "Bulk surface-layer removal is not undoable"
+  app.includes('kind: "anatomical-layer"'),
+  "Anatomical layer removal is not undoable"
+);
+assert(
+  !app.includes("function peelVisibleMuscleLayer"),
+  "Camera-visible ray sampling must not drive anatomical layer removal"
 );
 assert(
   app.includes("canvas.dataset.regionVisibleBones"),
@@ -46,4 +51,4 @@ assert(
 );
 
 console.log("Regional isolation: muscles default + opt-in regional bones ok");
-console.log("Depth exploration: view-dependent surface peeling + click stack ok");
+console.log("Depth exploration: regional anatomical peeling + constrained click stack ok");

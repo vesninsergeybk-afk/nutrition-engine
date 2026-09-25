@@ -9,6 +9,13 @@ import {
   studyStructureTerm,
 } from "./study-layer-terms-ru.js";
 import {
+  hasCoverageRules,
+  isKnownDeeperRelation,
+  muscleDepthInfo,
+  nextDepthRank,
+  regionHasDepthProfile,
+} from "./regional-depth-map.js";
+import {
   bodyPartsAnatomyKind,
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
@@ -973,6 +980,13 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
   applyRegionStudyVisibility();
   applyMuscleDisplayMode();
 
+  canvas.dataset.depthProfile =
+    regionIsolationActive() &&
+    availableTargets.length &&
+    availableTargets.every((target) => regionHasDepthProfile(target.region))
+      ? "regional-anatomical"
+      : "unverified-or-mixed";
+
   const regional = regionIsolationActive();
   if (skeletonMesh) {
     applyRegionBoneVisibility();
@@ -1090,62 +1104,135 @@ function highlightStructures(ids, kind = "answer") {
   anatomyMesh.geometry.getAttribute("color").needsUpdate = true;
 }
 
-function visibleSurfaceMuscleIdsFromCurrentView() {
-  if (!anatomyMesh || !anatomyMesh.visible) return [];
-
-  const surface = new Set();
-  const columns = 11;
-  const rows = 13;
-
-  for (let row = 0; row < rows; row += 1) {
-    const y = 0.88 - (row / (rows - 1)) * 1.76;
-    for (let column = 0; column < columns; column += 1) {
-      const x = -0.88 + (column / (columns - 1)) * 1.76;
-      raycaster.setFromCamera({ x, y }, camera);
-      const hits = raycaster.intersectObject(anatomyMesh, false);
-
-      for (const hit of hits) {
-        const sid = structureIdFromHit(hit);
-        if (sid == null || structureVisibility[sid] === false) continue;
-        surface.add(sid);
-        break;
-      }
-    }
-  }
-
-  return [...surface];
+function targetConceptKeys(target) {
+  return [
+    ...new Set(
+      (target?.sourceNames || [])
+        .map((sourceName) => learningConceptSourceName(sourceName))
+        .filter(Boolean)
+    ),
+  ];
 }
 
-function peelVisibleMuscleLayer() {
+function targetDepthInfo(target) {
+  if (!target?.region) return null;
+
+  for (const conceptKey of targetConceptKeys(target)) {
+    const info = muscleDepthInfo(target.region, conceptKey);
+    if (info) return { ...info, conceptKey };
+  }
+
+  return null;
+}
+
+function targetHasVisibleStructure(target) {
+  return Boolean(
+    target?.sids?.some((sid) => structureVisibility[sid] !== false)
+  );
+}
+
+function nextRegionalAnatomicalLayer() {
+  if (!regionIsolationActive() || !availableTargets.length) {
+    return {
+      supported: false,
+      reason: "Сначала изолируйте анатомический блок.",
+    };
+  }
+
+  const visibleTargets = availableTargets.filter(targetHasVisibleStructure);
+  if (!visibleTargets.length) {
+    return {
+      supported: false,
+      reason: "В выбранном блоке не осталось видимых мышц.",
+    };
+  }
+
+  const entries = visibleTargets.map((target) => ({
+    target,
+    info: targetDepthInfo(target),
+  }));
+  const missing = entries.filter((entry) => !entry.info);
+
+  if (missing.length) {
+    const unsupportedRegions = [
+      ...new Set(missing.map((entry) => entry.target.region).filter(Boolean)),
+    ];
+    return {
+      supported: false,
+      reason:
+        "Для этого блока анатомическая карта глубины ещё не проверена" +
+        (unsupportedRegions.length
+          ? ": " + unsupportedRegions.map(regionNameRu).join(", ")
+          : "") +
+        ". Можно скрывать отдельные структуры, но режим не будет выдавать геометрическую видимость за анатомический слой.",
+    };
+  }
+
+  const rank = nextDepthRank(entries.map((entry) => entry.info));
+  const layerEntries = entries.filter((entry) => entry.info.rank === rank);
+  const ids = [
+    ...new Set(
+      layerEntries.flatMap((entry) =>
+        (entry.target.sids || []).filter(
+          (sid) => structureVisibility[sid] !== false
+        )
+      )
+    ),
+  ];
+
+  const nameRu = layerEntries[0]?.info?.nameRu || "Анатомический";
+
+  return {
+    supported: true,
+    rank,
+    nameRu,
+    entries: layerEntries,
+    ids,
+  };
+}
+
+function peelAnatomicalMuscleLayer() {
   if (appMode !== "explore") return;
 
-  const ids = visibleSurfaceMuscleIdsFromCurrentView();
-  if (!ids.length) {
+  const layer = nextRegionalAnatomicalLayer();
+  if (!layer.supported || !layer.ids.length) {
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "В текущем ракурсе не найден видимый мышечный слой для снятия.";
+      layer.reason || "Следующий анатомический слой не найден.";
     return;
   }
 
   restoreHighlights();
   restoreStudyHighlight();
 
-  for (const sid of ids) setStructureVisible(sid, false);
-  exploreHiddenActions.push({ kind: "surface-layer", ids: [...ids] });
+  for (const sid of layer.ids) setStructureVisible(sid, false);
+
+  exploreHiddenActions.push({
+    kind: "anatomical-layer",
+    ids: [...layer.ids],
+    rank: layer.rank,
+    nameRu: layer.nameRu,
+  });
+
   selectedExploreSid = null;
   selectedStudyId = null;
   focusedStructureIds = [];
 
+  const muscles = layer.entries.map((entry) => entry.target.nameRu);
   questionLabelEl.textContent = "Послойное изучение";
-  questionEl.textContent = "Видимый поверхностный слой скрыт";
+  questionEl.textContent = `Скрыт ${layer.nameRu.toLocaleLowerCase("ru-RU")} слой`;
   feedbackEl.className = "feedback";
   feedbackEl.textContent =
-    `Скрыто ${ids.length} мышечных структур, которые образовывали поверхность в этом ракурсе. Поверните модель или снимите следующий видимый слой.`;
+    "Скрыты только мышцы этого анатомического уровня: " +
+    muscles.join(", ") +
+    ". Более глубокие мышцы, которые уже были видны в анатомических окнах, сохранены.";
 
   updateLayerButtons();
 }
 
 function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
+  const selectedTarget = learningTargetBySid.get(selectedSid) || null;
+  const selectedInfo = targetDepthInfo(selectedTarget);
   const ordered = [];
   let reachedSelected = false;
 
@@ -1160,6 +1247,30 @@ function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
     }
 
     if (sid === selectedSid || ordered.includes(sid)) continue;
+
+    const candidateTarget = learningTargetBySid.get(sid) || null;
+    const candidateInfo = targetDepthInfo(candidateTarget);
+
+    if (selectedInfo && candidateInfo) {
+      if (
+        selectedTarget?.region !== candidateTarget?.region ||
+        candidateInfo.rank <= selectedInfo.rank
+      ) {
+        continue;
+      }
+
+      if (
+        hasCoverageRules(selectedTarget.region, selectedInfo.ruleId) &&
+        !isKnownDeeperRelation(
+          selectedTarget.region,
+          selectedInfo.ruleId,
+          candidateInfo.ruleId
+        )
+      ) {
+        continue;
+      }
+    }
+
     ordered.push(sid);
     if (ordered.length >= limit) break;
   }
@@ -1169,10 +1280,22 @@ function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
 
 function updateLayerButtons() {
   isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
+
+  const nextLayer =
+    appMode === "explore" && anatomyMesh && regionIsolationActive()
+      ? nextRegionalAnatomicalLayer()
+      : null;
+
   peelSurfaceLayerButton.disabled =
     appMode !== "explore" ||
     !anatomyMesh ||
+    !regionIsolationActive() ||
     !structureVisibility.some(Boolean);
+
+  peelSurfaceLayerButton.textContent =
+    nextLayer?.supported && nextLayer?.ids?.length
+      ? "Снять: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
+      : "Снять анатомический слой";
   undoHideButton.disabled =
     hiddenStack.length === 0 && exploreHiddenActions.length === 0;
 
@@ -1214,6 +1337,7 @@ function setVisibleStructures(ids = null) {
 function showAllStructures() {
   applyRegionMuscleVisibility();
   hiddenStack.length = 0;
+  exploreHiddenActions.length = 0;
   updateLayerButtons();
 }
 
@@ -1315,13 +1439,16 @@ function hideSelectedStructure() {
 function undoLastHide() {
   const action = exploreHiddenActions.pop();
 
-  if (action?.kind === "surface-layer") {
+  if (
+    action?.kind === "anatomical-layer" ||
+    action?.kind === "surface-layer"
+  ) {
     for (const sid of action.ids || []) setStructureVisible(sid, true);
     questionLabelEl.textContent = "Послойное изучение";
-    questionEl.textContent = "Последний видимый слой возвращён";
+    questionEl.textContent = "Последний анатомический слой возвращён";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Мышцы последнего снятого слоя снова показаны.";
+      "Мышцы последнего снятого анатомического уровня снова показаны.";
     updateLayerButtons();
     return;
   }
@@ -4465,7 +4592,7 @@ isolateButton.addEventListener("click", () => {
 });
 
 hideSelectedButton.addEventListener("click", hideSelectedStructure);
-peelSurfaceLayerButton.addEventListener("click", peelVisibleMuscleLayer);
+peelSurfaceLayerButton.addEventListener("click", peelAnatomicalMuscleLayer);
 showNearestMuscleButton.addEventListener("click", () => {
   const entry = studyEntry(selectedStudyId);
   if (!entry?.nearestMuscleSourceName) return;
