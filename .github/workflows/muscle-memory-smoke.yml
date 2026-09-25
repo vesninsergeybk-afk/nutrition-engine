@@ -208,8 +208,9 @@ jobs:
               localStorage.getItem('muscle-memory-learning-v1')
             );
             assert.ok(storedLearning && storedLearning.includes('::name'));
+            await page.click('#exit-learning-session');
 
-            // PRACTICAL: finite ordered task set, not endless random quiz.
+            // PRACTICAL: mixed finite practice, not a duplicate FIND flow.
             await page.click('[data-learning-mode="practical"]');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'practical');
