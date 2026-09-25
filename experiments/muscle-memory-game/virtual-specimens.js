@@ -166,7 +166,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Поверхностные и собственные мышцы нижней части спины.",
     {
       questionPatterns: [
-        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|spinalis(?: thoracis)?|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
+        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|остистая мышца груди|остистая мышца$)|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
       ],
       supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium|hip bone|os cox/i],
       depthProfile: "back",
@@ -302,7 +302,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Подвздошно-рёберная, длиннейшая и остистая части комплекса.",
     {
       questionPatterns: [
-        /\biliocostalis\b|\blongissimus thoracis\b|\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|подвздошно-р[её]бер|длиннейш.*груди|(?:^|\s)остистая мышца(?:\s|$)/iu,
+        /\biliocostalis\b|\blongissimus thoracis\b|(?:\bspinalis thoracis\b|\bspinalis(?!\s+(?:capitis|colli|cervicis|thoracis)\b)\b|остистая мышца груди|остистая мышца$)|подвздошно-р[её]бер|длиннейш.*груди/iu,
       ],
       contextPatterns: [/latissimus dorsi|serratus posterior/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],

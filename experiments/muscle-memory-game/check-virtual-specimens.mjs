@@ -89,6 +89,37 @@ assert(
   "Posterior thigh scene must preserve gluteal/adductor context"
 );
 
+const spinalisCatalog = [
+  target("spinalis thoracis", "back"),
+  target("spinalis", "back"),
+  target("spinalis capitis", "head-neck"),
+  target("spinalis colli", "head-neck"),
+  target("Остистая мышца груди", "back"),
+  target("Остистая мышца", "back"),
+  target("Остистая мышца головы", "head-neck"),
+  target("Остистая мышца шеи", "head-neck"),
+];
+
+for (const specimenId of ["erector-spinae", "lower-back"]) {
+  const names = filterCatalogForSpecimen(
+    spinalisCatalog,
+    specimenId,
+    "question"
+  ).map((item) => item.nameRu);
+
+  assert(
+    names.includes("spinalis thoracis") &&
+      names.includes("spinalis") &&
+      names.includes("Остистая мышца груди") &&
+      names.includes("Остистая мышца"),
+    specimenId + ": thoracic/generic spinalis coverage is incomplete"
+  );
+  assert(
+    !names.some((name) => /capitis|colli|головы|шеи/i.test(name)),
+    specimenId + ": cervical/head spinalis leaked into back specimen"
+  );
+}
+
 for (const required of [
   "neck-collar",
   "shoulder",
