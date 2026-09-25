@@ -166,7 +166,7 @@ export function buildTodayQueue(
         a.skillId.localeCompare(b.skillId)
     )
     .slice(0, Math.max(1, Number(limit) || 10))
-    .map(({ target, skillId, record }) => ({ target, skillId, record }));
+    .map(({ target, skillId, record, priority }) => ({ target, skillId, record, priority }));
 }
 
 export function retentionSummary(store, catalog, skillId, now = Date.now()) {
