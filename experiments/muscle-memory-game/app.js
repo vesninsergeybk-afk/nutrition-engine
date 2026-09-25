@@ -1740,13 +1740,14 @@ function verifiedDeeperMuscleIds(selectedSid, limit = 3) {
       continue;
     }
 
-    const ids = (target.sids || []).filter(
-      (sid) =>
-        structureVisibility[sid] !== false &&
-        sidesCanShareDepthPath(
-          selectedSide,
-          targetSideForSid(target, sid)
-        )
+    // A verified anatomical relation must remain discoverable even when
+    // search/navigation temporarily isolated the selected superficial muscle
+    // and therefore hid the deeper candidate from the current scene.
+    const ids = (target.sids || []).filter((sid) =>
+      sidesCanShareDepthPath(
+        selectedSide,
+        targetSideForSid(target, sid)
+      )
     );
     if (!ids.length) continue;
 

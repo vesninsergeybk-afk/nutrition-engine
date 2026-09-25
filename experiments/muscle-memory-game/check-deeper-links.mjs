@@ -113,3 +113,9 @@ assert(
   /function applyLearningRegion\(\)[\s\S]*?searchInput\.value = ""[\s\S]*?searchResults\.replaceChildren\(\)[\s\S]*?questionEl\.textContent = "Выберите структуру"/.test(app),
   "Changing the specimen can preserve stale Atlas search/selection UI"
 );
+
+assert(
+  /function verifiedDeeperMuscleIds[\s\S]*?const ids = \(target\.sids \|\| \[\]\)\.filter\(\(sid\) =>[\s\S]*?sidesCanShareDepthPath/.test(app) &&
+    !/function verifiedDeeperMuscleIds[\s\S]*?structureVisibility\[sid\] !== false[\s\S]*?return candidates/.test(app),
+  "Verified deeper relations still depend on current scene visibility"
+);
