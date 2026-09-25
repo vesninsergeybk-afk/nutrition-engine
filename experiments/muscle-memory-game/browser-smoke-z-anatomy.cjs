@@ -81,7 +81,7 @@ const assert = require('node:assert/strict');
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip'),
-    'box'
+    'logical-box'
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip-y'),

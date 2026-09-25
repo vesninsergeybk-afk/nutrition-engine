@@ -562,16 +562,19 @@ function setMaterialClipPlanes(material, planes) {
 }
 
 function applyClipPlanesToLoadedAnatomy() {
-  const planes = regionalClipPlanes;
+  // Virtual specimens are made from whole anatomical structures.
+  // The regional box limits interaction, search/focus and context selection,
+  // but must not physically slice meshes with flat clipping planes.
+  const noPlanes = [];
 
-  setMaterialClipPlanes(anatomyMesh?.material, planes);
-  setMaterialClipPlanes(skeletonMesh?.material, planes);
+  setMaterialClipPlanes(anatomyMesh?.material, noPlanes);
+  setMaterialClipPlanes(skeletonMesh?.material, noPlanes);
   for (const mesh of connectiveMeshes.values()) {
-    setMaterialClipPlanes(mesh.material, planes);
+    setMaterialClipPlanes(mesh.material, noPlanes);
   }
-  setMaterialClipPlanes(skinMesh?.material, planes);
+  setMaterialClipPlanes(skinMesh?.material, noPlanes);
   for (const mesh of referenceMeshes.values()) {
-    setMaterialClipPlanes(mesh.material, planes);
+    setMaterialClipPlanes(mesh.material, noPlanes);
   }
 }
 
@@ -668,17 +671,11 @@ function applyRegionalClipWindow() {
     return;
   }
 
-  regionalClipPlanes = [
-    new THREE.Plane(new THREE.Vector3(1, 0, 0), -regionalClipBounds.minX),
-    new THREE.Plane(new THREE.Vector3(-1, 0, 0), regionalClipBounds.maxX),
-    new THREE.Plane(new THREE.Vector3(0, 1, 0), -regionalClipBounds.minY),
-    new THREE.Plane(new THREE.Vector3(0, -1, 0), regionalClipBounds.maxY),
-    new THREE.Plane(new THREE.Vector3(0, 0, 1), -regionalClipBounds.minZ),
-    new THREE.Plane(new THREE.Vector3(0, 0, -1), regionalClipBounds.maxZ),
-  ];
+  // Keep the specimen box for interaction/navigation, not mesh slicing.
+  regionalClipPlanes = [];
   applyClipPlanesToLoadedAnatomy();
 
-  canvas.dataset.specimenClip = "box";
+  canvas.dataset.specimenClip = "logical-box";
   canvas.dataset.specimenClipX =
     regionalClipBounds.minXFraction.toFixed(2) +
     ":" +

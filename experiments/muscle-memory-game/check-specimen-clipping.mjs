@@ -43,7 +43,7 @@ assert(
   "Raycaster can still select visually clipped anatomy"
 );
 assert(
-  app.includes('canvas.dataset.specimenClip = "box"') &&
+  app.includes('canvas.dataset.specimenClip = "logical-box"') &&
     app.includes("canvas.dataset.specimenClipX") &&
     app.includes("canvas.dataset.specimenClipY") &&
     app.includes("canvas.dataset.specimenClipZ"),
@@ -58,7 +58,12 @@ assert(
   "Specimen hit-testing is still only vertical"
 );
 assert(
-  /regionalClipPlanes = \[[\s\S]*?Vector3\(1, 0, 0\)[\s\S]*?Vector3\(0, 1, 0\)[\s\S]*?Vector3\(0, 0, 1\)/.test(app),
-  "Render clipping is not a three-dimensional specimen box"
+  app.includes("regionalClipPlanes = [];") &&
+    /function applyClipPlanesToLoadedAnatomy\(\)[\s\S]*?const noPlanes = \[\]/.test(app),
+  "Normal virtual specimens can still hard-slice anatomical meshes"
 );
-console.log("Three-dimensional specimen clipping: ok");
+assert(
+  /function pointWithinRegionalClip[\s\S]*?point\.x[\s\S]*?point\.y[\s\S]*?point\.z/.test(app),
+  "Logical specimen bounds no longer constrain interaction in 3D"
+);
+console.log("Whole-structure specimen rendering with logical 3D bounds: ok");
