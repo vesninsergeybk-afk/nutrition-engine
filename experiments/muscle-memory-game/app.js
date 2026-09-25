@@ -17,6 +17,15 @@ import {
   regionCounts,
   regionNameRu,
 } from "./learning-engine.js";
+import {
+  SESSION_MODES,
+  buildSmartChoices,
+  completeSessionItem,
+  createLearningSession,
+  currentSessionItem,
+  sessionProgress,
+  sessionSummary,
+} from "./learning-session.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
@@ -45,6 +54,12 @@ const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
 const learningRegion = document.querySelector("#learning-region");
 const learningSummaryEl = document.querySelector("#learning-summary");
+const learningSessionMode = document.querySelector("#learning-session-mode");
+const learningSessionSize = document.querySelector("#learning-session-size");
+const startLearningSessionButton = document.querySelector("#start-learning-session");
+const sessionProgressEl = document.querySelector("#session-progress");
+const nameChoicesEl = document.querySelector("#name-choices");
+const revealDeeperButton = document.querySelector("#reveal-deeper");
 const boneMode = document.querySelector("#bone-mode");
 const boneOpacity = document.querySelector("#bone-opacity");
 const connectiveMode = document.querySelector("#connective-mode");
@@ -120,6 +135,10 @@ let appMode = "quiz";
 let learningCatalog = [];
 let selectedLearningRegion = "all";
 let learningStore = loadLearningStore();
+let selectedSessionMode = "find";
+let learningSession = null;
+let currentItemWrongAttempts = 0;
+let lastWrongSid = null;
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
