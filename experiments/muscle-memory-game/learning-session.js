@@ -1,4 +1,5 @@
 import { skillRecord } from "./learning-engine.js";
+import { buildTodayQueue } from "./retention-engine.js";
 
 export const SESSION_MODES = Object.freeze({
   find: {
@@ -20,6 +21,11 @@ export const SESSION_MODES = Object.freeze({
     id: "mistakes",
     nameRu: "Повторить ошибки",
     descriptionRu: "Повторить мышцы и навыки, где уже были ошибки.",
+  },
+  today: {
+    id: "today",
+    nameRu: "На сегодня",
+    descriptionRu: "Повторить навыки, срок которых подошёл по истории ответов.",
   },
 });
 
@@ -160,8 +166,10 @@ function spreadReviewItems(items, rng = Math.random) {
     }
 
     candidates.sort((a, b) => {
-      const debtOrder = b.item.debt - a.item.debt;
-      if (debtOrder) return debtOrder;
+      const aPriority = Number(a.item.priority ?? a.item.debt ?? 0);
+      const bPriority = Number(b.item.priority ?? b.item.debt ?? 0);
+      const priorityOrder = bPriority - aPriority;
+      if (priorityOrder) return priorityOrder;
 
       if (previous) {
         const similarityOrder =
@@ -186,6 +194,7 @@ export function createLearningSession({
   store,
   size = 10,
   rng = Math.random,
+  now = Date.now(),
 }) {
   const safeSize = Math.max(1, Math.min(Number(size) || 10, 30));
   let items = [];
@@ -197,6 +206,14 @@ export function createLearningSession({
         target: entry.target,
         skillId: entry.skillId,
       }));
+  } else if (mode === "today") {
+    items = spreadReviewItems(
+      buildTodayQueue(store, catalog, { now, limit: safeSize }),
+      rng
+    ).map((entry) => ({
+      target: entry.target,
+      skillId: entry.skillId,
+    }));
   } else {
     const pool = spreadSimilarTargets(catalog, rng).slice(
       0,
