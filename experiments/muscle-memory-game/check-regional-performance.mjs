@@ -19,3 +19,19 @@ assert(
   "Camera focus is still enlarged by cover/context muscles"
 );
 console.log("Regional performance/framing contract: ok");
+
+
+const regionHandler = app.slice(
+  app.indexOf('learningRegion.addEventListener("change"'),
+  app.indexOf('learningSessionMode.addEventListener', app.indexOf('learningRegion.addEventListener("change"'))
+);
+assert(
+  !regionHandler.includes('applyRegionScene({ resetLayers: true, focus: true })'),
+  "Changing a specimen still rebuilds the full regional scene twice"
+);
+assert(
+  regionHandler.includes("focusLearningRegion()") &&
+    regionHandler.includes("setFullBodyView()"),
+  "Changing a specimen no longer focuses the already-updated scene"
+);
+console.log("Single-pass specimen switching: ok");
