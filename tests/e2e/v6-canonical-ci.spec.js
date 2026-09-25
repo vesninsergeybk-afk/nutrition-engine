@@ -473,6 +473,7 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiExecutiveHF4')).toContainText('HEI пока не рассчитан');
   await expect(page.locator('#workspaceHeiExecutiveHF4 .hei-card-hf4')).toHaveCount(0);
   await expect(page.locator('#workspaceHeiDashboardListHF2 [data-hf2-hei-key]')).toHaveCount(0);
+  await expect(page.locator('#workspaceHeiDashboardHF2')).toBeHidden();
   await expect(page.locator('#workspaceHeiDashboardHF2 [data-hf2-hei-all]')).toBeHidden();
 
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
@@ -495,8 +496,9 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiTotal')).not.toHaveText('—');
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-summary')).toBeVisible();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeVisible();
+  await expect(page.locator('#workspaceHeiDashboardHF2')).toBeVisible();
   await expect(page.locator('#workspaceHeiExecutiveHF4 .hei-card-hf4').first()).toBeVisible();
-  await expect(page.locator('#workspaceHeiDashboardListHF2 [data-hf2-hei-key]').first()).toBeVisible();
+  await expect(page.locator('#workspaceHeiDashboardListHF2 [data-hf2-hei-key]').first()).toBeHidden();
   await expect(page.locator('#workspaceHeiDashboardHF2 [data-hf2-hei-all]')).toBeVisible();
 });
 
