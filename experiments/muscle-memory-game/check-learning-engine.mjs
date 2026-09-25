@@ -241,7 +241,7 @@ const cuffScope = filterCatalogByRegion(catalog, "rotator-cuff");
 assert(cuffScope.length === 4, "Rotator-cuff scope must contain four muscles");
 
 const erectorScope = filterCatalogByRegion(catalog, "erector-spinae");
-assert(erectorScope.length >= 5, "Erector-spinae scope is unexpectedly small");
+assert(erectorScope.length >= 4, "Erector-spinae scope is unexpectedly small");
 assert(
   erectorScope.every((item) =>
     /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|(?:^|\s)остист(?:ая|ые)\s+мышц/iu.test(
@@ -255,6 +255,14 @@ assert(
     /semispinalis|полуостист/iu.test([item.nameRu, ...(item.sourceNames || [])].join(" "))
   ),
   "Semispinalis leaked into erector-spinae scope"
+);
+assert(
+  !erectorScope.some((item) =>
+    /iliocostalis (?:cervicis|colli)|longissimus (?:cervicis|colli|capitis)|spinalis (?:cervicis|colli|capitis)|мышц.*шеи|мышц.*головы/iu.test(
+      [item.nameRu, ...(item.sourceNames || [])].join(" ")
+    )
+  ),
+  "Cervical/head erector-spinae components leaked into the back teaching complex"
 );
 
 const neckScope = filterCatalogByRegion(catalog, "neck");
