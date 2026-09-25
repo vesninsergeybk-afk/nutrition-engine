@@ -465,6 +465,10 @@ function applyLearningRegion({ startQuestion = true } = {}) {
     `Учебный каталог: ${learningCatalog.length} мышц и частей мышц. ` +
     `Сейчас: ${regionNameRu(selectedLearningRegion)} — ${availableTargets.length} целей.`;
 
+  canvas.dataset.learningRegion = selectedLearningRegion;
+  canvas.dataset.learningTargetCount = String(availableTargets.length);
+  canvas.dataset.learningCatalogCount = String(learningCatalog.length);
+
   updateLearningSummary();
 
   if (!availableTargets.length) {
@@ -1028,6 +1032,9 @@ function resetLoadedModel() {
   canvas.dataset.boneMode = "";
   canvas.dataset.boneTransparent = "";
   canvas.dataset.boneStencil = "";
+  canvas.dataset.learningRegion = "";
+  canvas.dataset.learningTargetCount = "";
+  canvas.dataset.learningCatalogCount = "";
 }
 
 function createMuscleMaterial() {
