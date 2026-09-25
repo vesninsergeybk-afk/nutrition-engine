@@ -744,7 +744,6 @@ function applyLearningRegion() {
   canvas.dataset.learningRegion = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
-  focusShoulderButton.hidden = selectedLearningRegion === "all";
   focusShoulderButton.textContent = "К области";
   focusShoulderButton.hidden = selectedLearningRegion === "all";
 
