@@ -59,10 +59,14 @@
       if(title&&title.nextSibling)header.insertBefore(button,title.nextSibling);
       else header.insertBefore(button,header.firstChild);
     }
-    var legacy=byId('interfaceSettingsHF2');
+    var legacy=byId('interfaceSettingsHF2'),oldNav=d.querySelector('#navigationShell [data-navshell-settings-toggle]');
     if(legacy){
       legacy.setAttribute('aria-hidden','true');
       legacy.setAttribute('tabindex','-1');
+    }
+    if(oldNav){
+      oldNav.setAttribute('aria-hidden','true');
+      oldNav.setAttribute('tabindex','-1');
     }
     button.setAttribute('aria-expanded',header.classList.contains('interface-settings-pass1-open')?'true':'false');
   }
