@@ -91,7 +91,7 @@ html[data-interface-simplification="1"] .workspace-alt-entry__buttons button{
   margin:0!important;
 }
 
-@media(max-width:899px){
+@media(max-width:860px){
   html[data-interface-simplification="1"] #interfaceSettingsPass1{
     display:flex!important;
     align-items:center;
@@ -322,14 +322,14 @@ html[data-theme-parity-hotfix="4"] .hei-group-hf4__head span{
   color:#5d7086!important;
 }
 
-/* Developer chrome removal (Beta 8 UI pass 5).   Pass 1 collapsed the interface controls inside @media(max-width:899px) only, so a
+/* Developer chrome removal (Beta 8 UI pass 5).   Pass 1 collapsed the interface controls inside @media(max-width:860px) only, so a
    desktop window still carried the theme strip at 1116x60 px and the view switcher at
    208x44 px above the content, plus a 121x24 px build stamp in the header — all of it
    reading as leftover development chrome rather than product UI.
    The collapse now applies above the mobile breakpoint as well; the controls stay one
    click away behind the existing settings action (#interfaceSettingsPass1), and the
    build stamp remains available as data-ui-version / __APP_DEPLOY_VERSION__. */
-@media(min-width:900px){
+@media(min-width:861px){
   html[data-interface-simplification="1"] #interfaceSettingsPass1{
     display:inline-flex!important;
   }
@@ -391,7 +391,7 @@ html[data-theme-parity-hotfix="4"] .theme-parity-ration-hf4__card>header>button{
 }
 /* Desktop navigation has room for the 12px floor; the 11px value is only needed on
    the narrow bottom bar, where "Потребности" would otherwise wrap to two lines. */
-@media(min-width:900px){
+@media(min-width:861px){
   .navigation-shell__items a span{
     font-size:12px!important;
   }
@@ -521,7 +521,7 @@ span.pill{
   font-weight:800!important;
   white-space:nowrap!important;
 }
-@media(min-width:900px){
+@media(min-width:861px){
   #mainContent #consultationNeedsSummary .consultation-summary-grid>div:not(:first-child){
     border-left:1px solid #e2e8f0!important;
     padding-left:20px!important;
@@ -581,6 +581,7 @@ html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/nutrients"][data-ivory-ration="empty"] #workspaceNutrientsPanel .workspace-analysis-quality,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/nutrients"][data-ivory-ration="empty"] #workspaceNutrientsPanel .workspace-analysis-actions,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-analysis-summary,
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiDashboardHF2,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-guardrails,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-analysis-toolbar,
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-analysis-list,
@@ -593,4 +594,35 @@ html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-
 }
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-hei-hero{
   margin-top:2px!important;
+}
+
+
+/* Settings consolidation (UI audit 2026-09-25).
+   Beta 8 owns the single product-facing Settings entry point. Older HF2 and
+   navigation-shell settings triggers otherwise remain visible/reserve space and
+   create duplicate controls plus a blank bar between the route header and content. */
+html[data-interface-simplification="1"] #interfaceSettingsHF2,
+html[data-interface-simplification="1"] #navigationShell [data-navshell-settings-toggle]{
+  display:none!important;
+}
+
+
+/* Ration duplicate-disclosure cleanup (UI audit 2026-09-25).
+   Beta 8 already exposes photo, voice and audio through #workspaceAltEntryMethods
+   inside the primary search surface. The older workspaceRationSecondary disclosure
+   is redundant and, on narrow layouts, can collapse into an empty rounded strip. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="ration"] #workspaceRationSecondary{
+  display:none!important;
+}
+
+
+/* Workspace legacy needs-summary cleanup (UI audit 2026-09-25).
+   The needs checkpoint inserts #consultationNeedsSummary after #needsCompact for the
+   long technical canvas. In workspace mode its hidden state can be overridden by
+   route visibility, leaving an empty painted card between the route context and the
+   ration search before needs are calculated. Workspace already projects the relevant
+   person/needs context through its own route UI, so keep this legacy summary out of
+   workspace mode while leaving the long fallback untouched. */
+html[data-interface-simplification="1"][data-navigation-shell="workspace"] #consultationNeedsSummary{
+  display:none!important;
 }

@@ -172,10 +172,16 @@
       section.innerHTML='<div class="workspace-hei-dashboard-hf2__head"><div><span>Все компоненты одним взглядом</span><h3 id="workspaceHeiDashboardTitleHF2">Дашборд HEI-2020</h3><p>Баллы всех компонентов показаны сразу. Нажмите карточку, чтобы открыть подробности и вкладчики.</p></div><button type="button" class="secondary" data-hf2-hei-all>Показать все подробно</button></div><div id="workspaceHeiDashboardListHF2" class="workspace-hei-dashboard-hf2__list"></div>';
       if(toolbar)panel.insertBefore(section,toolbar);else panel.appendChild(section);
     }
-    var host=byId('workspaceHeiDashboardListHF2'),vm=null,rows=[];
-    try{vm=w.NutritionAnalysisWorkspaceHF7&&w.NutritionAnalysisWorkspaceHF7.getViewModel?w.NutritionAnalysisWorkspaceHF7.getViewModel():null;rows=vm&&vm.hei&&vm.hei.rows||[];}catch(_){}
+    var host=byId('workspaceHeiDashboardListHF2'),vm=null,rows=[],items=0,allButton=section.querySelector('[data-hf2-hei-all]');
+    try{vm=w.NutritionAnalysisWorkspaceHF7&&w.NutritionAnalysisWorkspaceHF7.getViewModel?w.NutritionAnalysisWorkspaceHF7.getViewModel():null;rows=vm&&vm.hei&&vm.hei.rows||[];items=vm?num(vm.items,0):0;}catch(_){}
     if(!host)return;
-    if(!rows.length){setHTML(host,'<div class="workspace-hei-dashboard-hf2__empty"><strong>HEI пока не рассчитан</strong><span>Добавьте продукты — здесь появятся баллы всех компонентов.</span></div>');return;}
+    section.setAttribute('data-hf2-state',items>0?'ready':'empty');
+    if(!items||!rows.length){
+      if(allButton)allButton.hidden=true;
+      setHTML(host,'<div class="workspace-hei-dashboard-hf2__empty"><strong>HEI пока не рассчитан</strong><span>Добавьте продукты — здесь появятся баллы всех компонентов.</span></div>');
+      return;
+    }
+    if(allButton)allButton.hidden=false;
     setHTML(host,rows.map(function(row){var s=heiStatus(row),points=fmt(row.points,1)+' / '+fmt(row.maxPoints,0),pct=isFinite(num(row.pct,NaN))?Math.round(num(row.pct))+'%':'—';return '<button type="button" class="is-'+esc(s.code)+'" data-hf2-hei-key="'+esc(row.key)+'" aria-label="'+esc(row.title)+': '+esc(points)+'"><span>'+esc(row.title)+'</span><strong>'+esc(points)+'</strong><i aria-hidden="true"><b style="width:'+esc(isFinite(num(row.pct,NaN))?Math.max(0,Math.min(100,num(row.pct))):0)+'%"></b></i><small>'+esc(pct)+' · '+esc(s.label)+'</small></button>';}).join(''));
   }
 

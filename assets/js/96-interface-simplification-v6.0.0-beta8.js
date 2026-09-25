@@ -59,10 +59,14 @@
       if(title&&title.nextSibling)header.insertBefore(button,title.nextSibling);
       else header.insertBefore(button,header.firstChild);
     }
-    var legacy=byId('interfaceSettingsHF2');
+    var legacy=byId('interfaceSettingsHF2'),oldNav=d.querySelector('#navigationShell [data-navshell-settings-toggle]');
     if(legacy){
       legacy.setAttribute('aria-hidden','true');
       legacy.setAttribute('tabindex','-1');
+    }
+    if(oldNav){
+      oldNav.setAttribute('aria-hidden','true');
+      oldNav.setAttribute('tabindex','-1');
     }
     button.setAttribute('aria-expanded',header.classList.contains('interface-settings-pass1-open')?'true':'false');
   }
@@ -95,6 +99,81 @@
     node=byId('workspaceHeiQuality');
     if(node&&node.textContent&&!/нет расч[её]та/i.test(node.textContent)){
       node.innerHTML='<strong>Достоверность HEI: нет расчёта</strong><span>Оценка достоверности появится после добавления продуктов.</span>';
+    }
+  }
+
+  function normalizePublicReportModel(model){
+    if(!model||!model.ration||Number(model.ration.count)>0)return model;
+    var copy=null;
+    try{copy=JSON.parse(JSON.stringify(model));}catch(_){return model;}
+    if(copy.hei){
+      copy.hei.available=false;
+      copy.hei.total=null;
+      copy.hei.grade='';
+    }
+    return copy;
+  }
+
+  function patchReportApi(){
+    var api=null;
+    try{api=w.WorkspaceReportHF13||null;}catch(_){api=null;}
+    if(!api||api.__emptySemanticPatch)return;
+    var getLast=typeof api.getLastModel==='function'?api.getLastModel:null;
+    var build=typeof api.buildReportModel==='function'?api.buildReportModel:null;
+    if(getLast)api.getLastModel=function(){return normalizePublicReportModel(getLast.apply(api,arguments));};
+    if(build)api.buildReportModel=function(){return normalizePublicReportModel(build.apply(api,arguments));};
+    try{api.__emptySemanticPatch='v6-ui-audit-2026-09-25';}catch(_){}
+  }
+
+  function replaceEmptyReportSection(section,title,body){
+    if(!section)return;
+    var current=section.querySelector('[data-ui-empty-report="'+title+'"]');
+    if(current)return;
+    var head=section.querySelector('.workspace-report-section__head');
+    var children=section.children,i;
+    for(i=children.length-1;i>=0;i--){
+      if(head&&children[i]===head)continue;
+      section.removeChild(children[i]);
+    }
+    var empty=d.createElement('div');
+    empty.className='workspace-report-empty';
+    empty.setAttribute('data-ui-empty-report',title);
+    empty.innerHTML=body;
+    section.appendChild(empty);
+  }
+
+  function syncEmptyReportSemantics(){
+    if(d.documentElement.getAttribute('data-ivory-ration')!=='empty')return;
+    var preview=byId('workspaceReportPreview');
+    if(!preview||!preview.querySelector('.workspace-report-document'))return;
+
+    var cover=preview.querySelector('.workspace-report-cover'),nodes,i,label,strong;
+    if(cover){
+      var intro=cover.querySelector('p');
+      if(intro)setText(intro,'Рацион пока пуст. Расчётные выводы появятся после добавления продуктов.');
+      nodes=cover.querySelectorAll('.workspace-report-kv');
+      for(i=0;i<nodes.length;i++){
+        label=nodes[i].querySelector('span');
+        strong=nodes[i].querySelector('strong');
+        if(!label||!strong)continue;
+        if(label.textContent==='Энергия')setText(strong,'—');
+        else if(label.textContent==='HEI')setText(strong,'не рассчитан');
+      }
+    }
+
+    var sections=preview.querySelectorAll('.workspace-report-section'),heading,title;
+    for(i=0;i<sections.length;i++){
+      heading=sections[i].querySelector('.workspace-report-section__head h3');
+      title=heading?String(heading.textContent||'').replace(/^\s+|\s+$/g,''):'';
+      if(title==='Краткий итог'){
+        replaceEmptyReportSection(sections[i],title,'<strong>Рацион пока пуст</strong><p>Добавьте продукты — после этого отчёт сформирует выводы, сильные стороны и приоритеты.</p>');
+      }else if(title==='Энергия и основные показатели'){
+        replaceEmptyReportSection(sections[i],title,'<strong>Нет данных о рационе</strong><p>Энергия и основные показатели появятся после добавления продуктов.</p>');
+      }else if(title==='Нутриенты и ориентиры'){
+        replaceEmptyReportSection(sections[i],title,'<strong>Нет данных для анализа нутриентов</strong><p>Подробные значения и статусы появятся после добавления продуктов.</p>');
+      }else if(title==='HEI-2020'){
+        replaceEmptyReportSection(sections[i],title,'<strong>HEI пока не рассчитан</strong><p>Индекс появится после добавления продуктов в рацион.</p>');
+      }
     }
   }
 
@@ -186,6 +265,8 @@
     simplifyEntryMethods();
     simplifyPersonContext();
     syncEmptyAnalysisSemantics();
+    patchReportApi();
+    syncEmptyReportSemantics();
   }
   function schedule(){
     w.clearTimeout(timer);
@@ -195,7 +276,7 @@
   function init(){
     d.addEventListener('click',handleClick,false);
     w.addEventListener('resize',schedule,false);
-    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','navigation-shell:mode-changed','workspace-entry-ux:ready','needs:computed','ration:changed'].forEach(function(name){
+    ['app:ready','navigation-shell:ready','navigation-shell:route-changed','navigation-shell:mode-changed','workspace-entry-ux:ready','workspace-report:ready','needs:computed','ration:changed'].forEach(function(name){
       w.addEventListener(name,schedule,false);
     });
     if(w.MutationObserver){

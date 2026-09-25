@@ -244,6 +244,118 @@ test('mobile interface keeps secondary display controls behind one settings acti
   await expect(page.locator('#themeSwitcher')).toBeHidden();
 });
 
+test('desktop workspace exposes only the canonical settings control', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-shell', 'workspace');
+  await expect(page.locator('#interfaceSettingsPass1')).toBeVisible();
+  await expect(page.locator('#interfaceSettingsHF2')).toBeHidden();
+  await expect(page.locator('#navigationShell [data-navshell-settings-toggle]')).toBeHidden();
+});
+
+test('861-899px seam uses the desktop shell without mobile search overlay', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 880, height: 900 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  const nav = page.locator('#navigationShell');
+  await expect(nav).toBeVisible();
+
+  const navGeometry = await nav.evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, top: rect.top, bottom: rect.bottom, height: rect.height };
+  });
+  expect(navGeometry.top).toBeLessThan(300);
+  expect(navGeometry.height).toBeGreaterThan(200);
+
+  const search = page.locator('#globalSearchInput');
+  await search.fill('банан');
+  await page.waitForFunction(() => {
+    const results = document.getElementById('globalResults');
+    return results && results.classList.contains('has-query') && results.getBoundingClientRect().height > 0;
+  });
+
+  const geometry = await page.evaluate(() => {
+    const results = document.getElementById('globalResults');
+    const searchSection = document.getElementById('globalSearchSection');
+    const rr = results.getBoundingClientRect();
+    const sr = searchSection.getBoundingClientRect();
+    return {
+      position: getComputedStyle(results).position,
+      resultsLeft: rr.left,
+      resultsRight: rr.right,
+      sectionLeft: sr.left,
+      sectionRight: sr.right,
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth
+    };
+  });
+  expect(geometry.position).not.toBe('fixed');
+  expect(geometry.resultsLeft).toBeGreaterThanOrEqual(geometry.sectionLeft - 1);
+  expect(geometry.resultsRight).toBeLessThanOrEqual(geometry.sectionRight + 1);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+});
+
+test('mobile ration has no painted empty strip between route context and search', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+
+  const gapElements = await page.evaluate(() => {
+    const context = document.getElementById('navigationShellContext');
+    const search = document.getElementById('globalSearchSection');
+    if (!context || !search) return [{ error: 'missing anchors' }];
+    const a = context.getBoundingClientRect();
+    const b = search.getBoundingClientRect();
+    return Array.from(document.querySelectorAll('body *')).map(node => {
+      const rect = node.getBoundingClientRect();
+      const cs = getComputedStyle(node);
+      const painted = cs.backgroundColor !== 'rgba(0, 0, 0, 0)' ||
+        cs.backgroundImage !== 'none' ||
+        parseFloat(cs.borderTopWidth) > 0 ||
+        parseFloat(cs.borderBottomWidth) > 0 ||
+        cs.boxShadow !== 'none';
+      return {
+        node,
+        rect,
+        cs,
+        painted
+      };
+    }).filter(x =>
+      x.painted &&
+      x.cs.display !== 'none' &&
+      x.cs.visibility !== 'hidden' &&
+      x.rect.width > 100 &&
+      x.rect.height > 3 &&
+      x.rect.top >= a.bottom - 1 &&
+      x.rect.bottom <= b.top + 1
+    ).map(x => ({
+      tag: x.node.tagName,
+      id: x.node.id || '',
+      cls: typeof x.node.className === 'string' ? x.node.className : '',
+      top: Math.round(x.rect.top),
+      bottom: Math.round(x.rect.bottom),
+      width: Math.round(x.rect.width),
+      height: Math.round(x.rect.height),
+      background: x.cs.backgroundColor,
+      borderTop: x.cs.borderTop,
+      borderBottom: x.cs.borderBottom,
+      radius: x.cs.borderRadius,
+      shadow: x.cs.boxShadow
+    }));
+  });
+
+  expect(gapElements, JSON.stringify(gapElements, null, 2)).toEqual([]);
+});
+
 test('mobile ration starts with text search and keeps alternatives collapsed', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
@@ -256,6 +368,7 @@ test('mobile ration starts with text search and keeps alternatives collapsed', a
 
   const alternative = page.locator('#workspaceAltEntryMethods');
   await expect(alternative).toBeVisible();
+  await expect(page.locator('#workspaceRationSecondary')).toBeHidden();
   await expect(alternative).not.toHaveAttribute('open', '');
   await expect(alternative.locator('button[data-ration-entry-method]')).toHaveCount(3);
 
@@ -470,6 +583,8 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiPanel .workspace-guardrails')).toBeHidden();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeHidden();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-actions')).toBeHidden();
+  await expect(page.locator('#workspaceHeiDashboardHF2')).toBeHidden();
+  await expect(page.locator('#workspaceHeiPanel [data-hf2-hei-key]:visible')).toHaveCount(0);
 
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
   const search = page.locator('#globalSearchInput');
@@ -491,4 +606,41 @@ test('empty nutrient and HEI routes do not turn missing data into zero scores', 
   await expect(page.locator('#workspaceHeiTotal')).not.toHaveText('—');
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-summary')).toBeVisible();
   await expect(page.locator('#workspaceHeiPanel .workspace-analysis-toolbar')).toBeVisible();
+});
+
+test('empty report does not present missing ration data as measured zeros', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('report'));
+  await page.waitForFunction(() =>
+    window.WorkspaceReportHF13 &&
+    window.WorkspaceReportHF13.getLastModel &&
+    window.WorkspaceReportHF13.getLastModel() &&
+    document.querySelector('#workspaceReportPreview .workspace-report-document')
+  );
+  await page.waitForFunction(() =>
+    window.WorkspaceReportHF13 &&
+    window.WorkspaceReportHF13.__emptySemanticPatch === 'v6-ui-audit-2026-09-25'
+  );
+
+  const model = await page.evaluate(() => {
+    const m = window.WorkspaceReportHF13.getLastModel();
+    return { rationCount: m.ration.count, heiAvailable: m.hei.available };
+  });
+  expect(model.rationCount).toBe(0);
+  expect(model.heiAvailable).toBe(false);
+
+  const preview = page.locator('#workspaceReportPreview');
+  await expect(preview).toContainText('Рацион пока пуст');
+  await expect(preview).not.toContainText('0/100');
+  await expect(preview.locator('.workspace-report-mobile-row')).toHaveCount(0);
+
+  const energy = preview.locator('.workspace-report-cover .workspace-report-kv').filter({ hasText: 'Энергия' });
+  const hei = preview.locator('.workspace-report-cover .workspace-report-kv').filter({ hasText: 'HEI' });
+  await expect(energy.locator('strong')).toHaveText('—');
+  await expect(hei.locator('strong')).toHaveText('не рассчитан');
+  await expect(preview).toContainText('Нет данных для анализа нутриентов');
 });
