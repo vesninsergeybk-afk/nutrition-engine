@@ -746,10 +746,7 @@ function finishLearningSession() {
   sessionProgressEl.textContent =
     `Итог · ${regionNameRu(selectedLearningRegion)} · ${summary.completed}/${summary.total}`;
 
-  const hasMistakes =
-    mistakeTargets(learningStore, availableTargets).length > 0 ||
-    summary.wrongAttempts > 0 ||
-    summary.revealed > 0;
+  const hasMistakes = mistakeTargets(learningStore, availableTargets).length > 0;
   nextButton.disabled = false;
   nextButton.textContent = hasMistakes ? "Повторить ошибки" : "Новая сессия";
   canvas.dataset.learningSessionFinished = "true";
@@ -963,11 +960,7 @@ function nextSessionStep() {
       return;
     }
 
-    const summary = sessionSummary(learningSession);
-    const hasMistakes =
-      mistakeTargets(learningStore, availableTargets).length > 0 ||
-      summary.wrongAttempts > 0 ||
-      summary.revealed > 0;
+    const hasMistakes = mistakeTargets(learningStore, availableTargets).length > 0;
 
     if (hasMistakes) {
       selectedSessionMode = "mistakes";
