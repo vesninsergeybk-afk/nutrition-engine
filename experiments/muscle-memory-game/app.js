@@ -2301,7 +2301,7 @@ function applyLearningRegion() {
   const sourceCoverageIncomplete =
     activeDepthAvailability?.reason === "source-incomplete";
   const sourceCoverageMessage = sourceCoverageIncomplete
-    ? `В этой 3D-базе препарат неполон для достоверной послойности: ${activeDepthAvailability.actual} из ${activeDepthAvailability.required} обязательных мышечных целей. Для полного препарата выберите Z-Anatomy.`
+    ? `В этой 3D-базе препарат неполон для достоверной послойности: ${activeDepthAvailability.actual} из ${activeDepthAvailability.required} обязательных мышечных целей. Послойный режим недоступен. Для полного препарата выберите Z-Anatomy.`
     : "";
   const sourceCoverageNote = sourceCoverageMessage
     ? " " + sourceCoverageMessage
