@@ -161,7 +161,8 @@ jobs:
             assert.equal(await page.locator('#mode-explore').getAttribute('aria-pressed'), 'true');
             assert.equal(await page.locator('#learning-region').isDisabled(), false);
             assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-catalog-count')) > 140);
-            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 140);
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 0);
             assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
