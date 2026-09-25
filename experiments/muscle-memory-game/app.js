@@ -15,7 +15,6 @@ import {
   loadLearningStore,
   recordLearningAttempt,
   recordConfusion,
-  appendSessionHistory,
   regionCounts,
   regionNameRu,
 } from "./learning-engine.js";
@@ -27,6 +26,7 @@ import {
 import {
   currentAreaProgress,
   recentSessionHistory,
+  recordSessionHistory,
   regionProgress,
   topConfusions,
   weakSkills,
@@ -1224,14 +1224,9 @@ function finishLearningSession() {
   if (!learningSession) return;
 
   const summary = sessionSummary(learningSession);
-  appendSessionHistory(learningStore, {
-    completedAt: Date.now(),
-    mode: learningSession.mode,
-    region: selectedLearningRegion,
-    total: summary.total,
-    clean: summary.clean,
-    wrongAttempts: summary.wrongAttempts,
-    revealed: summary.revealed,
+  recordSessionHistory(learningStore, learningSession, {
+    regionId: selectedLearningRegion,
+    modelSource: currentModelSource,
   });
   renderProgressPanel();
   sessionSummaryShown = true;
