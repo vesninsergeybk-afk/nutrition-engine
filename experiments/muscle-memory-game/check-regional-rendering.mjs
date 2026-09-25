@@ -42,10 +42,10 @@ assert(
   "Regional renderer does not independently control muscles, tissue layers and bones"
 );
 assert(
-  app.includes('boneDisplayMode = "off"') &&
+  app.includes('boneDisplayMode = "xray"') &&
     app.includes("applyRegionBoneVisibility()") &&
     app.includes('canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full"'),
-  "Regional bones are not opt-in and region-filtered"
+  "Regional bones are not visible-by-default and region-filtered"
 );
 assert(
   app.includes("function applyStudyLayerPreset") &&
