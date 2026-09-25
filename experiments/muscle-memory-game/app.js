@@ -3445,19 +3445,15 @@ async function loadReferenceLayer(layerKey) {
 
     gltf.scene.updateMatrixWorld(true);
     const geometries = [];
-    const vertexCounts = [];
     gltf.scene.traverse((child) => {
       if (!child.isMesh) return;
-      const boneId = boneNames.length;
-      const geometry = cleanSkeletonGeometry(
-        child.geometry,
-        child.matrixWorld,
-        boneId
+
+      // Reference layers are not bones. Keep their geometry independent so
+      // loading nerves/vessels/lymphatics can never corrupt bone ranges or
+      // regional skeletal filtering.
+      geometries.push(
+        cleanSkeletonGeometry(child.geometry, child.matrixWorld)
       );
-      boneNames.push(child.name || `Кость ${boneId + 1}`);
-      vertexCounts.push(geometry.getAttribute("position").count);
-      boneLocalBounds.push(geometry.boundingBox?.clone() || null);
-      geometries.push(geometry);
     });
 
     const { merged, temporaries } = mergeSkeletonGeometries(geometries);
@@ -3825,9 +3821,22 @@ async function loadSkeletonLayer(loader) {
     gltf.scene.updateMatrixWorld(true);
 
     const geometries = [];
+    const vertexCounts = [];
+
     gltf.scene.traverse((child) => {
       if (!child.isMesh) return;
-      geometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
+
+      const boneId = boneNames.length;
+      const geometry = cleanSkeletonGeometry(
+        child.geometry,
+        child.matrixWorld,
+        boneId
+      );
+
+      boneNames.push(child.name || `Кость ${boneId + 1}`);
+      vertexCounts.push(geometry.getAttribute("position").count);
+      boneLocalBounds.push(geometry.boundingBox?.clone() || null);
+      geometries.push(geometry);
     });
 
     const { merged, temporaries } = mergeSkeletonGeometries(geometries);
