@@ -2,9 +2,21 @@ name: Nutrition Calculator Quality Gate
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      profile:
+        description: "Gate profile"
+        required: true
+        default: full
+        type: choice
+        options:
+          - fast
+          - core
+          - browser
+          - full
 
 permissions:
   contents: read
@@ -14,8 +26,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Iterative branch work stays intentionally light. Draft PRs get structural
+  # feedback in seconds rather than launching four heavy jobs on every commit.
+  # Marking the PR ready for review is the explicit release-candidate boundary:
+  # it launches the canonical core + three-browser matrix below.
+  fast-feedback:
+    name: Fast draft feedback
+    if: >-
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == true) ||
+      (github.event_name == 'workflow_dispatch' && inputs.profile == 'fast')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout immutable revision
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24.14.0'
+          package-manager-cache: false
+
+      - name: Create non-secret CI configuration
+        run: |
+          cp api/gemini-secret.example.php api/gemini-secret.php
+          chmod 0644 api/gemini-secret.php
+
+      - name: Run fast structural feedback
+        run: python3 tools/ci_fast_gate_v6.py
+
+      - name: Upload fast diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: nutrition-fast-gate-${{ github.sha }}
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 5
+
   core-gate:
     name: Core and safety gate
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'workflow_dispatch' && (inputs.profile == 'full' || inputs.profile == 'core'))
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -43,17 +99,21 @@ jobs:
       - name: Run canonical V6 core and safety suites
         run: python3 tools/ci_core_gate_v6.py
 
-      - name: Upload core reports
-        if: always()
+      - name: Upload core reports on failure or manual audit
+        if: failure() || github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: nutrition-core-gate-${{ github.sha }}
           path: reports/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 7
 
   browser-gate:
     name: Canonical V6 browser gate (${{ matrix.browser }})
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'workflow_dispatch' && (inputs.profile == 'full' || inputs.profile == 'browser'))
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:
@@ -106,12 +166,13 @@ jobs:
           done
           node tools/real_run_smoke.cjs
 
-      # The accessibility contract audits both empty and filled states and the
-      # report route. Run the full axe matrix in Chromium and Firefox. WebKit
-      # remains an obligatory functional browser contract; the full axe suite
-      # repeatedly stalls there and duplicates the same DOM rule engine.
+      # Axe executes the same DOM rule engine in every browser. Chromium remains
+      # the PR blocker; Firefox repeats the full accessibility matrix on main and
+      # manual full/browser runs. WebKit keeps the obligatory functional contract.
       - name: Run WCAG accessibility gate
-        if: matrix.browser != 'webkit'
+        if: >-
+          matrix.browser == 'chromium' ||
+          (matrix.browser == 'firefox' && github.event_name != 'pull_request')
         run: |
           npx playwright test tests/e2e/accessibility.spec.js \
             --project=${{ matrix.browser }} \
@@ -119,8 +180,11 @@ jobs:
             --timeout=90000 \
             --reporter=line
 
+      # Chromium carries the intentional visual/real-run evidence. Successful
+      # Firefox/WebKit jobs do not need multi-megabyte artifacts; upload those
+      # only when they fail.
       - name: Upload browser diagnostics
-        if: always()
+        if: always() && (matrix.browser == 'chromium' || failure())
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: nutrition-browser-${{ matrix.browser }}-${{ github.sha }}
@@ -132,4 +196,4 @@ jobs:
             reports/ui-audit/
             reports/real-run/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 7

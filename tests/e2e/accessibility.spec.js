@@ -75,14 +75,16 @@ async function audit(page, label, testInfo) {
     path.join(outDir, `${testInfo.project.name}-${label}.json`),
     JSON.stringify(results, null, 2)
   );
-  const blocking = results.violations.filter(v => ['critical', 'serious'].includes(v.impact));
-  expect(blocking.map(v => ({
-    id: v.id,
-    impact: v.impact,
-    help: v.help,
-    nodes: v.nodes.length,
-    sample: v.nodes[0] && v.nodes[0].target
-  }))).toEqual([]);
+  return results.violations
+    .filter(v => ['critical', 'serious'].includes(v.impact))
+    .map(v => ({
+      label,
+      id: v.id,
+      impact: v.impact,
+      help: v.help,
+      nodes: v.nodes.length,
+      sample: v.nodes[0] && v.nodes[0].target
+    }));
 }
 
 const VIEWPORTS = [
@@ -109,28 +111,34 @@ const FILLED_SCENARIOS = [
 ];
 
 for (const viewport of VIEWPORTS) {
-  for (const scenario of EMPTY_SCENARIOS) {
-    test(`WCAG 2.2 automated audit has no serious or critical violations (${viewport.name}, ${scenario.name})`, async ({ page, loadApp }, testInfo) => {
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      await loadApp();
+  test(`WCAG 2.2 empty-state matrix has no serious or critical violations (${viewport.name})`, async ({ page, loadApp }, testInfo) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await loadApp();
+
+    const failures = [];
+    for (const scenario of EMPTY_SCENARIOS) {
       if (scenario.route) {
         await openRoute(page, scenario.route);
       } else {
         await page.evaluate(() => window.NavigationShellV1.setMode('long'));
       }
       await page.waitForTimeout(120);
-      await audit(page, `${viewport.name}-${scenario.name}`, testInfo);
-    });
-  }
+      failures.push(...await audit(page, `${viewport.name}-${scenario.name}`, testInfo));
+    }
+    expect(failures).toEqual([]);
+  });
 
-  for (const scenario of FILLED_SCENARIOS) {
-    test(`WCAG 2.2 automated audit has no serious or critical violations (${viewport.name}, ${scenario.name})`, async ({ page, loadApp }, testInfo) => {
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      await loadApp();
-      await seedRation(page);
+  test(`WCAG 2.2 filled-state matrix has no serious or critical violations (${viewport.name})`, async ({ page, loadApp }, testInfo) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await loadApp();
+    await seedRation(page);
+
+    const failures = [];
+    for (const scenario of FILLED_SCENARIOS) {
       await openRoute(page, scenario.route);
       await page.waitForTimeout(120);
-      await audit(page, `${viewport.name}-${scenario.name}`, testInfo);
-    });
-  }
+      failures.push(...await audit(page, `${viewport.name}-${scenario.name}`, testInfo));
+    }
+    expect(failures).toEqual([]);
+  });
 }
