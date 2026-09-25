@@ -172,7 +172,7 @@ export function inferMuscleRegion(sourceName, nameRu = "") {
   if (
     has(
       text,
-      /gastrocnemius|soleus|plantaris|popliteus|tibialis|fibularis|hallucis|digitorum longus|digitorum brevis|digiti minimi(?: brevis)? of foot|lumbrical.*foot|interossei.*foot|plantar interossei|opponens.*foot|abductor.*foot|quadratus plantae|flexor accessorius|икронож|камбаловид|подошвен|подколенн|большеберцов|малоберцов|палец стопы|пальцев стопы|мизинец стопы|межкостн.*стоп|червеобразн.*стоп|квадратная мышца подошвы/u
+      /gastrocnemius|soleus|plantaris|popliteus|tibialis|fibularis|hallucis|digitorum longus|digitorum brevis|digiti minimi(?: brevis)? of foot|lumbrical.*foot|interossei.*foot|plantar interossei|plantar interosseous.*foot|opponens.*foot|abductor.*foot|quadratus plantae|flexor accessorius|икронож|камбаловид|подошвен|подколенн|большеберцов|малоберцов|палец стопы|пальцев стопы|мизинец стопы|межкостн.*стоп|червеобразн.*стоп|квадратная мышца подошвы/u
     )
   ) return "leg-foot";
 
