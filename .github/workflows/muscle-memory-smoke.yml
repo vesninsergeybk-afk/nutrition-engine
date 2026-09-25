@@ -221,7 +221,7 @@ jobs:
               if (done < 4) await page.click('#next-question');
             }
             await page.click('#next-question');
-            assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/);
+            assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/i);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-summary.png', fullPage: true });
 
             // Mobile-width learning UI must stay usable without a separate flow.
