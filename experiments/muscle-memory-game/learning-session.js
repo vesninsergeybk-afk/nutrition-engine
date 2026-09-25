@@ -66,6 +66,33 @@ function similarityScore(a, b) {
   return score;
 }
 
+function spreadSimilarTargets(items, rng = Math.random) {
+  const remaining = shuffled(items, rng);
+  if (remaining.length < 3) return remaining;
+
+  const ordered = [remaining.shift()];
+  while (remaining.length) {
+    const previous = ordered[ordered.length - 1];
+    let bestIndex = 0;
+    let bestScore = Infinity;
+    let bestTie = Infinity;
+
+    for (let i = 0; i < remaining.length; i += 1) {
+      const score = similarityScore(previous, remaining[i]);
+      const tie = rng();
+      if (score < bestScore || (score === bestScore && tie < bestTie)) {
+        bestIndex = i;
+        bestScore = score;
+        bestTie = tie;
+      }
+    }
+
+    ordered.push(remaining.splice(bestIndex, 1)[0]);
+  }
+
+  return ordered;
+}
+
 export function buildSmartChoices(target, catalog, count = 4, rng = Math.random) {
   const distractors = (catalog || [])
     .filter((item) => item.id !== target.id)
@@ -124,7 +151,10 @@ export function createLearningSession({
       }));
   } else {
     const skillId = mode === "name" ? "name" : "find";
-    const pool = shuffled(catalog, rng).slice(0, Math.min(safeSize, catalog.length));
+    const pool = spreadSimilarTargets(catalog, rng).slice(
+      0,
+      Math.min(safeSize, catalog.length)
+    );
     items = pool.map((target) => ({ target, skillId }));
   }
 
