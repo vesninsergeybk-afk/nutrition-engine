@@ -38,8 +38,10 @@ jobs:
           node --check experiments/muscle-memory-game/bodyparts4-muscles-ru.js
           node --check experiments/muscle-memory-game/learning-engine.js
           node --check experiments/muscle-memory-game/learning-session.js
+          node --check experiments/muscle-memory-game/retention-engine.js
           node --check experiments/muscle-memory-game/check-learning-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-session.mjs
+          node --check experiments/muscle-memory-game/check-retention-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-cross-source.mjs
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node --check experiments/muscle-memory-game/verify.mjs
@@ -79,6 +81,7 @@ jobs:
           node experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node experiments/muscle-memory-game/check-learning-engine.mjs
           node experiments/muscle-memory-game/check-learning-session.mjs
+          node experiments/muscle-memory-game/check-retention-engine.mjs
           node experiments/muscle-memory-game/check-learning-cross-source.mjs
 
       - name: Install browser
