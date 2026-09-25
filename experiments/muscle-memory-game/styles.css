@@ -998,3 +998,8 @@ button:disabled {
     min-height: 28px;
   }
 }
+
+
+#peel-surface-layer {
+  white-space: normal;
+}

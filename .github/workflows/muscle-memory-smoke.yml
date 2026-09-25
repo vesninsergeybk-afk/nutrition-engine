@@ -103,6 +103,7 @@ jobs:
           node experiments/muscle-memory-game/check-learning-cross-source.mjs
           node experiments/muscle-memory-game/check-anatomy-validation.mjs
           node experiments/muscle-memory-game/check-study-layers.mjs
+          node experiments/muscle-memory-game/check-region-depth.mjs
 
       - name: Install browser
         if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') }}

@@ -145,6 +145,7 @@ const searchResults = document.querySelector("#search-results");
 const isolateButton = document.querySelector("#isolate-selected");
 const hideSelectedButton = document.querySelector("#hide-selected");
 const showNearestMuscleButton = document.querySelector("#show-nearest-muscle");
+const peelSurfaceLayerButton = document.querySelector("#peel-surface-layer");
 const undoHideButton = document.querySelector("#undo-hide");
 const showAllButton = document.querySelector("#show-all");
 
@@ -196,6 +197,10 @@ const pointer = new THREE.Vector2();
 
 let anatomyMesh = null;
 let skeletonMesh = null;
+let boneNames = [];
+let boneRanges = [];
+let boneVisibility = [];
+let boneLocalBounds = [];
 let connectiveMeshes = new Map();
 let skinMesh = null;
 let referenceMeshes = new Map();
@@ -963,16 +968,10 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
 
   const regional = regionIsolationActive();
   if (skeletonMesh) {
-    if (regional) {
-      skeletonMesh.visible = false;
-      boneMode.disabled = true;
-      boneOpacity.disabled = true;
-      boneOpacityField.hidden = true;
-      canvas.dataset.boneMode = "regional-hidden";
-    } else {
-      boneMode.disabled = false;
-      applyBoneDisplayMode();
-    }
+    applyRegionBoneVisibility();
+    boneMode.disabled = false;
+    applyBoneDisplayMode();
+    canvas.dataset.regionBoneContext = regional ? "filtered" : "all";
   }
 
   if (regional) {
@@ -1090,8 +1089,89 @@ function highlightStructures(ids, kind = "answer") {
   anatomyMesh.geometry.getAttribute("color").needsUpdate = true;
 }
 
+function visibleSurfaceMuscleIdsFromCurrentView() {
+  if (!anatomyMesh || !anatomyMesh.visible) return [];
+
+  const surface = new Set();
+  const columns = 11;
+  const rows = 13;
+
+  for (let row = 0; row < rows; row += 1) {
+    const y = 0.88 - (row / (rows - 1)) * 1.76;
+    for (let column = 0; column < columns; column += 1) {
+      const x = -0.88 + (column / (columns - 1)) * 1.76;
+      raycaster.setFromCamera({ x, y }, camera);
+      const hits = raycaster.intersectObject(anatomyMesh, false);
+
+      for (const hit of hits) {
+        const sid = structureIdFromHit(hit);
+        if (sid == null || structureVisibility[sid] === false) continue;
+        surface.add(sid);
+        break;
+      }
+    }
+  }
+
+  return [...surface];
+}
+
+function peelVisibleMuscleLayer() {
+  if (appMode !== "explore") return;
+
+  const ids = visibleSurfaceMuscleIdsFromCurrentView();
+  if (!ids.length) {
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent =
+      "В текущем ракурсе не найден видимый мышечный слой для снятия.";
+    return;
+  }
+
+  restoreHighlights();
+  restoreStudyHighlight();
+
+  for (const sid of ids) setStructureVisible(sid, false);
+  exploreHiddenActions.push({ kind: "surface-layer", ids: [...ids] });
+  selectedExploreSid = null;
+  selectedStudyId = null;
+  focusedStructureIds = [];
+
+  questionLabelEl.textContent = "Послойное изучение";
+  questionEl.textContent = "Видимый поверхностный слой скрыт";
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    `Скрыто ${ids.length} мышечных структур, которые образовывали поверхность в этом ракурсе. Поверните модель или снимите следующий видимый слой.`;
+
+  updateLayerButtons();
+}
+
+function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
+  const ordered = [];
+  let reachedSelected = false;
+
+  for (const hit of hits || []) {
+    if (hit.object !== anatomyMesh) continue;
+    const sid = structureIdFromHit(hit);
+    if (sid == null || structureVisibility[sid] === false) continue;
+
+    if (!reachedSelected) {
+      if (sid === selectedSid) reachedSelected = true;
+      continue;
+    }
+
+    if (sid === selectedSid || ordered.includes(sid)) continue;
+    ordered.push(sid);
+    if (ordered.length >= limit) break;
+  }
+
+  return ordered.map((sid) => displayStructureName(sid));
+}
+
 function updateLayerButtons() {
   isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
+  peelSurfaceLayerButton.disabled =
+    appMode !== "explore" ||
+    !anatomyMesh ||
+    !structureVisibility.some(Boolean);
   undoHideButton.disabled =
     hiddenStack.length === 0 && exploreHiddenActions.length === 0;
 
@@ -1233,6 +1313,17 @@ function hideSelectedStructure() {
 
 function undoLastHide() {
   const action = exploreHiddenActions.pop();
+
+  if (action?.kind === "surface-layer") {
+    for (const sid of action.ids || []) setStructureVisible(sid, true);
+    questionLabelEl.textContent = "Послойное изучение";
+    questionEl.textContent = "Последний видимый слой возвращён";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent =
+      "Мышцы последнего снятого слоя снова показаны.";
+    updateLayerButtons();
+    return;
+  }
 
   if (action?.kind === "study") {
     setStudyStructureVisible(action.id, true);
@@ -2451,7 +2542,7 @@ function nextSessionStep() {
   }
 }
 
-function selectExploreStructure(sid) {
+function selectExploreStructure(sid, hitStack = null) {
   if (sid == null || !structureNames[sid]) return;
 
   restoreStudyHighlight();
@@ -2467,8 +2558,12 @@ function selectExploreStructure(sid) {
   questionLabelEl.textContent = "Мышца";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
-  feedbackEl.textContent =
-    "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
+  const deeperNames = deeperMuscleNamesFromHits(hitStack, sid);
+  feedbackEl.textContent = deeperNames.length
+    ? "Глубже по выбранной точке: " +
+      deeperNames.join(" → ") +
+      ". Можно снять видимый слой целиком или скрыть только выбранную мышцу."
+    : "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
 
   focusSelectedButton.disabled = false;
   isolateButton.disabled = false;
@@ -2739,7 +2834,10 @@ function onPointerUp(event) {
     if (hit.object === anatomyMesh) {
       const sid = structureIdFromHit(hit);
       if (sid != null && structureVisibility[sid] !== false) {
-        selectExploreStructure(sid);
+        selectExploreStructure(
+          sid,
+          hits.filter((candidateHit) => candidateHit.object === anatomyMesh)
+        );
         return;
       }
       continue;
@@ -2814,9 +2912,15 @@ function cleanMuscleGeometry(sourceGeometry, matrixWorld, sid, color) {
   return geometry;
 }
 
-function cleanSkeletonGeometry(sourceGeometry, matrixWorld) {
+function cleanSkeletonGeometry(sourceGeometry, matrixWorld, boneId = null) {
   let geometry = sourceGeometry.clone();
   geometry.applyMatrix4(matrixWorld);
+
+  if (geometry.index) {
+    const nonIndexed = geometry.toNonIndexed();
+    geometry.dispose();
+    geometry = nonIndexed;
+  }
 
   for (const attribute of Object.keys(geometry.attributes)) {
     if (attribute !== "position" && attribute !== "normal") {
@@ -2828,6 +2932,19 @@ function cleanSkeletonGeometry(sourceGeometry, matrixWorld) {
     geometry.computeVertexNormals();
   }
 
+  if (boneId != null) {
+    const vertexCount = geometry.getAttribute("position").count;
+    geometry.setAttribute(
+      "structureId",
+      new THREE.BufferAttribute(new Float32Array(vertexCount).fill(boneId), 1)
+    );
+    geometry.setAttribute(
+      "structureVisible",
+      new THREE.BufferAttribute(new Float32Array(vertexCount).fill(1), 1)
+    );
+  }
+
+  geometry.computeBoundingBox();
   return geometry;
 }
 
@@ -2851,6 +2968,94 @@ function mergeSkeletonGeometries(geometries) {
     merged: mergeGeometries(geometries, false),
     temporaries: [],
   };
+}
+
+function setAllBonesVisible(visible = true) {
+  if (!skeletonMesh) return;
+  const attr = skeletonMesh.geometry.getAttribute("structureVisible");
+  if (!attr) return;
+
+  attr.array.fill(visible ? 1 : 0);
+  attr.needsUpdate = true;
+  boneVisibility = boneNames.map(() => visible);
+  canvas.dataset.regionVisibleBones = String(
+    boneVisibility.filter(Boolean).length
+  );
+}
+
+function setBoneVisible(boneId, visible) {
+  if (!skeletonMesh || boneId == null || !boneRanges[boneId]) return;
+  const attr = skeletonMesh.geometry.getAttribute("structureVisible");
+  if (!attr) return;
+
+  const range = boneRanges[boneId];
+  attr.array.fill(visible ? 1 : 0, range.start, range.start + range.count);
+  attr.needsUpdate = true;
+  boneVisibility[boneId] = visible;
+}
+
+function boneWorldBox(boneId) {
+  const local = boneLocalBounds[boneId];
+  if (!skeletonMesh || !local) return new THREE.Box3().makeEmpty();
+  skeletonMesh.updateMatrixWorld(true);
+  return local.clone().applyMatrix4(skeletonMesh.matrixWorld);
+}
+
+function regionalBoneContextBox() {
+  const ids = activeRegionStructureIds();
+  const box = boxForStructures(ids);
+  if (box.isEmpty()) return box;
+
+  const body = worldBodyBox();
+  const size = box.getSize(new THREE.Vector3());
+  const bodySizeNow = body.getSize(new THREE.Vector3());
+  const expand = new THREE.Vector3(
+    Math.max(size.x * 0.10, bodySizeNow.x * 0.018),
+    Math.max(size.y * 0.08, bodySizeNow.y * 0.012),
+    Math.max(size.z * 0.14, bodySizeNow.z * 0.025)
+  );
+  box.min.sub(expand);
+  box.max.add(expand);
+
+  // Shoulder-focused blocks need scapula/clavicle/humerus plus a limited
+  // thoracic anchor, not the entire rib cage and spine.
+  if (
+    ["shoulder", "rotator-cuff", "scapular-stabilizers"].includes(
+      selectedLearningRegion
+    ) &&
+    !body.isEmpty()
+  ) {
+    const minY = body.max.y - bodySizeNow.y * 0.50;
+    const maxY = body.max.y - bodySizeNow.y * 0.07;
+    box.min.y = Math.max(box.min.y, minY);
+    box.max.y = Math.min(box.max.y, maxY);
+  }
+
+  return box;
+}
+
+function applyRegionBoneVisibility() {
+  if (!skeletonMesh) return;
+
+  if (!regionIsolationActive()) {
+    setAllBonesVisible(true);
+    return;
+  }
+
+  const context = regionalBoneContextBox();
+  if (context.isEmpty()) {
+    setAllBonesVisible(false);
+    return;
+  }
+
+  let visibleCount = 0;
+  for (let boneId = 0; boneId < boneNames.length; boneId += 1) {
+    const visible = context.intersectsBox(boneWorldBox(boneId));
+    setBoneVisible(boneId, visible);
+    if (visible) visibleCount += 1;
+  }
+
+  canvas.dataset.regionVisibleBones = String(visibleCount);
 }
 
 function applyBoneDisplayMode() {
@@ -3015,6 +3220,10 @@ function resetLoadedModel() {
 
   anatomyMesh = null;
   skeletonMesh = null;
+  boneNames = [];
+  boneRanges = [];
+  boneVisibility = [];
+  boneLocalBounds = [];
   connectiveMeshes = new Map();
   skinMesh = null;
   referenceMeshes = new Map();
@@ -3098,6 +3307,7 @@ function resetLoadedModel() {
   canvas.dataset.selectedStudySpecific = "";
   canvas.dataset.boneMode = "";
   canvas.dataset.boneTransparent = "";
+  canvas.dataset.regionVisibleBones = "";
   canvas.dataset.boneStencil = "";
   canvas.dataset.learningRegion = "";
   canvas.dataset.learningScope = "";
@@ -3157,7 +3367,7 @@ function createMuscleMaterial() {
 }
 
 function createBoneMaterial() {
-  return new THREE.MeshStandardMaterial({
+  const material = new THREE.MeshStandardMaterial({
     color: 0xe7d8b7,
     roughness: 0.72,
     metalness: 0,
@@ -3167,6 +3377,8 @@ function createBoneMaterial() {
     depthTest: true,
     depthWrite: true,
   });
+
+  return attachStructureVisibilityShader(material, "bone-visibility-v1");
 }
 
 
@@ -3233,9 +3445,19 @@ async function loadReferenceLayer(layerKey) {
 
     gltf.scene.updateMatrixWorld(true);
     const geometries = [];
+    const vertexCounts = [];
     gltf.scene.traverse((child) => {
       if (!child.isMesh) return;
-      geometries.push(cleanSkeletonGeometry(child.geometry, child.matrixWorld));
+      const boneId = boneNames.length;
+      const geometry = cleanSkeletonGeometry(
+        child.geometry,
+        child.matrixWorld,
+        boneId
+      );
+      boneNames.push(child.name || `Кость ${boneId + 1}`);
+      vertexCounts.push(geometry.getAttribute("position").count);
+      boneLocalBounds.push(geometry.boundingBox?.clone() || null);
+      geometries.push(geometry);
     });
 
     const { merged, temporaries } = mergeSkeletonGeometries(geometries);
@@ -3614,9 +3836,18 @@ async function loadSkeletonLayer(loader) {
     for (const geometry of geometries) geometry.dispose();
     for (const geometry of temporaries) geometry.dispose();
 
+    let boneStart = 0;
+    boneRanges = vertexCounts.map((count) => {
+      const range = { start: boneStart, count };
+      boneStart += count;
+      return range;
+    });
+    boneVisibility = boneNames.map(() => true);
+
     skeletonMesh = new THREE.Mesh(merged, createBoneMaterial());
     skeletonMesh.renderOrder = 1;
     modelGroup.add(skeletonMesh);
+    applyRegionBoneVisibility();
 
     boneMode.disabled = false;
     boneOpacity.disabled = boneDisplayMode !== "xray";
@@ -3744,6 +3975,7 @@ async function loadBodyParts4Model() {
 
   const muscleChunks = [];
   const boneChunks = [];
+  const boneVertexCounts = [];
   const connectiveChunksByLayer = new Map(
     ["subcutaneous", "fascia", "tendon", "ligament", "joint", "cartilage", "other"]
       .map((key) => [key, []])
@@ -3790,8 +4022,14 @@ async function loadBodyParts4Model() {
     const boneParts = chunkParts.filter((part) => bodyPartsAnatomyKind(part) === "bone");
     if (boneParts.length) {
       const geometries = boneParts.map((part) => {
+        const boneId = boneNames.length;
         triangleCount += Math.floor(part.indexCount / 3);
-        return bodyPartsGeometry(part, buffer);
+        const geometry = bodyPartsGeometry(part, buffer, boneId);
+        geometry.computeBoundingBox();
+        boneNames.push(part.name || `Кость ${boneId + 1}`);
+        boneVertexCounts.push(part.vertexCount);
+        boneLocalBounds.push(geometry.boundingBox?.clone() || null);
+        return geometry;
       });
       const mergedChunk = mergeGeometries(geometries, false);
       for (const geometry of geometries) geometry.dispose();
@@ -3886,9 +4124,18 @@ async function loadBodyParts4Model() {
   const mergedBones = mergeGeometries(boneChunks, false);
   for (const geometry of boneChunks) geometry.dispose();
   if (mergedBones) {
+    let boneStart = 0;
+    boneRanges = boneVertexCounts.map((count) => {
+      const range = { start: boneStart, count };
+      boneStart += count;
+      return range;
+    });
+    boneVisibility = boneNames.map(() => true);
+
     skeletonMesh = new THREE.Mesh(mergedBones, createBoneMaterial());
     skeletonMesh.renderOrder = 1;
     modelGroup.add(skeletonMesh);
+    applyRegionBoneVisibility();
   }
 
   for (const [layerKey, chunks] of connectiveChunksByLayer) {
@@ -4124,6 +4371,7 @@ isolateButton.addEventListener("click", () => {
 });
 
 hideSelectedButton.addEventListener("click", hideSelectedStructure);
+peelSurfaceLayerButton.addEventListener("click", peelVisibleMuscleLayer);
 showNearestMuscleButton.addEventListener("click", () => {
   const entry = studyEntry(selectedStudyId);
   if (!entry?.nearestMuscleSourceName) return;
