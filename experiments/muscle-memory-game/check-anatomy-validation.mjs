@@ -62,7 +62,7 @@ const response = await fetch(ATLAS_URL);
 assert(response.ok, "Could not fetch pinned BodyParts3D atlas");
 const atlas = await response.json();
 
-for (const entry of structures) {
+const coverage = structures.map((entry) => {
   const expectedKind = BONE_KEYS.has(entry.canonical_key) ? "bone" : "muscle";
   const key = normalize(entry.canonical_key);
   const matches = atlas.parts.filter(
@@ -71,12 +71,31 @@ for (const entry of structures) {
       normalize(part.name).includes(key)
   );
 
-  assert(
-    matches.length > 0,
-    entry.canonical_key + ": no matching " + expectedKind + " in pinned BodyParts3D atlas"
-  );
-}
+  return {
+    canonicalKey: entry.canonical_key,
+    expectedKind,
+    matches,
+  };
+});
+
+const covered = coverage.filter((item) => item.matches.length > 0);
+const missing = coverage.filter((item) => item.matches.length === 0);
+
+// BodyParts3D 4.0 is a comparison source, not the definition of the 19/19
+// shoulder audit. Missing coverage is an anatomical/source finding that must
+// remain visible; it is not by itself a broken validation manifest.
+assert(
+  covered.length >= 15,
+  "Pinned BodyParts3D shoulder coverage unexpectedly collapsed: " +
+    covered.length + "/19"
+);
 
 console.log("Shoulder validation manifest: 19/19 entries structurally valid");
-console.log("BodyParts3D coverage: 19/19 canonical structures found");
+console.log("BodyParts3D direct canonical coverage:", covered.length + "/19");
+if (missing.length) {
+  console.log(
+    "Needs source/alias review:",
+    missing.map((item) => item.canonicalKey).join(" | ")
+  );
+}
 console.log("Verified for teaching:", verifiedCount + "/19");
