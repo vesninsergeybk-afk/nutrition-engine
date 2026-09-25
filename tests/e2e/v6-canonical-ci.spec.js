@@ -257,6 +257,51 @@ test('desktop workspace exposes only the canonical settings control', async ({ p
   await expect(page.locator('#navigationShell [data-navshell-settings-toggle]')).toBeHidden();
 });
 
+test('861-899px seam uses the desktop shell without mobile search overlay', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 880, height: 900 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  const nav = page.locator('#navigationShell');
+  await expect(nav).toBeVisible();
+
+  const navGeometry = await nav.evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, top: rect.top, bottom: rect.bottom, height: rect.height };
+  });
+  expect(navGeometry.top).toBeLessThan(300);
+  expect(navGeometry.height).toBeGreaterThan(200);
+
+  const search = page.locator('#globalSearchInput');
+  await search.fill('банан');
+  await page.waitForFunction(() => {
+    const results = document.getElementById('globalResults');
+    return results && results.classList.contains('has-query') && results.getBoundingClientRect().height > 0;
+  });
+
+  const geometry = await page.evaluate(() => {
+    const results = document.getElementById('globalResults');
+    const searchSection = document.getElementById('globalSearchSection');
+    const rr = results.getBoundingClientRect();
+    const sr = searchSection.getBoundingClientRect();
+    return {
+      position: getComputedStyle(results).position,
+      resultsLeft: rr.left,
+      resultsRight: rr.right,
+      sectionLeft: sr.left,
+      sectionRight: sr.right,
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth
+    };
+  });
+  expect(geometry.position).not.toBe('fixed');
+  expect(geometry.resultsLeft).toBeGreaterThanOrEqual(geometry.sectionLeft - 1);
+  expect(geometry.resultsRight).toBeLessThanOrEqual(geometry.sectionRight + 1);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+});
+
 test('mobile ration starts with text search and keeps alternatives collapsed', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await loadApp();
