@@ -4778,7 +4778,13 @@ learningRegion.addEventListener("change", () => {
   selectedLearningRegion = learningRegion.value;
   applyLearningRegion();
   syncLearningAreaQuery();
-  applyRegionScene({ resetLayers: true, focus: true });
+
+  if (regionIsolationActive()) {
+    focusLearningRegion();
+  } else {
+    setFullBodyView();
+  }
+
   renderSearchResults(searchInput.value);
 });
 
