@@ -737,10 +737,25 @@ function finishLearningSession() {
   questionLabelEl.textContent = "Сессия завершена";
   questionEl.textContent =
     `${summary.clean} из ${summary.total} заданий выполнены без ошибок и подсказки`;
+  const reviewLabels = learningSession.results
+    .filter((result) => result.wrongAttempts > 0 || result.revealed)
+    .map((result) => {
+      const item = learningSession.items[result.index];
+      if (!item) return null;
+      return `${item.target.nameRu} — ${item.skillId === "name" ? "назвать" : "найти"}`;
+    })
+    .filter(Boolean);
+  const uniqueReviewLabels = [...new Set(reviewLabels)];
+  const visibleReviewLabels = uniqueReviewLabels.slice(0, 6);
+  const hiddenReviewCount = Math.max(0, uniqueReviewLabels.length - visibleReviewLabels.length);
+
   feedbackEl.className = "feedback";
   feedbackEl.textContent =
     `Правильно завершено: ${summary.correct}. Показан ответ: ${summary.revealed}. ` +
-    `Неверных попыток: ${summary.wrongAttempts}.`;
+    `Неверных попыток: ${summary.wrongAttempts}.` +
+    (visibleReviewLabels.length
+      ? ` Повторить: ${visibleReviewLabels.join("; ")}${hiddenReviewCount ? `; ещё ${hiddenReviewCount}` : ""}.`
+      : " Все задания выполнены без ошибок и показа ответа.");
 
   sessionProgressEl.hidden = false;
   sessionProgressEl.textContent =
