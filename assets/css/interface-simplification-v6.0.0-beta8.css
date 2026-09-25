@@ -594,3 +594,13 @@ html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-
 html[data-interface-simplification="1"][data-navigation-shell="workspace"][data-navigation-route="analysis/hei"][data-ivory-ration="empty"] #workspaceHeiPanel .workspace-hei-hero{
   margin-top:2px!important;
 }
+
+
+/* Settings consolidation (UI audit 2026-09-25).
+   Beta 8 owns the single product-facing Settings entry point. Older HF2 and
+   navigation-shell settings triggers otherwise remain visible/reserve space and
+   create duplicate controls plus a blank bar between the route header and content. */
+html[data-interface-simplification="1"] #interfaceSettingsHF2,
+html[data-interface-simplification="1"] #navigationShell [data-navshell-settings-toggle]{
+  display:none!important;
+}
