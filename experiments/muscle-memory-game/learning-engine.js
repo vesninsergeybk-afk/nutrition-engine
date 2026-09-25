@@ -306,6 +306,7 @@ export function recordLearningAttempt(
   const key = muscleId + "::" + skillId;
   const current = skillRecord(store, muscleId, skillId);
   const retireMistake = options.retireMistake !== false;
+  const addReviewDebt = options.addReviewDebt !== false;
 
   store.records[key] = {
     attempts: current.attempts + 1,
@@ -314,7 +315,7 @@ export function recordLearningAttempt(
     lastSeen: Date.now(),
     reviewDebt: wasCorrect
       ? Math.max(0, current.reviewDebt - (retireMistake ? 1 : 0))
-      : current.reviewDebt + 1,
+      : current.reviewDebt + (addReviewDebt ? 1 : 0),
   };
   saveLearningStore(store, storage);
   return store.records[key];
