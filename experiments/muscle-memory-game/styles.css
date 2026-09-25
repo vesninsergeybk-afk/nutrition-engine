@@ -1116,3 +1116,9 @@ button:disabled {
 .learning-mode-buttons [data-learning-mode="topography"]:not(:disabled) {
   border-color: rgba(36, 93, 168, .26);
 }
+
+
+/* Six learning modes form three stable pairs. */
+.learning-mode-buttons [data-learning-mode="exam"] {
+  grid-column: auto;
+}
