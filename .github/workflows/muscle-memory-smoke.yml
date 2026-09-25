@@ -300,12 +300,14 @@ jobs:
             await page.click('#mode-explore');
             await page.click('#mode-quiz');
             await page.click('[data-learning-mode="exam"]');
+            assert.equal(await page.locator('#exam-time-field').isVisible(), true);
+            await page.selectOption('#exam-item-seconds', '30');
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'exam');
             assert.equal(await page.locator('#show-answer').isHidden(), true);
             assert.equal(await page.locator('#reveal-deeper').isHidden(), true);
             const examSeconds = Number(await page.locator('#viewer').getAttribute('data-exam-seconds'));
-            assert.ok(examSeconds > 0 && examSeconds <= 20);
+            assert.ok(examSeconds > 0 && examSeconds <= 30);
             assert.match(await page.locator('#session-progress').innerText(), /\d+ с/);
             const examSkill = await page.locator('#viewer').getAttribute('data-learning-current-skill');
             if (examSkill === 'find') {
