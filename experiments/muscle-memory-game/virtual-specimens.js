@@ -37,7 +37,8 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Шея, подзатылочная область и лопаточно-шейный переход.",
     {
       questionPatterns: [
-        /sternocleidomastoid|scalenus|splenius|semispinalis (?:capitis|cervicis|colli)|longissimus (?:capitis|cervicis|colli)|iliocostalis (?:cervicis|colli)|longus (?:capitis|colli)|rectus (?:posterior (?:major|minor)|lateralis|anterior) capitis|obliquus (?:capitis|inferior capitis|superior capitis)|multifidus (?:cervicis|colli)|interspinales cervicis|intertransversarii cervicis|trapezius|levator scapulae|rhomboid/i,
+        /sternocleidomastoid|scalenus|splenius|semispinalis (?:capitis|cervicis|colli)|longissimus (?:capitis|cervicis|colli)|iliocostalis (?:cervicis|colli)|longus (?:capitis|colli)|rectus (?:posterior (?:major|minor)|lateralis|anterior) capitis|obliquus (?:capitis|inferior capitis|superior capitis)|multifidus (?:cervicis|colli)|interspinales cervicis|intertransversarii cervicis|трапециевид|поднимающ.*лопат|ромбовид|грудино-ключично-сосцевид|лестничн|ременн.*(?:голов|ше)|полуостист.*(?:голов|ше)|длиннейш.*(?:голов|ше)|подвздошно-р[её]берн.*ше|длинн.*мышц.*(?:голов|ше)|прям.*мышц.*голов|кос.*мышц.*голов|многораздельн.*ше|межостист.*ше|межпоперечн.*ше/u,
+        /trapezius|levator scapulae|rhomboid/i,
       ],
       contextPatterns: [/deltoid/i],
       supportBonePatterns: [/cervical|vertebra|occip|clavicle|scapula/i],
