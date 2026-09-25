@@ -2340,6 +2340,7 @@ function renderSearchResults(query) {
       const sid = match.id;
       button.textContent = displayStructureName(sid);
       button.addEventListener("click", () => {
+        if (isolated || selectedStudyId != null) restoreExploreContext();
         if (structureVisibility[sid] === false) {
           setStructureVisible(sid, true);
           for (let i = hiddenStack.length - 1; i >= 0; i -= 1) {
@@ -2356,6 +2357,7 @@ function renderSearchResults(query) {
       button.textContent =
         studyDisplayName(match.id) + " · " + studyLayerNameRu(entry?.layerKey);
       button.addEventListener("click", () => {
+        if (isolated) restoreExploreContext();
         ensureStudyLayerShown(entry);
         setStudyStructureVisible(match.id, true);
         selectStudyStructure(match.id);
@@ -3377,6 +3379,7 @@ async function loadBodyParts4Model() {
   const skinParts = atlas.parts.filter(
     (part) => part.system === "integumentary" && !connectiveIds.has(part.id)
   );
+  const skinIds = new Set(skinParts.map((part) => part.id));
   const parts = [...anatomyParts, ...connectiveParts, ...skinParts];
   const chunkIds = [...new Set(parts.map((part) => part.chunk))].sort((a, b) => a - b);
 
@@ -3473,7 +3476,7 @@ async function loadBodyParts4Model() {
       connectiveChunksByLayer.get(layerKey).push(mergedChunk);
     }
 
-    const skinInChunk = chunkParts.filter((part) => part.system === "integumentary");
+    const skinInChunk = chunkParts.filter((part) => skinIds.has(part.id));
     if (skinInChunk.length) {
       const geometries = skinInChunk.map((part) => {
         const studyId = studyStructures.length;
@@ -3749,10 +3752,17 @@ showNearestMuscleButton.addEventListener("click", () => {
   const entry = studyEntry(selectedStudyId);
   if (!entry?.nearestMuscleSourceName) return;
 
-  const concept = learningConceptSourceName(entry.nearestMuscleSourceName);
-  const sid = structureNames.findIndex(
-    (name) => learningConceptSourceName(name) === concept
+  let sid = structureNames.findIndex(
+    (name) => name === entry.nearestMuscleSourceName
   );
+
+  if (sid < 0) {
+    const concept = learningConceptSourceName(entry.nearestMuscleSourceName);
+    sid = structureNames.findIndex(
+      (name) => learningConceptSourceName(name) === concept
+    );
+  }
+
   if (sid < 0) return;
 
   restoreExploreContext();

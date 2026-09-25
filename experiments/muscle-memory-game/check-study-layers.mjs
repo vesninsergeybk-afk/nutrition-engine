@@ -127,3 +127,20 @@ assert(
   "Study-layer camera focus is not using stored anatomical bounds"
 );
 console.log("Study-layer indexed interaction: ok");
+
+
+assert(
+  app.includes("const skinIds = new Set(skinParts.map((part) => part.id))") &&
+    app.includes("skinIds.has(part.id)"),
+  "Connective integumentary structures can still be duplicated into the skin layer"
+);
+assert(
+  app.includes("name === entry.nearestMuscleSourceName"),
+  "Nearest-muscle navigation does not preserve the exact source side/component"
+);
+assert(
+  app.includes("if (isolated || selectedStudyId != null) restoreExploreContext()") &&
+    app.includes("if (isolated) restoreExploreContext()"),
+  "Atlas search can leave the model stuck in study-structure isolation"
+);
+console.log("Study-layer deduplication and navigation state: ok");
