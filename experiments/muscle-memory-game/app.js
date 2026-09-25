@@ -271,10 +271,26 @@ function boxForStructures(ids) {
   return box;
 }
 
-function focusSelectedStructures() {
+function focusSelectedStructures(padding = 1.65) {
   if (!focusedStructureIds.length) return;
   const box = boxForStructures(focusedStructureIds);
-  if (!box.isEmpty()) focusBox(box, 1.65);
+  if (!box.isEmpty()) focusBox(box, padding);
+}
+
+function focusLearningRegion() {
+  if (!availableTargets.length) {
+    setFullBodyView();
+    return;
+  }
+
+  const ids = [...new Set(availableTargets.flatMap((target) => target.sids || []))];
+  const box = boxForStructures(ids);
+  if (box.isEmpty()) {
+    setFullBodyView();
+    return;
+  }
+
+  focusBox(box, selectedLearningRegion === "all" ? 1.12 : 1.28);
 }
 
 function fitCamera(object) {
@@ -663,7 +679,7 @@ function prepareSessionItem() {
       highlightStructures([sid], "selected");
       focusedStructureIds = [sid];
       focusSelectedButton.disabled = false;
-      focusSelectedStructures();
+      focusSelectedStructures(2.35);
     }
     questionEl.textContent = "Как называется выделенная мышца?";
     feedbackEl.textContent = "Выберите название. Неправильный вариант не завершает задание.";
@@ -671,6 +687,7 @@ function prepareSessionItem() {
   } else {
     nameChoicesEl.replaceChildren();
     nameChoicesEl.hidden = true;
+    focusLearningRegion();
     questionEl.textContent = `Найдите на модели: «${item.target.nameRu}»`;
     feedbackEl.textContent = "Коснитесь нужной мышцы на модели.";
   }
