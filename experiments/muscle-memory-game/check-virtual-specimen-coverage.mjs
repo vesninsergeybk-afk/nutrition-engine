@@ -7,6 +7,7 @@ import {
   filterCatalogForSpecimen,
   specimenSceneTargets,
   specimenDepthAvailability,
+  specimenVerticalWindow,
 } from "./virtual-specimens.js";
 
 const Z_URL =
@@ -56,9 +57,24 @@ const zNames = [...new Set(
     .map((node) => node.name.trim())
 )];
 const bpAtlas = await bpr.json();
-const bpNames = bpAtlas.parts
-  .filter((part) => bodyPartsAnatomyKind(part) === "muscle")
-  .map((part) => part.name);
+const bpMuscleParts = bpAtlas.parts.filter(
+  (part) => bodyPartsAnatomyKind(part) === "muscle"
+);
+const bpNames = bpMuscleParts.map((part) => part.name);
+const bpPartByName = new Map(bpMuscleParts.map((part) => [part.name, part]));
+
+const bpBodyMinY = Math.min(
+  ...bpMuscleParts
+    .map((part) => Number(part.bounds?.[0]?.[1]))
+    .filter(Number.isFinite)
+);
+const bpBodyMaxY = Math.max(
+  ...bpMuscleParts
+    .map((part) => Number(part.bounds?.[1]?.[1]))
+    .filter(Number.isFinite)
+);
+const bpBodyHeight = bpBodyMaxY - bpBodyMinY;
+assert(bpBodyHeight > 0, "BodyParts muscle body bounds are invalid");
 
 const sources = {
   z: buildMuscleCatalog(zNames),
@@ -88,6 +104,30 @@ for (const specimen of VIRTUAL_SPECIMENS) {
   const zDepth = specimenDepthAvailability(sources.z, specimen.id);
   const bpDepth = specimenDepthAvailability(sources.bp, specimen.id);
 
+  const windowFractions = specimenVerticalWindow(specimen.id);
+  assert(windowFractions, specimen.id + ": missing spatial specimen window");
+  const windowMinY = bpBodyMinY + bpBodyHeight * windowFractions[0];
+  const windowMaxY = bpBodyMinY + bpBodyHeight * windowFractions[1];
+
+  const clippedOutTargets = bpQuestion.filter((target) => {
+    const parts = (target.sourceNames || [])
+      .map((name) => bpPartByName.get(name))
+      .filter(Boolean);
+
+    if (!parts.length) return true;
+
+    return !parts.some((part) => {
+      const minY = Number(part.bounds?.[0]?.[1]);
+      const maxY = Number(part.bounds?.[1]?.[1]);
+      return (
+        Number.isFinite(minY) &&
+        Number.isFinite(maxY) &&
+        maxY >= windowMinY &&
+        minY <= windowMaxY
+      );
+    });
+  });
+
   const row = {
     id: specimen.id,
     zQuestion: zQuestion.length,
@@ -98,6 +138,7 @@ for (const specimen of VIRTUAL_SPECIMENS) {
     semanticMismatches: semanticMismatches.length,
     zDepth: zDepth.reason,
     bpDepth: bpDepth.reason,
+    bpClippedOutQuestionTargets: clippedOutTargets.length,
   };
   console.log("Specimen coverage:", JSON.stringify(row));
 
@@ -107,6 +148,12 @@ for (const specimen of VIRTUAL_SPECIMENS) {
   assert(
     zScene.length >= zQuestion.length && bpScene.length >= bpQuestion.length,
     specimen.id + ": scene targets cannot be smaller than question targets"
+  );
+  assert(
+    clippedOutTargets.length === 0,
+    specimen.id +
+      ": spatial window completely clips BodyParts learning target(s): " +
+      clippedOutTargets.map((target) => target.nameRu).join(" | ")
   );
 
   if (specimen.id === "abdomen" || specimen.id === "anterior-abdominal-wall") {
@@ -146,3 +193,4 @@ assert(
 );
 
 console.log("Virtual specimen cross-source audit: ok");
+console.log("BodyParts specimen-window target coverage: ok");
