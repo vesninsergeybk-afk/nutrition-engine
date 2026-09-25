@@ -46,23 +46,37 @@ function normalizeSource(value) {
 }
 
 function stripRussianSide(value) {
+  const RIGHT_VENTRICLE = "__RIGHT_VENTRICLE__";
+  const LEFT_VENTRICLE = "__LEFT_VENTRICLE__";
+
   return String(value || "")
+    .replace(/правого желудочка/giu, RIGHT_VENTRICLE)
+    .replace(/левого желудочка/giu, LEFT_VENTRICLE)
     .replace(/\s*\((?:справа|слева)\)\s*$/iu, "")
     .replace(/^(?:правая|левая)\s+/iu, "")
     .replace(
       /\b(?:прав(?:ая|ой|ую|ого|ому|ым|ом)|лев(?:ая|ой|ую|ого|ому|ым|ом))\b/giu,
       ""
     )
+    .replace(new RegExp(RIGHT_VENTRICLE, "g"), "правого желудочка")
+    .replace(new RegExp(LEFT_VENTRICLE, "g"), "левого желудочка")
     .replace(/\s+/g, " ")
     .replace(/\s+([,.;:])/g, "$1")
     .trim();
 }
 
 function neutralSourceName(value) {
+  const RIGHT_VENTRICLE = "__right_ventricle__";
+  const LEFT_VENTRICLE = "__left_ventricle__";
+
   return String(value || "")
     .trim()
+    .replace(/\bright ventricle\b/gi, RIGHT_VENTRICLE)
+    .replace(/\bleft ventricle\b/gi, LEFT_VENTRICLE)
     .replace(/\.(l|r)$/i, "")
     .replace(/\b(right|left)\b/gi, "")
+    .replace(new RegExp(RIGHT_VENTRICLE, "g"), "right ventricle")
+    .replace(new RegExp(LEFT_VENTRICLE, "g"), "left ventricle")
     .replace(/\s+/g, " ")
     .trim();
 }
