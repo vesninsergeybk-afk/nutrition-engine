@@ -884,8 +884,8 @@ function applyStudyLayerPreset(preset = "muscles") {
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
   setConnectiveLayerSelection([]);
-  boneDisplayMode = "off";
-  boneMode.value = "off";
+  boneDisplayMode = preset === "muscles" ? "anatomical" : "off";
+  boneMode.value = boneDisplayMode;
 
   if (preset === "skin") {
     muscleDisplayMode = "ghost";
@@ -950,10 +950,10 @@ function resetRegionSupportLayers() {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  boneDisplayMode = "off";
+  boneDisplayMode = "anatomical";
   if (skinMode) skinMode.value = "off";
   if (connectiveMode) connectiveMode.value = "off";
-  if (boneMode) boneMode.value = "off";
+  if (boneMode) boneMode.value = "anatomical";
   setConnectiveLayerSelection([]);
   for (const input of referenceLayerInputs) input.checked = false;
 }
