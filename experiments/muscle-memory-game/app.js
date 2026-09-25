@@ -2350,12 +2350,17 @@ function createBoneMaterial() {
 
 
 const CONNECTIVE_LAYER_COLORS = {
-  ligament: 0xd8cfb7,
-  tendon: 0xe1d7c4,
+  subcutaneous: 0xe5c9b3,
   fascia: 0xb9c6c2,
+  tendon: 0xe1d7c4,
+  ligament: 0xd8cfb7,
+  joint: 0xc8d4d6,
   cartilage: 0xc5d2d6,
   other: 0xc9c1b2,
 };
+
+const CONNECTIVE_DISPLAY_NAME_RE =
+  /ligament|fascia|tendon|aponeuros|retinacul|cartilage|bursa|capsule|synovial|subcutaneous|adipose|iliotibial tract/i;
 
 function createConnectiveMaterial(layerKey) {
   return new THREE.MeshStandardMaterial({
@@ -2508,8 +2513,10 @@ function restoreDisplayAfterTraining() {
 
 function connectiveSubtype(name) {
   const value = String(name || "").toLowerCase();
+  if (/subcutaneous|adipose/.test(value)) return "subcutaneous";
+  if (/bursa|capsule|synovial/.test(value)) return "joint";
   if (/ligament/.test(value)) return "ligament";
-  if (/fascia/.test(value)) return "fascia";
+  if (/fascia|iliotibial tract/.test(value)) return "fascia";
   if (/tendon/.test(value)) return "tendon";
   if (/aponeuros/.test(value)) return "aponeurosis";
   if (/retinacul/.test(value)) return "retinaculum";
@@ -2527,6 +2534,8 @@ function connectiveLayerKey(name) {
 function connectiveStats(parts) {
   const stats = {
     total: parts.length,
+    subcutaneous: 0,
+    joint: 0,
     ligament: 0,
     fascia: 0,
     tendon: 0,
@@ -2730,16 +2739,28 @@ async function loadBodyParts4Model() {
 
   const anatomyParts = atlas.parts.filter((part) => bodyPartsAnatomyKind(part));
   const connectiveParts = atlas.parts.filter(
-    (part) => part.system === "connective" && !bodyPartsAnatomyKind(part)
+    (part) =>
+      !bodyPartsAnatomyKind(part) &&
+      (
+        part.system === "connective" ||
+        (
+          (part.system === "skeletal" || part.system === "integumentary") &&
+          CONNECTIVE_DISPLAY_NAME_RE.test(part.name)
+        )
+      )
   );
-  const skinParts = atlas.parts.filter((part) => part.system === "integumentary");
+  const connectiveIds = new Set(connectiveParts.map((part) => part.id));
+  const skinParts = atlas.parts.filter(
+    (part) => part.system === "integumentary" && !connectiveIds.has(part.id)
+  );
   const parts = [...anatomyParts, ...connectiveParts, ...skinParts];
   const chunkIds = [...new Set(parts.map((part) => part.chunk))].sort((a, b) => a - b);
 
   const muscleChunks = [];
   const boneChunks = [];
   const connectiveChunksByLayer = new Map(
-    ["ligament", "tendon", "fascia", "cartilage", "other"].map((key) => [key, []])
+    ["subcutaneous", "fascia", "tendon", "ligament", "joint", "cartilage", "other"]
+      .map((key) => [key, []])
   );
   const skinChunks = [];
   const vertexCounts = [];
@@ -2795,7 +2816,7 @@ async function loadBodyParts4Model() {
     const connectiveInChunk = chunkParts.filter(
       (part) => part.system === "connective" && !bodyPartsAnatomyKind(part)
     );
-    for (const layerKey of ["ligament", "tendon", "fascia", "cartilage", "other"]) {
+    for (const layerKey of ["subcutaneous", "fascia", "tendon", "ligament", "joint", "cartilage", "other"]) {
       const layerParts = connectiveInChunk.filter(
         (part) => connectiveLayerKey(part.name) === layerKey
       );
@@ -2897,8 +2918,8 @@ async function loadBodyParts4Model() {
     " соединительнотканных и " +
     skinParts.length +
     " структур наружных покровов. " +
-    "В соединительнотканном слое по названиям: связки " +
-    connective.ligament +
+    "В соединительнотканном слое по названиям: подкожная клетчатка " +
+    connective.subcutaneous +
     ", фасции " +
     connective.fascia +
     ", сухожилия " +
@@ -2907,6 +2928,10 @@ async function loadBodyParts4Model() {
     connective.aponeurosis +
     ", удерживатели " +
     connective.retinaculum +
+    ", суставные капсулы/сумки " +
+    connective.joint +
+    ", связки " +
+    connective.ligament +
     ", хрящевые структуры " +
     connective.cartilage +
     "; остальные " +
