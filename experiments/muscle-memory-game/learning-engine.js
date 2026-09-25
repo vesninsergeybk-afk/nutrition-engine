@@ -116,7 +116,6 @@ function neutralSourceName(value) {
     .replace(/\bleft ventricle\b/gi, LEFT_VENTRICLE)
     .replace(/\.(l|r)$/i, "")
     .replace(/\b(right|left)\b/gi, "")
-    .replace(/\bmuscle\s*$/i, "")
     .replace(new RegExp(RIGHT_VENTRICLE, "g"), "right ventricle")
     .replace(new RegExp(LEFT_VENTRICLE, "g"), "left ventricle")
     .replace(/\s+/g, " ")
@@ -125,11 +124,12 @@ function neutralSourceName(value) {
 
 export function learningConceptSourceName(sourceName) {
   const neutral = neutralSourceName(sourceName);
-  const subdivision = neutral.match(
+  const conceptNeutral = neutral.replace(/\bmuscle\s*$/i, "").trim();
+  const subdivision = conceptNeutral.match(
     /^(?:.+?\s+)?(?:part|head|belly) of (.+)$/i
   );
 
-  if (!subdivision) return neutral;
+  if (!subdivision) return conceptNeutral;
 
   const parent = subdivision[1].trim();
   const translatedParent =
@@ -158,11 +158,22 @@ function detailedRussianName(sourceName) {
 }
 
 function canonicalRussianName(sourceName) {
+  const neutralSource = neutralSourceName(sourceName);
   const conceptSource = learningConceptSourceName(sourceName);
-  const neutralTranslation = bodyPartsMuscleNameRu(conceptSource);
-  if (neutralTranslation) return stripRussianSide(neutralTranslation);
+  const conceptNeutral = neutralSource.replace(/\bmuscle\s*$/i, "").trim();
+  const isSubdivision =
+    /^(?:.+?\s+)?(?:part|head|belly) of (.+)$/i.test(conceptNeutral);
 
-  return stripRussianSide(structureTerm(conceptSource).nameRu || sourceName);
+  if (!isSubdivision) {
+    const directTranslation = bodyPartsMuscleNameRu(neutralSource);
+    if (directTranslation) return stripRussianSide(directTranslation);
+  }
+
+  const conceptTranslation = bodyPartsMuscleNameRu(conceptSource);
+  if (conceptTranslation) return stripRussianSide(conceptTranslation);
+
+  const termSource = isSubdivision ? conceptSource : neutralSource;
+  return stripRussianSide(structureTerm(termSource).nameRu || sourceName);
 }
 
 function baseRussianName(value) {
