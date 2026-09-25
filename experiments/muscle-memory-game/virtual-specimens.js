@@ -336,7 +336,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     {
       questionPatterns: [/rectus femoris|vastus (?:lateralis|medialis|intermedius)/i],
       contextPatterns: [/sartorius|tensor fasciae latae/i],
-      supportBonePatterns: [/femur|patella|ilium/i],
+      supportBonePatterns: [/femur|patella|ilium|hip bone|os cox/i],
       defaultViews: ["front", "threeQuarter"],
     }
   ),
