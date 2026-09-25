@@ -14,6 +14,8 @@ import {
   learningSummary,
   loadLearningStore,
   recordLearningAttempt,
+  recordConfusion,
+  appendSessionHistory,
   regionCounts,
   regionNameRu,
 } from "./learning-engine.js";
@@ -150,6 +152,7 @@ let bodySize = new THREE.Vector3(1, 1, 1);
 
 let appMode = "quiz";
 let learningCatalog = [];
+let learningTargetBySid = new Map();
 let selectedLearningRegion = "all";
 let learningStore = loadLearningStore();
 let selectedSessionMode = "find";
@@ -794,6 +797,10 @@ function applyLearningRegion() {
 
 function discoverTargets() {
   learningCatalog = buildMuscleCatalog(structureNames);
+  learningTargetBySid = new Map();
+  for (const target of learningCatalog) {
+    for (const sid of target.sids) learningTargetBySid.set(sid, target);
+  }
   renderLearningRegionOptions();
   applyLearningRegion();
 
@@ -1024,6 +1031,15 @@ function finishLearningSession() {
   if (!learningSession) return;
 
   const summary = sessionSummary(learningSession);
+  appendSessionHistory(learningStore, {
+    completedAt: Date.now(),
+    mode: learningSession.mode,
+    region: selectedLearningRegion,
+    total: summary.total,
+    clean: summary.clean,
+    wrongAttempts: summary.wrongAttempts,
+    revealed: summary.revealed,
+  });
   sessionSummaryShown = true;
   locked = true;
   currentTarget = null;
@@ -1086,6 +1102,16 @@ function commitPendingFindMistake() {
   wrong += 1;
   currentItemWrongAttempts += 1;
   wrongEl.textContent = String(wrong);
+
+  const chosenTarget = learningTargetBySid.get(lastWrongSid);
+  if (chosenTarget) {
+    recordConfusion(
+      learningStore,
+      currentTarget.id,
+      chosenTarget.id,
+      "find"
+    );
+  }
 
   recordLearningAttempt(
     learningStore,
@@ -1230,6 +1256,12 @@ function chooseNameAnswer(targetId, button) {
     wrong += 1;
     currentItemWrongAttempts += 1;
     wrongEl.textContent = String(wrong);
+    recordConfusion(
+      learningStore,
+      currentTarget.id,
+      targetId,
+      "name"
+    );
     button.classList.add("wrong");
     button.disabled = true;
     feedbackEl.className = "feedback wrong";
@@ -1695,6 +1727,7 @@ function resetLoadedModel() {
   bodySize.set(1, 1, 1);
 
   learningCatalog = [];
+  learningTargetBySid = new Map();
   availableTargets = [];
   learningSession = null;
   sessionSummaryShown = false;
