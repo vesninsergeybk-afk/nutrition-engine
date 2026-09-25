@@ -296,3 +296,66 @@ html[data-theme="modern"][data-interface-simplification="1"] .total-card{
     transition-duration:.01ms!important;
   }
 }
+
+
+/* Final UI acceptance pass — 2026-09-25.
+   Presentation-only corrections from the post-merge visual audit.
+   No routes, DOM order, visibility logic, calculations or event handlers change. */
+
+/* The application header had already been simplified functionally, but still kept
+   enough bottom padding/margin to create a visually empty band before the route
+   context. Tighten only that vertical rhythm. */
+html[data-theme="modern"][data-interface-simplification="1"][data-navigation-shell="workspace"] #mainContent>header{
+  margin-bottom:4px!important;
+  padding-bottom:8px!important;
+}
+@media(max-width:860px){
+  html[data-theme="modern"][data-interface-simplification="1"][data-navigation-shell="workspace"] #mainContent>header{
+    margin-bottom:4px!important;
+    padding-bottom:6px!important;
+  }
+  html[data-theme="modern"][data-interface-simplification="1"] #mainContent>header>#interfaceSettingsPass1{
+    margin-bottom:0!important;
+  }
+}
+
+/* Context actions support the current task; they should not compete visually with
+   the route's primary work. Their behavior is unchanged. */
+html[data-theme="modern"][data-interface-simplification="1"] #workspacePersonEdit,
+html[data-theme="modern"][data-interface-simplification="1"] #workspaceFocusSearch{
+  min-height:44px!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] #workspacePersonEdit{
+  background:#fff!important;
+  color:#344054!important;
+  border-color:var(--vg-line-strong)!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] #workspacePersonEdit:hover{
+  background:#f8fafc!important;
+  color:var(--vg-ink)!important;
+  border-color:#98a2b3!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"][data-navigation-route="ration"] #workspaceFocusSearch{
+  background:#fff!important;
+  color:#344054!important;
+  border-color:var(--vg-line-strong)!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"][data-navigation-route="ration"] #workspaceFocusSearch:hover{
+  background:#f8fafc!important;
+  color:var(--vg-ink)!important;
+  border-color:#98a2b3!important;
+}
+
+/* Touch target floor. The audit found helper chips at 36–40px on mobile even though
+   they are frequent one-tap actions. Preserve their compact appearance while making
+   the clickable box reliably finger-sized. */
+html[data-theme="modern"][data-interface-simplification="1"] .quick-searches button,
+html[data-theme="modern"][data-interface-simplification="1"] .quick-grams button{
+  min-height:44px!important;
+  padding-block:9px!important;
+}
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-overview__head button,
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-group-overview-hf2__head>button,
+html[data-theme="modern"][data-interface-simplification="1"] .workspace-hei-dashboard-hf2__head>button{
+  min-height:44px!important;
+}
