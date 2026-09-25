@@ -7,6 +7,16 @@ import {
   bodyPartsAnatomyKind,
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
+import {
+  LEARNING_REGIONS,
+  buildMuscleCatalog,
+  filterCatalogByRegion,
+  learningSummary,
+  loadLearningStore,
+  recordLearningAttempt,
+  regionCounts,
+  regionNameRu,
+} from "./learning-engine.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
@@ -16,17 +26,6 @@ const SKELETON_MODEL_URL =
 const BODYPARTS_SOURCE_ROOT =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
 const BODYPARTS_ATLAS_URL = BODYPARTS_SOURCE_ROOT + "/models/atlas.json";
-
-// Первый игровой набор намеренно ограничен поверхностными структурами.
-// Глубокие мышцы появятся после отдельного режима снятия слоёв.
-const TARGETS = [
-  { nameRu: "Дельтовидная мышца", ru: "дельтовидную мышцу", latin: "m. deltoideus", re: /deltoid/i },
-  { nameRu: "Большая грудная мышца", ru: "большую грудную мышцу", latin: "m. pectoralis major", re: /pectoralis.?major/i },
-  { nameRu: "Широчайшая мышца спины", ru: "широчайшую мышцу спины", latin: "m. latissimus dorsi", re: /latissimus/i },
-  { nameRu: "Двуглавая мышца плеча", ru: "двуглавую мышцу плеча", latin: "m. biceps brachii", re: /biceps.?brach/i },
-  { nameRu: "Трёхглавая мышца плеча", ru: "трёхглавую мышцу плеча", latin: "m. triceps brachii", re: /triceps.?brach/i },
-  { nameRu: "Трапециевидная мышца", ru: "трапециевидную мышцу", latin: "m. trapezius", re: /trapezius/i },
-];
 
 const COVER_RE =
   /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
@@ -44,6 +43,8 @@ const scoreEl = document.querySelector("#score");
 const diagnosticsEl = document.querySelector("#diagnostics");
 const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
+const learningRegion = document.querySelector("#learning-region");
+const learningSummaryEl = document.querySelector("#learning-summary");
 const boneMode = document.querySelector("#bone-mode");
 const boneOpacity = document.querySelector("#bone-opacity");
 const connectiveMode = document.querySelector("#connective-mode");
@@ -116,6 +117,9 @@ let highlightedIds = new Set();
 let bodySize = new THREE.Vector3(1, 1, 1);
 
 let appMode = "quiz";
+let learningCatalog = [];
+let selectedLearningRegion = "all";
+let learningStore = loadLearningStore();
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
@@ -151,21 +155,13 @@ function baseColorFor(name) {
   return new THREE.Color().setHSL(hue % 1, saturation, lightness);
 }
 
-function targetForName(name) {
-  return TARGETS.find((target) => target.re.test(name)) || null;
-}
-
 function displayStructureName(sid) {
   const sourceName = structureNames[sid] || "Неизвестная структура";
   const term = structureTerm(sourceName);
 
-  // Пользовательский интерфейс — русскоязычный. Исходное английское и
-  // латинское название сохраняются в поисковом индексе и диагностике,
-  // но не дублируются в основной подписи структуры.
-  if (term.nameRu && term.nameRu !== sourceName) return term.nameRu;
-
-  const target = targetForName(sourceName);
-  return target ? target.nameRu : sourceName;
+  // Пользовательский интерфейс — русскоязычный. Исходное имя остаётся
+  // поисковым синонимом и диагностическим идентификатором.
+  return term.nameRu || sourceName;
 }
 
 const navPoint = new THREE.Vector3();
@@ -284,11 +280,7 @@ function fitCamera(object) {
 }
 
 function targetStructureIds(target) {
-  const ids = [];
-  for (let sid = 0; sid < structureNames.length; sid += 1) {
-    if (target.re.test(structureNames[sid])) ids.push(sid);
-  }
-  return ids;
+  return target?.sids ? [...target.sids] : [];
 }
 
 function paintStructure(sid, color) {
@@ -427,32 +419,97 @@ function undoLastHide() {
   updateLayerButtons();
 }
 
-function discoverTargets() {
-  availableTargets = TARGETS.filter((target) => targetStructureIds(target).length > 0);
+function renderLearningRegionOptions() {
+  const counts = regionCounts(learningCatalog);
+  const previous = selectedLearningRegion;
 
-  const lines = availableTargets.map((target) => {
-    const matches = targetStructureIds(target).map((sid) => displayStructureName(sid));
-    return `${target.nameRu}: ${matches.join(", ")}`;
-  });
+  learningRegion.replaceChildren();
+
+  for (const region of LEARNING_REGIONS) {
+    const count = counts[region.id] || 0;
+    if (region.id !== "all" && count === 0) continue;
+
+    const option = document.createElement("option");
+    option.value = region.id;
+    option.textContent =
+      region.id === "all"
+        ? `${region.nameRu} · ${counts.all}`
+        : `${region.nameRu} · ${count}`;
+    learningRegion.appendChild(option);
+  }
+
+  const stillAvailable = [...learningRegion.options].some(
+    (option) => option.value === previous
+  );
+  selectedLearningRegion = stillAvailable ? previous : "all";
+  learningRegion.value = selectedLearningRegion;
+  learningRegion.disabled = learningCatalog.length === 0;
+}
+
+function updateLearningSummary() {
+  const summary = learningSummary(learningStore, availableTargets, "find");
+  const accuracy = summary.accuracy == null ? "—" : summary.accuracy + "%";
+
+  learningSummaryEl.textContent =
+    `${regionNameRu(selectedLearningRegion)}: ${summary.muscles} учебных целей · ` +
+    `встречались ${summary.touched} · попыток ${summary.attempts} · точность ${accuracy}.`;
+}
+
+function applyLearningRegion({ startQuestion = true } = {}) {
+  availableTargets = filterCatalogByRegion(learningCatalog, selectedLearningRegion);
+  lastTargetIndex = -1;
+  currentTarget = null;
+  sessionDifficulty.clear();
 
   targetStatusEl.textContent =
-    `Поверхностный режим: распознано целей ${availableTargets.length} из ${TARGETS.length}. Ошибочные ответы чаще возвращаются в этой сессии.`;
+    `Учебный каталог: ${learningCatalog.length} мышц и частей мышц. ` +
+    `Сейчас: ${regionNameRu(selectedLearningRegion)} — ${availableTargets.length} целей.`;
 
-  updateDiagnostics();
-  meshNamesEl.textContent =
-    lines.join("\n") ||
-    structureNames.slice(0, 120).map((_, sid) => displayStructureName(sid)).join("\n");
+  updateLearningSummary();
 
   if (!availableTargets.length) {
-    questionEl.textContent = "Не удалось сопоставить названия мышц";
-    feedbackEl.textContent =
-      "Откройте техническую диагностику: нужно сверить реальные имена объектов в GLB.";
+    nextButton.disabled = true;
+    answerButton.disabled = true;
+    questionEl.textContent = "В этом регионе нет учебных целей";
+    feedbackEl.textContent = "Выберите другой регион.";
     return;
   }
 
   nextButton.disabled = false;
   answerButton.disabled = false;
-  nextQuestion();
+
+  if (startQuestion && appMode === "quiz") nextQuestion();
+}
+
+function discoverTargets() {
+  learningCatalog = buildMuscleCatalog(structureNames);
+  renderLearningRegionOptions();
+  applyLearningRegion({ startQuestion: false });
+
+  const counts = regionCounts(learningCatalog);
+  const lines = LEARNING_REGIONS
+    .filter((region) => region.id !== "all" && (counts[region.id] || 0) > 0)
+    .map((region) => `${region.nameRu}: ${counts[region.id]}`);
+
+  updateDiagnostics(
+    `Учебных целей после объединения правой и левой сторон: ${learningCatalog.length}. ` +
+    `Регионы: ${lines.join("; ")}.`
+  );
+
+  meshNamesEl.textContent =
+    learningCatalog
+      .slice(0, 220)
+      .map((target) => `${target.nameRu} [${target.region}] ← ${target.sourceNames.join(" | ")}`)
+      .join("\n");
+
+  if (!learningCatalog.length) {
+    questionEl.textContent = "Не удалось построить учебный каталог";
+    feedbackEl.textContent =
+      "Откройте техническую диагностику: нужно сверить реальные имена объектов модели.";
+    return;
+  }
+
+  applyLearningRegion({ startQuestion: appMode === "quiz" });
 }
 
 function updateDiagnostics(extra = "") {
@@ -468,7 +525,7 @@ function pickNextTargetIndex() {
   if (!availableTargets.length) return -1;
 
   const weights = availableTargets.map((target) => {
-    const difficulty = sessionDifficulty.get(target.latin) || 0;
+    const difficulty = sessionDifficulty.get(target.id) || 0;
     return 1 + Math.min(4, difficulty * 1.5);
   });
 
@@ -490,8 +547,8 @@ function pickNextTargetIndex() {
 
 function recordDifficulty(target, wasCorrect) {
   if (!target) return;
-  const current = sessionDifficulty.get(target.latin) || 0;
-  sessionDifficulty.set(target.latin, wasCorrect ? Math.max(0, current - 0.5) : current + 1);
+  const current = sessionDifficulty.get(target.id) || 0;
+  sessionDifficulty.set(target.id, wasCorrect ? Math.max(0, current - 0.5) : current + 1);
 }
 
 function nextQuestion() {
@@ -510,7 +567,7 @@ function nextQuestion() {
   focusSelectedButton.disabled = true;
 
   questionLabelEl.textContent = "Задание";
-  questionEl.textContent = `Найдите ${currentTarget.ru}`;
+  questionEl.textContent = `Найдите на модели: «${currentTarget.nameRu}»`;
   nextButton.textContent = "Пропустить";
 }
 
@@ -525,9 +582,11 @@ function revealAnswer() {
 
   feedbackEl.className = "feedback correct";
   feedbackEl.textContent =
-    `${currentTarget.latin}. Подсвечены найденные варианты этой структуры, включая правую и левую стороны.`;
+    `Ответ показан: «${currentTarget.nameRu}». Подсвечены доступные варианты этой структуры.`;
 
   recordDifficulty(currentTarget, false);
+  recordLearningAttempt(learningStore, currentTarget.id, "find", false);
+  updateLearningSummary();
   locked = true;
   nextButton.textContent = "Следующая";
 }
@@ -536,9 +595,9 @@ function chooseQuiz(sid) {
   if (!currentTarget || locked || sid == null || !structureNames[sid]) return;
 
   restoreHighlights();
-  const name = structureNames[sid];
+  const isCorrect = targetStructureIds(currentTarget).includes(sid);
 
-  if (currentTarget.re.test(name)) {
+  if (isCorrect) {
     correct += 1;
     correctEl.textContent = String(correct);
     highlightStructures([sid], "answer");
@@ -547,6 +606,8 @@ function chooseQuiz(sid) {
     feedbackEl.className = "feedback correct";
     feedbackEl.textContent = `Верно. Вы выбрали: ${displayStructureName(sid)}.`;
     recordDifficulty(currentTarget, true);
+    recordLearningAttempt(learningStore, currentTarget.id, "find", true);
+    updateLearningSummary();
     locked = true;
     nextButton.textContent = "Следующая";
   } else {
@@ -556,6 +617,8 @@ function chooseQuiz(sid) {
     feedbackEl.className = "feedback wrong";
     feedbackEl.textContent = `Это «${displayStructureName(sid)}». Попробуйте ещё раз.`;
     recordDifficulty(currentTarget, false);
+    recordLearningAttempt(learningStore, currentTarget.id, "find", false);
+    updateLearningSummary();
   }
 }
 
@@ -607,7 +670,7 @@ function setMode(mode) {
     questionEl.textContent = "Выберите мышцу";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Коснитесь структуры на модели или найдите её по исходному названию. Ответы здесь не оцениваются.";
+      "Коснитесь структуры на модели или найдите её по русскому или исходному названию. Ответы здесь не оцениваются.";
     searchInput.focus({ preventScroll: true });
   }
 
@@ -623,11 +686,7 @@ function renderSearchResults(query) {
   const matches = [];
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
     const source = structureNames[sid];
-    const target = targetForName(source);
-    const haystack =
-      structureSearchText(source) +
-      " " +
-      `${target?.nameRu || ""} ${target?.latin || ""}`.toLocaleLowerCase("ru-RU");
+    const haystack = structureSearchText(source);
     if (haystack.includes(q.toLocaleLowerCase("ru-RU"))) matches.push(sid);
   }
 
@@ -936,6 +995,7 @@ function resetLoadedModel() {
   highlightedIds = new Set();
   bodySize.set(1, 1, 1);
 
+  learningCatalog = [];
   availableTargets = [];
   currentTarget = null;
   selectedExploreSid = null;
@@ -949,6 +1009,9 @@ function resetLoadedModel() {
   searchResults.replaceChildren();
   meshNamesEl.textContent = "";
   targetStatusEl.textContent = "Загружаю выбранную модель…";
+  learningRegion.disabled = true;
+  learningRegion.replaceChildren(new Option("Загрузка…", "all"));
+  learningSummaryEl.textContent = "Учебный каталог появится после загрузки модели.";
 
   nextButton.disabled = true;
   answerButton.disabled = true;
@@ -1483,6 +1546,11 @@ boneOpacity.addEventListener("input", () => {
 
 modelSource.addEventListener("change", () => {
   void loadSelectedModel(modelSource.value);
+});
+
+learningRegion.addEventListener("change", () => {
+  selectedLearningRegion = learningRegion.value;
+  applyLearningRegion({ startQuestion: appMode === "quiz" });
 });
 
 focusShoulderButton.addEventListener("click", setShoulderView);
