@@ -679,9 +679,13 @@ function renderSessionProgress() {
   }
 
   const progress = sessionProgress(learningSession);
+  const visibleStep =
+    locked && progress.done > 0
+      ? progress.done
+      : progress.current;
   sessionProgressEl.hidden = false;
   sessionProgressEl.textContent =
-    `${regionNameRu(selectedLearningRegion)} · ${progress.current} из ${progress.total}`;
+    `${regionNameRu(selectedLearningRegion)} · ${visibleStep} из ${progress.total}`;
   sessionProgressEl.style.setProperty(
     "--session-progress",
     progress.total ? `${Math.round((progress.done / progress.total) * 100)}%` : "0%"
