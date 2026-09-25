@@ -20,6 +20,7 @@ for (const symbol of [
   "targetSideStructureIds",
   "deeperMuscleKey",
   "deeperMuscleIdsFromHits",
+  "verifiedDeeperMuscleIds",
   "renderDeeperStructures",
   "isolateDeeperMuscle",
   "clearDeeperStructures",
@@ -90,3 +91,10 @@ assert(
   "Deep focus does not expose component-count diagnostics for browser verification"
 );
 console.log("Deep links: whole unilateral muscle, not one mesh subdivision");
+
+assert(
+  app.includes('"Глубже относительно этой мышцы"') &&
+    app.includes("verifiedDeeperMuscleIds") &&
+    app.includes("isKnownDeeperRelation("),
+  "Verified graph fallback for deeper anatomy is missing"
+);

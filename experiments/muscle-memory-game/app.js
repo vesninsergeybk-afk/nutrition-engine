@@ -1562,6 +1562,66 @@ function deeperMuscleNamesFromHits(hits, selectedSid, limit = 3) {
   );
 }
 
+function verifiedDeeperMuscleIds(selectedSid, limit = 3) {
+  const selectedTarget = learningTargetBySid.get(selectedSid) || null;
+  const selectedInfo = targetDepthInfo(selectedTarget);
+  if (!selectedTarget || !selectedInfo) return [];
+
+  const depthRegionId = activeDepthProfileId(selectedTarget);
+  const selectedSide = targetSideForSid(selectedTarget, selectedSid);
+  const candidates = [];
+
+  for (const target of activeSceneTargets()) {
+    if (!target || target === selectedTarget) continue;
+
+    const info = targetDepthInfo(target);
+    if (
+      !info ||
+      activeDepthProfileId(target) !== depthRegionId ||
+      info.rank <= selectedInfo.rank ||
+      !isKnownDeeperRelation(
+        depthRegionId,
+        selectedInfo.ruleId,
+        info.ruleId
+      )
+    ) {
+      continue;
+    }
+
+    const ids = (target.sids || []).filter(
+      (sid) =>
+        structureVisibility[sid] !== false &&
+        sidesCanShareDepthPath(
+          selectedSide,
+          targetSideForSid(target, sid)
+        )
+    );
+    if (!ids.length) continue;
+
+    ids.sort((a, b) => {
+      const sideA = targetSideForSid(target, a);
+      const sideB = targetSideForSid(target, b);
+      const exactA = sideA === selectedSide ? 0 : 1;
+      const exactB = sideB === selectedSide ? 0 : 1;
+      return exactA - exactB;
+    });
+
+    candidates.push({
+      sid: ids[0],
+      rank: info.rank,
+      name: target.nameRu || displayStructureName(ids[0]),
+    });
+  }
+
+  candidates.sort(
+    (a, b) =>
+      a.rank - b.rank ||
+      a.name.localeCompare(b.name, "ru")
+  );
+
+  return candidates.slice(0, limit).map((item) => item.sid);
+}
+
 function clearDeeperStructures() {
   deeperStructureListEl?.replaceChildren();
   if (deeperStructuresEl) deeperStructuresEl.hidden = true;
@@ -1615,9 +1675,22 @@ function isolateDeeperMuscle(sid) {
   canvas.dataset.deeperFocusComponentCount = String(muscleIds.length);
 }
 
-function renderDeeperStructures(ids) {
+function renderDeeperStructures(ids, { pointSpecific = true } = {}) {
   clearDeeperStructures();
   if (!deeperStructuresEl || !deeperStructureListEl || !ids?.length) return;
+
+  const heading = deeperStructuresEl.querySelector(".deeper-structures-head strong");
+  const note = deeperStructuresEl.querySelector(".deeper-structures-head span");
+  if (heading) {
+    heading.textContent = pointSpecific
+      ? "Глубже здесь"
+      : "Глубже относительно этой мышцы";
+  }
+  if (note) {
+    note.textContent = pointSpecific
+      ? "Показаны только подтверждённые мышцы глубже по выбранной точке."
+      : "Показаны проверенные более глубокие отношения для этой мышцы; конкретное перекрытие зависит от точки.";
+  }
 
   ids.forEach((sid, index) => {
     const button = document.createElement("button");
@@ -3117,11 +3190,20 @@ function selectExploreStructure(sid, hitStack = null) {
   questionLabelEl.textContent = "Мышца";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
-  const deeperIds = deeperMuscleIdsFromHits(hitStack, sid);
-  feedbackEl.textContent = deeperIds.length
-    ? "Ниже показаны мышцы, которые модель действительно пересекает глубже в выбранной точке."
+  const pointDeeperIds = hitStack
+    ? deeperMuscleIdsFromHits(hitStack, sid)
+    : [];
+  const relatedDeeperIds = pointDeeperIds.length
+    ? pointDeeperIds
+    : verifiedDeeperMuscleIds(sid);
+  const pointSpecific = pointDeeperIds.length > 0;
+
+  feedbackEl.textContent = relatedDeeperIds.length
+    ? pointSpecific
+      ? "Ниже показаны только подтверждённые мышцы, которые модель пересекает глубже в выбранной точке."
+      : "Для этой мышцы есть проверенные более глубокие отношения. Конкретное перекрытие зависит от выбранной точки."
     : "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
-  renderDeeperStructures(deeperIds);
+  renderDeeperStructures(relatedDeeperIds, { pointSpecific });
 
   focusSelectedButton.disabled = false;
   isolateButton.disabled = false;

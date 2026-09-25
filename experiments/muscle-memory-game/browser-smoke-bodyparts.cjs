@@ -207,6 +207,9 @@ const assert = require('node:assert/strict');
   // regional search must not leak structures from unrelated areas.
   await page.selectOption('#learning-region', 'lower-limb');
   assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
+  if (!(await page.locator('.viewer-settings').evaluate(el => el.open))) {
+    await page.locator('.viewer-settings > summary').click();
+  }
   await page.selectOption('#layer-preset', 'fascia');
   await page.fill('#structure-search', 'подвздошно-большеберцовый');
   await page.waitForFunction(

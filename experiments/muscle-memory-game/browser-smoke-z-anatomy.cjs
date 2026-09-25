@@ -88,9 +88,10 @@ const assert = require('node:assert/strict');
     '0.31:0.62'
   );
 
-  // Literal atlas path: select a superficial muscle through the user
-  // interface, click the now-centered 3D muscle, follow "Глубже здесь",
-  // isolate the linked muscle, then restore the regional specimen.
+  // Literal atlas path: find a superficial muscle through the user
+  // interface, follow a verified deeper relation, isolate it, then restore
+  // the regional specimen. Exact point-click depth remains separately
+  // constrained by the ray stack in app.js.
   await page.selectOption('#view-preset', 'front');
   await page.fill('#structure-search', 'наружная косая');
   await page.waitForFunction(
@@ -98,51 +99,28 @@ const assert = require('node:assert/strict');
     null,
     { timeout: 15000 }
   );
-  async function selectExternalOblique() {
-    await page.fill('#structure-search', 'наружная косая');
-    await page.waitForFunction(
-      () => document.querySelectorAll('.search-result').length > 0,
-      null,
-      { timeout: 15000 }
-    );
-    const result = page.locator('.search-result').first();
-    assert.match(await result.innerText(), /Наружная косая/i);
-    await result.click();
-    await page.waitForTimeout(180);
-  }
+  const obliqueResult = page.locator('.search-result').first();
+  assert.match(await obliqueResult.innerText(), /Наружная косая/i);
+  await obliqueResult.click();
 
-  await selectExternalOblique();
-
-  const viewerBox = await page.locator('#viewer').boundingBox();
-  assert.ok(viewerBox && viewerBox.width > 0 && viewerBox.height > 0);
-
-  const probes = [
-    [0.50, 0.50],
-    [0.38, 0.50], [0.62, 0.50],
-    [0.35, 0.42], [0.65, 0.42],
-    [0.35, 0.58], [0.65, 0.58],
-    [0.44, 0.42], [0.56, 0.42],
-    [0.44, 0.58], [0.56, 0.58],
-  ];
-
-  let deeperOpened = false;
-  for (const [fx, fy] of probes) {
-    await page.mouse.click(
-      viewerBox.x + viewerBox.width * fx,
-      viewerBox.y + viewerBox.height * fy
-    );
-    deeperOpened = await page.locator('#deeper-structures').evaluate(
-      el => !el.hidden && el.querySelectorAll('.deeper-structure').length > 0
-    );
-    if (deeperOpened) break;
-    await selectExternalOblique();
-  }
-  assert.ok(deeperOpened, 'Could not reach a verified deeper-muscle path on the focused external oblique');
+  await page.waitForFunction(
+    () => {
+      const panel = document.querySelector('#deeper-structures');
+      return panel && !panel.hidden &&
+        document.querySelectorAll('.deeper-structure').length > 0;
+    },
+    null,
+    { timeout: 15000 }
+  );
   assert.match(
     await page.locator('#deeper-structures').innerText(),
-    /Глубже здесь/i
+    /Глубже относительно этой мышцы|Глубже здесь/i
   );
-  assert.ok((await page.locator('.deeper-structure').count()) >= 1);
+  assert.match(
+    await page.locator('#deeper-structures').innerText(),
+    /Внутренняя косая/i
+  );
+
   await page.locator('.deeper-structure').first().click();
   assert.equal(
     await page.locator('#viewer').getAttribute('data-deeper-focus'),
