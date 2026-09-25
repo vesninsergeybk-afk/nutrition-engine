@@ -712,6 +712,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   lastWrongSid = null;
   locked = true;
 
+  restoreDisplayAfterTraining();
   restoreHighlights();
   showAllStructures();
   nameChoicesEl.replaceChildren();
@@ -862,6 +863,8 @@ function prepareSessionItem() {
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
   canvas.dataset.nameView = "";
+  canvas.dataset.trainingDisplay = "";
+  canvas.dataset.connectiveTrainingHidden = "";
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
   revealDeeperButton.hidden = true;
@@ -945,6 +948,7 @@ function startLearningSession() {
   document.body.classList.add("session-active");
   exitLearningSessionButton.hidden = false;
   if (viewerSettings) viewerSettings.open = false;
+  applyTrainingDisplayOverride();
   startLearningSessionButton.textContent = "Перезапустить";
   syncQuestionCardPlacement();
   prepareSessionItem();
@@ -1303,6 +1307,7 @@ function setMode(mode) {
     }
   } else {
     locked = true;
+    restoreDisplayAfterTraining();
     questionLabelEl.textContent = "Атлас";
     questionEl.textContent = "Выберите мышцу";
     feedbackEl.className = "feedback";
@@ -1796,6 +1801,32 @@ function applyConnectiveDisplayMode() {
 
   material.needsUpdate = true;
   canvas.dataset.connectiveMode = mode;
+}
+
+function applyTrainingDisplayOverride() {
+  if (skeletonMesh) {
+    const material = skeletonMesh.material;
+    skeletonMesh.visible = true;
+    material.transparent = false;
+    material.opacity = 1;
+    material.depthTest = true;
+    material.depthWrite = true;
+    skeletonMesh.renderOrder = 1;
+    material.needsUpdate = true;
+  }
+
+  if (connectiveMesh) connectiveMesh.visible = false;
+
+  canvas.dataset.trainingDisplay = "true";
+  canvas.dataset.connectiveTrainingHidden = String(Boolean(connectiveMesh));
+}
+
+function restoreDisplayAfterTraining() {
+  if (skeletonMesh) applyBoneDisplayMode();
+  if (connectiveMesh) applyConnectiveDisplayMode();
+
+  canvas.dataset.trainingDisplay = "false";
+  canvas.dataset.connectiveTrainingHidden = "false";
 }
 
 function connectiveSubtype(name) {
