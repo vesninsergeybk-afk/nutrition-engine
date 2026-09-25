@@ -1229,7 +1229,7 @@ function restoreExploreContext() {
   applyMuscleDisplayMode();
   applyConnectiveDisplayMode();
   applySkinDisplayMode();
-  if (!regionIsolationActive()) restoreReferenceLayerVisibility();
+  restoreReferenceLayerVisibility();
   updateLayerButtons();
 }
 

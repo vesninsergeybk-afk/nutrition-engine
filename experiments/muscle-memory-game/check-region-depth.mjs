@@ -39,10 +39,11 @@ assert(
   "Regional bone visibility is not observable"
 );
 assert(
-  app.includes('boneDisplayMode = "anatomical"') &&
-  app.includes('boneMode.value = "anatomical"'),
-  "Regional reset must keep filtered bone landmarks visible"
+  app.includes('boneDisplayMode = "off"') &&
+    app.includes('preset === "bones"') &&
+    app.includes("applyRegionBoneVisibility()"),
+  "Regional bones must be hidden by default and available as an explicit filtered layer"
 );
 
-console.log("Regional isolation: muscle + bone contract ok");
+console.log("Regional isolation: muscles default + opt-in regional bones ok");
 console.log("Depth exploration: view-dependent surface peeling + click stack ok");
