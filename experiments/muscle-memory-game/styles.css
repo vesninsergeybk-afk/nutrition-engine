@@ -299,6 +299,10 @@ h1 {
   margin-top: 16px;
 }
 
+.actions.next-only {
+  grid-template-columns: 1fr;
+}
+
 button {
   border: 1px solid var(--line-strong);
   background: #f4f3f0;
