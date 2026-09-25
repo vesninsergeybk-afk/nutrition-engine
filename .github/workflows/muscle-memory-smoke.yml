@@ -269,6 +269,10 @@ jobs:
             assert.match(await page.locator('#session-progress').innerText(), /1 из 5/i);
             await page.screenshot({ path: '/tmp/muscle-memory-learning-mobile-name.png', fullPage: true });
 
+            // Active mobile training intentionally hides the top bar. Exit the
+            // session first, then switch to the atlas through the visible mode control.
+            await page.click('#exit-learning-session');
+            assert.equal(await page.locator('.topbar').isVisible(), true);
             await page.click('#mode-explore');
             assert.equal(
               await page.locator('.question-card').evaluate(el => el.parentElement?.classList.contains('viewer-wrap')),
