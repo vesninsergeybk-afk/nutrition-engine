@@ -27,8 +27,14 @@ assert(
   "Too few topographic virtual specimens"
 );
 assert(
-  VIRTUAL_SPECIMENS.filter((item) => item.type === "group").length >= 10,
-  "Too few thematic virtual specimens"
+  VIRTUAL_SPECIMENS.filter((item) => item.type === "group").length >= 8,
+  "Too few distinct thematic virtual specimens"
+);
+
+const userFacingNames = VIRTUAL_SPECIMENS.map((item) => item.nameRu);
+assert(
+  new Set(userFacingNames).size === userFacingNames.length,
+  "Duplicate user-facing virtual specimen names returned"
 );
 
 for (const item of VIRTUAL_SPECIMENS) {
