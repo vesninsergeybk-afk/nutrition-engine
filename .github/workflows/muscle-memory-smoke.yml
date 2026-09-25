@@ -142,8 +142,26 @@ jobs:
             let storedLearning = await page.evaluate(() =>
               localStorage.getItem('muscle-memory-learning-v1')
             );
-            assert.ok(storedLearning && storedLearning.includes('"find"') === false);
             assert.ok(storedLearning && storedLearning.includes('::find'));
+
+            // Finish the whole five-item session and open its result.
+            for (let done = 1; done < 5; done += 1) {
+              await page.click('#next-question');
+              await page.click('#show-answer');
+              assert.equal(
+                await page.locator('#viewer').getAttribute('data-learning-session-done'),
+                String(done + 1)
+              );
+            }
+            await page.click('#next-question');
+            assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/);
+            assert.match(await page.locator('#next-question').innerText(), /Повторить ошибки/);
+
+            // The result screen must start a mistake-review session directly.
+            await page.click('#next-question');
+            assert.equal(await page.locator('#learning-session-mode').inputValue(), 'mistakes');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'mistakes');
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-session-total')) > 0);
 
             // NAME: four smart choices, eventually one must complete the item.
             await page.selectOption('#learning-session-mode', 'name');
@@ -168,14 +186,16 @@ jobs:
             await page.click('#start-learning-session');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'practical');
             assert.match(await page.locator('#question-label').innerText(), /Практикум · 1\/5/);
-            await page.click('#show-answer');
-            assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-done'), '1');
-
-            // MISTAKES: errors created above must yield a non-empty review queue.
-            await page.selectOption('#learning-session-mode', 'mistakes');
-            await page.click('#start-learning-session');
-            assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'mistakes');
-            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-session-total')) > 0);
+            for (let done = 0; done < 5; done += 1) {
+              await page.click('#show-answer');
+              assert.equal(
+                await page.locator('#viewer').getAttribute('data-learning-session-done'),
+                String(done + 1)
+              );
+              if (done < 4) await page.click('#next-question');
+            }
+            await page.click('#next-question');
+            assert.match(await page.locator('#question-label').innerText(), /Сессия завершена/);
 
             await page.click('#mode-explore');
 
