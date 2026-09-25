@@ -1,9 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { structureTerm } from "./anatomy-terms-ru.js";
 
 const SOURCE_ROOT =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
 const ATLAS_URL = SOURCE_ROOT + "/models/atlas.json";
+const VALIDATION_MANIFEST_URL = "./anatomy-validation-shoulder.json";
 
 const MUSCLE_RE =
   /deltoid|supraspinatus|infraspinatus|subscapularis|teres minor|teres major|pectoralis major|latissimus dorsi|biceps brachii|triceps brachii|trapezius|levator scapulae|rhomboid|serratus anterior|coracobrachialis/i;
@@ -15,6 +17,9 @@ const selectedEl = document.querySelector("#quality-selected");
 const metaEl = document.querySelector("#quality-meta");
 const statsEl = document.querySelector("#quality-stats");
 const structuresEl = document.querySelector("#quality-structures");
+const validationSummaryEl = document.querySelector("#quality-validation-summary");
+const validationSelectedEl = document.querySelector("#quality-validation-selected");
+const validationListEl = document.querySelector("#quality-validation-list");
 const modelSource = document.querySelector("#quality-model-source");
 const sideFilter = document.querySelector("#side-filter");
 const musclesToggle = document.querySelector("#muscles-toggle");
@@ -63,6 +68,7 @@ const activePointers = new Map();
 let tapBlocked = false;
 
 let atlas = null;
+let validationManifest = null;
 let selectedParts = [];
 let visibleMeshes = [];
 let selectedMesh = null;
@@ -79,6 +85,83 @@ function sideOf(name) {
   if (/\bright\b/.test(n)) return "right";
   if (/\bleft\b/.test(n)) return "left";
   return "midline";
+}
+
+function normalizedValidationName(value) {
+  return String(value || "")
+    .toLocaleLowerCase("en-US")
+    .replace(/\b(right|left)\b/g, " ")
+    .replace(/\bmuscle\b/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function validationEntryForName(name) {
+  if (!validationManifest?.structures?.length) return null;
+  const normalized = normalizedValidationName(name);
+
+  return [...validationManifest.structures]
+    .sort((a, b) => b.canonical_key.length - a.canonical_key.length)
+    .find((entry) =>
+      normalized.includes(normalizedValidationName(entry.canonical_key))
+    ) || null;
+}
+
+function validationNameRu(entry) {
+  if (!entry) return "";
+  const term = structureTerm("right " + entry.canonical_key);
+  return term?.nameRu || entry.canonical_key;
+}
+
+function reviewLabel(value) {
+  if (value === "verified") return "проверено";
+  if (value === "not_applicable") return "не требуется";
+  return "ожидает проверки";
+}
+
+function validationStatusLabel(entry) {
+  return entry?.status === "verified_for_teaching"
+    ? "допущена к учебному режиму"
+    : "проверка не завершена";
+}
+
+function renderValidationAudit() {
+  if (!validationManifest || !validationSummaryEl || !validationListEl) return;
+
+  const entries = validationManifest.structures || [];
+  const verified = entries.filter(
+    (entry) => entry.status === "verified_for_teaching"
+  );
+
+  validationSummaryEl.textContent =
+    "Проверено для учебного режима: " + verified.length + " из " + entries.length +
+    ". Статус нельзя повысить автоматически только по совпадению названия или наличию mesh.";
+
+  validationListEl.replaceChildren();
+
+  for (const entry of entries) {
+    const row = document.createElement("div");
+    row.className = "quality-validation-row";
+    row.dataset.verified = String(entry.status === "verified_for_teaching");
+
+    const title = document.createElement("strong");
+    title.textContent = validationNameRu(entry);
+
+    const state = document.createElement("span");
+    state.className = "quality-validation-state";
+    state.textContent = validationStatusLabel(entry);
+
+    const checks = document.createElement("span");
+    checks.className = "quality-validation-checks";
+    checks.textContent =
+      "терминология: " + reviewLabel(entry.terminology_review) +
+      " · геометрия: " + reviewLabel(entry.geometry_review) +
+      " · отношения: " + reviewLabel(entry.relation_review);
+
+    row.append(title, state, checks);
+    validationListEl.appendChild(row);
+  }
 }
 
 function classify(part) {
@@ -185,6 +268,17 @@ function selectMesh(mesh) {
     " · representation ID: " + part.id +
     " · FMA/concept: " + (part.conceptId || "—") +
     " · " + triangles.toLocaleString("ru-RU") + " треугольников.";
+
+  const validation = validationEntryForName(part.name);
+  if (validationSelectedEl) {
+    validationSelectedEl.textContent = validation
+      ? validationNameRu(validation) + " · " + validationStatusLabel(validation) +
+        ". Терминология: " + reviewLabel(validation.terminology_review) +
+        "; геометрия: " + reviewLabel(validation.geometry_review) +
+        "; пространственные отношения: " + reviewLabel(validation.relation_review) + "."
+      : "Выбранная структура не входит в текущий плечевой manifest 19/19.";
+  }
+
   focusButton.disabled = false;
 }
 
@@ -259,9 +353,15 @@ function applyFilters() {
 }
 
 async function loadAtlas() {
-  const response = await fetch(ATLAS_URL);
-  if (!response.ok) throw new Error("Не удалось получить каталог BodyParts3D.");
-  atlas = await response.json();
+  const [atlasResponse, validationResponse] = await Promise.all([
+    fetch(ATLAS_URL),
+    fetch(VALIDATION_MANIFEST_URL),
+  ]);
+  if (!atlasResponse.ok) throw new Error("Не удалось получить каталог BodyParts3D.");
+  if (!validationResponse.ok) throw new Error("Не удалось получить manifest анатомической проверки.");
+
+  atlas = await atlasResponse.json();
+  validationManifest = await validationResponse.json();
 
   selectedParts = atlas.parts.filter(partWanted);
 
@@ -329,10 +429,15 @@ async function loadAtlas() {
     atlasOptimization;
 
   structuresEl.textContent = visibleMeshes
-    .map((mesh) => (mesh.userData.kind === "muscle" ? "М · " : "К · ") + mesh.name)
+    .map((mesh) => {
+      const validation = validationEntryForName(mesh.name);
+      const auditMark = validation?.status === "verified_for_teaching" ? "✓ " : "· ";
+      return auditMark + (mesh.userData.kind === "muscle" ? "М · " : "К · ") + mesh.name;
+    })
     .sort((a, b) => a.localeCompare(b))
     .join("\n");
 
+  renderValidationAudit();
   loadingEl.classList.add("is-hidden");
   applyFilters();
 }

@@ -47,6 +47,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-retention-engine.mjs
           node --check experiments/muscle-memory-game/check-progress-engine.mjs
           node --check experiments/muscle-memory-game/check-learning-cross-source.mjs
+          node --check experiments/muscle-memory-game/check-anatomy-validation.mjs
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
@@ -88,6 +89,7 @@ jobs:
           node experiments/muscle-memory-game/check-retention-engine.mjs
           node experiments/muscle-memory-game/check-progress-engine.mjs
           node experiments/muscle-memory-game/check-learning-cross-source.mjs
+          node experiments/muscle-memory-game/check-anatomy-validation.mjs
 
       - name: Install browser
         if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') }}

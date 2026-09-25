@@ -30,3 +30,46 @@
   .quality-header { flex-direction: column; }
   .quality-viewer { min-height: 66vh; border-radius: 18px; }
 }
+
+
+.quality-validation-summary,
+.quality-validation-selected {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.quality-validation-selected {
+  margin-top: 10px;
+  color: rgba(27, 27, 29, .72);
+}
+
+.quality-validation-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.quality-validation-row {
+  display: grid;
+  gap: 2px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(27, 27, 29, .07);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.quality-validation-row:first-child {
+  border-top: 0;
+}
+
+.quality-validation-row strong {
+  font-weight: 680;
+}
+
+.quality-validation-state {
+  color: rgba(27, 27, 29, .74);
+}
+
+.quality-validation-checks {
+  color: rgba(27, 27, 29, .58);
+}
