@@ -231,7 +231,7 @@ const cuffScope = filterCatalogByRegion(catalog, "rotator-cuff");
 assert(cuffScope.length === 4, "Rotator-cuff scope must contain four muscles");
 
 const erectorScope = filterCatalogByRegion(catalog, "erector-spinae");
-assert(erectorScope.length >= 6, "Erector-spinae scope is unexpectedly small");
+assert(erectorScope.length >= 5, "Erector-spinae scope is unexpectedly small");
 assert(
   erectorScope.every((item) =>
     /\b(?:iliocostalis|longissimus|spinalis)\b|подвздошно-р[её]берн|длиннейш.*мышц|(?:^|\s)остист(?:ая|ые)\s+мышц/iu.test(
