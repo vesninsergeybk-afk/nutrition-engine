@@ -88,6 +88,7 @@ const globalShared = new Set(
 
 let semanticMismatchTotal = 0;
 let emptyTotal = 0;
+const clippedWindowFailures = [];
 
 for (const specimen of VIRTUAL_SPECIMENS) {
   const zQuestion = filterCatalogForSpecimen(sources.z, specimen.id, "question");
@@ -149,12 +150,12 @@ for (const specimen of VIRTUAL_SPECIMENS) {
     zScene.length >= zQuestion.length && bpScene.length >= bpQuestion.length,
     specimen.id + ": scene targets cannot be smaller than question targets"
   );
-  assert(
-    clippedOutTargets.length === 0,
-    specimen.id +
-      ": spatial window completely clips BodyParts learning target(s): " +
-      clippedOutTargets.map((target) => target.nameRu).join(" | ")
-  );
+  if (clippedOutTargets.length) {
+    clippedWindowFailures.push({
+      specimenId: specimen.id,
+      targets: clippedOutTargets.map((target) => target.nameRu),
+    });
+  }
 
   if (specimen.id === "abdomen" || specimen.id === "anterior-abdominal-wall") {
     assert(zDepth.supported, specimen.id + ": Z-Anatomy should support full abdominal depth");
@@ -190,6 +191,16 @@ assert(emptyTotal === 0, "At least one virtual specimen is empty in an anatomy s
 assert(
   semanticMismatchTotal === 0,
   "Shared muscle concepts are assigned inconsistently across virtual specimens"
+);
+assert(
+  clippedWindowFailures.length === 0,
+  "Spatial windows completely clip BodyParts learning targets: " +
+    clippedWindowFailures
+      .map(
+        (entry) =>
+          entry.specimenId + " => " + entry.targets.join(" | ")
+      )
+      .join(" || ")
 );
 
 console.log("Virtual specimen cross-source audit: ok");
