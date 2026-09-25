@@ -30,6 +30,8 @@ jobs:
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/bodyparts4-classification.js
           node --check experiments/muscle-memory-game/bodyparts4-muscles-ru.js
+          node --check experiments/muscle-memory-game/learning-engine.js
+          node --check experiments/muscle-memory-game/check-learning-engine.mjs
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
@@ -66,6 +68,7 @@ jobs:
           NODE
 
           node experiments/muscle-memory-game/check-z-anatomy-ru.mjs
+          node experiments/muscle-memory-game/check-learning-engine.mjs
 
       - name: Install browser
         run: |
@@ -106,6 +109,17 @@ jobs:
             assert.equal(new URL(page.url()).pathname, '/');
             assert.equal(await page.locator('#model-source').inputValue(), 'z-anatomy');
             assert.equal(await page.locator('#viewer').getAttribute('data-model-source'), 'z-anatomy');
+            assert.equal(await page.locator('#learning-region').isDisabled(), false);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-catalog-count')) > 140);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 140);
+
+            await page.selectOption('#learning-region', 'shoulder');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 0);
+            assert.match(await page.locator('#learning-summary').innerText(), /Плечевой пояс:/);
+
+            await page.selectOption('#learning-region', 'all');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'all');
 
             await page.fill('#structure-search', 'deltoid');
             await page.waitForFunction(
@@ -132,6 +146,9 @@ jobs:
             assert.equal(new URL(page.url()).pathname, pathnameBefore, 'Model switch must not navigate away');
             assert.equal(await page.locator('#model-source').inputValue(), 'bodyparts4');
             assert.equal(await page.locator('#mode-explore').getAttribute('aria-pressed'), 'true');
+            assert.equal(await page.locator('#learning-region').isDisabled(), false);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-catalog-count')) > 140);
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-target-count')) > 140);
             assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
