@@ -3223,7 +3223,12 @@ function finishLearningSession() {
 
   const hasMistakes = mistakeTargets(learningStore, availableTargets).length > 0;
   nextButton.disabled = false;
-  nextButton.textContent = hasMistakes ? "Повторить ошибки" : "Новая сессия";
+  nextButton.textContent =
+    learningSession.mode === "topography"
+      ? "Новая топографическая сессия"
+      : hasMistakes
+        ? "Повторить ошибки"
+        : "Новая сессия";
   canvas.dataset.learningSessionFinished = "true";
 }
 
@@ -3528,6 +3533,11 @@ function nextSessionStep() {
   if (progress.finished) {
     if (!sessionSummaryShown) {
       finishLearningSession();
+      return;
+    }
+
+    if (learningSession.mode === "topography") {
+      startLearningSession("topography");
       return;
     }
 
