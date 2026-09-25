@@ -679,11 +679,9 @@ function renderSessionProgress() {
   }
 
   const progress = sessionProgress(learningSession);
-  const modeName = SESSION_MODES[learningSession.mode]?.nameRu || "Сессия";
   sessionProgressEl.hidden = false;
   sessionProgressEl.textContent =
-    `${modeName} · ${regionNameRu(selectedLearningRegion)} · ` +
-    `${progress.done}/${progress.total} · верно ${correct} · ошибок ${wrong}`;
+    `${regionNameRu(selectedLearningRegion)} · ${progress.current} из ${progress.total}`;
   sessionProgressEl.style.setProperty(
     "--session-progress",
     progress.total ? `${Math.round((progress.done / progress.total) * 100)}%` : "0%"
@@ -739,13 +737,12 @@ function prepareSessionItem() {
 
   renderSessionProgress();
 
-  const progress = sessionProgress(learningSession);
-  const prefix =
-    learningSession.mode === "practical"
-      ? `Практикум · ${progress.current}/${progress.total}`
-      : `${SESSION_MODES[learningSession.mode]?.nameRu || "Задание"} · ${progress.current}/${progress.total}`;
+  const modeLabel =
+    learningSession.mode === "mistakes"
+      ? "Повторение"
+      : SESSION_MODES[learningSession.mode]?.nameRu || "Задание";
 
-  questionLabelEl.textContent = prefix;
+  questionLabelEl.textContent = modeLabel;
 
   if (item.skillId === "name") {
     const ids = targetStructureIds(item.target);
@@ -757,7 +754,7 @@ function prepareSessionItem() {
       focusSelectedStructures(2.35);
     }
     questionEl.textContent = "Назовите выделенную мышцу";
-    feedbackEl.textContent = "Выберите название. Неправильный вариант не завершает задание.";
+    feedbackEl.textContent = "Выберите название.";
     renderNameChoices(item);
   } else {
     nameChoicesEl.replaceChildren();
@@ -838,7 +835,7 @@ function finishLearningSession() {
   focusLearningRegion();
 
   questionLabelEl.textContent = "Сессия завершена";
-  questionEl.textContent = `Без ошибок: ${summary.clean} из ${summary.total}`;
+  questionEl.textContent = `Без ошибок и подсказки: ${summary.clean} из ${summary.total}`;
   const reviewLabels = learningSession.results
     .filter((result) => result.wrongAttempts > 0 || result.revealed)
     .map((result) => {
@@ -853,13 +850,15 @@ function finishLearningSession() {
 
   feedbackEl.className = "feedback";
   feedbackEl.textContent = visibleReviewLabels.length
-    ? `К повторению: ${visibleReviewLabels.join("; ")}${hiddenReviewCount ? `; ещё ${hiddenReviewCount}` : ""}.`
+    ? "К повторению:\n" +
+      visibleReviewLabels.map((label) => `• ${label}`).join("\n") +
+      (hiddenReviewCount ? `\n• ещё ${hiddenReviewCount}` : "")
     : "Все задания выполнены без ошибок и подсказки.";
 
   sessionProgressEl.hidden = false;
   exitLearningSessionButton.hidden = true;
   sessionProgressEl.textContent =
-    `Итог · ${regionNameRu(selectedLearningRegion)} · ${summary.completed}/${summary.total}`;
+    `${regionNameRu(selectedLearningRegion)} · ${summary.completed} из ${summary.total}`;
 
   const hasMistakes = mistakeTargets(learningStore, availableTargets).length > 0;
   nextButton.disabled = false;
