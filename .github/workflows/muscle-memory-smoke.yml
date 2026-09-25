@@ -65,6 +65,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-anatomical-depth.mjs
           node --check experiments/muscle-memory-game/study-layer-terms-ru.js
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
+          node --check experiments/muscle-memory-game/check-bodyparts-ru.mjs
           node --check experiments/muscle-memory-game/browser-smoke-learning-core.cjs
           node --check experiments/muscle-memory-game/browser-smoke-learning-practical.cjs
           node --check experiments/muscle-memory-game/browser-smoke-z-anatomy.cjs
@@ -111,6 +112,7 @@ jobs:
           NODE
 
           node experiments/muscle-memory-game/check-z-anatomy-ru.mjs
+          node experiments/muscle-memory-game/check-bodyparts-ru.mjs
           node experiments/muscle-memory-game/check-learning-engine.mjs
           node experiments/muscle-memory-game/check-learning-session.mjs
           node experiments/muscle-memory-game/check-quiz-ui.mjs
