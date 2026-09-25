@@ -121,6 +121,19 @@ jobs:
             await page.selectOption('#learning-region', 'all');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'all');
 
+            // Integration check: a real trainer action must write progress for
+            // the current (muscle, find) skill and immediately update the UI.
+            await page.click('#mode-quiz');
+            await page.selectOption('#learning-region', 'shoulder');
+            assert.match(await page.locator('#learning-summary').innerText(), /попыток 0/);
+            await page.click('#show-answer');
+            assert.match(await page.locator('#learning-summary').innerText(), /попыток 1/);
+            const storedLearning = await page.evaluate(() =>
+              localStorage.getItem('muscle-memory-learning-v1')
+            );
+            assert.ok(storedLearning && storedLearning.includes('"attempts":1'));
+            await page.click('#mode-explore');
+
             await page.fill('#structure-search', 'deltoid');
             await page.waitForFunction(
               () => document.querySelectorAll('.search-result').length > 0,
