@@ -9,6 +9,7 @@ function specimen(
     contextPatterns = [],
     supportBonePatterns = [],
     depthProfile = null,
+    minDepthQuestionTargets = 0,
     defaultViews = ["threeQuarter"],
     padding = 1.28,
   } = {}
@@ -23,6 +24,7 @@ function specimen(
     contextPatterns: Object.freeze([...contextPatterns]),
     supportBonePatterns: Object.freeze([...supportBonePatterns]),
     depthProfile,
+    minDepthQuestionTargets,
     defaultViews: Object.freeze([...defaultViews]),
     padding,
   });
@@ -55,6 +57,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       contextPatterns: [/pectoralis major|latissimus dorsi/i],
       supportBonePatterns: [/scapula|clavicle|humerus|rib|thoracic vertebra/i],
       depthProfile: "shoulder",
+      minDepthQuestionTargets: 13,
       defaultViews: ["back", "threeQuarter", "front"],
       padding: 1.22,
     }
@@ -90,7 +93,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Сгибатели, пронаторы и ладонный мышечный контекст.",
     {
       questionPatterns: [
-        /pronator|flexor carpi|flexor digitorum|flexor pollicis|palmaris longus|lumbrical.*hand|interosse.*hand|opponens|adductor pollicis|abductor pollicis brevis/i,
+        /pronator|flexor carpi|flexor digitorum|flexor pollicis|palmaris longus|lumbrical.*hand|palmar interosse|interosse.*hand|opponens|adductor pollicis|abductor pollicis brevis|ладонн.*межкостн.*кист/iu,
       ],
       supportBonePatterns: [/radius|ulna|carpal|metacarp|phalan/i],
       defaultViews: ["front", "threeQuarter"],
@@ -131,6 +134,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionRegionIds: ["abdomen"],
       supportBonePatterns: [/rib|sternum|ilium|pubis|lumbar vertebra/i],
       depthProfile: "abdomen",
+      minDepthQuestionTargets: 5,
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -156,10 +160,11 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Поверхностные и собственные мышцы нижней части спины.",
     {
       questionPatterns: [
-        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|spinalis(?: thoracis)?|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levatores costarum/i,
+        /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|spinalis(?: thoracis)?|quadratus lumborum|multifidus (?:thoracis|lumborum)|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)? costar|поднимающ.*р[её]бр/iu,
       ],
       supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium/i],
       depthProfile: "back",
+      minDepthQuestionTargets: 6,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -262,6 +267,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       contextPatterns: [/deltoid|teres major/i],
       supportBonePatterns: [/scapula|clavicle|humerus/i],
       depthProfile: "shoulder",
+      minDepthQuestionTargets: 4,
       defaultViews: ["back", "threeQuarter", "front"],
       padding: 1.16,
     }
@@ -289,6 +295,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       contextPatterns: [/latissimus dorsi|serratus posterior/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
       depthProfile: "back",
+      minDepthQuestionTargets: 5,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -299,11 +306,12 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Многораздельные, вращатели и короткие сегментарные мышцы.",
     {
       questionPatterns: [
-        /multifidus|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levatores costarum/i,
+        /multifidus|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)? costar|поднимающ.*р[её]бр/iu,
       ],
       contextPatterns: [/erector|iliocostalis|longissimus thoracis|spinalis|latissimus dorsi/i],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
       depthProfile: "back",
+      minDepthQuestionTargets: 4,
       defaultViews: ["back", "threeQuarter"],
     }
   ),
@@ -376,6 +384,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionRegionIds: ["abdomen"],
       supportBonePatterns: [/rib|sternum|ilium|pubis|lumbar vertebra/i],
       depthProfile: "abdomen",
+      minDepthQuestionTargets: 5,
       defaultViews: ["front", "threeQuarter"],
     }
   ),
@@ -386,7 +395,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
     "Короткие глубокие мышцы подзатылочной области.",
     {
       questionPatterns: [
-        /rectus posterior (?:major|minor) capitis|obliquus (?:superior|inferior) capitis|obliquus capitis/i,
+        /rectus (?:capitis posterior (?:major|minor)|posterior (?:major|minor) capitis)|obliquus (?:superior|inferior) capitis|obliquus capitis|задн.*прям.*мышц.*голов|кос.*мышц.*голов/iu,
       ],
       contextPatterns: [/splenius capitis|semispinalis capitis|trapezius/i],
       supportBonePatterns: [/occip|cervical vertebra|atlas|axis/i],
@@ -470,6 +479,30 @@ export function specimenLearningScopes() {
 
 export function specimenDepthProfileId(specimenId) {
   return specimenById(specimenId)?.depthProfile || null;
+}
+
+export function specimenDepthAvailability(catalog, specimenId) {
+  const item = specimenById(specimenId);
+  if (!item?.depthProfile) {
+    return {
+      supported: false,
+      reason: "unverified",
+      actual: 0,
+      required: 0,
+      profileId: null,
+    };
+  }
+
+  const actual = filterCatalogForSpecimen(catalog, specimenId, "question").length;
+  const required = Math.max(1, Number(item.minDepthQuestionTargets) || 1);
+
+  return {
+    supported: actual >= required,
+    reason: actual >= required ? "ok" : "source-incomplete",
+    actual,
+    required,
+    profileId: item.depthProfile,
+  };
 }
 
 export function specimenPrimaryView(specimenId) {

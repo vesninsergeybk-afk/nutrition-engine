@@ -17,6 +17,7 @@ import {
 } from "./regional-depth-map.js";
 import {
   specimenById,
+  specimenDepthAvailability,
   specimenDepthProfileId,
   specimenPadding,
   specimenPrimaryView,
@@ -997,16 +998,20 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
   applyRegionStudyVisibility();
   applyMuscleDisplayMode();
 
+  const specimen = specimenById(selectedLearningRegion);
+  const specimenDepth = specimen
+    ? specimenDepthAvailability(learningCatalog, selectedLearningRegion)
+    : null;
   const depthProfileId =
-    specimenDepthProfileId(selectedLearningRegion) ||
-    (
-      activeSceneTargets().length &&
-      activeSceneTargets().every(
-        (target) => target.region === activeSceneTargets()[0].region
-      )
+    specimenDepth?.supported
+      ? specimenDepth.profileId
+      : !specimen &&
+          activeSceneTargets().length &&
+          activeSceneTargets().every(
+            (target) => target.region === activeSceneTargets()[0].region
+          )
         ? activeSceneTargets()[0].region
-        : null
-    );
+        : null;
 
   canvas.dataset.depthProfile =
     regionIsolationActive() &&
@@ -1014,8 +1019,9 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
     regionHasDepthProfile(depthProfileId)
       ? depthProfileId
       : "unverified-or-mixed";
-  canvas.dataset.virtualSpecimen =
-    specimenById(selectedLearningRegion)?.id || "";
+  canvas.dataset.virtualSpecimen = specimen?.id || "";
+  canvas.dataset.depthSourceCapability =
+    specimenDepth?.reason || (depthProfileId ? "regional" : "unverified");
 
   const regional = regionIsolationActive();
   if (skeletonMesh) {
@@ -1167,11 +1173,16 @@ function targetConceptKeys(target) {
 }
 
 function activeDepthProfileId(target = null) {
-  return (
-    specimenDepthProfileId(selectedLearningRegion) ||
-    target?.region ||
-    null
-  );
+  const specimen = specimenById(selectedLearningRegion);
+  if (specimen) {
+    const availability = specimenDepthAvailability(
+      learningCatalog,
+      selectedLearningRegion
+    );
+    return availability.supported ? availability.profileId : null;
+  }
+
+  return target?.region || null;
 }
 
 function targetDepthInfo(target) {
@@ -1199,6 +1210,25 @@ function nextRegionalAnatomicalLayer() {
       supported: false,
       reason: "Сначала изолируйте анатомический блок.",
     };
+  }
+
+  const specimen = specimenById(selectedLearningRegion);
+  if (specimen?.depthProfile) {
+    const availability = specimenDepthAvailability(
+      learningCatalog,
+      selectedLearningRegion
+    );
+    if (!availability.supported) {
+      return {
+        supported: false,
+        reason:
+          "В этой 3D-модели препарат неполон для достоверной послойности: " +
+          availability.actual +
+          " из " +
+          availability.required +
+          " обязательных мышечных целей. Выберите другой источник анатомии.",
+      };
+    }
   }
 
   const visibleTargets = sceneTargets.filter(targetHasVisibleStructure);

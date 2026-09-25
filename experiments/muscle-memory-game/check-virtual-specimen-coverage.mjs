@@ -6,6 +6,7 @@ import {
   VIRTUAL_SPECIMENS,
   filterCatalogForSpecimen,
   specimenSceneTargets,
+  specimenDepthAvailability,
 } from "./virtual-specimens.js";
 
 const Z_URL =
@@ -84,6 +85,9 @@ for (const specimen of VIRTUAL_SPECIMENS) {
     (id) => zIds.has(id) !== bpIds.has(id)
   );
 
+  const zDepth = specimenDepthAvailability(sources.z, specimen.id);
+  const bpDepth = specimenDepthAvailability(sources.bp, specimen.id);
+
   const row = {
     id: specimen.id,
     zQuestion: zQuestion.length,
@@ -92,6 +96,8 @@ for (const specimen of VIRTUAL_SPECIMENS) {
     bpScene: bpScene.length,
     sharedQuestion: [...zIds].filter((id) => bpIds.has(id)).length,
     semanticMismatches: semanticMismatches.length,
+    zDepth: zDepth.reason,
+    bpDepth: bpDepth.reason,
   };
   console.log("Specimen coverage:", JSON.stringify(row));
 
@@ -102,6 +108,14 @@ for (const specimen of VIRTUAL_SPECIMENS) {
     zScene.length >= zQuestion.length && bpScene.length >= bpQuestion.length,
     specimen.id + ": scene targets cannot be smaller than question targets"
   );
+
+  if (specimen.id === "abdomen" || specimen.id === "anterior-abdominal-wall") {
+    assert(zDepth.supported, specimen.id + ": Z-Anatomy should support full abdominal depth");
+    assert(
+      !bpDepth.supported && bpDepth.reason === "source-incomplete",
+      specimen.id + ": BodyParts3D must be marked incomplete for abdominal depth"
+    );
+  }
 
   if (semanticMismatches.length) {
     console.log(
