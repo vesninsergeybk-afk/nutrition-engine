@@ -47,3 +47,14 @@ assert(
   "Quiz/reveal targeting can still choose a clipped-away part of a long muscle"
 );
 console.log("Specimen clipping is shared by rendering, framing and target access");
+
+assert(
+  /function setViewPreset\(value\)[\s\S]*?regionIsolationActive\(\)[\s\S]*?focusLearningRegion\(direction\)[\s\S]*?setFullBodyView\(direction\)/.test(app),
+  "Changing anatomical view can still zoom an isolated specimen back to full-body framing"
+);
+assert(
+  app.includes('canvas.dataset.cameraScope = "regional"') ||
+    app.includes('canvas.dataset.cameraScope = regionIsolationActive() ? "regional" : "full"'),
+  "Camera scope is not observable for browser verification"
+);
+console.log("View presets preserve regional specimen framing");
