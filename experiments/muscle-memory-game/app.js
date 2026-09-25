@@ -1082,6 +1082,7 @@ function prepareSessionItem() {
   showAllStructures();
   locked = false;
   currentTarget = item.target;
+  canvas.dataset.learningCurrentTargetId = currentTarget.id;
   currentItemWrongAttempts = 0;
   lastWrongSid = null;
   canvas.dataset.nameTargetVisible = "";
@@ -1232,6 +1233,7 @@ function finishLearningSession() {
   sessionSummaryShown = true;
   locked = true;
   currentTarget = null;
+  canvas.dataset.learningCurrentTargetId = "";
   lastWrongSid = null;
   restoreHighlights();
   showAllStructures();
@@ -1976,6 +1978,7 @@ function resetLoadedModel() {
   canvas.dataset.learningSessionDone = "";
   canvas.dataset.learningSessionTotal = "";
   canvas.dataset.learningSessionFinished = "";
+  canvas.dataset.learningCurrentTargetId = "";
   canvas.dataset.nameTargetVisible = "";
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
