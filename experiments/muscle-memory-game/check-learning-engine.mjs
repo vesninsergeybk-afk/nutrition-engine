@@ -77,6 +77,24 @@ assert(
     latinNames.map((item) => item.nameRu).join(" | ")
 );
 
+const sidedNames = catalog.filter((item) =>
+  /\((?:справа|слева)\)|^(?:правая|левая)\b|\b(?:правой|левой|правую|левую)\b/iu.test(item.nameRu)
+);
+assert(
+  sidedNames.length === 0,
+  "Base learning targets must be side-neutral: " +
+    sidedNames.map((item) => item.nameRu).join(" | ")
+);
+
+const subdivisionNames = catalog.filter((item) =>
+  /\b(?:часть|головка|брюшко)\b/iu.test(item.nameRu)
+);
+assert(
+  subdivisionNames.length === 0,
+  "Base learning targets still contain anatomical subdivisions: " +
+    subdivisionNames.map((item) => item.nameRu).join(" | ")
+);
+
 
 const migrationTarget = catalog.find(
   (item) => item.nameRu === "Дельтовидная мышца" && item.legacyIds?.length
