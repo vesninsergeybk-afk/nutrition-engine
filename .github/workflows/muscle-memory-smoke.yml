@@ -212,6 +212,14 @@ jobs:
             assert.equal(await page.locator('#exit-learning-session').isVisible(), true);
             await page.click('#exit-learning-session');
 
+            // Pass 3: due work is offered as one action, not as a statistics dashboard.
+            assert.equal(await page.locator('#today-learning-session').isVisible(), true);
+            assert.match(await page.locator('#today-learning-session').innerText(), /Повторить сегодня/i);
+            await page.click('#today-learning-session');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-session-mode'), 'today');
+            assert.ok(Number(await page.locator('#viewer').getAttribute('data-learning-session-total')) > 0);
+            await page.click('#exit-learning-session');
+
             // NAME: four smart choices, eventually one must complete the item.
             await page.click('[data-learning-mode="name"]');
             await page.click('#start-learning-session');
