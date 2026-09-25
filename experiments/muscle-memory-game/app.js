@@ -721,6 +721,7 @@ function setFullBodyView(direction = new THREE.Vector3(0.22, 0.035, 1).normalize
   const box = worldBodyBox();
   if (box.isEmpty()) return;
   focusBox(box, 1.12, direction);
+  canvas.dataset.cameraScope = "full";
 }
 
 function setViewPreset(value) {
@@ -731,7 +732,13 @@ function setViewPreset(value) {
     left: new THREE.Vector3(-1, 0.02, 0).normalize(),
     right: new THREE.Vector3(1, 0.02, 0).normalize(),
   };
-  setFullBodyView(directions[value] || directions.threeQuarter);
+  const direction = directions[value] || directions.threeQuarter;
+
+  if (regionIsolationActive()) {
+    focusLearningRegion(direction);
+  } else {
+    setFullBodyView(direction);
+  }
 }
 
 function setShoulderView() {
@@ -1232,7 +1239,7 @@ function specimenViewDirection(viewId) {
   return directions[viewId] || currentViewDirection();
 }
 
-function focusLearningRegion() {
+function focusLearningRegion(directionOverride = null) {
   const focusTargets = availableTargets;
   if (!focusTargets.length) {
     setFullBodyView();
@@ -1255,15 +1262,18 @@ function focusLearningRegion() {
 
   const specimen = specimenById(selectedLearningRegion);
   const preferredView = specimenPrimaryView(selectedLearningRegion);
-  const direction = preferredView
-    ? specimenViewDirection(preferredView)
-    : bestViewDirectionForBox(box).direction;
+  const direction =
+    directionOverride ||
+    (preferredView
+      ? specimenViewDirection(preferredView)
+      : bestViewDirectionForBox(box).direction);
 
   focusBox(
     box,
     specimen ? specimenPadding(specimen.id) : selectedLearningRegion === "all" ? 1.12 : 1.28,
     direction
   );
+  canvas.dataset.cameraScope = regionIsolationActive() ? "regional" : "full";
 }
 
 function fitCamera(object) {
