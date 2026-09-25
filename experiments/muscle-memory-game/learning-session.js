@@ -85,8 +85,10 @@ function mistakeItemForTarget(store, target) {
   const find = skillRecord(store, target.id, "find");
   const name = skillRecord(store, target.id, "name");
 
-  const findDebt = find.wrong;
-  const nameDebt = name.wrong;
+  // Накопленная ошибка не должна оставаться в очереди навсегда.
+  // Последующий правильный ответ погашает одну единицу долга.
+  const findDebt = Math.max(0, find.wrong - find.correct);
+  const nameDebt = Math.max(0, name.wrong - name.correct);
   if (findDebt <= 0 && nameDebt <= 0) return null;
 
   return {
