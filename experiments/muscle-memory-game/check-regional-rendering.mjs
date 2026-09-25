@@ -68,3 +68,12 @@ assert(
     app.includes("referenceBounds"),
   "Safety-reference layers cannot be clipped to the active regional scene"
 );
+
+
+assert(
+  app.includes('currentLayerPreset = "muscles"') &&
+    app.includes('muscleDisplayMode = "anatomical"') &&
+    app.includes('connectiveDisplayMode = "off"') &&
+    app.includes('layerPreset.value = "muscles"'),
+  "Model switching can leak an incompatible layered rendering preset"
+);

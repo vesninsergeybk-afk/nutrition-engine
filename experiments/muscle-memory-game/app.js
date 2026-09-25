@@ -986,7 +986,6 @@ function applyRegionScene({ resetLayers = false, focus = false } = {}) {
 
   applyConnectiveDisplayMode();
   applySkinDisplayMode();
-  restoreReferenceLayerVisibility();
 
   if (focus) {
     if (regional) focusLearningRegion();
@@ -3251,6 +3250,22 @@ function resetLoadedModel() {
   locked = false;
 
   focusedStructureIds = [];
+
+  // A model switch keeps the selected learning scope/progress but must not
+  // carry a rendering preset that the next source cannot represent.
+  currentLayerPreset = "muscles";
+  muscleDisplayMode = "anatomical";
+  skinDisplayMode = "off";
+  connectiveDisplayMode = "off";
+  boneDisplayMode =
+    regionIsolation?.checked && selectedLearningRegion !== "all"
+      ? "off"
+      : "anatomical";
+  layerPreset.value = "muscles";
+  skinMode.value = "off";
+  connectiveMode.value = "off";
+  boneMode.value = boneDisplayMode;
+  setConnectiveLayerSelection([]);
 
   searchInput.value = "";
   searchResults.replaceChildren();

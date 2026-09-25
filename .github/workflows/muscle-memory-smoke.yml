@@ -657,6 +657,25 @@ jobs:
             await page.waitForTimeout(600);
             await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-shoulder.png', fullPage: true });
 
+            // Source round-trip: incompatible BodyParts tissue presets must not
+            // leak into Z-Anatomy, while the selected learning block survives.
+            await page.selectOption('#learning-region', 'shoulder');
+            await page.selectOption('#layer-preset', 'fascia');
+            assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
+            await page.selectOption('#model-source', 'z-anatomy');
+            await page.waitForFunction(
+              () =>
+                document.querySelector('#loading')?.classList.contains('is-hidden') &&
+                document.querySelector('#viewer')?.dataset.modelSource === 'z-anatomy',
+              null,
+              { timeout: 150000 }
+            );
+            assert.equal(await page.locator('#learning-region').inputValue(), 'shoulder');
+            assert.equal(await page.locator('#viewer').getAttribute('data-learning-scope'), 'shoulder');
+            assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
+            assert.equal(await page.locator('#layer-preset').inputValue(), 'muscles');
+            assert.equal(await page.locator('#layer-preset').isDisabled(), true);
+
             if (errors.length) throw new Error(errors.join('\n'));
             await browser.close();
           })().catch(error => {
