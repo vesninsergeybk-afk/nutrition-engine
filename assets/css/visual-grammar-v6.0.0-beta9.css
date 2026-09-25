@@ -349,10 +349,12 @@ html[data-theme="modern"][data-interface-simplification="1"][data-navigation-rou
 /* Touch target floor. The audit found helper chips at 36–40px on mobile even though
    they are frequent one-tap actions. Preserve their compact appearance while making
    the clickable box reliably finger-sized. */
-html[data-theme="modern"][data-interface-simplification="1"] .quick-searches button,
-html[data-theme="modern"][data-interface-simplification="1"] .quick-grams button{
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent #globalSearchSection .quick-searches>button,
+html[data-theme="modern"][data-interface-simplification="1"] #mainContent #globalSearchSection .quick-grams>button{
   min-height:44px!important;
-  padding-block:9px!important;
+  height:44px!important;
+  box-sizing:border-box!important;
+  padding:9px 10px!important;
 }
 html[data-theme="modern"][data-interface-simplification="1"] .workspace-overview__head button,
 html[data-theme="modern"][data-interface-simplification="1"] .workspace-group-overview-hf2__head>button,
