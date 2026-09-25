@@ -739,7 +739,8 @@ button:disabled {
 
 @media (max-width: 620px) {
   .session-active.task-docked .topbar,
-  .session-active.task-docked .attribution {
+  .session-active.task-docked .attribution,
+  .session-active.task-docked .panel {
     display: none;
   }
 
