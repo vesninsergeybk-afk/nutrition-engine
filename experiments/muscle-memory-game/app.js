@@ -53,6 +53,7 @@ const scoreEl = document.querySelector("#score");
 const diagnosticsEl = document.querySelector("#diagnostics");
 const meshNamesEl = document.querySelector("#mesh-names");
 const targetStatusEl = document.querySelector("#target-status");
+const learningControls = document.querySelector("#learning-controls");
 const learningRegion = document.querySelector("#learning-region");
 const learningSummaryEl = document.querySelector("#learning-summary");
 const learningSessionMode = document.querySelector("#learning-session-mode");
@@ -645,6 +646,7 @@ function prepareSessionItem() {
       highlightStructures([sid], "selected");
       focusedStructureIds = [sid];
       focusSelectedButton.disabled = false;
+      focusSelectedStructures();
     }
     questionEl.textContent = "Как называется выделенная мышца?";
     feedbackEl.textContent = "Выберите название. Неправильный вариант не завершает задание.";
@@ -980,6 +982,9 @@ function setMode(mode) {
 
   quizActions.hidden = mode !== "quiz";
   exploreControls.hidden = mode !== "explore";
+  learningControls.hidden = mode !== "quiz";
+  learningSummaryEl.hidden = mode !== "quiz";
+  sessionProgressEl.hidden = mode !== "quiz" || !learningSession;
   scoreEl.hidden = mode !== "quiz";
 
   if (mode === "quiz") {
