@@ -201,6 +201,11 @@ jobs:
             assert.ok(
               Number(await page.locator('#viewer').getAttribute('data-region-visible-bones')) > 0
             );
+            await page.waitForTimeout(350);
+            await page.screenshot({
+              path: '/tmp/muscle-memory-learning-upper-limb.png',
+              fullPage: true,
+            });
 
             await page.selectOption('#learning-region', 'rotator-cuff');
             assert.equal(
@@ -221,6 +226,11 @@ jobs:
               await page.locator('#viewer').getAttribute('data-learning-target-count')
             );
             assert.ok(neckCollarCount > neckCount);
+            await page.waitForTimeout(350);
+            await page.screenshot({
+              path: '/tmp/muscle-memory-learning-neck-collar.png',
+              fullPage: true,
+            });
 
             await page.selectOption('#learning-region', 'shoulder');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'shoulder');
@@ -499,6 +509,11 @@ jobs:
               Number(await page.locator('#viewer').getAttribute('data-region-visible-bones')),
               regionalBoneCount
             );
+            await page.waitForTimeout(350);
+            await page.screenshot({
+              path: '/tmp/muscle-memory-bodyparts-shoulder-bones.png',
+              fullPage: true,
+            });
 
             await page.selectOption('#layer-preset', 'muscles');
             assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
@@ -514,6 +529,11 @@ jobs:
               await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
               'fascia'
             );
+            await page.waitForTimeout(350);
+            await page.screenshot({
+              path: '/tmp/muscle-memory-bodyparts-shoulder-fascia.png',
+              fullPage: true,
+            });
 
             await page.selectOption('#layer-preset', 'skin');
             assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'skin');
