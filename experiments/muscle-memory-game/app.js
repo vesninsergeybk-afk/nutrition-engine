@@ -961,7 +961,11 @@ function setMode(mode) {
   scoreEl.hidden = mode !== "quiz";
 
   if (mode === "quiz") {
-    nextQuestion();
+    if (learningSession && !sessionSummaryShown) {
+      prepareSessionItem();
+    } else {
+      resetLearningSessionUi();
+    }
   } else {
     locked = true;
     questionLabelEl.textContent = "Исследование";
@@ -1295,6 +1299,10 @@ function resetLoadedModel() {
 
   learningCatalog = [];
   availableTargets = [];
+  learningSession = null;
+  sessionSummaryShown = false;
+  currentItemWrongAttempts = 0;
+  lastWrongSid = null;
   currentTarget = null;
   selectedExploreSid = null;
   isolated = false;
@@ -1309,6 +1317,13 @@ function resetLoadedModel() {
   targetStatusEl.textContent = "Загружаю выбранную модель…";
   learningRegion.disabled = true;
   learningRegion.replaceChildren(new Option("Загрузка…", "all"));
+  learningSessionMode.disabled = true;
+  startLearningSessionButton.disabled = true;
+  sessionProgressEl.hidden = true;
+  nameChoicesEl.hidden = true;
+  nameChoicesEl.replaceChildren();
+  revealDeeperButton.hidden = true;
+  revealDeeperButton.disabled = true;
   learningSummaryEl.textContent = "Учебный каталог появится после загрузки модели.";
 
   nextButton.disabled = true;
@@ -1329,6 +1344,10 @@ function resetLoadedModel() {
   canvas.dataset.learningRegion = "";
   canvas.dataset.learningTargetCount = "";
   canvas.dataset.learningCatalogCount = "";
+  canvas.dataset.learningSessionMode = "";
+  canvas.dataset.learningSessionDone = "";
+  canvas.dataset.learningSessionTotal = "";
+  canvas.dataset.learningSessionFinished = "";
 }
 
 function createMuscleMaterial() {
@@ -1851,8 +1870,16 @@ modelSource.addEventListener("change", () => {
 
 learningRegion.addEventListener("change", () => {
   selectedLearningRegion = learningRegion.value;
-  applyLearningRegion({ startQuestion: appMode === "quiz" });
+  applyLearningRegion();
 });
+
+learningSessionMode.addEventListener("change", () => {
+  selectedSessionMode = learningSessionMode.value;
+  updateLearningSummary();
+  resetLearningSessionUi();
+});
+
+startLearningSessionButton.addEventListener("click", startLearningSession);
 
 focusShoulderButton.addEventListener("click", setShoulderView);
 focusFullButton.addEventListener("click", () => setFullBodyView());
@@ -1860,8 +1887,9 @@ focusSelectedButton.addEventListener("click", focusSelectedStructures);
 viewPreset.addEventListener("change", () => setViewPreset(viewPreset.value));
 modeQuizButton.addEventListener("click", () => setMode("quiz"));
 modeExploreButton.addEventListener("click", () => setMode("explore"));
-nextButton.addEventListener("click", nextQuestion);
+nextButton.addEventListener("click", nextSessionStep);
 answerButton.addEventListener("click", revealAnswer);
+revealDeeperButton.addEventListener("click", revealDeeperAfterMistake);
 
 searchInput.addEventListener("input", () => renderSearchResults(searchInput.value));
 searchInput.addEventListener("keydown", (event) => {
