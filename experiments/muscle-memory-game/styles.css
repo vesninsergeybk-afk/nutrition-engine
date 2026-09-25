@@ -717,3 +717,35 @@ button:disabled {
     max-height: 55dvh;
   }
 }
+
+
+.hint-touch { display: none; }
+.hint-pointer { display: inline; }
+
+.feedback {
+  white-space: pre-line;
+}
+
+@media (pointer: coarse) {
+  .hint-touch { display: inline; }
+  .hint-pointer { display: none; }
+}
+
+@media (max-width: 620px) {
+  .session-active.task-docked .topbar,
+  .session-active.task-docked .attribution {
+    display: none;
+  }
+
+  .session-active.task-docked #focus-full {
+    display: none;
+  }
+
+  .session-active.task-docked .stage {
+    padding-top: 8px;
+  }
+
+  .session-active.task-docked .viewer-wrap {
+    min-height: 88dvh;
+  }
+}
