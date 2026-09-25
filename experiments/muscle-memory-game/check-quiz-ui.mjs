@@ -44,8 +44,9 @@ assert(
 );
 assert(
   app.includes("function regionIsolationActive()") &&
-    app.includes("applyRegionScene({ resetLayers: true, focus: true })") &&
-    app.includes("applyRegionMuscleVisibility()"),
+    app.includes("applyRegionScene({ resetLayers: true })") &&
+    app.includes("applyRegionMuscleVisibility()") &&
+    app.includes("focusLearningRegion();"),
   "Learning block does not control real scene isolation"
 );
 assert(
