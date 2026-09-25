@@ -396,6 +396,7 @@ button:disabled {
   color: var(--muted);
 }
 
+.session-active .scope-controls,
 .session-active .learning-controls,
 .session-active .learning-summary,
 .session-active #model-source-field {
