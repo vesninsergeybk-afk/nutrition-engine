@@ -315,6 +315,7 @@ export function recordLearningAttempt(
   const addReviewDebt = options.addReviewDebt !== false;
 
   store.records[key] = {
+    ...(store.records[key] || {}),
     attempts: current.attempts + 1,
     correct: current.correct + (wasCorrect ? 1 : 0),
     wrong: current.wrong + (wasCorrect ? 0 : 1),
