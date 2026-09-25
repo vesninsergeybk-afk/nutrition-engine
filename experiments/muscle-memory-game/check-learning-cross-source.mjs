@@ -1,4 +1,7 @@
-import { buildMuscleCatalog } from "./learning-engine.js";
+import {
+  buildMuscleCatalog,
+  filterCatalogByRegion,
+} from "./learning-engine.js";
 import { bodyPartsAnatomyKind } from "./bodyparts4-classification.js";
 
 const Z_URL =
@@ -113,3 +116,65 @@ for (const expectedName of [
 }
 
 console.log("Cross-source stable IDs: ok");
+
+function scopeOverlap(scopeId) {
+  const zScope = filterCatalogByRegion(zCatalog, scopeId);
+  const bpScope = filterCatalogByRegion(bpCatalog, scopeId);
+  const zScopeIds = new Set(zScope.map((item) => item.id));
+  const bpScopeIds = new Set(bpScope.map((item) => item.id));
+  const common = [...zScopeIds].filter((id) => bpScopeIds.has(id));
+  const denominator = Math.max(1, Math.min(zScope.length, bpScope.length));
+
+  return {
+    scopeId,
+    z: zScope,
+    bp: bpScope,
+    shared: common,
+    coverage: common.length / denominator,
+  };
+}
+
+const scopeContracts = [
+  ["shoulder", 0.90],
+  ["upper-limb", 0.80],
+  ["lower-limb", 0.80],
+  ["neck", 0.70],
+  ["neck-collar", 0.70],
+  ["foot", 0.70],
+  ["erector-spinae", 0.70],
+  ["rotator-cuff", 1.00],
+  ["scapular-stabilizers", 0.80],
+];
+
+for (const [scopeId, minimumCoverage] of scopeContracts) {
+  const result = scopeOverlap(scopeId);
+
+  console.log("Scope overlap:", {
+    scope: scopeId,
+    z: result.z.length,
+    bodyParts: result.bp.length,
+    shared: result.shared.length,
+    coverage:
+      Math.round(result.coverage * 1000) / 10 + "%",
+  });
+
+  assert(result.z.length > 0, "Z-Anatomy scope is empty: " + scopeId);
+  assert(result.bp.length > 0, "BodyParts scope is empty: " + scopeId);
+  assert(
+    result.coverage >= minimumCoverage,
+    "Cross-source scope divergence for " + scopeId + ": " +
+      result.shared.length + "/" +
+      Math.min(result.z.length, result.bp.length)
+  );
+
+  if (scopeId === "rotator-cuff") {
+    assert(
+      result.z.length === 4 &&
+      result.bp.length === 4 &&
+      result.shared.length === 4,
+      "Rotator-cuff scope must be exactly 4/4 in both sources"
+    );
+  }
+}
+
+console.log("Cross-source regional scopes: ok");
