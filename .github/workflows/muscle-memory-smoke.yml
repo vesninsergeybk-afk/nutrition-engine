@@ -263,6 +263,10 @@ jobs:
 
             await page.selectOption('#learning-region', 'all');
             assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'all');
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-specimen-clip'),
+              'none'
+            );
 
             // Pass 2: finite learning sessions must work as real flows.
             await page.selectOption('#learning-region', 'shoulder');
@@ -495,6 +499,14 @@ jobs:
               await page.locator('#viewer').getAttribute('data-depth-source-capability'),
               'ok'
             );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-specimen-clip'),
+              'vertical'
+            );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-specimen-clip-y'),
+              '0.31:0.62'
+            );
 
             // Literal atlas path: select a superficial muscle through the user
             // interface, click the now-centered 3D muscle, follow "Глубже здесь",
@@ -607,12 +619,32 @@ jobs:
               await page.locator('#source-coverage-note').innerText(),
               /неполон.*1 из 5.*Z-Anatomy/i
             );
-            await page.click('#peel-surface-layer');
+            assert.equal(await page.locator('#peel-surface-layer').isDisabled(), true);
             assert.match(
-              await page.locator('#feedback').innerText(),
-              /препарат неполон.*1 из 5/i
+              (await page.locator('#peel-surface-layer').getAttribute('title')) || '',
+              /неполон.*1 из 5|послойност/i
             );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-specimen-clip'),
+              'vertical'
+            );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-specimen-clip-y'),
+              '0.31:0.62'
+            );
+            await page.screenshot({
+              path: '/tmp/muscle-memory-bodyparts-abdomen-incomplete.png',
+              fullPage: true,
+            });
             await page.selectOption('#learning-region', 'shoulder');
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-specimen-clip'),
+              'vertical'
+            );
+            assert.equal(
+              await page.locator('#viewer').getAttribute('data-specimen-clip-y'),
+              '0.54:0.90'
+            );
 
             // Layer presets operate inside the isolated region.
             assert.equal(await page.locator('#layer-preset').isDisabled(), false);
