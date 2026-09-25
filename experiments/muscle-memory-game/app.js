@@ -1359,9 +1359,23 @@ function deeperMuscleKey(target, sid) {
   return (target?.id || String(sid)) + "::" + targetSideForSid(target, sid);
 }
 
+function sidesCanShareDepthPath(selectedSide, candidateSide) {
+  if (
+    selectedSide === "single" ||
+    selectedSide === "midline" ||
+    candidateSide === "single" ||
+    candidateSide === "midline"
+  ) {
+    return true;
+  }
+
+  return selectedSide === candidateSide;
+}
+
 function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
   const selectedTarget = learningTargetBySid.get(selectedSid) || null;
   const selectedInfo = targetDepthInfo(selectedTarget);
+  const selectedSide = targetSideForSid(selectedTarget, selectedSid);
 
   // A second ray hit is not, by itself, proof of an anatomical layer
   // relationship. Until this region has a verified depth map, keep the
@@ -1390,6 +1404,9 @@ function deeperMuscleIdsFromHits(hits, selectedSid, limit = 3) {
     // must not masquerade as a deeper muscle.
     const candidateTarget = learningTargetBySid.get(sid) || null;
     if (!candidateTarget) continue;
+
+    const candidateSide = targetSideForSid(candidateTarget, sid);
+    if (!sidesCanShareDepthPath(selectedSide, candidateSide)) continue;
 
     const candidateKey = deeperMuscleKey(candidateTarget, sid);
     if (seenTargets.has(candidateKey)) continue;
