@@ -130,14 +130,19 @@ const practical = createLearningSession({
   mode: "practical",
   catalog,
   store,
-  size: 3,
+  size: 4,
   rng: deterministic,
 });
+assert(
+  practical.items.some((item) => item.skillId === "find") &&
+    practical.items.some((item) => item.skillId === "name"),
+  "Practical mode must mix find and name retrieval"
+);
 while (currentSessionItem(practical)) {
   completeSessionItem(practical, { correct: true, wrongAttempts: 0 });
 }
 const summary = sessionSummary(practical);
-assert(summary.total === 3 && summary.clean === 3, "Practical summary is wrong");
+assert(summary.total === 4 && summary.clean === 4, "Practical summary is wrong");
 assert(sessionProgress(practical).finished, "Practical session did not finish");
 
 console.log("Learning sessions: finite unique targets ok");
@@ -145,4 +150,5 @@ console.log("Confusable target spacing: ok");
 console.log("Smart distractors: ok");
 console.log("Mistake debt retirement: ok");
 console.log("Independent skill review: ok");
+console.log("Mixed practical retrieval: ok");
 console.log("Session summary: ok");
