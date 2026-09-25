@@ -67,12 +67,38 @@ function neutralSourceName(value) {
     .trim();
 }
 
+export function learningConceptSourceName(sourceName) {
+  const neutral = neutralSourceName(sourceName);
+  const subdivision = neutral.match(
+    /^(?:.+?\s+)?(?:part|head|belly) of (.+)$/i
+  );
+
+  if (!subdivision) return neutral;
+
+  const parent = subdivision[1].trim();
+  const translatedParent =
+    bodyPartsMuscleNameRu(parent) || structureTerm(parent).nameRu || "";
+
+  // Only collapse a subdivision when the parent muscle itself has a known
+  // user-facing Russian name. Atlas mode still keeps the exact source mesh;
+  // this grouping affects the learning concept, not anatomical exploration.
+  if (
+    translatedParent &&
+    translatedParent !== parent &&
+    /[А-Яа-яЁё]/u.test(translatedParent)
+  ) {
+    return parent;
+  }
+
+  return neutral;
+}
+
 function canonicalRussianName(sourceName) {
-  const neutralSource = neutralSourceName(sourceName);
-  const neutralTranslation = bodyPartsMuscleNameRu(neutralSource);
+  const conceptSource = learningConceptSourceName(sourceName);
+  const neutralTranslation = bodyPartsMuscleNameRu(conceptSource);
   if (neutralTranslation) return stripRussianSide(neutralTranslation);
 
-  return stripRussianSide(structureTerm(sourceName).nameRu || sourceName);
+  return stripRussianSide(structureTerm(conceptSource).nameRu || sourceName);
 }
 
 function baseRussianName(value) {
