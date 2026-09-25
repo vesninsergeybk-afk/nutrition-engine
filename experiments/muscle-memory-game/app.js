@@ -158,9 +158,7 @@ let selectedExploreSid = null;
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
 
 function syncQuestionCardPlacement() {
-  const shouldDock =
-    mobileTaskMedia.matches &&
-    appMode === "quiz";
+  const shouldDock = mobileTaskMedia.matches;
 
   if (shouldDock) {
     if (questionCardEl.parentElement !== viewerWrap) viewerWrap.appendChild(questionCardEl);
