@@ -11,6 +11,7 @@ import {
   LEARNING_REGIONS,
   buildMuscleCatalog,
   filterCatalogByRegion,
+  learningConceptSourceName,
   learningSummary,
   loadLearningStore,
   recordLearningAttempt,
@@ -138,15 +139,19 @@ controls.panSpeed = 0.72;
 controls.rotateSpeed = 0.78;
 controls.maxPolarAngle = Math.PI * 0.98;
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x777777, 2.2));
+scene.add(new THREE.HemisphereLight(0xffffff, 0x777777, 1.35));
 
-const key = new THREE.DirectionalLight(0xffffff, 2.6);
+const key = new THREE.DirectionalLight(0xffffff, 2.45);
 key.position.set(3, 5, 4);
 scene.add(key);
 
-const fill = new THREE.DirectionalLight(0xffffff, 1.1);
+const fill = new THREE.DirectionalLight(0xffffff, 0.62);
 fill.position.set(-4, 1, -3);
 scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0xffffff, 0.5);
+rim.position.set(0, 2, -4);
+scene.add(rim);
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -213,11 +218,21 @@ function hashString(value) {
 }
 
 function baseColorFor(name) {
-  const hash = hashString(name);
-  const hue = 0.985 + (hash % 20) / 2000;
-  const saturation = 0.43 + ((hash >>> 5) % 10) / 100;
-  const lightness = 0.47 + ((hash >>> 9) % 8) / 100;
-  return new THREE.Color().setHSL(hue % 1, saturation, lightness);
+  // Both sides and anatomical subdivisions of one muscle should read as one
+  // structure. Use the learning concept as the color key while keeping the
+  // exact mesh identity for atlas selection and highlighting.
+  const concept = learningConceptSourceName(name) || name;
+  const hash = hashString(concept.toLocaleLowerCase("en-US"));
+
+  // Stay inside an anatomical red/rose family, but use enough perceptual
+  // variation to separate neighbouring muscles without turning the atlas into
+  // a rainbow.
+  const hueOffsets = [-0.028, -0.014, 0, 0.014, 0.028, 0.042];
+  const hue = (0.99 + hueOffsets[hash % hueOffsets.length] + 1) % 1;
+  const saturation = 0.42 + ((hash >>> 5) % 17) / 100;
+  const lightness = 0.46 + ((hash >>> 11) % 13) / 100;
+
+  return new THREE.Color().setHSL(hue, saturation, lightness);
 }
 
 function displayStructureName(sid) {
