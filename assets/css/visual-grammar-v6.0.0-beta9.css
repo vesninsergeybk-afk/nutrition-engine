@@ -195,6 +195,30 @@ html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-an
   letter-spacing:-.01em!important;
 }
 
+/* ---------- Profile: keep every panel and control, but remove redundant outer chrome ---------- */
+html[data-interface-simplification="1"]:not([data-theme^="retro"])[data-navigation-shell="workspace"][data-navigation-route="profile"] #needsCompact,
+html[data-interface-simplification="1"]:not([data-theme^="retro"])[data-navigation-shell="workspace"][data-navigation-route="profile"] #needs{
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .profile-hierarchy__basic,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .profile-hierarchy__details,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .profile-hierarchy__method{
+  border-color:var(--vg-border)!important;
+  border-radius:var(--vg-radius-panel)!important;
+  box-shadow:var(--vg-shadow-panel)!important;
+}
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .profile-hierarchy__header>span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-profile-panel__tools>span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-profile-status>div>span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-profile-next>div>span,
+html[data-interface-simplification="1"]:not([data-theme^="retro"]) .workspace-ration-inline__head span{
+  font-weight:650!important;
+  letter-spacing:.015em!important;
+  text-transform:none!important;
+}
+
 /* ---------- Controls: secondary really looks secondary ---------- */
 html[data-interface-simplification="1"]:not([data-theme^="retro"]) #mainContent button.secondary{
   border-color:var(--vg-border-strong)!important;
