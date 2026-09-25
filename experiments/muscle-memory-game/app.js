@@ -548,7 +548,9 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   answerButton.disabled = true;
+  answerButton.hidden = false;
   nextButton.disabled = true;
+  quizActions.hidden = true;
   startLearningSessionButton.disabled = !canStartLearningSession();
   startLearningSessionButton.textContent = "Начать";
 
@@ -683,6 +685,8 @@ function prepareSessionItem() {
   focusSelectedButton.disabled = true;
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
+  quizActions.hidden = false;
+  answerButton.hidden = false;
   answerButton.disabled = false;
   nextButton.disabled = true;
   nextButton.textContent = "Следующая";
@@ -781,6 +785,8 @@ function finishLearningSession() {
   revealDeeperButton.hidden = true;
   revealDeeperButton.disabled = true;
   answerButton.disabled = true;
+  answerButton.hidden = true;
+  quizActions.hidden = false;
   focusSelectedButton.disabled = true;
   focusLearningRegion();
 
