@@ -596,6 +596,7 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   answerButton.hidden = false;
   nextButton.disabled = true;
   quizActions.hidden = true;
+  syncLearningModeButtons();
   startLearningSessionButton.disabled = !canStartLearningSession();
   startLearningSessionButton.textContent = "Начать";
 
