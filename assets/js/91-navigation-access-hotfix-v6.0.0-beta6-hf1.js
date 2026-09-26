@@ -227,8 +227,14 @@
     var button=e.target&&e.target.closest?e.target.closest('[data-navigation-semantic-return]'):null,ctx,api;
     if(!button||!returnContext)return false;
     e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();
-    ctx=clone(returnContext);returnContext=null;saveStored();pendingManualContext=ctx;
-    api=shell();if(api&&api.navigate)api.navigate(ctx.route,ctx.targetId||'');else restoreContext(ctx);
+    /* Keep returnContext alive until the wrapped navigate() has persisted the
+       current ration/correction history entry. routeChanged clears it only
+       after the analysis entry becomes active, so browser Back can restore
+       the exact return affordance that was visible on the previous entry. */
+    ctx=clone(returnContext);pendingManualContext=ctx;
+    api=shell();
+    if(api&&api.navigate)api.navigate(ctx.route,ctx.targetId||'');
+    else{returnContext=null;saveStored();restoreContext(ctx);}
     updateSemanticReturn();return true;
   }
 
