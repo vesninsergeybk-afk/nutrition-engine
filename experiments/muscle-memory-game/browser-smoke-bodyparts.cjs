@@ -173,7 +173,8 @@ const assert = require('node:assert/strict');
   });
 
   await page.selectOption('#layer-preset', 'muscles');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
   assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
   assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
   assert.ok(Number(await page.locator('#viewer').getAttribute('data-skin-count')) > 0);
