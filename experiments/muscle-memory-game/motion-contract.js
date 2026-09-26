@@ -16,8 +16,13 @@ export function pilotActuators(pilotId) {
 }
 
 export function createActivationFrame(pilotId, values = {}) {
+  const pilot = motionPilot(pilotId);
+  if (!pilot) throw new Error("Unknown motion pilot: " + pilotId);
+
   const actuators = pilotActuators(pilotId);
-  if (!actuators.length) throw new Error("Unknown or empty motion pilot: " + pilotId);
+  if (!actuators.length && pilot.requiresMyoActuators !== false) {
+    throw new Error("Motion pilot has no Myo actuators: " + pilotId);
+  }
 
   const known = new Set(actuators);
   for (const name of Object.keys(values || {})) {
