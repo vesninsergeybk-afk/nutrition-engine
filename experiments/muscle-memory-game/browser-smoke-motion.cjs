@@ -187,6 +187,7 @@ const assert = require('node:assert/strict');
     'shoulder-external-rotation',
     'shoulder-internal-rotation',
     'shoulder-scaption',
+    'shoulder-adduction',
     'shoulder-horizontal-adduction',
     'shoulder-horizontal-abduction',
   ]) {
@@ -247,6 +248,28 @@ const assert = require('node:assert/strict');
   assert.match(
     await page.locator('#motion-state').innerText(),
     /Основные двигатели:|Стабилизирующий контекст:/i
+  );
+  const visualContext = await page
+    .locator('#motion-viewer')
+    .getAttribute('data-motion-visual-context');
+  for (const unitId of [
+    'trapezius',
+    'serratus-anterior',
+    'rhomboid-major',
+    'rhomboid-minor',
+    'levator-scapulae',
+    'pectoralis-minor',
+  ]) {
+    assert.match(
+      visualContext || '',
+      new RegExp(unitId),
+      'Missing shoulder visual context unit: ' + unitId
+    );
+  }
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-missing-context'),
+    '',
+    'Shoulder visual-only context must be rendered in the current anatomy source'
   );
 
   assert.equal(
