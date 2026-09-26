@@ -123,3 +123,17 @@ assert(
     app.includes("visualContextNames"),
   "Motion UI does not explain visual-only anatomical context"
 );
+
+
+assert(
+  app.includes("shouldUseTsmNativeMotion") &&
+    app.includes('action.movementId === "shoulder-adduction"'),
+  "Verified TSM shoulder adduction is still hidden behind a diagnostic URL flag"
+);
+assert(
+  css.includes("motion-state-controls") &&
+    css.includes("max-height: min(26dvh, 205px)") &&
+    css.includes("motion-state.motion-state-controls > span"),
+  "Mobile Motion controls are not compact enough for movement-first teaching"
+);
+console.log("Motion mobile UX: compact controls and normal-flow TSM adduction");

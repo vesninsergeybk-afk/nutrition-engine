@@ -64,16 +64,26 @@ const assert = require('node:assert/strict');
       'none',
       'Atlas viewer tools must not cover mobile Motion'
     );
-    assert.ok(stateBox && stateBox.height <= viewport.height * 0.44,
-      'Motion controls sheet must leave most of the moving model visible');
+    assert.ok(stateBox && stateBox.height <= viewport.height * 0.30,
+      'Motion controls sheet must stay compact and leave the moving model dominant');
     assert.ok(sliderBox && sliderBox.y >= stateBox.y &&
       sliderBox.y + sliderBox.height <= stateBox.y + stateBox.height,
       'Motion slider must be immediately reachable inside the controls sheet');
 
-    const controlsTop = await page.locator('.motion-controls').evaluate(el => el.offsetTop);
-    const rolesTop = await page.locator('.motion-role-summary').evaluate(el => el.offsetTop);
-    assert.ok(controlsTop <= rolesTop,
-      'Primary motion controls must precede long explanatory role text');
+    assert.equal(
+      await page.locator('.motion-role-summary').evaluate(
+        el => getComputedStyle(el).display
+      ),
+      'none',
+      'Long role explanation must not cover the mobile movement scene'
+    );
+    assert.equal(
+      await page.locator('#motion-kinematic-summary').evaluate(
+        el => getComputedStyle(el).display
+      ),
+      'none',
+      'Kinematic explanation must stay out of the compact mobile controls sheet'
+    );
 
     const motionCanvas = page.locator('#motion-viewer');
     const boneCount = Number(await motionCanvas.getAttribute('data-motion-bones') || 0);

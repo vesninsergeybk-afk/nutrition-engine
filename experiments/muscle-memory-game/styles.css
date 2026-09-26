@@ -1312,12 +1312,14 @@ body:not(.motion-mode) .comparison-pane-static {
   accent-color: currentColor;
 }
 
-.motion-control-buttons {
+.motion-control-buttons,
+.motion-button-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px;
 }
 
+.motion-button-row button,
 .motion-control-buttons button {
   min-height: 34px;
   padding: 7px 10px;
@@ -1479,53 +1481,67 @@ body:not(.motion-mode) .comparison-pane-static {
     left: 8px;
     right: 8px;
     bottom: 8px;
-    max-height: min(40dvh, 360px);
+    max-height: min(28dvh, 220px);
     overflow-y: auto;
     overscroll-behavior: contain;
-    gap: 5px;
-    padding: 10px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(27,27,29,.18);
+    gap: 4px;
+    padding: 8px 10px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(27,27,29,.16);
     scrollbar-width: thin;
   }
 
-  body.motion-mode .motion-state > strong {
-    padding-right: 74px;
-    font-size: 13px;
+  body.motion-mode .motion-state.motion-state-controls {
+    max-height: min(26dvh, 205px);
   }
 
-  body.motion-mode .motion-state > span:first-of-type {
-    padding-right: 74px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  body.motion-mode .motion-state > strong {
+    padding-right: 68px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  body.motion-mode .motion-state.motion-state-controls > span,
+  body.motion-mode .motion-state.motion-state-controls > small,
+  body.motion-mode .motion-state.motion-state-controls > .motion-role-summary {
+    display: none;
   }
 
   body.motion-mode .motion-controls {
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    position: static;
     margin-top: 2px;
-    padding: 8px 0 9px;
+    padding: 4px 0 0;
+    gap: 4px;
     border-top: 0;
-    border-bottom: 1px solid rgba(27,27,29,.10);
-    background: rgba(255,255,255,.97);
+    border-bottom: 0;
+    background: transparent;
+  }
+
+  body.motion-mode .motion-movement-row {
+    gap: 2px;
+  }
+
+  body.motion-mode .motion-movement-row > span {
+    display: none;
+  }
+
+  body.motion-mode .motion-movement-row select {
+    min-height: 34px;
+  }
+
+  body.motion-mode .motion-angle-row {
+    font-size: 10px;
   }
 
   body.motion-mode #motion-angle {
-    min-height: 28px;
+    min-height: 22px;
     touch-action: pan-x;
   }
 
-  body.motion-mode .motion-control-buttons button {
-    min-height: 40px;
-  }
-
-  body.motion-mode .motion-role-summary,
-  body.motion-mode .motion-kinematic-summary,
-  body.motion-mode .motion-source-gap {
-    padding-top: 3px;
+  body.motion-mode .motion-control-buttons button,
+  body.motion-mode .motion-button-row button {
+    min-height: 34px;
+    padding-block: 5px;
   }
 }
 
@@ -1536,11 +1552,12 @@ body:not(.motion-mode) .comparison-pane-static {
   }
 
   body.motion-mode .comparison-pane-static {
-    width: min(34vw, 124px);
-    height: min(20dvh, 154px);
+    width: min(30vw, 112px);
+    height: min(16dvh, 120px);
   }
 
-  body.motion-mode .motion-state {
-    max-height: min(42dvh, 340px);
+  body.motion-mode .motion-state,
+  body.motion-mode .motion-state.motion-state-controls {
+    max-height: min(27dvh, 198px);
   }
 }

@@ -238,6 +238,18 @@ const motionNativeBoneProbe =
   motionQuery.get("motionBones") === "tsm-native";
 const motionNativeMovementProbe =
   motionQuery.get("motionMovement") || null;
+
+function shouldUseTsmNativeMotion(action) {
+  if (!action) return false;
+  const productionSupported =
+    action.pilotId === "shoulder" &&
+    action.movementId === "shoulder-adduction";
+  const diagnosticSupported =
+    motionNativeBoneProbe &&
+    (action.pilotId === "shoulder" || action.pilotId === "scapula");
+  return productionSupported || diagnosticSupported;
+}
+
 camera.position.set(0, 0, 4);
 
 const renderer = new THREE.WebGLRenderer({
@@ -3744,6 +3756,7 @@ function disposeMotionObject(object) {
 function clearMotionPreview() {
   motionPlayback = null;
   motionRig = null;
+  motionStateEl?.classList.remove("motion-state-controls");
   motionNativePlayback = null;
   motionNativeLoadGeneration += 1;
   motionCameraIndependent = false;
@@ -3846,6 +3859,7 @@ function applyTsmNativePose(playback, progress) {
 function renderTsmNativeAdductionControls(selectedName, playback) {
   if (!motionStateEl) return;
   motionStateEl.replaceChildren();
+  motionStateEl.classList.add("motion-state-controls");
 
   const strong = document.createElement("strong");
   strong.textContent = selectedName || "Плечевой комплекс";
@@ -5826,6 +5840,7 @@ function renderMotionControls(
 ) {
   if (!motionStateEl) return;
   motionStateEl.replaceChildren();
+  motionStateEl.classList.add("motion-state-controls");
 
   const strong = document.createElement("strong");
   strong.textContent = selectedName;
@@ -6056,10 +6071,7 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
     ? motionVisualAssetPolicy(action.pilotId)
     : null;
 
-  if (
-    motionNativeBoneProbe &&
-    (action?.pilotId === "shoulder" || action?.pilotId === "scapula")
-  ) {
+  if (shouldUseTsmNativeMotion(action)) {
     void buildTsmNativeBoneProbeScene(
       action,
       displayStructureName(firstSid)
