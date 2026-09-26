@@ -488,3 +488,14 @@ This is intentionally limited to runtime assets. The full upstream OpenSim model
 A verification pass found that the first native-bone probe loaded the correct pinned VTP files but omitted the non-unit `Mesh.scale_factors` serialized by the same Thoracoscapular CMC model. That meant the visual meshes did not yet exactly represent the geometry used by the source OpenSim model.
 
 The native loader now applies the pinned model scale factors for thorax, clavicle, scapula and humerus directly to the VTP geometry before any body pose is applied. This keeps the source-native mesh in the same scaled body-local geometry as the model that produced the CMC transforms. No atlas registration is involved.
+
+
+### First source-derived native-bone motion: shoulder adduction checkpoint — 2026-09-27
+
+The independent TSM scene now has one deliberately narrow executable movement: `shoulder-adduction`.
+
+No new adduction biomechanics were invented. The runtime loads the verified local `tsm-abduction-teaching-01` CMC clip and plays its thorax-relative clavicle/scapula/humerus poses in reverse. This is therefore a source-derived kinematic return path, not a separately measured active-adduction trial and not evidence about adductor muscle activation.
+
+The source phase spans approximately 96.95° -> 22.52° on the recorded `shoulder_elv` coordinate when reversed. The Motion Lab does not extrapolate the trajectory from ~22.5° to 0°. Source-native TSM geometry is used directly, with the OpenSim mesh scale factors baked into the VTP geometry before clip poses are applied.
+
+This checkpoint still renders bones only. Volumetric adductor muscles remain a later visual layer.

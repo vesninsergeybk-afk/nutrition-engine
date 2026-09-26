@@ -83,6 +83,11 @@ import {
   loadTsmNativeBoneGeometries,
 } from "./motion-native-bones.js";
 import {
+  loadTsmNativeMotionClip,
+  sampleTsmNativeMotion,
+  tsmNativeMotionSourceRange,
+} from "./motion-native-clips.js";
+import {
   clampMotionValue,
   elbowFlexionRadians,
   horizontalShoulderComplexPreview,
@@ -227,9 +232,12 @@ let motionRig = null;
 let motionPlayback = null;
 let motionNativeLoadGeneration = 0;
 let motionCameraIndependent = false;
+let motionNativePlayback = null;
+const motionQuery = new URLSearchParams(window.location.search);
 const motionNativeBoneProbe =
-  new URLSearchParams(window.location.search).get("motionBones") ===
-  "tsm-native";
+  motionQuery.get("motionBones") === "tsm-native";
+const motionNativeMovementProbe =
+  motionQuery.get("motionMovement") || null;
 camera.position.set(0, 0, 4);
 
 const renderer = new THREE.WebGLRenderer({
@@ -3736,6 +3744,7 @@ function disposeMotionObject(object) {
 function clearMotionPreview() {
   motionPlayback = null;
   motionRig = null;
+  motionNativePlayback = null;
   motionNativeLoadGeneration += 1;
   motionCameraIndependent = false;
 
@@ -3804,6 +3813,108 @@ function fitIndependentMotionCamera(box) {
   motionCamera.updateProjectionMatrix();
 }
 
+function applyTsmNativePose(playback, progress) {
+  if (!playback?.loaded || !playback?.meshes) return;
+  const frame = sampleTsmNativeMotion(playback.loaded, progress);
+
+  for (const bodyId of ["clavicle", "scapula", "humerus"]) {
+    const mesh = playback.meshes.get(bodyId);
+    const pose = frame.bodies?.[bodyId];
+    if (!mesh || !pose) continue;
+    mesh.position.set(
+      pose.position[0],
+      pose.position[1],
+      pose.position[2]
+    );
+    // Motion clips store SimTK quaternions as [w,x,y,z].
+    mesh.quaternion.set(
+      pose.quaternion[1],
+      pose.quaternion[2],
+      pose.quaternion[3],
+      pose.quaternion[0]
+    );
+  }
+
+  playback.progress = progress;
+  if (motionCanvas) {
+    motionCanvas.dataset.motionState =
+      progress >= 1 ? "source-native-adduction-end" : "source-native-adduction";
+    motionCanvas.dataset.motionNativeProgress = progress.toFixed(4);
+  }
+}
+
+function renderTsmNativeAdductionControls(selectedName, playback) {
+  if (!motionStateEl) return;
+  motionStateEl.replaceChildren();
+
+  const strong = document.createElement("strong");
+  strong.textContent = selectedName || "Плечевой комплекс";
+
+  const description = document.createElement("span");
+  const range = tsmNativeMotionSourceRange(playback.loaded);
+  description.textContent =
+    "Приведение показано как обратное воспроизведение проверенной CMC-траектории отведения: ключица, лопатка и плечевая кость движутся согласованно. Это source-derived кинематический участок, а не отдельный эксперимент активного приведения.";
+
+  const sourceNote = document.createElement("small");
+  sourceNote.className = "motion-range-note";
+  sourceNote.textContent = range
+    ? "Покрытый источником участок: " +
+      range.start.toFixed(1) +
+      "° → " +
+      range.end.toFixed(1) +
+      "° по координате " +
+      range.coordinate +
+      ". До 0° траектория не достраивается вручную."
+    : "Диапазон определяется исходным CMC-клипом.";
+
+  const controls = document.createElement("div");
+  controls.className = "motion-controls";
+  const buttons = document.createElement("div");
+  buttons.className = "motion-button-row";
+
+  const play = document.createElement("button");
+  play.type = "button";
+  play.id = "motion-native-play";
+  play.textContent = "Показать движение";
+  play.addEventListener("click", () => {
+    playback.playing = true;
+    playback.startTime = performance.now();
+    playback.progress = 0;
+    applyTsmNativePose(playback, 0);
+    if (motionCanvas) motionCanvas.dataset.motionPlaying = "true";
+  });
+
+  const reset = document.createElement("button");
+  reset.type = "button";
+  reset.id = "motion-native-reset";
+  reset.textContent = "Исходное";
+  reset.addEventListener("click", () => {
+    playback.playing = false;
+    playback.progress = 0;
+    applyTsmNativePose(playback, 0);
+    if (motionCanvas) motionCanvas.dataset.motionPlaying = "false";
+  });
+
+  buttons.append(play, reset);
+  controls.append(buttons);
+  motionStateEl.append(strong, description, sourceNote, controls);
+}
+
+function updateTsmNativePlayback(now) {
+  const playback = motionNativePlayback;
+  if (!playback?.playing) return;
+  const durationMs = Math.max(500, playback.loaded.clip.duration * 1000);
+  const progress = Math.min(
+    1,
+    Math.max(0, (now - playback.startTime) / durationMs)
+  );
+  applyTsmNativePose(playback, progress);
+  if (progress >= 1) {
+    playback.playing = false;
+    if (motionCanvas) motionCanvas.dataset.motionPlaying = "false";
+  }
+}
+
 async function buildTsmNativeBoneProbeScene(action, selectedName) {
   const generation = ++motionNativeLoadGeneration;
   motionCameraIndependent = true;
@@ -3841,6 +3952,7 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
 
     const box = new THREE.Box3();
     const ids = [];
+    const nativeMeshes = new Map();
     for (const boneId of defaultTsmNativeBoneIds()) {
       const geometry = geometries.get(boneId);
       if (!geometry) throw new Error("Native TSM bone missing: " + boneId);
@@ -3849,22 +3961,59 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       mesh.userData.motionBoneUnit = boneId;
       mesh.userData.motionGeometrySource = "tsm-native-bones";
       motionModelGroup.add(mesh);
+      nativeMeshes.set(boneId, mesh);
       box.expandByObject(mesh);
       ids.push(boneId);
     }
 
     fitIndependentMotionCamera(box);
 
+    const supportsAdduction =
+      action?.movementId === "shoulder-adduction";
+    if (supportsAdduction) {
+      const loaded = await loadTsmNativeMotionClip("shoulder-adduction");
+      if (
+        generation !== motionNativeLoadGeneration ||
+        appMode !== "motion"
+      ) {
+        return;
+      }
+      motionNativePlayback = {
+        kind: "tsm-source-clip",
+        movementId: "shoulder-adduction",
+        loaded,
+        meshes: nativeMeshes,
+        playing: false,
+        startTime: 0,
+        progress: 0,
+      };
+      applyTsmNativePose(motionNativePlayback, 0);
+      renderTsmNativeAdductionControls(
+        selectedName,
+        motionNativePlayback
+      );
+    }
+
     if (motionCanvas) {
-      motionCanvas.dataset.motionState = "source-native-rest-pose";
+      motionCanvas.dataset.motionState = supportsAdduction
+        ? "source-native-adduction-ready"
+        : "source-native-rest-pose";
       motionCanvas.dataset.motionPilot = action?.pilotId || "";
-      motionCanvas.dataset.motionAuthority = "source-native-geometry-probe";
+      motionCanvas.dataset.motionAuthority = supportsAdduction
+        ? "source-derived-clip"
+        : "source-native-geometry-probe";
       motionCanvas.dataset.motionGeometryRuntimeBones = "tsm-native-bones";
       motionCanvas.dataset.motionNativeBoneIds = ids.join(",");
       motionCanvas.dataset.motionBones = String(ids.length);
       motionCanvas.dataset.motionMuscles = "0";
+      motionCanvas.dataset.motionSourceClip = supportsAdduction
+        ? "tsm-abduction-teaching-01"
+        : "";
+      motionCanvas.dataset.motionSourcePlaybackDirection = supportsAdduction
+        ? "reverse"
+        : "";
     }
-    if (motionStateEl) {
+    if (motionStateEl && !supportsAdduction) {
       motionStateEl.replaceChildren();
       const strong = document.createElement("strong");
       strong.textContent = selectedName || "Плечевой комплекс";
@@ -5890,8 +6039,12 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   }
 
   const actions = motionActionsForUnits([...selectedUnits]);
+  const resolvedPreferredMovementId =
+    preferredMovementId || (motionNativeBoneProbe ? motionNativeMovementProbe : null);
   const action =
-    actions.find((item) => item.movementId === preferredMovementId) ||
+    actions.find(
+      (item) => item.movementId === resolvedPreferredMovementId
+    ) ||
     actions[0] ||
     null;
 
@@ -8241,6 +8394,7 @@ function animate(now = performance.now()) {
   resize();
   controls.update();
   updateMotionPlayback(now);
+  updateTsmNativePlayback(now);
   renderer.render(scene, camera);
 
   if (appMode === "motion" && motionRenderer && !motionPane?.hidden) {

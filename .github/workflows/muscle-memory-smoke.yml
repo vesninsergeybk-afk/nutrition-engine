@@ -50,6 +50,7 @@ jobs:
           node --check experiments/muscle-memory-game/motion-muscle-assets.js
           node --check experiments/muscle-memory-game/motion-vtp.js
           node --check experiments/muscle-memory-game/motion-native-bones.js
+          node --check experiments/muscle-memory-game/motion-native-clips.js
           node --check experiments/muscle-memory-game/motion-clip.js
           node --check experiments/muscle-memory-game/motion-registration.js
           node --check experiments/muscle-memory-game/motion-contract.js

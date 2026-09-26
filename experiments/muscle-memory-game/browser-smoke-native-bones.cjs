@@ -66,6 +66,87 @@ const assert = require('node:assert/strict');
       throw new Error('Browser errors: ' + errors.join(' || '));
     }
 
+    const adductionPage = await browser.newPage({
+      viewport: { width: 1280, height: 900 }
+    });
+    const adductionErrors = [];
+    adductionPage.on('pageerror', error =>
+      adductionErrors.push('pageerror: ' + error.message)
+    );
+    adductionPage.on('console', msg => {
+      if (msg.type() === 'error') {
+        adductionErrors.push('console: ' + msg.text());
+      }
+    });
+
+    await adductionPage.goto(
+      'http://127.0.0.1:4173/?mode=explore&scope=shoulder&motionBones=tsm-native&motionMovement=shoulder-adduction',
+      { waitUntil: 'domcontentloaded' }
+    );
+    await adductionPage.waitForFunction(
+      () => document.querySelector('#loading')?.classList.contains('is-hidden'),
+      null,
+      { timeout: 150000 }
+    );
+    await adductionPage.fill('#structure-search', 'большая грудная');
+    await adductionPage.waitForFunction(
+      () => document.querySelectorAll('.search-result').length > 0,
+      null,
+      { timeout: 15000 }
+    );
+    await adductionPage.locator('.search-result').first().click();
+    await adductionPage.click('#mode-motion');
+    await adductionPage.waitForFunction(
+      () =>
+        document.querySelector('#motion-viewer')?.dataset.motionState ===
+          'source-native-adduction-ready',
+      null,
+      { timeout: 30000 }
+    );
+
+    const adductionCanvas = adductionPage.locator('#motion-viewer');
+    assert.equal(
+      await adductionCanvas.getAttribute('data-motion-authority'),
+      'source-derived-clip'
+    );
+    assert.equal(
+      await adductionCanvas.getAttribute('data-motion-source-clip'),
+      'tsm-abduction-teaching-01'
+    );
+    assert.equal(
+      await adductionCanvas.getAttribute('data-motion-source-playback-direction'),
+      'reverse'
+    );
+    assert.match(
+      await adductionPage.locator('#motion-state').innerText(),
+      /96\.9|22\.5|обратн.*CMC|source-derived/i
+    );
+
+    const before = Number(
+      await adductionCanvas.getAttribute('data-motion-native-progress') || 0
+    );
+    await adductionPage.click('#motion-native-play');
+    await adductionPage.waitForFunction(
+      () =>
+        Number(
+          document.querySelector('#motion-viewer')?.dataset
+            .motionNativeProgress || 0
+        ) > 0.05,
+      null,
+      { timeout: 3000 }
+    );
+    const after = Number(
+      await adductionCanvas.getAttribute('data-motion-native-progress')
+    );
+    assert.ok(after > before, 'Source-native adduction did not advance');
+
+    if (adductionErrors.length) {
+      throw new Error(
+        'Native adduction browser errors: ' + adductionErrors.join(' || ')
+      );
+    }
+    await adductionPage.close();
+
     console.log('[smoke:native-bones] ok');
   } finally {
     await browser.close();
