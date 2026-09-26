@@ -31,6 +31,7 @@ SUITES = [
     ("static_integrity", [PY, "tools/static_checks.py", "--json-out", "reports/static-checks-fast.json"]),
     ("client_guard", ["node", "tests/p0-4-client-guard-stability.test.js"]),
     ("hosting_check", ["node", "tests/p0-4-1-hosting-check.test.js"]),
+    ("release1_navigation_context", ["node", "tests/release1-navigation-context-static.test.js"]),
 ]
 
 
