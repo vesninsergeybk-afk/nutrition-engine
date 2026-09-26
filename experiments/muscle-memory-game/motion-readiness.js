@@ -250,6 +250,7 @@ export const MOTION_PILOTS = Object.freeze({
   elbow: Object.freeze({
     id: "elbow",
     nameRu: "Локоть",
+    sourceId: "myosim-arm",
     specimenId: "arm",
     simulatedSide: "right",
     mirrorLeft: true,
@@ -283,6 +284,7 @@ export const MOTION_PILOTS = Object.freeze({
   wrist: Object.freeze({
     id: "wrist",
     nameRu: "Запястье",
+    sourceId: "myosim-arm",
     specimenId: "forearm-hand-anterior",
     simulatedSide: "right",
     mirrorLeft: true,
@@ -311,6 +313,8 @@ export const MOTION_PILOTS = Object.freeze({
   shoulder: Object.freeze({
     id: "shoulder",
     nameRu: "Плечевой комплекс",
+    sourceId: "thoracoscapular-shoulder",
+    requiresMyoActuators: false,
     specimenId: "shoulder",
     simulatedSide: "right",
     mirrorLeft: true,
@@ -344,18 +348,19 @@ export const MOTION_PILOTS = Object.freeze({
       Object.freeze({
         id: "glenohumeral",
         nameRu: "Плечевой сустав",
-        simulationAuthority: "mujoco",
+        simulationAuthority: "opensim-motion-clip",
       }),
       Object.freeze({
         id: "scapular-complex",
         nameRu: "Лопаточно-ключичный комплекс",
-        simulationAuthority: "kinematic-preview",
+        simulationAuthority: "opensim-motion-clip",
       }),
     ]),
   }),
   scapula: Object.freeze({
     id: "scapula",
     nameRu: "Лопаточно-ключичный комплекс",
+    sourceId: "thoracoscapular-shoulder",
     specimenId: "scapular-stabilizers",
     simulatedSide: "right",
     mirrorLeft: true,
@@ -381,12 +386,12 @@ export const MOTION_PILOTS = Object.freeze({
       Object.freeze({
         id: "scapular-translation",
         nameRu: "Протракция/ретракция и подъём/опускание",
-        simulationAuthority: "kinematic-preview",
+        simulationAuthority: "opensim-motion-clip",
       }),
       Object.freeze({
         id: "scapular-rotation",
         nameRu: "Верхняя/нижняя ротация",
-        simulationAuthority: "kinematic-preview",
+        simulationAuthority: "opensim-motion-clip",
       }),
     ]),
   })

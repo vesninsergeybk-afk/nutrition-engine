@@ -1,8 +1,8 @@
-# Регистрация Motion Lab: MyoSim ↔ анатомический атлас
+# Регистрация Motion Lab: биомеханический источник ↔ анатомический атлас
 
 ## Почему нужна отдельная регистрация
 
-MyoArm и наши Z-Anatomy/BodyParts3D используют разные системы координат, масштабы и исходную геометрию. Поэтому quaternion/position тела MuJoCo нельзя напрямую присвоить atlas-кости.
+Thoracoscapular/OpenSim, MyoArm/MuJoCo и наши Z-Anatomy/BodyParts3D используют разные системы координат, масштабы и исходную геометрию. Поэтому quaternion/position тела любого биомеханического источника нельзя напрямую присвоить atlas-кости.
 
 Для каждого pilot и каждого 3D-источника хранится отдельная rest-pose calibration. Пока она не проверена, `registrationReady()` возвращает false — анимационный режим не должен выдавать приблизительное совмещение за готовое.
 
@@ -34,7 +34,9 @@ MyoArm:
 
 ## Плечевой комплекс
 
-MyoArm связывает ключицу, лопатку и плечевую кость отдельными степенями свободы. В контракт включены грудино-ключичные, акромиально-ключичные и плечевые joints.
+Primary source теперь — Thoracoscapular Shoulder Model. В registration contract используются тела `clavicle`, `scapula`, `humerus` и координаты `clav_prot`, `clav_elev`, `scapula_abduction`, `scapula_elevation`, `scapula_upward_rot`, `scapula_winging`, `plane_elv`, `shoulder_elv`, `axial_rot`.
+
+MyoArm остаётся контрольным/техническим источником для плеча, но не production authority: его текущая shoulder chain содержит coupling constraints между подъёмом плеча и частью движения плечевого пояса.
 
 Минимальные atlas-landmarks:
 
@@ -55,7 +57,7 @@ MyoArm связывает ключицу, лопатку и плечевую к�
 ## Calibration pipeline
 
 1. Выбрать соответствующие landmarks на atlas-кости в rest pose.
-2. Получить соответствующие точки/систему тела MyoArm.
+2. Получить соответствующие точки/систему тела выбранного primary biomechanics source.
 3. Рассчитать coarse similarity transform с единым масштабом для pilot.
 4. Уточнить только rigid-поворот/перенос по поверхности кости; не использовать независимое нелинейное растяжение костей.
 5. Проверить суставные центры и оси.

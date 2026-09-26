@@ -79,19 +79,19 @@ export const MOTION_REGISTRATION_SPECS = Object.freeze({
     method: "rest-pose-landmarks-plus-rigid-refinement",
     scalePolicy: "uniform-per-pilot",
     atlasSpace: "atlas-world",
-    simulationSpace: "myoarm-right",
+    simulationSpace: "thoracoscapular-opensim-right",
     bodies: Object.freeze({
-      clavicle: body("clavicle", "clavicle_r", [
+      clavicle: body("clavicle", "clavicle", [
         "sternal-end-center",
         "acromial-end-center",
         "clavicle-shaft-reference",
       ]),
-      scapula: body("scapula", "scapula_r", [
+      scapula: body("scapula", "scapula", [
         "acromion",
         "inferior-angle",
         "root-of-scapular-spine",
       ]),
-      humerus: body("humerus", "humerus_r", [
+      humerus: body("humerus", "humerus", [
         "humeral-head-center",
         "medial-epicondyle",
         "lateral-epicondyle",
@@ -99,19 +99,19 @@ export const MOTION_REGISTRATION_SPECS = Object.freeze({
     }),
     joints: Object.freeze({
       sternoclavicular: joint("sternoclavicular", [
-        "sternoclavicular_r2_r",
-        "sternoclavicular_r3_r",
+        "clav_prot",
+        "clav_elev",
       ]),
-      acromioclavicular: joint("acromioclavicular", [
-        "acromioclavicular_r1_r",
-        "acromioclavicular_r2_r",
-        "acromioclavicular_r3_r",
+      scapulothoracic: joint("scapulothoracic", [
+        "scapula_abduction",
+        "scapula_elevation",
+        "scapula_upward_rot",
+        "scapula_winging",
       ]),
       glenohumeral: joint("glenohumeral", [
-        "elv_angle_r",
-        "shoulder_elv_r",
-        "shoulder1_r2_r",
-        "shoulder_rot_r",
+        "plane_elv",
+        "shoulder_elv",
+        "axial_rot",
       ]),
     }),
   }),
@@ -120,19 +120,19 @@ export const MOTION_REGISTRATION_SPECS = Object.freeze({
     method: "rest-pose-landmarks-plus-rigid-refinement",
     scalePolicy: "uniform-per-pilot",
     atlasSpace: "atlas-world",
-    simulationSpace: "myoarm-right",
+    simulationSpace: "thoracoscapular-opensim-right",
     bodies: Object.freeze({
-      clavicle: body("clavicle", "clavicle_r", [
+      clavicle: body("clavicle", "clavicle", [
         "sternal-end-center",
         "acromial-end-center",
         "clavicle-shaft-reference",
       ]),
-      scapula: body("scapula", "scapula_r", [
+      scapula: body("scapula", "scapula", [
         "acromion",
         "inferior-angle",
         "root-of-scapular-spine",
       ]),
-      humerus: body("humerus", "humerus_r", [
+      humerus: body("humerus", "humerus", [
         "humeral-head-center",
         "medial-epicondyle",
         "lateral-epicondyle",
@@ -140,13 +140,14 @@ export const MOTION_REGISTRATION_SPECS = Object.freeze({
     }),
     joints: Object.freeze({
       sternoclavicular: joint("sternoclavicular", [
-        "sternoclavicular_r2_r",
-        "sternoclavicular_r3_r",
+        "clav_prot",
+        "clav_elev",
       ]),
-      acromioclavicular: joint("acromioclavicular", [
-        "acromioclavicular_r1_r",
-        "acromioclavicular_r2_r",
-        "acromioclavicular_r3_r",
+      scapulothoracic: joint("scapulothoracic", [
+        "scapula_abduction",
+        "scapula_elevation",
+        "scapula_upward_rot",
+        "scapula_winging",
       ]),
     }),
   }),

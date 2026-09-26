@@ -15,49 +15,70 @@ import {
   createMotionSnapshot,
   pilotActuators,
 } from "./motion-contract.js";
+import {
+  MOTION_SOURCES,
+  primaryMotionSource,
+} from "./motion-sources.js";
 
-const CHAIN_URL =
-  "https://raw.githubusercontent.com/MyoHub/myo_sim/main/myo_sim/models/arm/assets/myoarm_r_chain.xml";
-const MUSCLE_URL =
-  "https://raw.githubusercontent.com/MyoHub/myo_sim/main/myo_sim/models/arm/assets/myoarm_r_muscle.xml";
+const MYO = MOTION_SOURCES["myosim-arm"];
+const TSM = MOTION_SOURCES["thoracoscapular-shoulder"];
 
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
+function rawUrl(source, path) {
+  return (
+    "https://raw.githubusercontent.com/" +
+    source.repository +
+    "/" +
+    source.revision +
+    "/" +
+    path.split("/").map(encodeURIComponent).join("/")
+  );
 }
 
-const [chainResponse, muscleResponse] = await Promise.all([
-  fetch(CHAIN_URL),
-  fetch(MUSCLE_URL),
+const [chainResponse, muscleResponse, tsmResponse] = await Promise.all([
+  fetch(rawUrl(MYO, MYO.modelPath)),
+  fetch(rawUrl(MYO, MYO.musclePath)),
+  fetch(rawUrl(TSM, TSM.modelPath)),
 ]);
-assert(chainResponse.ok && muscleResponse.ok, "Could not fetch MyoSim arm model");
+assert(
+  chainResponse.ok && muscleResponse.ok && tsmResponse.ok,
+  "Could not fetch pinned biomechanics models"
+);
 const chain = await chainResponse.text();
 const muscle = await muscleResponse.text();
+const tsmModel = await tsmResponse.text();
 
 for (const pilot of Object.values(MOTION_PILOTS)) {
   const spec = MOTION_REGISTRATION_SPECS[pilot.id];
   assert(spec, "Missing registration spec for " + pilot.id);
 
+  const source = primaryMotionSource(pilot.id);
+  assert(source, pilot.id + ": primary motion source missing");
+  const sourceText =
+    source.id === "thoracoscapular-shoulder" ? tsmModel : chain;
+
   for (const bodyName of requiredSimulationBodies(pilot.id)) {
     assert(
-      chain.includes('name="' + bodyName + '"'),
-      pilot.id + ": MyoSim body missing: " + bodyName
+      sourceText.includes('name="' + bodyName + '"'),
+      pilot.id + ": source body missing: " + bodyName
     );
   }
 
   for (const jointName of requiredSimulationJoints(pilot.id)) {
     assert(
-      chain.includes('name="' + jointName + '"'),
-      pilot.id + ": MyoSim joint missing: " + jointName
+      sourceText.includes('name="' + jointName + '"'),
+      pilot.id + ": source coordinate/joint missing: " + jointName
     );
   }
 
-  for (const unitId of pilot.muscleUnits) {
-    const unit = motionVisualUnit(unitId);
-    for (const actuator of unit.myoActuators) {
-      assert(
-        muscle.includes('name="' + actuator + '"'),
-        pilot.id + ": MyoSim actuator missing: " + actuator
-      );
+  if (source.id === "myosim-arm") {
+    for (const unitId of pilot.muscleUnits) {
+      const unit = motionVisualUnit(unitId);
+      for (const actuator of unit.myoActuators) {
+        assert(
+          muscle.includes('name="' + actuator + '"'),
+          pilot.id + ": MyoSim actuator missing: " + actuator
+        );
+      }
     }
   }
 
@@ -73,11 +94,13 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
     );
   }
 
-  const frame = createActivationFrame(pilot.id, {});
-  assert(
-    Object.keys(frame.actuators).length === pilotActuators(pilot.id).length,
-    pilot.id + ": activation frame does not cover all pilot actuators"
-  );
+  if (pilot.requiresMyoActuators !== false) {
+    const frame = createActivationFrame(pilot.id, {});
+    assert(
+      Object.keys(frame.actuators).length === pilotActuators(pilot.id).length,
+      pilot.id + ": activation frame does not cover all pilot actuators"
+    );
+  }
 }
 
 for (const source of ["z-anatomy", "bodyparts4"]) {
@@ -111,6 +134,6 @@ try {
 }
 assert(rejected, "Unknown simulation actuator must be rejected");
 
-console.log("Motion simulation contract: MyoArm bodies/joints/actuators verified");
+console.log("Motion simulation contract: TSM shoulder/scapula + MyoArm distal source contracts verified");
 console.log("Motion registration contract: explicit landmark calibration required");
 console.log("Motion frame contract: activations and body transforms normalized");

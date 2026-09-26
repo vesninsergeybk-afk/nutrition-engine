@@ -317,3 +317,14 @@ Motion использует **combined shoulder-complex preview**.
 Горизонтальное приведение и отведение больше не начинаются из искусственной позы, где плечевая кость одна повёрнута на 90° при неподвижной лопатке. Исходные 90° отведения теперь строятся как плечевой комплекс: часть угла приходится на гленогумеральное движение, часть — на верхнюю ротацию лопатки, одновременно учитываются задний наклон лопатки, положение ключицы и консервативная наружная ротация плечевой кости.
 
 Поверх этой исходной позы горизонтальное приведение добавляет небольшой тренд лопатки к протракции/внутренней ротации и ключицы — к протракции; горизонтальное отведение даёт противоположный тренд к ретракции/наружной ротации. Эти добавки намеренно невелики: их задача — убрать ложную неподвижность плечевого пояса, не выдавая одну траекторию за универсальную норму. В интерфейсе отдельно объясняется разложение исходных 90° и характер сопутствующего движения лопатки.
+
+
+## Source-backed biomechanics architecture — 2026-09-26
+
+Production authority for movement is now separated from the rendering layer.
+
+- Shoulder and scapular-complex primary source: `thoracoscapular-shoulder` (Thoracoscapular Shoulder Model, OpenSim). OpenSim is an offline build dependency only. The browser is expected to consume precomputed `motion-clip-v1` rigid-body transforms.
+- Elbow, forearm rotation and wrist primary candidate: `myosim-arm` (MyoArm/MyoSim). Runtime may later use official MuJoCo WASM or precomputed clips. Upstream model provenance/licensing remains a product gate.
+- `motion-kinematics.js` is retained as `kinematic-preview` fallback only. It is no longer the target production biomechanics engine.
+
+The first exporter workflow is intentionally manual. It downloads a pinned Thoracoscapular model and pinned ABD01 / FLX01 / SHRUG01 trajectories, uses OpenSim offline to realize body positions, then exports clavicle/scapula/humerus position + normalized quaternion frames. Browser interpolation occurs only between source-derived poses.
