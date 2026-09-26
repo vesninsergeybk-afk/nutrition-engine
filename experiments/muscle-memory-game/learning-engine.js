@@ -81,6 +81,7 @@ function normalizeSource(value) {
     .trim()
     .toLocaleLowerCase("en-US")
     .replace(/\.(l|r)$/i, "")
+    .replace(/^\((.+)\)$/u, "$1")
     .replace(/\b(right|left)\b/gi, "")
     .replace(/\s+/g, " ")
     .trim();
