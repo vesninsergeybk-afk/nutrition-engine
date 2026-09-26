@@ -241,3 +241,17 @@ assert(
 );
 
 console.log("Upper-limb kinematics: scaption and assistant roles ok");
+
+const latissimusActions = motionActionsForUnits(["latissimus-dorsi"]);
+assert(
+  latissimusActions.some((item) => item.movementId === "shoulder-extension") &&
+    latissimusActions.some((item) => item.movementId === "shoulder-adduction") &&
+    latissimusActions.some((item) => item.movementId === "shoulder-internal-rotation"),
+  "Latissimus dorsi shoulder actions are incomplete"
+);
+assert(
+  abductionAction.stabilizers.includes("trapezius") &&
+    abductionAction.stabilizers.includes("serratus-anterior"),
+  "Shoulder elevation must expose scapular stabilizing context"
+);
+console.log("Upper-limb kinematics: latissimus and scapular context ok");

@@ -124,6 +124,22 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
     [/pectoralis major/i],
     ["PECM1", "PECM2", "PECM3"]
   ),
+  "latissimus-dorsi": unit(
+    "latissimus-dorsi",
+    "Широчайшая мышца спины",
+    [/latissimus dorsi/i],
+    ["LAT1", "LAT2", "LAT3"]
+  ),
+  trapezius: unit(
+    "trapezius",
+    "Трапециевидная мышца",
+    [/trapezius/i]
+  ),
+  "serratus-anterior": unit(
+    "serratus-anterior",
+    "Передняя зубчатая мышца",
+    [/serratus anterior/i]
+  ),
   coracobrachialis: unit(
     "coracobrachialis",
     "Клювовидно-плечевая мышца",
@@ -278,6 +294,7 @@ export const MOTION_PILOTS = Object.freeze({
       "subscapularis",
       "teres-minor",
       "pectoralis-major",
+      "latissimus-dorsi",
       "coracobrachialis",
       "teres-major",
     ]),

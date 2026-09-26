@@ -4087,6 +4087,12 @@ function deformRadiusForForearmRotation(radius, ulna, angleRad) {
   radius.geometry.computeBoundingSphere();
 }
 
+function motionBoneMeshesByUnit(unitId) {
+  return motionModelGroup.children.filter(
+    (child) => child?.userData?.motionBoneUnit === unitId
+  );
+}
+
 function buildElbowKinematicRig(action, muscleMeshes, boneMeshes) {
   const humerus = boneMeshes.get("humerus") || null;
   const radius = boneMeshes.get("radius") || null;
@@ -4095,12 +4101,13 @@ function buildElbowKinematicRig(action, muscleMeshes, boneMeshes) {
 
   const pivot = estimateElbowPivot(humerus, radius, ulna);
   if (!pivot) return null;
+  const handMeshes = motionBoneMeshesByUnit("hand");
 
   const forearmPivot = new THREE.Group();
   forearmPivot.name = "elbow-forearm-pivot";
   forearmPivot.position.copy(pivot);
   motionModelGroup.add(forearmPivot);
-  for (const mesh of [radius, ulna].filter(Boolean)) {
+  for (const mesh of [radius, ulna, ...handMeshes].filter(Boolean)) {
     reparentMotionMeshAtPivot(mesh, pivot, forearmPivot);
   }
 
@@ -4112,6 +4119,7 @@ function buildElbowKinematicRig(action, muscleMeshes, boneMeshes) {
     action,
     pivot,
     forearmPivot,
+    distalFollowerCount: [radius, ulna, ...handMeshes].filter(Boolean).length,
     muscleMeshes,
     valueDeg: action.startDeg,
   };
@@ -4126,6 +4134,24 @@ function buildForearmRotationRig(action, muscleMeshes, boneMeshes) {
   const pivot = estimateElbowPivot(humerus, radius, ulna);
   if (!pivot) return null;
   captureMotionRestGeometry(radius);
+  const handMeshes = motionBoneMeshesByUnit("hand");
+  const ulnaBox = motionMeshBox(ulna);
+  const radiusBox = motionMeshBox(radius);
+  const axisCenter = ulnaBox.isEmpty()
+    ? radiusBox.getCenter(new THREE.Vector3())
+    : ulnaBox.getCenter(new THREE.Vector3());
+  const axisOrigin = new THREE.Vector3(
+    axisCenter.x,
+    radiusBox.max.y,
+    axisCenter.z
+  );
+  const handRotationPivot = new THREE.Group();
+  handRotationPivot.name = "forearm-hand-rotation-pivot";
+  handRotationPivot.position.copy(axisOrigin);
+  motionModelGroup.add(handRotationPivot);
+  for (const mesh of handMeshes) {
+    reparentMotionMeshAtPivot(mesh, axisOrigin, handRotationPivot);
+  }
   for (const mesh of muscleMeshes) captureMotionRestGeometry(mesh);
 
   return {
@@ -4135,6 +4161,8 @@ function buildForearmRotationRig(action, muscleMeshes, boneMeshes) {
     pivot,
     radius,
     ulna,
+    handRotationPivot,
+    distalFollowerCount: handMeshes.length + 1,
     muscleMeshes,
     sideSign: Math.sign(pivot.x) || 1,
     valueDeg: action.startDeg,
@@ -4179,6 +4207,7 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
   const clavicle = boneMeshes.get("clavicle") || null;
   const radius = boneMeshes.get("radius") || null;
   const ulna = boneMeshes.get("ulna") || null;
+  const handMeshes = motionBoneMeshesByUnit("hand");
   if (!humerus || !scapula) return null;
 
   const pivot = estimateShoulderPivot(humerus);
@@ -4189,7 +4218,7 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
   humerusPivot.position.copy(pivot);
   motionModelGroup.add(humerusPivot);
 
-  const distalFollowers = [radius, ulna].filter(Boolean);
+  const distalFollowers = [radius, ulna, ...handMeshes].filter(Boolean);
   for (const mesh of [humerus, ...distalFollowers]) {
     reparentMotionMeshAtPivot(mesh, pivot, humerusPivot);
   }
@@ -4296,6 +4325,12 @@ function applyForearmRotationValue(angleDeg) {
     motionRig.ulna,
     angleRad
   );
+  if (motionRig.handRotationPivot) {
+    motionRig.handRotationPivot.quaternion.setFromAxisAngle(
+      new THREE.Vector3(0, -1, 0),
+      angleRad
+    );
+  }
 
   const activation = motionActionActivation(motionRig.action, value);
   for (const mesh of motionRig.muscleMeshes) {
@@ -4390,8 +4425,25 @@ function applyShoulderMotionValue(angleDeg) {
   motionRig.humerusPivot.quaternion.setFromAxisAngle(axis, angle);
 
   const activation = motionActionActivation(motionRig.action, value);
+  const humeralCrossingUnits = new Set([
+    "deltoid-clavicular",
+    "deltoid-acromial",
+    "deltoid-spinal",
+    "biceps-long",
+    "biceps-short",
+    "triceps-long",
+    "supraspinatus",
+    "infraspinatus",
+    "subscapularis",
+    "teres-minor",
+    "pectoralis-major",
+    "latissimus-dorsi",
+    "coracobrachialis",
+    "teres-major",
+  ]);
   for (const mesh of motionRig.muscleMeshes) {
     restoreMotionRestGeometry(mesh);
+    if (!humeralCrossingUnits.has(mesh.userData.motionUnit)) continue;
     deformShoulderMuscle(
       mesh,
       motionRig.pivot,
@@ -4565,12 +4617,20 @@ function renderMotionControls(selectedName, action, actions, selectedIds) {
   const rangeNote = document.createElement("small");
   rangeNote.className = "motion-range-note";
   if (action.referenceMaxDeg > action.maxDeg) {
+    const limitation =
+      action.pilotId === "shoulder"
+        ? "выше нужна проверенная кинематика лопатки и ключицы"
+        : action.pilotId === "wrist"
+          ? "исполняемый диапазон пока ограничен текущей регистрацией запястья"
+          : "исполняемый диапазон пока ограничен текущей регистрацией модели";
     rangeNote.textContent =
       "Референс активного движения ≈ " +
       Math.round(action.referenceMaxDeg) +
       "°. Текущий preview ограничен " +
       Math.round(action.maxDeg) +
-      "°: выше нужна проверенная кинематика лопатки и ключицы.";
+      "°: " +
+      limitation +
+      ".";
   } else {
     rangeNote.textContent =
       "Учебный диапазон preview: " +
@@ -4676,10 +4736,10 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   let boneCount = 0;
   const allowedBones = new Set(
     action?.pilotId === "shoulder"
-      ? ["scapula", "clavicle", "humerus", "radius", "ulna"]
+      ? ["scapula", "clavicle", "humerus", "radius", "ulna", "hand"]
       : action?.pilotId === "wrist"
         ? ["radius", "ulna", "hand"]
-        : ["humerus", "radius", "ulna"]
+        : ["humerus", "radius", "ulna", "hand"]
   );
 
   if (skeletonMesh) {

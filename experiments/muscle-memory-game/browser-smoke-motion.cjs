@@ -255,7 +255,13 @@ const assert = require('node:assert/strict');
     Number(
       await page.locator('#motion-viewer').getAttribute('data-motion-distal-followers')
     ) >= 2,
-    'Shoulder preview must move radius/ulna with a fixed elbow'
+    'Shoulder preview must move the distal upper-limb chain with a fixed elbow'
+  );
+  assert.ok(
+    Number(
+      await page.locator('#motion-viewer').getAttribute('data-motion-distal-followers')
+    ) >= 3,
+    'Shoulder preview must include at least one hand bone follower'
   );
 
   await page.selectOption('#motion-movement', 'shoulder-scaption');
@@ -310,6 +316,11 @@ const assert = require('node:assert/strict');
   assert.equal(
     await page.locator('#motion-viewer').getAttribute('data-motion-reference-max'),
     '80'
+  );
+  assert.doesNotMatch(
+    await page.locator('#motion-state').innerText(),
+    /лопатк|ключиц/i,
+    'Wrist range note must not mention shoulder-girdle limitations'
   );
   await page.locator('#motion-angle').evaluate((el) => {
     el.value = '30';
