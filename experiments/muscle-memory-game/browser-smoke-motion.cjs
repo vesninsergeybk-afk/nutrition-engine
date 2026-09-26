@@ -150,6 +150,11 @@ const assert = require('node:assert/strict');
     await page.locator('#motion-viewer').getAttribute('data-motion-playing'),
     'true'
   );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-playback-curve'),
+    'cosine-ease-in-out',
+    'Automatic teaching playback must ease into and out of each movement limit'
+  );
   await page.click('#motion-play');
   assert.equal(
     await page.locator('#motion-viewer').getAttribute('data-motion-playing'),
@@ -316,10 +321,18 @@ const assert = require('node:assert/strict');
     'clavicle-lateral',
     'Scapular base must follow the lateral clavicle rather than drift independently'
   );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-humeral-external-rotation-deg')
+    ) > 15,
+    'Frontal abduction must include coupled humeral external rotation'
+  );
   assert.match(
     await page.locator('#motion-state').innerText(),
-    /зад|кзади|лопатк/i,
-    'Teaching UI must explain the coupled 3D scapular motion'
+    /наруж|кнаружи|лопатк/i,
+    'Teaching UI must explain the coupled 3D shoulder motion'
   );
   assert.match(
     await page.locator('#motion-viewer').getAttribute('data-motion-scapular-drivers'),

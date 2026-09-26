@@ -78,7 +78,6 @@ import {
   motionVisualUnit,
 } from "./motion-readiness.js";
 import {
-  advanceMotionValue,
   clampMotionValue,
   elbowFlexionRadians,
   motionActionActivation,
@@ -3750,6 +3749,8 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionScapulaAnchor = "";
     motionCanvas.dataset.motionShoulderChain = "";
     motionCanvas.dataset.motionShoulderRotationDeg = "";
+    motionCanvas.dataset.motionHumeralExternalRotationDeg = "";
+    motionCanvas.dataset.motionPlaybackCurve = "";
     motionCanvas.dataset.motionForearmAxis = "";
     motionCanvas.dataset.motionRadiusRigid = "";
     motionCanvas.dataset.motionWristModel = "";
@@ -4429,9 +4430,16 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
   if (!humerus || !scapula || !clavicle) return null;
 
   const pivot = estimateShoulderPivot(humerus);
+  const elbowPivot = estimateElbowPivot(humerus, radius, ulna);
   const scapulaBox = motionMeshBox(scapula);
   const clavicleBox = motionMeshBox(clavicle);
   if (!pivot || scapulaBox.isEmpty() || clavicleBox.isEmpty()) return null;
+
+  const humeralLongAxis = elbowPivot
+    ? pivot.clone().sub(elbowPivot)
+    : new THREE.Vector3(0, 1, 0);
+  if (humeralLongAxis.lengthSq() < 1e-8) humeralLongAxis.set(0, 1, 0);
+  humeralLongAxis.normalize();
 
   const claviclePivotPoint =
     motionMeshMedialEndCentroid(clavicle) ||
@@ -4477,6 +4485,8 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
     kind: "shoulder-gh",
     action,
     pivot,
+    elbowPivot,
+    humeralLongAxis,
     humerusPivot,
     scapula,
     clavicle,
@@ -4992,7 +5002,24 @@ function applyShoulderMotionValue(angleDeg) {
     glenohumeralValue,
     motionRig.sideSign
   );
-  motionRig.humerusPivot.quaternion.copy(pose.quaternion);
+  const coupledAxialQuaternion = new THREE.Quaternion();
+  if (
+    motionRig.action.combinedShoulderComplex &&
+    complex.humeralExternalRotationDeg > 0
+  ) {
+    coupledAxialQuaternion.setFromAxisAngle(
+      motionRig.humeralLongAxis,
+      THREE.MathUtils.degToRad(complex.humeralExternalRotationDeg) *
+        -motionRig.sideSign
+    );
+  }
+  // Apply axial rotation around the resting humeral long axis first, then
+  // carry that rotated humerus through the glenohumeral elevation. This is
+  // equivalent to axial rotation around the moving humeral shaft.
+  const humerusQuaternion = pose.quaternion
+    .clone()
+    .multiply(coupledAxialQuaternion);
+  motionRig.humerusPivot.quaternion.copy(humerusQuaternion);
 
   motionRig.scapulaPivot.position.copy(motionRig.scapulaPivotPoint);
   motionRig.scapulaPivot.quaternion.identity();
@@ -5103,8 +5130,8 @@ function applyShoulderMotionValue(angleDeg) {
   const clavicularOriginUnits = new Set(["deltoid-clavicular"]);
 
   const worldHumerusQuaternion = motionRig.action.combinedShoulderComplex
-    ? scapulaQuaternion.clone().multiply(pose.quaternion)
-    : pose.quaternion.clone();
+    ? scapulaQuaternion.clone().multiply(humerusQuaternion)
+    : humerusQuaternion.clone();
   const movingShoulderPivot = motionRig.pivot.clone();
   if (motionRig.action.combinedShoulderComplex) {
     movingShoulderPivot
@@ -5189,6 +5216,8 @@ function applyShoulderMotionValue(angleDeg) {
     motionCanvas.dataset.motionShoulderRotation = pose.angle.toFixed(6);
     motionCanvas.dataset.motionShoulderRotationDeg =
       THREE.MathUtils.radToDeg(Math.abs(pose.angle)).toFixed(1);
+    motionCanvas.dataset.motionHumeralExternalRotationDeg =
+      complex.humeralExternalRotationDeg.toFixed(1);
     motionCanvas.dataset.motionShoulderChain =
       motionRig.humerusPivot.parent === motionRig.scapulaPivot
         ? "scapula>glenohumeral"
@@ -5225,6 +5254,12 @@ function applyShoulderMotionValue(angleDeg) {
               complex.scapularExternalRotationDeg
             )}°)`
           : "";
+      const humeralAxialText =
+        complex.humeralExternalRotationDeg >= 4
+          ? ` Плечевая кость одновременно ротируется кнаружи примерно на ${Math.round(
+              complex.humeralExternalRotationDeg
+            )}°; величина зависит от плоскости подъёма и здесь показана как консервативный учебный ориентир.`
+          : "";
       kinematicSummary.textContent =
         `Сейчас: ${Math.round(complex.totalDeg)}° общего подъёма. В этой учебной модели ≈${Math.round(
           complex.glenohumeralDeg
@@ -5232,7 +5267,7 @@ function applyShoulderMotionValue(angleDeg) {
           complex.scapularUpwardRotationDeg
         )}° — на верхнюю ротацию лопатки. Лопатка одновременно наклоняется кзади (≈${Math.round(
           complex.scapularPosteriorTiltDeg
-        )}°)${externalText}; ключица поднимается, ретрагируется и ротируется кзади.`;
+        )}°)${externalText}; ключица поднимается, ретрагируется и ротируется кзади.${humeralAxialText}`;
     } else {
       kinematicSummary.textContent =
         `Сейчас: ${Math.round(
@@ -5279,35 +5314,76 @@ function applyMotionValue(angleDeg) {
   }
 }
 
+function createMotionPlaybackSegment(direction, startDeg, now) {
+  const action = motionRig?.action;
+  if (!action) return null;
+
+  let resolvedDirection = direction >= 0 ? 1 : -1;
+  const min = action.minDeg;
+  const max = action.maxDeg;
+  const start = THREE.MathUtils.clamp(startDeg, min, max);
+
+  if (start >= max - 1e-6) resolvedDirection = -1;
+  if (start <= min + 1e-6) resolvedDirection = 1;
+
+  const end = resolvedDirection > 0 ? max : min;
+  const distance = Math.abs(end - start);
+  const nominalSpeed = Math.max(1, action.speedDegPerSecond || 55);
+  // Cosine ease has zero velocity at both ends. The 1.2 factor keeps the
+  // peak velocity close to the previous teaching playback while avoiding
+  // the abrupt direction flip of a constant-speed ping-pong.
+  const durationMs = Math.max(
+    320,
+    (distance / nominalSpeed) * 1000 * 1.2
+  );
+
+  return {
+    direction: resolvedDirection,
+    startDeg: start,
+    endDeg: end,
+    startTime: now,
+    durationMs,
+  };
+}
+
 function setMotionPlaying(playing) {
   if (!motionRig) return;
   if (!playing) {
     motionPlayback = null;
   } else {
-    motionPlayback = {
-      direction: motionRig.action.playDirection,
-      lastTime: performance.now(),
-    };
+    motionPlayback = createMotionPlaybackSegment(
+      motionRig.action.playDirection,
+      motionRig.valueDeg,
+      performance.now()
+    );
   }
 
   const button = motionStateEl?.querySelector("#motion-play");
   if (button) button.textContent = playing ? "Пауза" : "Показать движение";
-  if (motionCanvas) motionCanvas.dataset.motionPlaying = String(Boolean(playing));
+  if (motionCanvas) {
+    motionCanvas.dataset.motionPlaying = String(Boolean(playing));
+    motionCanvas.dataset.motionPlaybackCurve = "cosine-ease-in-out";
+  }
 }
 
 function updateMotionPlayback(now) {
   if (!motionPlayback || !motionRig) return;
 
-  const delta = Math.min(0.05, Math.max(0, (now - motionPlayback.lastTime) / 1000));
-  motionPlayback.lastTime = now;
-  const next = advanceMotionValue(
-    motionRig.valueDeg,
-    motionPlayback.direction,
-    delta,
-    motionRig.action
-  );
-  motionPlayback.direction = next.direction;
-  applyMotionValue(next.angleDeg);
+  const elapsed = Math.max(0, now - motionPlayback.startTime);
+  const t = Math.min(1, elapsed / motionPlayback.durationMs);
+  const eased = 0.5 - 0.5 * Math.cos(Math.PI * t);
+  const value =
+    motionPlayback.startDeg +
+    (motionPlayback.endDeg - motionPlayback.startDeg) * eased;
+  applyMotionValue(value);
+
+  if (t >= 1) {
+    motionPlayback = createMotionPlaybackSegment(
+      -motionPlayback.direction,
+      motionPlayback.endDeg,
+      now
+    );
+  }
 }
 
 function renderMotionControls(

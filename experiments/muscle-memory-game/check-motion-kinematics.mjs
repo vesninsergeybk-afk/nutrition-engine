@@ -331,6 +331,18 @@ assert(
       shoulder120.scapularExternalRotationDeg,
   "Combined shoulder elevation must add a modest high-range external-rotation trend"
 );
+const scaption120 = shoulderComplexElevationPreview(scaptionAction, 120, 1);
+const flexion120 = shoulderComplexElevationPreview(flexionAction, 120, 1);
+assert(
+  shoulder120.humeralExternalRotationDeg > 20 &&
+    scaption120.humeralExternalRotationDeg > 8 &&
+    flexion120.humeralExternalRotationDeg <= 5 &&
+    shoulder120.humeralExternalRotationDeg >
+      scaption120.humeralExternalRotationDeg &&
+    scaption120.humeralExternalRotationDeg >
+      flexion120.humeralExternalRotationDeg,
+  "Coupled humeral external rotation must vary conservatively with the plane of elevation"
+);
 assert(
   shoulder150.clavicleElevationDeg > 0 &&
     shoulder150.clavicleRetractionDeg > 0 &&

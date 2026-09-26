@@ -655,6 +655,42 @@ const SHOULDER_ELEVATION_EXTERNAL_ROTATION_POINTS = Object.freeze([
   Object.freeze([180, 7]),
 ]);
 
+// Arm elevation is also accompanied by axial humeral rotation. The amount
+// depends strongly on the plane of elevation, so the teaching preview uses
+// deliberately conservative plane-specific trajectories instead of one
+// universal value. Frontal abduction gets the largest external-rotation
+// component, scaption an intermediate one, and sagittal flexion only a small
+// component. These are visual deltas from the source model's rest pose.
+const SHOULDER_ABDUCTION_HUMERAL_EXTERNAL_ROTATION_POINTS = Object.freeze([
+  Object.freeze([0, 0]),
+  Object.freeze([30, 4]),
+  Object.freeze([60, 11]),
+  Object.freeze([90, 19]),
+  Object.freeze([120, 26]),
+  Object.freeze([150, 24]),
+  Object.freeze([180, 22]),
+]);
+
+const SHOULDER_SCAPTION_HUMERAL_EXTERNAL_ROTATION_POINTS = Object.freeze([
+  Object.freeze([0, 0]),
+  Object.freeze([30, 2]),
+  Object.freeze([60, 5]),
+  Object.freeze([90, 9]),
+  Object.freeze([120, 13]),
+  Object.freeze([150, 12]),
+  Object.freeze([180, 11]),
+]);
+
+const SHOULDER_FLEXION_HUMERAL_EXTERNAL_ROTATION_POINTS = Object.freeze([
+  Object.freeze([0, 0]),
+  Object.freeze([30, 0.5]),
+  Object.freeze([60, 1]),
+  Object.freeze([90, 2]),
+  Object.freeze([120, 3]),
+  Object.freeze([150, 3]),
+  Object.freeze([180, 3]),
+]);
+
 function interpolateControlPoints(points, value) {
   const x = Number(value) || 0;
   if (x <= points[0][0]) return points[0][1];
@@ -667,6 +703,32 @@ function interpolateControlPoints(points, value) {
     }
   }
   return points[points.length - 1][1];
+}
+
+function shoulderElevationHumeralExternalRotationDeg(action, totalDeg) {
+  const movementId = action?.movementId || "";
+  if (
+    movementId === "shoulder-abduction" ||
+    movementId === "shoulder-adduction"
+  ) {
+    return interpolateControlPoints(
+      SHOULDER_ABDUCTION_HUMERAL_EXTERNAL_ROTATION_POINTS,
+      totalDeg
+    );
+  }
+  if (movementId === "shoulder-scaption") {
+    return interpolateControlPoints(
+      SHOULDER_SCAPTION_HUMERAL_EXTERNAL_ROTATION_POINTS,
+      totalDeg
+    );
+  }
+  if (movementId === "shoulder-flexion") {
+    return interpolateControlPoints(
+      SHOULDER_FLEXION_HUMERAL_EXTERNAL_ROTATION_POINTS,
+      totalDeg
+    );
+  }
+  return 0;
 }
 
 export function shoulderComplexElevationPreview(
@@ -685,6 +747,7 @@ export function shoulderComplexElevationPreview(
       scapularUpwardRotationDeg: 0,
       scapularPosteriorTiltDeg: 0,
       scapularExternalRotationDeg: 0,
+      humeralExternalRotationDeg: 0,
       clavicleElevationDeg: 0,
       clavicleRetractionDeg: 0,
       claviclePosteriorRotationDeg: 0,
@@ -708,6 +771,8 @@ export function shoulderComplexElevationPreview(
     SHOULDER_ELEVATION_EXTERNAL_ROTATION_POINTS,
     totalDeg
   );
+  const humeralExternalRotationDeg =
+    shoulderElevationHumeralExternalRotationDeg(action, totalDeg);
 
   // Clavicular motion is scaled to the elevation itself rather than to the
   // preview's local maximum. That prevents a 90° teaching action from being
@@ -720,6 +785,7 @@ export function shoulderComplexElevationPreview(
     scapularUpwardRotationDeg,
     scapularPosteriorTiltDeg,
     scapularExternalRotationDeg,
+    humeralExternalRotationDeg,
     clavicleElevationDeg: 13 * elevationProgress,
     clavicleRetractionDeg: 20 * elevationProgress,
     claviclePosteriorRotationDeg: 24 * elevationProgress,
