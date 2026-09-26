@@ -2,6 +2,7 @@ import {
   ELBOW_KINEMATIC_LIMITS,
   FOREARM_ROTATION_LIMITS,
   SHOULDER_PREVIEW_LIMITS,
+  WRIST_PREVIEW_LIMITS,
   advanceElbowAngle,
   advanceMotionValue,
   clampElbowAngle,
@@ -36,6 +37,30 @@ assert(
     pronatorActions[0].movementId === "forearm-pronation" &&
     pronatorActions[0].maxDeg === FOREARM_ROTATION_LIMITS.pronationMaxDeg,
   "Pronator teres must expose pronation"
+);
+
+const wristFlexorActions = motionActionsForUnits(["flexor-carpi-radialis"]);
+assert(
+  wristFlexorActions.some((item) => item.movementId === "wrist-flexion") &&
+    wristFlexorActions.some(
+      (item) => item.movementId === "wrist-radial-deviation"
+    ),
+  "Flexor carpi radialis must expose wrist flexion and radial deviation"
+);
+const wristExtensorActions = motionActionsForUnits(["extensor-carpi-ulnaris"]);
+assert(
+  wristExtensorActions.some((item) => item.movementId === "wrist-extension") &&
+    wristExtensorActions.some(
+      (item) => item.movementId === "wrist-ulnar-deviation"
+    ),
+  "Extensor carpi ulnaris must expose wrist extension and ulnar deviation"
+);
+assert(
+  WRIST_PREVIEW_LIMITS.flexion.previewMaxDeg === 45 &&
+    WRIST_PREVIEW_LIMITS.flexion.referenceMaxDeg === 80 &&
+    WRIST_PREVIEW_LIMITS.radialDeviation.previewMaxDeg === 10 &&
+    WRIST_PREVIEW_LIMITS.ulnarDeviation.previewMaxDeg === 25,
+  "Wrist preview must preserve MyoArm limits separately from clinical references"
 );
 
 const deltoidActions = motionActionsForUnits([
@@ -165,4 +190,5 @@ assert(
 
 console.log("Upper-limb kinematics: elbow flexion/extension 0–146°");
 console.log("Upper-limb kinematics: pronation/supination actions present");
-console.log("Upper-limb kinematics: shoulder five-movement preview contract ok");
+console.log("Upper-limb kinematics: shoulder preview contract ok");
+console.log("Upper-limb kinematics: wrist flexion/extension and deviation contract ok");

@@ -247,6 +247,49 @@ const assert = require('node:assert/strict');
   );
 
   await page.click('#mode-explore');
+  await page.selectOption('#learning-region', 'forearm-hand-anterior');
+  await page.fill('#structure-search', 'лучевой сгибатель запястья');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  await page.locator('.search-result').first().click();
+  await page.click('#mode-motion');
+  await page.waitForFunction(
+    () => document.querySelector('#motion-viewer')?.dataset.motionPilot === 'wrist',
+    null,
+    { timeout: 15000 }
+  );
+  const wristOptions = await page.locator('#motion-movement option').evaluateAll(
+    nodes => nodes.map(node => node.value)
+  );
+  assert.ok(wristOptions.includes('wrist-flexion'));
+  assert.ok(wristOptions.includes('wrist-radial-deviation'));
+  await page.selectOption('#motion-movement', 'wrist-flexion');
+  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '45');
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-reference-max'),
+    '80'
+  );
+  await page.locator('#motion-angle').evaluate((el) => {
+    el.value = '30';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionMovement ===
+        'wrist-flexion' &&
+      Math.abs(
+        Number(
+          document.querySelector('#motion-viewer')?.dataset.motionWristRotation || 0
+        )
+      ) > 0.25,
+    null,
+    { timeout: 5000 }
+  );
+
+  await page.click('#mode-explore');
   const viewerBox = await page.locator('#viewer').boundingBox();
   assert.ok(viewerBox && viewerBox.width > 700, 'Atlas did not return to a single wide viewer');
 

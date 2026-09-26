@@ -38,6 +38,14 @@ export const FOREARM_ROTATION_LIMITS = Object.freeze({
   speedDegPerSecond: 50,
 });
 
+export const WRIST_PREVIEW_LIMITS = Object.freeze({
+  flexion: Object.freeze({ previewMaxDeg: 45, referenceMaxDeg: 80 }),
+  extension: Object.freeze({ previewMaxDeg: 45, referenceMaxDeg: 70 }),
+  radialDeviation: Object.freeze({ previewMaxDeg: 10, referenceMaxDeg: 20 }),
+  ulnarDeviation: Object.freeze({ previewMaxDeg: 25, referenceMaxDeg: 35 }),
+  speedDegPerSecond: 40,
+});
+
 export const SHOULDER_PREVIEW_LIMITS = Object.freeze({
   flexion: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 160 }),
   abduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
@@ -97,6 +105,66 @@ const MOTION_ACTIONS = Object.freeze({
     maxDeg: FOREARM_ROTATION_LIMITS.pronationMaxDeg,
     speedDegPerSecond: FOREARM_ROTATION_LIMITS.speedDegPerSecond,
     synergists: ["pronator-teres", "pronator-quadratus"],
+  }),
+  "wrist-flexion": frozenAction({
+    pilotId: "wrist",
+    movementId: "wrist-flexion",
+    direction: "flexion",
+    nameRu: "Сгибание запястья",
+    controlLabelRu: "Сгибание запястья",
+    descriptionRu:
+      "Сгибание кисти относительно предплечья. Исполняемый preview ограничен диапазоном текущей MyoArm-модели; рядом показан клинический референс.",
+    maxDeg: WRIST_PREVIEW_LIMITS.flexion.previewMaxDeg,
+    referenceMaxDeg: WRIST_PREVIEW_LIMITS.flexion.referenceMaxDeg,
+    speedDegPerSecond: WRIST_PREVIEW_LIMITS.speedDegPerSecond,
+    synergists: ["flexor-carpi-radialis", "flexor-carpi-ulnaris", "palmaris-longus"],
+  }),
+  "wrist-extension": frozenAction({
+    pilotId: "wrist",
+    movementId: "wrist-extension",
+    direction: "extension",
+    nameRu: "Разгибание запястья",
+    controlLabelRu: "Разгибание запястья",
+    descriptionRu:
+      "Разгибание кисти относительно предплечья в учебном кинематическом preview.",
+    maxDeg: WRIST_PREVIEW_LIMITS.extension.previewMaxDeg,
+    referenceMaxDeg: WRIST_PREVIEW_LIMITS.extension.referenceMaxDeg,
+    speedDegPerSecond: WRIST_PREVIEW_LIMITS.speedDegPerSecond,
+    synergists: [
+      "extensor-carpi-radialis-longus",
+      "extensor-carpi-radialis-brevis",
+      "extensor-carpi-ulnaris",
+    ],
+  }),
+  "wrist-radial-deviation": frozenAction({
+    pilotId: "wrist",
+    movementId: "wrist-radial-deviation",
+    direction: "radial-deviation",
+    nameRu: "Лучевое отклонение кисти",
+    controlLabelRu: "Лучевое отклонение",
+    descriptionRu:
+      "Отклонение кисти в лучевую сторону. Preview ограничен диапазоном текущего MyoArm wrist joint.",
+    maxDeg: WRIST_PREVIEW_LIMITS.radialDeviation.previewMaxDeg,
+    referenceMaxDeg: WRIST_PREVIEW_LIMITS.radialDeviation.referenceMaxDeg,
+    speedDegPerSecond: 28,
+    synergists: [
+      "flexor-carpi-radialis",
+      "extensor-carpi-radialis-longus",
+      "extensor-carpi-radialis-brevis",
+    ],
+  }),
+  "wrist-ulnar-deviation": frozenAction({
+    pilotId: "wrist",
+    movementId: "wrist-ulnar-deviation",
+    direction: "ulnar-deviation",
+    nameRu: "Локтевое отклонение кисти",
+    controlLabelRu: "Локтевое отклонение",
+    descriptionRu:
+      "Отклонение кисти в локтевую сторону. Preview ограничен диапазоном текущего MyoArm wrist joint.",
+    maxDeg: WRIST_PREVIEW_LIMITS.ulnarDeviation.previewMaxDeg,
+    referenceMaxDeg: WRIST_PREVIEW_LIMITS.ulnarDeviation.referenceMaxDeg,
+    speedDegPerSecond: 28,
+    synergists: ["flexor-carpi-ulnaris", "extensor-carpi-ulnaris"],
   }),
   "shoulder-flexion": frozenAction({
     pilotId: "shoulder",
@@ -218,6 +286,27 @@ const UNIT_ACTION_IDS = Object.freeze({
   "pronator-teres": Object.freeze(["forearm-pronation"]),
   "pronator-quadratus": Object.freeze(["forearm-pronation"]),
   supinator: Object.freeze(["forearm-supination"]),
+  "flexor-carpi-radialis": Object.freeze([
+    "wrist-flexion",
+    "wrist-radial-deviation",
+  ]),
+  "flexor-carpi-ulnaris": Object.freeze([
+    "wrist-flexion",
+    "wrist-ulnar-deviation",
+  ]),
+  "extensor-carpi-radialis-longus": Object.freeze([
+    "wrist-extension",
+    "wrist-radial-deviation",
+  ]),
+  "extensor-carpi-radialis-brevis": Object.freeze([
+    "wrist-extension",
+    "wrist-radial-deviation",
+  ]),
+  "extensor-carpi-ulnaris": Object.freeze([
+    "wrist-extension",
+    "wrist-ulnar-deviation",
+  ]),
+  "palmaris-longus": Object.freeze(["wrist-flexion"]),
   "deltoid-clavicular": Object.freeze([
     "shoulder-flexion",
     "shoulder-internal-rotation",

@@ -82,6 +82,42 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
     [/\bsupinator\b/i],
     ["SUP"]
   ),
+  "flexor-carpi-radialis": unit(
+    "flexor-carpi-radialis",
+    "Лучевой сгибатель запястья",
+    [/flexor carpi radialis/i],
+    ["FCR"]
+  ),
+  "flexor-carpi-ulnaris": unit(
+    "flexor-carpi-ulnaris",
+    "Локтевой сгибатель запястья",
+    [/flexor carpi ulnaris/i],
+    ["FCU"]
+  ),
+  "extensor-carpi-radialis-longus": unit(
+    "extensor-carpi-radialis-longus",
+    "Длинный лучевой разгибатель запястья",
+    [/extensor carpi radialis longus/i],
+    ["ECRL"]
+  ),
+  "extensor-carpi-radialis-brevis": unit(
+    "extensor-carpi-radialis-brevis",
+    "Короткий лучевой разгибатель запястья",
+    [/extensor carpi radialis brevis/i],
+    ["ECRB"]
+  ),
+  "extensor-carpi-ulnaris": unit(
+    "extensor-carpi-ulnaris",
+    "Локтевой разгибатель запястья",
+    [/extensor carpi ulnaris/i],
+    ["ECU"]
+  ),
+  "palmaris-longus": unit(
+    "palmaris-longus",
+    "Длинная ладонная мышца",
+    [/palmaris longus/i],
+    ["PL"]
+  ),
   "pectoralis-major": unit(
     "pectoralis-major",
     "Большая грудная мышца",
@@ -150,6 +186,15 @@ export const MOTION_BONE_UNITS = Object.freeze({
   humerus: bone("humerus", "Плечевая кость", [/humerus/i]),
   radius: bone("radius", "Лучевая кость", [/radius/i]),
   ulna: bone("ulna", "Локтевая кость", [/ulna/i]),
+  hand: bone(
+    "hand",
+    "Кости кисти",
+    [
+      /carpal|metacarp/i,
+      /\b(?:scaphoid|lunate|triquetrum|pisiform|trapezium|trapezoid|capitate|hamate)\b/i,
+      /phalanx.*(?:thumb|finger|hand)|(?:thumb|finger|hand).*phalanx/i,
+    ]
+  ),
 });
 
 export const MOTION_PILOTS = Object.freeze({
@@ -182,6 +227,34 @@ export const MOTION_PILOTS = Object.freeze({
       Object.freeze({
         id: "forearm-rotation",
         nameRu: "Пронация/супинация предплечья",
+        simulationAuthority: "mujoco",
+      }),
+    ]),
+  }),
+  wrist: Object.freeze({
+    id: "wrist",
+    nameRu: "Запястье",
+    specimenId: "forearm-hand-anterior",
+    simulatedSide: "right",
+    mirrorLeft: true,
+    bodies: Object.freeze(["radius", "ulna", "hand"]),
+    muscleUnits: Object.freeze([
+      "flexor-carpi-radialis",
+      "flexor-carpi-ulnaris",
+      "extensor-carpi-radialis-longus",
+      "extensor-carpi-radialis-brevis",
+      "extensor-carpi-ulnaris",
+      "palmaris-longus",
+    ]),
+    degreesOfFreedom: Object.freeze([
+      Object.freeze({
+        id: "wrist-flexion-extension",
+        nameRu: "Сгибание/разгибание запястья",
+        simulationAuthority: "mujoco",
+      }),
+      Object.freeze({
+        id: "wrist-deviation",
+        nameRu: "Лучевое/локтевое отклонение",
         simulationAuthority: "mujoco",
       }),
     ]),
