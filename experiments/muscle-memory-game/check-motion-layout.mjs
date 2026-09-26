@@ -58,9 +58,10 @@ assert(
 );
 assert(
   /кинематическ/i.test(app) &&
-    /ещ[её] не силовая симуляция MyoSim/i.test(app) &&
-    app.includes('motionCanvas.dataset.motionAuthority = action.authority'),
-  "Motion UI does not distinguish the kinematic preview from MyoSim simulation"
+    app.includes('motionCanvas.dataset.motionAuthority = action.authority') &&
+    app.includes('action.referenceMaxDeg > action.maxDeg') &&
+    /без проверенной регистрации|не силовая симуляция|кинематический preview/i.test(app),
+  "Motion UI does not distinguish the kinematic preview from calibrated MyoSim simulation"
 );
 assert(
   app.includes('"kinematic-preview"') ||
