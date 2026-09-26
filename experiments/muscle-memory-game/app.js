@@ -74,6 +74,7 @@ import {
 import {
   matchMotionBoneUnit,
   matchMotionMuscleUnit,
+  motionVisualUnit,
 } from "./motion-readiness.js";
 import {
   advanceMotionValue,
@@ -3737,15 +3738,21 @@ function clearMotionPreview() {
   }
 }
 
-function motionMuscleMaterial(selected = true) {
+function motionMuscleMaterial(role = "context") {
+  const opacity =
+    role === "mover"
+      ? 1
+      : role === "stabilizer"
+        ? 0.72
+        : 0.42;
   return new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.52,
     metalness: 0,
     side: THREE.DoubleSide,
-    transparent: !selected,
-    opacity: selected ? 1 : 0.52,
-    depthWrite: selected,
+    transparent: opacity < 1,
+    opacity,
+    depthWrite: role === "mover",
   });
 }
 
@@ -4123,14 +4130,35 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
 }
 
 function setMotionMuscleActivation(meshes, action, activation) {
-  const activeUnits = new Set(action?.synergists || []);
+  const moverUnits = new Set(action?.synergists || []);
+  const stabilizerUnits = new Set(action?.stabilizers || []);
   for (const mesh of meshes || []) {
     const material = mesh.material;
     if (!material || Array.isArray(material)) continue;
-    const active = activeUnits.has(mesh.userData.motionUnit);
+
+    const unitId = mesh.userData.motionUnit;
+    const role = moverUnits.has(unitId)
+      ? "mover"
+      : stabilizerUnits.has(unitId)
+        ? "stabilizer"
+        : "context";
+    mesh.userData.motionRole = role;
+
     material.emissive?.set?.(0x8b1f24);
     material.emissiveIntensity =
-      active ? 0.08 + activation * 0.48 : 0.025;
+      role === "mover"
+        ? 0.08 + activation * 0.48
+        : role === "stabilizer"
+          ? 0.075
+          : 0.02;
+    material.opacity =
+      role === "mover"
+        ? 1
+        : role === "stabilizer"
+          ? 0.72
+          : 0.42;
+    material.transparent = role !== "mover";
+    material.depthWrite = role === "mover";
     material.needsUpdate = true;
   }
 }
@@ -4315,6 +4343,31 @@ function renderMotionControls(selectedName, action, actions, selectedIds) {
   description.textContent = action.descriptionRu;
   motionStateEl.append(strong, description);
 
+  const roles = document.createElement("div");
+  roles.className = "motion-role-summary";
+  const moverNames = (action.synergists || [])
+    .map((id) => motionVisualUnit(id)?.nameRu)
+    .filter(Boolean);
+  const stabilizerNames = (action.stabilizers || [])
+    .map((id) => motionVisualUnit(id)?.nameRu)
+    .filter(Boolean);
+
+  if (moverNames.length) {
+    const row = document.createElement("span");
+    row.innerHTML =
+      "<strong>Основные двигатели:</strong> " + moverNames.join(", ");
+    roles.appendChild(row);
+  }
+  if (stabilizerNames.length) {
+    const row = document.createElement("span");
+    row.innerHTML =
+      "<strong>Стабилизирующий контекст:</strong> " +
+      stabilizerNames.join(", ") +
+      ". Их степень активации в этом preview не рассчитывается.";
+    roles.appendChild(row);
+  }
+  if (roles.childElementCount) motionStateEl.appendChild(roles);
+
   const controls = document.createElement("div");
   controls.className = "motion-controls";
 
@@ -4428,11 +4481,13 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   const firstSid = selectedIds[0];
   const selectedTarget = learningTargetBySid.get(firstSid) || null;
   const selectedSide = targetSideForSid(selectedTarget, firstSid);
+  const relatedUnitIds = action
+    ? [...new Set([...(action.synergists || []), ...(action.stabilizers || [])])]
+    : [];
   const relatedIds = action
-    ? motionStructureIdsForUnits(action.synergists, selectedSide)
+    ? motionStructureIdsForUnits(relatedUnitIds, selectedSide)
     : [];
   const renderIds = [...new Set([...selectedIds, ...relatedIds])];
-  const selectedSet = new Set(selectedIds);
 
   const muscleMeshes = [];
   const renderedUnits = new Set();
@@ -4440,15 +4495,20 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   for (const sid of renderIds) {
     const range = structureRanges[sid];
     if (!range) continue;
-    const selected = selectedSet.has(sid);
+    const unit = matchMotionMuscleUnit(structureNames[sid]);
+    const role = action?.synergists?.includes(unit?.id)
+      ? "mover"
+      : action?.stabilizers?.includes(unit?.id)
+        ? "stabilizer"
+        : "context";
     const mesh = createMotionMesh(anatomyMesh, range, {
-      material: motionMuscleMaterial(selected),
+      material: motionMuscleMaterial(role),
       name: displayStructureName(sid),
       kind: "muscle",
     });
     mesh.userData.sourceSid = sid;
-    mesh.userData.motionSelected = selected;
-    const unit = matchMotionMuscleUnit(structureNames[sid]);
+    mesh.userData.motionSelected = selectedIds.includes(sid);
+    mesh.userData.motionRole = role;
     if (unit) {
       renderedUnits.add(unit.id);
       mesh.userData.motionUnit = unit.id;
@@ -4489,6 +4549,8 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   motionCanvas.dataset.motionBones = String(boneCount);
   motionCanvas.dataset.motionUnits = [...renderedUnits].join(",");
   motionCanvas.dataset.motionSelectedUnits = [...selectedUnits].join(",");
+  motionCanvas.dataset.motionMovers = (action?.synergists || []).join(",");
+  motionCanvas.dataset.motionStabilizers = (action?.stabilizers || []).join(",");
   motionCanvas.dataset.motionState = "rest-pose";
   motionCanvas.dataset.motionPlaying = "false";
   motionCanvas.dataset.motionMovement = action?.movementId || "";

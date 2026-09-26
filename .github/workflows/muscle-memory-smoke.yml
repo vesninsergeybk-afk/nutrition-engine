@@ -20,8 +20,8 @@ permissions:
 # checkpoints. Full-smoke runs share one group: a newer checkpoint supersedes
 # an older checkpoint, but ordinary pushes cannot cancel it.
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
-  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') }}
 
 jobs:
   fast:
@@ -172,7 +172,6 @@ jobs:
           - z-anatomy
           - bodyparts
           - mobile-atlas
-          - motion
 
     steps:
       - uses: actions/checkout@v4
@@ -206,3 +205,42 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+
+
+  browser-motion:
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') }}
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run motion browser checkpoint
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          timeout 9m node experiments/muscle-memory-game/browser-smoke-motion.cjs
+
+      - name: Upload motion screenshots
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: muscle-memory-motion-smoke
+          path: /tmp/muscle-memory-*.png
+          if-no-files-found: ignore
+          retention-days: 7

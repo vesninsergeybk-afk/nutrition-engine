@@ -1345,3 +1345,19 @@ body:not(.motion-mode) .comparison-pane-static {
   font-size: 10px;
   line-height: 1.4;
 }
+
+
+.motion-role-summary {
+  display: grid;
+  gap: 4px;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.motion-role-summary span {
+  color: var(--muted);
+}
+
+.motion-role-summary strong {
+  color: var(--ink);
+}

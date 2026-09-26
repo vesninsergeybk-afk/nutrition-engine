@@ -21,6 +21,7 @@ function frozenAction(config) {
     speedDegPerSecond: 55,
     referenceMaxDeg: config.maxDeg,
     synergists: Object.freeze([...(config.synergists || [])]),
+    stabilizers: Object.freeze([...(config.stabilizers || [])]),
     ...config,
   });
 }
@@ -107,6 +108,7 @@ const MOTION_ACTIONS = Object.freeze({
     maxDeg: SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg,
     synergists: ["deltoid-clavicular", "coracobrachialis", "pectoralis-major"],
+    stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
   }),
   "shoulder-abduction": frozenAction({
     pilotId: "shoulder",
@@ -119,6 +121,7 @@ const MOTION_ACTIONS = Object.freeze({
     maxDeg: SHOULDER_PREVIEW_LIMITS.abduction.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.abduction.referenceMaxDeg,
     synergists: ["supraspinatus", "deltoid-acromial"],
+    stabilizers: ["infraspinatus", "subscapularis", "teres-minor"],
   }),
   "shoulder-extension": frozenAction({
     pilotId: "shoulder",
@@ -132,6 +135,7 @@ const MOTION_ACTIONS = Object.freeze({
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.extension.referenceMaxDeg,
     speedDegPerSecond: 35,
     synergists: ["deltoid-spinal", "teres-major"],
+    stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
   }),
   "shoulder-external-rotation": frozenAction({
     pilotId: "shoulder",
@@ -145,6 +149,7 @@ const MOTION_ACTIONS = Object.freeze({
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.externalRotation.referenceMaxDeg,
     speedDegPerSecond: 40,
     synergists: ["infraspinatus", "teres-minor", "deltoid-spinal"],
+    stabilizers: ["supraspinatus", "subscapularis"],
   }),
   "shoulder-internal-rotation": frozenAction({
     pilotId: "shoulder",
@@ -163,6 +168,7 @@ const MOTION_ACTIONS = Object.freeze({
       "pectoralis-major",
       "teres-major",
     ],
+    stabilizers: ["supraspinatus", "infraspinatus", "teres-minor"],
   }),
 });
 

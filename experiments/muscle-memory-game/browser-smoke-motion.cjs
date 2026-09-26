@@ -229,6 +229,22 @@ const assert = require('node:assert/strict');
     await page.locator('#motion-viewer').getAttribute('data-motion-units'),
     /supraspinatus/
   );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-movers'),
+    /deltoid-acromial/
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-movers'),
+    /supraspinatus/
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-stabilizers'),
+    /infraspinatus/
+  );
+  assert.match(
+    await page.locator('#motion-state').innerText(),
+    /Основные двигатели:|Стабилизирующий контекст:/i
+  );
 
   await page.click('#mode-explore');
   const viewerBox = await page.locator('#viewer').boundingBox();

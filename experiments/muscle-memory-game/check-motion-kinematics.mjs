@@ -61,6 +61,17 @@ assert(
     SHOULDER_PREVIEW_LIMITS.abduction.referenceMaxDeg === 150,
   "Shoulder elevation preview must remain honest about the uncalibrated scapular component"
 );
+const abductionAction = deltoidActions.find(
+  (item) => item.movementId === "shoulder-abduction"
+);
+assert(
+  abductionAction.synergists.includes("deltoid-acromial") &&
+    abductionAction.synergists.includes("supraspinatus") &&
+    abductionAction.stabilizers.includes("infraspinatus") &&
+    abductionAction.stabilizers.includes("subscapularis") &&
+    abductionAction.stabilizers.includes("teres-minor"),
+  "Shoulder abduction must distinguish movers from rotator-cuff stabilizing context"
+);
 
 
 const pectoralisActions = motionActionsForUnits(["pectoralis-major"]);
