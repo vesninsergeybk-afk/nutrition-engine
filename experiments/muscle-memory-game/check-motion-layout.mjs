@@ -106,3 +106,9 @@ assert(
 );
 
 console.log("Motion primary navigation: direct one-click top-level mode");
+
+assert(
+  app.includes("<strong>Анатомический контекст:</strong>") &&
+    app.includes("visualContextNames"),
+  "Motion UI does not explain visual-only anatomical context"
+);
