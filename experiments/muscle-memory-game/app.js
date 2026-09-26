@@ -4734,10 +4734,9 @@ function prepareMotionComparison(sid) {
   questionLabelEl.textContent = "Движение";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
-  feedbackEl.textContent =
-    motionRig?.pilotId === "elbow"
-      ? "Слева — исходная анатомия. Справа — первая учебная кинематическая модель локтя: меняйте угол вручную или запустите движение."
-      : "Слева — статический анатомический эталон. Справа — Motion-сцена; для выбранной мышцы движение этого сустава ещё не подключено.";
+  feedbackEl.textContent = motionRig
+    ? "Слева — исходная анатомия. Справа — учебный кинематический preview: выберите движение, меняйте угол вручную или запустите анимацию."
+    : "Слева — статический анатомический эталон. Справа — Motion-сцена; для выбранной мышцы суставная кинематика ещё не подключена.";
   updateLayerButtons();
 }
 
