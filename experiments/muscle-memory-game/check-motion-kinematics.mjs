@@ -196,9 +196,9 @@ assert(
 const shoulderAction = deltoidActions.find(
   (item) => item.movementId === "shoulder-abduction"
 );
-const shoulderAdvance = advanceMotionValue(89, 1, 1, shoulderAction);
+const shoulderAdvance = advanceMotionValue(149, 1, 1, shoulderAction);
 assert(
-  shoulderAdvance.angleDeg === 90 && shoulderAdvance.direction === -1,
+  shoulderAdvance.angleDeg === 150 && shoulderAdvance.direction === -1,
   "Shoulder preview must reverse at its calibrated preview limit"
 );
 
