@@ -26,6 +26,7 @@ function frozenAction(config) {
     synergists: Object.freeze([...(config.synergists || [])]),
     assistants: Object.freeze([...(config.assistants || [])]),
     stabilizers: Object.freeze([...(config.stabilizers || [])]),
+    scapularDrivers: Object.freeze([...(config.scapularDrivers || [])]),
   });
 }
 
@@ -50,9 +51,9 @@ export const WRIST_PREVIEW_LIMITS = Object.freeze({
 });
 
 export const SHOULDER_PREVIEW_LIMITS = Object.freeze({
-  flexion: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 160 }),
-  abduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
-  scaption: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
+  flexion: Object.freeze({ previewMaxDeg: 160, referenceMaxDeg: 180 }),
+  abduction: Object.freeze({ previewMaxDeg: 150, referenceMaxDeg: 150 }),
+  scaption: Object.freeze({ previewMaxDeg: 150, referenceMaxDeg: 150 }),
   adduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 90 }),
   horizontalAdduction: Object.freeze({ previewMaxDeg: 60, referenceMaxDeg: 120 }),
   horizontalAbduction: Object.freeze({ previewMaxDeg: 30, referenceMaxDeg: 45 }),
@@ -188,18 +189,20 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Сгибание плеча",
     controlLabelRu: "Сгибание плеча",
     descriptionRu:
-      "Показан только гленогумеральный компонент сгибания. Лопатка и ключица участвуют в реальном подъёме руки уже в пределах этого диапазона, но их движение пока не моделируется без проверенной регистрации.",
+      "Совместный учебный preview подъёма руки: движение плечевой кости сочетается с верхней ротацией лопатки и ключичным компонентом. Это кинематическая модель, а не индивидуальная норма или расчёт силы.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg,
+    combinedShoulderComplex: true,
+    rangeNoteRu:
+      "Combined preview до 160°: вклад лопатки меняется по диапазону, а не задаётся постоянным 2:1. Клинический референс сгибания около 180°.",
     synergists: ["deltoid-clavicular", "coracobrachialis", "pectoralis-major"],
     assistants: ["biceps-long", "biceps-short"],
+    scapularDrivers: ["serratus-anterior", "trapezius"],
     stabilizers: [
       "supraspinatus",
       "infraspinatus",
       "subscapularis",
       "teres-minor",
-      "trapezius",
-      "serratus-anterior",
     ],
   }),
   "shoulder-abduction": frozenAction({
@@ -209,16 +212,18 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Отведение плеча",
     controlLabelRu: "Отведение плеча",
     descriptionRu:
-      "Показан только гленогумеральный компонент отведения. Надостная и дельтовидная участвуют в подъёме плечевой кости, а движение лопатки и ключицы в этом preview пока не моделируется.",
+      "Совместное отведение плечевого комплекса: плечевая кость, лопатка и ключица движутся согласованно. Надостная и акромиальная часть дельтовидной поднимают плечевую кость; передняя зубчатая и трапециевидная обеспечивают лопаточный компонент.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.abduction.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.abduction.referenceMaxDeg,
+    combinedShoulderComplex: true,
+    rangeNoteRu:
+      "Combined preview до 150°. Верхняя ротация лопатки нарастает нелинейно и к верхнему диапазону приближается к опубликованному ориентиру около 60°.",
     synergists: ["supraspinatus", "deltoid-acromial"],
+    scapularDrivers: ["serratus-anterior", "trapezius"],
     stabilizers: [
       "infraspinatus",
       "subscapularis",
       "teres-minor",
-      "trapezius",
-      "serratus-anterior",
     ],
   }),
   "shoulder-scaption": frozenAction({
@@ -228,17 +233,19 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Подъём в плоскости лопатки",
     controlLabelRu: "Подъём в плоскости лопатки",
     descriptionRu:
-      "Подъём плечевой кости примерно на 30° кпереди от фронтальной плоскости. Показан гленогумеральный компонент; лопаточно-ключичный вклад пока не моделируется, поэтому preview ограничен 90°.",
+      "Подъём примерно на 30° кпереди от фронтальной плоскости с согласованным лопаточно-ключичным компонентом.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.scaption.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.scaption.referenceMaxDeg,
+    combinedShoulderComplex: true,
+    rangeNoteRu:
+      "Combined preview до 150° в плоскости лопатки; вклад лопатки меняется по диапазону.",
     synergists: ["supraspinatus", "deltoid-acromial"],
     assistants: ["deltoid-clavicular"],
+    scapularDrivers: ["serratus-anterior", "trapezius"],
     stabilizers: [
       "infraspinatus",
       "subscapularis",
       "teres-minor",
-      "trapezius",
-      "serratus-anterior",
     ],
   }),
   "shoulder-adduction": frozenAction({
@@ -530,6 +537,9 @@ const UNIT_ACTION_IDS = Object.freeze({
     "shoulder-internal-rotation",
   ]),
   trapezius: Object.freeze([
+    "shoulder-flexion",
+    "shoulder-abduction",
+    "shoulder-scaption",
     "scapular-retraction",
     "scapular-elevation",
     "scapular-depression",
@@ -537,6 +547,9 @@ const UNIT_ACTION_IDS = Object.freeze({
     "scapular-downward-rotation",
   ]),
   "serratus-anterior": Object.freeze([
+    "shoulder-flexion",
+    "shoulder-abduction",
+    "shoulder-scaption",
     "scapular-protraction",
     "scapular-upward-rotation",
   ]),
@@ -599,6 +612,76 @@ export function motionActionActivation(action, angleDeg) {
   const span = Math.max(1e-6, action.maxDeg - action.minDeg);
   const progress = (value - action.minDeg) / span;
   return action.playDirection < 0 ? 1 - progress : progress;
+}
+
+const SHOULDER_ELEVATION_SCAPULA_POINTS = Object.freeze([
+  Object.freeze([0, 0]),
+  Object.freeze([30, 5]),
+  Object.freeze([60, 24]),
+  Object.freeze([90, 30]),
+  Object.freeze([120, 35]),
+  Object.freeze([150, 52]),
+  Object.freeze([160, 56]),
+  Object.freeze([180, 61]),
+]);
+
+function interpolateControlPoints(points, value) {
+  const x = Number(value) || 0;
+  if (x <= points[0][0]) return points[0][1];
+  for (let i = 1; i < points.length; i += 1) {
+    const [x1, y1] = points[i - 1];
+    const [x2, y2] = points[i];
+    if (x <= x2) {
+      const t = (x - x1) / Math.max(1e-6, x2 - x1);
+      return y1 + (y2 - y1) * t;
+    }
+  }
+  return points[points.length - 1][1];
+}
+
+export function shoulderComplexElevationPreview(
+  action,
+  totalElevationDeg,
+  sideSign = 1
+) {
+  const totalDeg = clampMotionValue(action, totalElevationDeg);
+  const combined = Boolean(action?.combinedShoulderComplex);
+  const side = sideSign < 0 ? -1 : 1;
+
+  if (!combined) {
+    return Object.freeze({
+      totalDeg,
+      glenohumeralDeg: totalDeg,
+      scapularUpwardRotationDeg: 0,
+      clavicleElevationDeg: 0,
+      clavicleRetractionDeg: 0,
+      claviclePosteriorRotationDeg: 0,
+      side,
+    });
+  }
+
+  const scapularUpwardRotationDeg = Math.min(
+    totalDeg,
+    interpolateControlPoints(SHOULDER_ELEVATION_SCAPULA_POINTS, totalDeg)
+  );
+  const glenohumeralDeg = Math.max(
+    0,
+    totalDeg - scapularUpwardRotationDeg
+  );
+  const progress = Math.min(
+    1,
+    totalDeg / Math.max(1, action.referenceMaxDeg || action.maxDeg || 1)
+  );
+
+  return Object.freeze({
+    totalDeg,
+    glenohumeralDeg,
+    scapularUpwardRotationDeg,
+    clavicleElevationDeg: 13 * progress,
+    clavicleRetractionDeg: 20 * progress,
+    claviclePosteriorRotationDeg: 24 * progress,
+    side,
+  });
 }
 
 export function shoulderPreviewRotation(action, angleDeg, sideSign = 1) {
