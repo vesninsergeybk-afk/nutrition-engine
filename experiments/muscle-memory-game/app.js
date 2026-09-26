@@ -4521,7 +4521,13 @@ function updateMotionPlayback(now) {
   applyMotionValue(next.angleDeg);
 }
 
-function renderMotionControls(selectedName, action, actions, selectedIds) {
+function renderMotionControls(
+  selectedName,
+  action,
+  actions,
+  selectedIds,
+  missingUnitIds = []
+) {
   if (!motionStateEl) return;
   motionStateEl.replaceChildren();
 
@@ -4565,6 +4571,19 @@ function renderMotionControls(selectedName, action, actions, selectedIds) {
     roles.appendChild(row);
   }
   if (roles.childElementCount) motionStateEl.appendChild(roles);
+
+  if (missingUnitIds.length) {
+    const missing = document.createElement("span");
+    missing.className = "motion-source-gap";
+    missing.textContent =
+      "В текущей 3D-модели нет отдельного объёмного mesh: " +
+      missingUnitIds
+        .map((id) => motionVisualUnit(id)?.nameRu)
+        .filter(Boolean)
+        .join(", ") +
+      ". Функциональная роль сохранена в схеме движения.";
+    motionStateEl.appendChild(missing);
+  }
 
   const controls = document.createElement("div");
   controls.className = "motion-controls";
@@ -4776,7 +4795,21 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
 
   motionCanvas.dataset.motionMuscles = String(muscleCount);
   motionCanvas.dataset.motionBones = String(boneCount);
+  const expectedRoleUnits = action
+    ? [
+        ...new Set([
+          ...(action.synergists || []),
+          ...(action.assistants || []),
+          ...(action.stabilizers || []),
+        ]),
+      ]
+    : [];
+  const missingRoleUnits = expectedRoleUnits.filter(
+    (unitId) => !renderedUnits.has(unitId)
+  );
+
   motionCanvas.dataset.motionUnits = [...renderedUnits].join(",");
+  motionCanvas.dataset.motionMissingUnits = missingRoleUnits.join(",");
   motionCanvas.dataset.motionSelectedUnits = [...selectedUnits].join(",");
   motionCanvas.dataset.motionMovers = (action?.synergists || []).join(",");
   motionCanvas.dataset.motionAssistants = (action?.assistants || []).join(",");
@@ -4813,7 +4846,13 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
     motionCanvas.dataset.motionDistalFollowers = String(
       motionRig.distalFollowerCount || 0
     );
-    renderMotionControls(selectedName, action, actions, selectedIds);
+    renderMotionControls(
+      selectedName,
+      action,
+      actions,
+      selectedIds,
+      missingRoleUnits
+    );
     applyMotionValue(action.startDeg);
     return;
   }

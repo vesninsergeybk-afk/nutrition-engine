@@ -1,9 +1,16 @@
-function unit(id, nameRu, sourcePatterns, myoActuators = []) {
+function unit(
+  id,
+  nameRu,
+  sourcePatterns,
+  myoActuators = [],
+  requiredSources = ["z-anatomy", "bodyparts4"]
+) {
   return Object.freeze({
     id,
     nameRu,
     sourcePatterns: Object.freeze([...sourcePatterns]),
     myoActuators: Object.freeze([...myoActuators]),
+    requiredSources: Object.freeze([...requiredSources]),
   });
 }
 
@@ -128,7 +135,8 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
     "latissimus-dorsi",
     "Широчайшая мышца спины",
     [/latissimus dorsi/i],
-    ["LAT1", "LAT2", "LAT3"]
+    ["LAT1", "LAT2", "LAT3"],
+    ["z-anatomy"]
   ),
   trapezius: unit(
     "trapezius",

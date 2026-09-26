@@ -81,8 +81,20 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
       "BodyParts=" + bpMatches.length,
       "Myo=" + unit.myoActuators.join(",")
     );
-    assert(zMatches.length > 0, pilot.id + ": Z-Anatomy missing " + unitId);
-    assert(bpMatches.length > 0, pilot.id + ": BodyParts3D missing " + unitId);
+    if (unit.requiredSources.includes("z-anatomy")) {
+      assert(zMatches.length > 0, pilot.id + ": Z-Anatomy missing " + unitId);
+    }
+    if (unit.requiredSources.includes("bodyparts4")) {
+      assert(bpMatches.length > 0, pilot.id + ": BodyParts3D missing " + unitId);
+    }
+    if (!zMatches.length || !bpMatches.length) {
+      console.log(
+        "Motion optional source gap:",
+        pilot.id,
+        unitId,
+        "required=" + unit.requiredSources.join(",")
+      );
+    }
   }
 
   for (const boneId of pilot.bodies) {
