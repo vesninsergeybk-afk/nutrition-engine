@@ -1,0 +1,326 @@
+/* Nutrition Calculator — Release 2 UI foundation.
+ * Canonical presentation primitives shared by the three themes.
+ * This is a foundation layer, not a route/layout hotfix: it defines roles,
+ * tokens and compatibility aliases while leaving calculations, visibility,
+ * DOM order and navigation semantics untouched.
+ */
+
+:root{
+  --ui-font-body:system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans",sans-serif;
+  --ui-font-display:var(--ui-font-body);
+
+  --ui-type-xs:12px;
+  --ui-type-sm:13px;
+  --ui-type-body:15px;
+  --ui-type-lg:18px;
+  --ui-type-xl:clamp(21px,2vw,27px);
+  --ui-type-2xl:clamp(28px,3vw,36px);
+
+  --ui-line-tight:1.2;
+  --ui-line-body:1.5;
+  --ui-line-comfort:1.58;
+
+  --ui-space-1:4px;
+  --ui-space-2:8px;
+  --ui-space-3:12px;
+  --ui-space-4:16px;
+  --ui-space-5:20px;
+  --ui-space-6:24px;
+  --ui-space-8:32px;
+
+  --ui-control-min:40px;
+  --ui-control-touch:44px;
+  --ui-field-min:42px;
+
+  --ui-radius-sm:8px;
+  --ui-radius-control:10px;
+  --ui-radius-surface:14px;
+  --ui-radius-large:18px;
+
+  --ui-bg:#f5f7fa;
+  --ui-surface:#fff;
+  --ui-surface-soft:#f8fafc;
+  --ui-surface-strong:#eef2f6;
+  --ui-text:#182235;
+  --ui-text-soft:#344054;
+  --ui-muted:#667085;
+  --ui-border:#e2e8f0;
+  --ui-border-strong:#cbd5e1;
+  --ui-accent:#155cc7;
+  --ui-accent-hover:#0d4faa;
+  --ui-accent-soft:#eef4ff;
+  --ui-positive:#2f7a5d;
+  --ui-warning:#9a6c18;
+  --ui-danger:#a3483f;
+  --ui-shadow-surface:0 1px 2px rgba(24,34,53,.04);
+  --ui-focus-ring:0 0 0 3px rgba(21,92,199,.16);
+}
+
+html[data-theme="retro-2bit"]{
+  --ui-font-display:ui-monospace,"Cascadia Mono","SFMono-Regular",Consolas,monospace;
+  --ui-bg:var(--bg,#eef4f8);
+  --ui-surface:var(--surface,#fff);
+  --ui-surface-soft:var(--surface-soft,#f4f7fa);
+  --ui-surface-strong:var(--surface-strong,#e9eef4);
+  --ui-text:var(--text,#10243d);
+  --ui-text-soft:var(--text,#203650);
+  --ui-muted:var(--muted-text,#586b7e);
+  --ui-border:var(--border,#b7c5d4);
+  --ui-border-strong:var(--border-strong,#91a4b8);
+  --ui-accent:var(--accent,#155eb8);
+  --ui-accent-hover:var(--accent-strong,#0d4c98);
+  --ui-accent-soft:var(--accent-soft,#e8f1fb);
+  --ui-radius-sm:0px;
+  --ui-radius-control:0px;
+  --ui-radius-surface:0px;
+  --ui-radius-large:0px;
+  --ui-shadow-surface:3px 3px 0 rgba(10,31,56,.16);
+}
+
+html[data-theme="ivory-brass"]{
+  --ui-font-display:var(--ib-serif,Georgia,"Times New Roman",serif);
+  --ui-bg:var(--ib-bg,#f4efe5);
+  --ui-surface:var(--ib-surface,#fffdf8);
+  --ui-surface-soft:var(--ib-surface-soft,#faf6ee);
+  --ui-surface-strong:var(--ib-surface-strong,#f0e8d9);
+  --ui-text:var(--ib-ink,#24251f);
+  --ui-text-soft:#4f4d45;
+  --ui-muted:var(--ib-muted,#6d685e);
+  --ui-border:var(--ib-line,#ddd3c1);
+  --ui-border-strong:var(--ib-line-strong,#cbbda5);
+  --ui-accent:var(--ib-brass-dark,#755016);
+  --ui-accent-hover:#5f4214;
+  --ui-accent-soft:#f5ecdc;
+  --ui-positive:var(--ib-positive,#66834f);
+  --ui-warning:var(--ib-warning,#d89412);
+  --ui-danger:var(--ib-danger,#c65045);
+  --ui-shadow-surface:0 6px 22px rgba(73,59,36,.055);
+}
+
+/* Migration bridge: existing late-stage layers consume the canonical roles.
+   The aliases can be removed when those layers are retired. */
+html[data-ui-foundation="1"][data-theme-parity-hotfix="4"]{
+  --hf4-body-font:var(--ui-font-body);
+  --hf4-display-font:var(--ui-font-display);
+  --hf4-radius:var(--ui-radius-surface);
+  --hf4-radius-small:var(--ui-radius-control);
+  --hf4-card-bg:var(--ui-surface);
+  --hf4-soft-bg:var(--ui-surface-soft);
+  --hf4-line:var(--ui-border);
+  --hf4-ink:var(--ui-text);
+  --hf4-muted:var(--ui-muted);
+  --hf4-accent:var(--ui-accent);
+  --hf4-good:var(--ui-positive);
+  --hf4-warn:var(--ui-warning);
+  --hf4-bad:var(--ui-danger);
+  --hf4-shadow:var(--ui-shadow-surface);
+}
+html[data-ui-foundation="1"][data-theme="modern"][data-interface-simplification="1"]{
+  --vg-bg:var(--ui-bg);
+  --vg-surface:var(--ui-surface);
+  --vg-subtle:var(--ui-surface-soft);
+  --vg-line:var(--ui-border);
+  --vg-line-strong:var(--ui-border-strong);
+  --vg-ink:var(--ui-text);
+  --vg-text:var(--ui-text-soft);
+  --vg-muted:var(--ui-muted);
+  --vg-primary:var(--ui-accent);
+  --vg-primary-hover:var(--ui-accent-hover);
+  --vg-primary-soft:var(--ui-accent-soft);
+  --d111-bg:var(--ui-bg);
+  --d111-surface:var(--ui-surface);
+  --d111-subtle:var(--ui-surface-soft);
+  --d111-soft-blue:var(--ui-accent-soft);
+  --d111-ink:var(--ui-text);
+  --d111-text:var(--ui-text-soft);
+  --d111-muted:var(--ui-muted);
+  --d111-border:var(--ui-border);
+  --d111-blue:var(--ui-accent);
+  --d111-blue-dark:var(--ui-accent-hover);
+  --d111-radius:var(--ui-radius-surface);
+  --d111-radius-sm:var(--ui-radius-control);
+  --d111-shadow:var(--ui-shadow-surface);
+}
+
+/* Typography: one scale, theme-specific voice only through display font. */
+html[data-ui-foundation="1"] body{
+  font-family:var(--ui-font-body);
+  font-size:var(--ui-type-body);
+  line-height:var(--ui-line-body);
+  color:var(--ui-text);
+}
+html[data-ui-foundation="1"] #mainContent :where(h1,h2,h3,h4,.card-title){
+  color:var(--ui-text);
+  font-family:var(--ui-font-display);
+  text-wrap:balance;
+}
+html[data-ui-foundation="1"] #mainContent h1{
+  font-size:var(--ui-type-2xl);
+  line-height:1.12;
+}
+html[data-ui-foundation="1"] #mainContent h2{
+  font-size:var(--ui-type-xl);
+  line-height:1.16;
+}
+html[data-ui-foundation="1"] #mainContent h3{
+  font-size:var(--ui-type-lg);
+  line-height:1.24;
+}
+html[data-ui-foundation="1"] #mainContent :where(p,li,td,th,label,input,select,textarea,button){
+  line-height:1.45;
+}
+html[data-ui-foundation="1"] #mainContent :where(.small,small,.muted,.hint,.footer-note){
+  font-size:var(--ui-type-xs);
+  line-height:1.45;
+  color:var(--ui-muted);
+}
+html[data-ui-foundation="1"] #mainContent label{
+  color:var(--ui-text-soft);
+  font-size:var(--ui-type-sm);
+  font-weight:650;
+}
+
+/* Form fields: exclude native compact controls that must keep intrinsic geometry. */
+html[data-ui-foundation="1"] #mainContent :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+  select,
+  textarea
+){
+  box-sizing:border-box;
+  min-height:var(--ui-field-min);
+  border-color:var(--ui-border-strong);
+  border-radius:var(--ui-radius-control);
+  background:var(--ui-surface);
+  color:var(--ui-text);
+}
+html[data-ui-foundation="1"] #mainContent :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+  select,
+  textarea
+):focus-visible{
+  border-color:var(--ui-accent);
+  outline:none;
+  box-shadow:var(--ui-focus-ring);
+}
+
+/* Existing semantic button roles become the canonical four-role vocabulary.
+   Bare specialist/visualisation buttons keep their existing component rules. */
+html[data-ui-foundation="1"] #mainContent :where(.btn,button.secondary,button.ghost,button.danger){
+  box-sizing:border-box;
+  min-height:var(--ui-control-min);
+  border-radius:var(--ui-radius-control);
+  font-family:var(--ui-font-body);
+  font-size:14px;
+  font-weight:650;
+  line-height:1.2;
+  box-shadow:none;
+}
+html[data-ui-foundation="1"] #mainContent :where(button.secondary,.btn.secondary){
+  border-color:var(--ui-border-strong)!important;
+  background:var(--ui-surface)!important;
+  color:var(--ui-text-soft)!important;
+}
+html[data-ui-foundation="1"] #mainContent :where(button.secondary,.btn.secondary):hover{
+  border-color:var(--ui-accent)!important;
+  background:var(--ui-surface-soft)!important;
+  color:var(--ui-text)!important;
+}
+html[data-ui-foundation="1"] #mainContent :where(button.ghost,.btn.ghost){
+  border-color:transparent!important;
+  background:transparent!important;
+  color:var(--ui-text-soft)!important;
+}
+html[data-ui-foundation="1"] #mainContent :where(button.ghost,.btn.ghost):hover{
+  background:var(--ui-surface-soft)!important;
+  color:var(--ui-text)!important;
+}
+html[data-ui-foundation="1"] #mainContent :where(button.danger,.btn.danger){
+  color:#fff!important;
+  border-color:var(--ui-danger)!important;
+  background:var(--ui-danger)!important;
+}
+
+/* Surfaces: top-level working areas remain clear; nested groups stay visually quiet. */
+html[data-ui-foundation="1"] #mainContent>section.card{
+  border-color:var(--ui-border);
+  border-radius:var(--ui-radius-surface);
+  background:var(--ui-surface);
+  box-shadow:var(--ui-shadow-surface);
+}
+html[data-ui-foundation="1"] #mainContent :where(
+  .card .card,
+  .total-card,
+  .workspace-alt-entry,
+  .workspace-analysis-group,
+  .workspace-correction-method,
+  .workspace-report-card
+){
+  border-color:var(--ui-border);
+  border-radius:var(--ui-radius-control);
+  box-shadow:none;
+}
+
+/* Repeated data is intentionally denser than explanatory cards. */
+html[data-ui-foundation="1"] #mainContent :where(
+  .ration-table,
+  .norm-region-help-table,
+  .workspace-report-table
+) th{
+  color:var(--ui-muted);
+  font-size:var(--ui-type-xs);
+  font-weight:700;
+  letter-spacing:.015em;
+  text-transform:none;
+}
+html[data-ui-foundation="1"] #mainContent :where(
+  .ration-table,
+  .norm-region-help-table,
+  .workspace-report-table
+) td{
+  color:var(--ui-text-soft);
+  font-size:14px;
+}
+html[data-ui-foundation="1"] #mainContent .ration-table tbody tr.ration-row>td{
+  border-color:var(--ui-border);
+}
+
+/* Status colours communicate meaning; neutral surfaces do not become decorative. */
+html[data-ui-foundation="1"] #mainContent :where(.muted,.small,.hint){color:var(--ui-muted)}
+html[data-ui-foundation="1"] #mainContent :where(.search-db-count,.ration-kpi-strip){
+  border-color:var(--ui-border);
+  box-shadow:none;
+}
+
+/* Focus is consistent across themes, including keyboard-only navigation. */
+html[data-ui-foundation="1"] :where(
+  button,a,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])
+):focus-visible{
+  outline:3px solid color-mix(in srgb,var(--ui-accent) 30%,transparent);
+  outline-offset:2px;
+}
+
+/* Responsive contract: preserve readable type and finger-sized controls instead
+   of shrinking the desktop grammar. */
+@media(max-width:860px){
+  :root{
+    --ui-control-min:44px;
+    --ui-field-min:44px;
+  }
+  html[data-ui-foundation="1"] #mainContent :where(.btn,button.secondary,button.ghost,button.danger){
+    min-height:var(--ui-control-touch);
+  }
+  html[data-ui-foundation="1"] #mainContent>section.card{
+    border-radius:12px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-ui-foundation="1"] *,
+  html[data-ui-foundation="1"] *::before,
+  html[data-ui-foundation="1"] *::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
