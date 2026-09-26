@@ -272,6 +272,40 @@ const assert = require('node:assert/strict');
     Number(await page.locator('#motion-viewer').getAttribute('data-motion-clavicle-elevation-deg')) > 0,
     'Full-range abduction must move the clavicle'
   );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-scapular-posterior-tilt-deg')
+    ) > 3,
+    'Full-range abduction must include scapular posterior tilt'
+  );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-scapular-external-rotation-deg')
+    ) > 1,
+    'Higher-range abduction must include a modest scapular external-rotation component'
+  );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-clavicle-posterior-rotation-deg')
+    ) > 0,
+    'Full-range abduction must include clavicular posterior rotation'
+  );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-scapula-anchor'),
+    'clavicle-lateral',
+    'Scapular base must follow the lateral clavicle rather than drift independently'
+  );
+  assert.match(
+    await page.locator('#motion-state').innerText(),
+    /зад|кзади|лопатк/i,
+    'Teaching UI must explain the coupled 3D scapular motion'
+  );
   assert.match(
     await page.locator('#motion-viewer').getAttribute('data-motion-scapular-drivers'),
     /serratus-anterior/

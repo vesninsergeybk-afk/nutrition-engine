@@ -321,10 +321,35 @@ assert(
   "Scapulohumeral preview must not collapse back to a constant 2:1 ratio"
 );
 assert(
+  shoulder120.scapularPosteriorTiltDeg > 8 &&
+    shoulder150.scapularPosteriorTiltDeg > shoulder120.scapularPosteriorTiltDeg,
+  "Combined shoulder elevation must add progressive scapular posterior tilt"
+);
+assert(
+  shoulder120.scapularExternalRotationDeg > 1 &&
+    shoulder150.scapularExternalRotationDeg >
+      shoulder120.scapularExternalRotationDeg,
+  "Combined shoulder elevation must add a modest high-range external-rotation trend"
+);
+assert(
   shoulder150.clavicleElevationDeg > 0 &&
     shoulder150.clavicleRetractionDeg > 0 &&
     shoulder150.claviclePosteriorRotationDeg > 0,
   "Combined shoulder elevation must include a clavicular component"
+);
+assert(
+  adductionAction.combinedShoulderComplex === true,
+  "Return from 90° abduction must preserve the linked shoulder-complex chain"
+);
+const adduction90 = shoulderComplexElevationPreview(adductionAction, 90, 1);
+assert(
+  adduction90.scapularUpwardRotationDeg > 0 &&
+    Math.abs(
+      adduction90.glenohumeralDeg +
+        adduction90.scapularUpwardRotationDeg -
+        90
+    ) < 0.01,
+  "Adduction reference pose must include the scapular contribution rather than a humerus-only 90° pose"
 );
 
 const scapUp = motionActionById("scapular-upward-rotation");

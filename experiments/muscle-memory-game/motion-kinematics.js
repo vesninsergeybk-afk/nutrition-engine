@@ -262,6 +262,9 @@ const MOTION_ACTIONS = Object.freeze({
     playDirection: -1,
     speedDegPerSecond: 40,
     referencePose: "abducted-90",
+    combinedShoulderComplex: true,
+    rangeNoteRu:
+      "Возврат из 90° отведения к нейтрали показан как связное движение плечевой кости, лопатки и ключицы; точная индивидуальная траектория не заявляется.",
     synergists: ["pectoralis-major", "latissimus-dorsi", "teres-major"],
     assistants: ["coracobrachialis", "triceps-long"],
     stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
@@ -625,6 +628,33 @@ const SHOULDER_ELEVATION_SCAPULA_POINTS = Object.freeze([
   Object.freeze([180, 61]),
 ]);
 
+// These are deliberately conservative deltas from the model's rest pose,
+// not normative "ideal" values. The robust teaching pattern is 3D:
+// upward rotation + posterior tilt throughout elevation, with a modest
+// trend toward external rotation in the upper range. Healthy variability
+// is too large to present one exact trajectory as normal.
+const SHOULDER_ELEVATION_POSTERIOR_TILT_POINTS = Object.freeze([
+  Object.freeze([0, 0]),
+  Object.freeze([30, 2]),
+  Object.freeze([60, 5]),
+  Object.freeze([90, 8]),
+  Object.freeze([120, 12]),
+  Object.freeze([150, 16]),
+  Object.freeze([160, 17]),
+  Object.freeze([180, 18]),
+]);
+
+const SHOULDER_ELEVATION_EXTERNAL_ROTATION_POINTS = Object.freeze([
+  Object.freeze([0, 0]),
+  Object.freeze([30, 0]),
+  Object.freeze([60, 0.5]),
+  Object.freeze([90, 2]),
+  Object.freeze([120, 4]),
+  Object.freeze([150, 6]),
+  Object.freeze([160, 6.5]),
+  Object.freeze([180, 7]),
+]);
+
 function interpolateControlPoints(points, value) {
   const x = Number(value) || 0;
   if (x <= points[0][0]) return points[0][1];
@@ -653,6 +683,8 @@ export function shoulderComplexElevationPreview(
       totalDeg,
       glenohumeralDeg: totalDeg,
       scapularUpwardRotationDeg: 0,
+      scapularPosteriorTiltDeg: 0,
+      scapularExternalRotationDeg: 0,
       clavicleElevationDeg: 0,
       clavicleRetractionDeg: 0,
       claviclePosteriorRotationDeg: 0,
@@ -668,18 +700,29 @@ export function shoulderComplexElevationPreview(
     0,
     totalDeg - scapularUpwardRotationDeg
   );
-  const progress = Math.min(
-    1,
-    totalDeg / Math.max(1, action.referenceMaxDeg || action.maxDeg || 1)
+  const scapularPosteriorTiltDeg = interpolateControlPoints(
+    SHOULDER_ELEVATION_POSTERIOR_TILT_POINTS,
+    totalDeg
   );
+  const scapularExternalRotationDeg = interpolateControlPoints(
+    SHOULDER_ELEVATION_EXTERNAL_ROTATION_POINTS,
+    totalDeg
+  );
+
+  // Clavicular motion is scaled to the elevation itself rather than to the
+  // preview's local maximum. That prevents a 90° teaching action from being
+  // assigned the same clavicular excursion as a full overhead raise.
+  const elevationProgress = Math.min(1, totalDeg / 180);
 
   return Object.freeze({
     totalDeg,
     glenohumeralDeg,
     scapularUpwardRotationDeg,
-    clavicleElevationDeg: 13 * progress,
-    clavicleRetractionDeg: 20 * progress,
-    claviclePosteriorRotationDeg: 24 * progress,
+    scapularPosteriorTiltDeg,
+    scapularExternalRotationDeg,
+    clavicleElevationDeg: 13 * elevationProgress,
+    clavicleRetractionDeg: 20 * elevationProgress,
+    claviclePosteriorRotationDeg: 24 * elevationProgress,
     side,
   });
 }
