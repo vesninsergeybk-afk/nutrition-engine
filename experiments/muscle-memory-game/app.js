@@ -3988,6 +3988,13 @@ function deformShoulderMuscle(mesh, pivot, axis, angleRad, activation) {
   }
 
   const distanceSpan = Math.max(1e-6, maxDistance - minDistance);
+  const distalInsertionUnits = new Set([
+    "coracobrachialis",
+    "biceps-long",
+    "biceps-short",
+    "triceps-long",
+  ]);
+  const movesDistalWithHumerus = distalInsertionUnits.has(unitId);
   const p = new THREE.Vector3();
   const rel = new THREE.Vector3();
   const q = new THREE.Quaternion();
@@ -4014,13 +4021,7 @@ function deformShoulderMuscle(mesh, pivot, axis, angleRad, activation) {
       // center while their humeral insertion is nearer the pivot. The
       // coracobrachialis is the opposite: its coracoid origin is near the
       // shoulder and its humeral insertion lies distally.
-      const distalInsertionUnits = new Set([
-        "coracobrachialis",
-        "biceps-long",
-        "biceps-short",
-        "triceps-long",
-      ]);
-      attachmentWeight = distalInsertionUnits.has(unitId)
+      attachmentWeight = movesDistalWithHumerus
         ? normalizedDistance
         : 1 - normalizedDistance;
     }
