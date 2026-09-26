@@ -121,6 +121,114 @@ def is_translation_coordinate(name: str) -> bool:
     return bool(re.search(r"_t[xyz]$", name))
 
 
+def moving_average(values: List[float], window: int) -> List[float]:
+    if window < 1:
+        raise ValueError("Smoothing window must be >= 1")
+    if window % 2 == 0:
+        raise ValueError("Smoothing window must be odd")
+    half = window // 2
+    smoothed: List[float] = []
+    for index in range(len(values)):
+        start = max(0, index - half)
+        end = min(len(values), index + half + 1)
+        chunk = values[start:end]
+        smoothed.append(sum(chunk) / len(chunk))
+    return smoothed
+
+
+def extract_teaching_phase(
+    labels: List[str],
+    rows: List[List[float]],
+    coordinate_name: str,
+    direction: str,
+    start_fraction: float,
+    end_fraction: float,
+    smoothing_window: int,
+) -> Tuple[List[List[float]], Dict[str, float | int | str]]:
+    if coordinate_name not in labels:
+        raise ValueError("Phase coordinate missing from motion: " + coordinate_name)
+    if direction not in {"increasing", "decreasing"}:
+        raise ValueError("Phase direction must be increasing or decreasing")
+    if not (0 <= start_fraction < end_fraction <= 1):
+        raise ValueError("Phase fractions must satisfy 0 <= start < end <= 1")
+
+    coordinate_index = labels.index(coordinate_name)
+    raw_values = [float(row[coordinate_index]) for row in rows]
+    oriented_values = (
+        raw_values
+        if direction == "increasing"
+        else [-value for value in raw_values]
+    )
+    smoothed = moving_average(oriented_values, smoothing_window)
+
+    peak_index = max(range(len(smoothed)), key=smoothed.__getitem__)
+    baseline_index = min(
+        range(peak_index + 1),
+        key=smoothed.__getitem__,
+    )
+    amplitude = smoothed[peak_index] - smoothed[baseline_index]
+    if not amplitude > 1e-8:
+        raise ValueError(
+            "Phase coordinate has no usable movement amplitude before its peak"
+        )
+
+    start_target = smoothed[baseline_index] + amplitude * start_fraction
+    end_target = smoothed[baseline_index] + amplitude * end_fraction
+
+    start_index = next(
+        (
+            index
+            for index in range(baseline_index, peak_index + 1)
+            if smoothed[index] >= start_target
+        ),
+        None,
+    )
+    end_index = next(
+        (
+            index
+            for index in range(start_index or baseline_index, peak_index + 1)
+            if smoothed[index] >= end_target
+        ),
+        None,
+    )
+    if start_index is None or end_index is None or end_index <= start_index:
+        raise ValueError("Could not isolate a clean teaching phase")
+
+    selected = rows[start_index : end_index + 1]
+    selected_smooth = smoothed[start_index : end_index + 1]
+    path_length = sum(
+        abs(selected_smooth[index] - selected_smooth[index - 1])
+        for index in range(1, len(selected_smooth))
+    )
+    net_progress = selected_smooth[-1] - selected_smooth[0]
+    progress_quality = net_progress / max(path_length, 1e-12)
+    if progress_quality < 0.9:
+        raise ValueError(
+            "Selected teaching phase is too non-monotonic: "
+            + f"{progress_quality:.3f}"
+        )
+
+    sign = 1.0 if direction == "increasing" else -1.0
+    metadata: Dict[str, float | int | str] = {
+        "coordinate": coordinate_name,
+        "direction": direction,
+        "startFraction": start_fraction,
+        "endFraction": end_fraction,
+        "smoothingWindow": smoothing_window,
+        "sourceStartTime": float(rows[start_index][0]),
+        "sourceEndTime": float(rows[end_index][0]),
+        "sourceDuration": float(rows[end_index][0] - rows[start_index][0]),
+        "baselineValue": sign * smoothed[baseline_index],
+        "peakValue": sign * smoothed[peak_index],
+        "startValue": float(raw_values[start_index]),
+        "endValue": float(raw_values[end_index]),
+        "progressQuality": float(progress_quality),
+        "sourceRowCount": len(rows),
+        "selectedRowCount": len(selected),
+    }
+    return selected, metadata
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True)
@@ -138,6 +246,19 @@ def main() -> None:
         default=None,
         help="Optional OpenSim body used as the coordinate frame for exported poses",
     )
+    parser.add_argument(
+        "--phase-coordinate",
+        default=None,
+        help="Optional source coordinate used to isolate one clean teaching phase",
+    )
+    parser.add_argument(
+        "--phase-direction",
+        choices=["increasing", "decreasing"],
+        default="increasing",
+    )
+    parser.add_argument("--phase-start-fraction", type=float, default=0.05)
+    parser.add_argument("--phase-end-fraction", type=float, default=0.95)
+    parser.add_argument("--phase-smoothing-window", type=int, default=21)
     parser.add_argument("--stride", type=int, default=1)
     args = parser.parse_args()
 
@@ -182,12 +303,25 @@ def main() -> None:
     if not coordinate_columns:
         raise ValueError("No .mot coordinate names matched the OpenSim model")
 
+    source_phase = None
+    export_rows = rows
+    if args.phase_coordinate:
+        export_rows, source_phase = extract_teaching_phase(
+            labels=labels,
+            rows=rows,
+            coordinate_name=args.phase_coordinate,
+            direction=args.phase_direction,
+            start_fraction=args.phase_start_fraction,
+            end_fraction=args.phase_end_fraction,
+            smoothing_window=args.phase_smoothing_window,
+        )
+
     frames = []
     stride = max(1, args.stride)
-    first_time = float(rows[0][0])
+    first_time = float(export_rows[0][0])
 
-    for row_index, row in enumerate(rows):
-        if row_index % stride and row_index != len(rows) - 1:
+    for row_index, row in enumerate(export_rows):
+        if row_index % stride and row_index != len(export_rows) - 1:
             continue
         source_time = float(row[0])
         state.setTime(source_time)
@@ -235,6 +369,7 @@ def main() -> None:
             "body-relative" if args.reference_body else "opensim-ground"
         ),
         "referenceBody": args.reference_body,
+        "sourcePhase": source_phase,
         "frames": frames,
     }
     output = pathlib.Path(args.output)
@@ -243,7 +378,18 @@ def main() -> None:
         json.dumps(clip, separators=(",", ":")),
         encoding="utf-8",
     )
-    print(f"exported {len(frames)} frames from {len(rows)} source rows -> {output}")
+    if source_phase:
+        print(
+            "teaching phase "
+            + f"{source_phase['coordinate']} "
+            + f"{source_phase['sourceStartTime']:.3f}-"
+            + f"{source_phase['sourceEndTime']:.3f}s, "
+            + f"quality={source_phase['progressQuality']:.3f}"
+        )
+    print(
+        f"exported {len(frames)} frames from {len(export_rows)} selected rows "
+        + f"({len(rows)} source rows) -> {output}"
+    )
 
 
 if __name__ == "__main__":

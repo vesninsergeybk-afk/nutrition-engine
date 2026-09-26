@@ -46,6 +46,7 @@ export function createMotionClip({
   sourceMotion = null,
   coordinateSpace = null,
   referenceBody = null,
+  sourcePhase = null,
   frames,
 } = {}) {
   if (schema !== "motion-clip-v1") {
@@ -97,6 +98,7 @@ export function createMotionClip({
     sourceMotion,
     coordinateSpace,
     referenceBody,
+    sourcePhase: sourcePhase ? Object.freeze({ ...sourcePhase }) : null,
     duration:
       normalizedFrames[normalizedFrames.length - 1].time -
       normalizedFrames[0].time,

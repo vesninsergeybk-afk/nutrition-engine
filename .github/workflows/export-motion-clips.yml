@@ -71,11 +71,12 @@ jobs:
           SCRIPT=experiments/muscle-memory-game/export-opensim-motion.py
           STRIDE="${{ github.event_name == 'workflow_dispatch' && inputs.stride || '2' }}"
           COMMON="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id shoulder --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --reference-body thorax --stride $STRIDE"
-          python "$SCRIPT" $COMMON --motion /tmp/tsm/ABD01.mot --source-motion "Results/IK solutions/ABD01.mot" --clip-id tsm-abduction-01 --movement-id shoulder-abduction --output /tmp/motion-clips/tsm-abduction-01.json
-          python "$SCRIPT" $COMMON --motion /tmp/tsm/FLX01.mot --source-motion "Results/IK solutions/FLX01.mot" --clip-id tsm-flexion-01 --movement-id shoulder-flexion --output /tmp/motion-clips/tsm-flexion-01.json
+          PHASE="--phase-direction increasing --phase-start-fraction 0.05 --phase-end-fraction 0.95 --phase-smoothing-window 21"
+          python "$SCRIPT" $COMMON $PHASE --phase-coordinate shoulder_elv --motion /tmp/tsm/ABD01.mot --source-motion "Results/IK solutions/ABD01.mot" --clip-id tsm-abduction-teaching-01 --movement-id shoulder-abduction --output /tmp/motion-clips/tsm-abduction-teaching-01.json
+          python "$SCRIPT" $COMMON $PHASE --phase-coordinate shoulder_elv --motion /tmp/tsm/FLX01.mot --source-motion "Results/IK solutions/FLX01.mot" --clip-id tsm-flexion-teaching-01 --movement-id shoulder-flexion --output /tmp/motion-clips/tsm-flexion-teaching-01.json
 
           COMMON_SCAP="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id scapula --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --reference-body thorax --stride $STRIDE"
-          python "$SCRIPT" $COMMON_SCAP --motion /tmp/tsm/SHRUG01.mot --source-motion "Results/IK solutions/SHRUG01.mot" --clip-id tsm-shrug-01 --movement-id scapular-elevation --output /tmp/motion-clips/tsm-shrug-01.json
+          python "$SCRIPT" $COMMON_SCAP $PHASE --phase-coordinate scapula_elevation --motion /tmp/tsm/SHRUG01.mot --source-motion "Results/IK solutions/SHRUG01.mot" --clip-id tsm-shrug-teaching-01 --movement-id scapular-elevation --output /tmp/motion-clips/tsm-shrug-teaching-01.json
 
       - name: Validate exported clip contract
         run: |

@@ -328,3 +328,17 @@ Production authority for movement is now separated from the rendering layer.
 - `motion-kinematics.js` is retained as `kinematic-preview` fallback only. It is no longer the target production biomechanics engine.
 
 The first exporter workflow is intentionally manual. It downloads a pinned Thoracoscapular model and pinned ABD01 / FLX01 / SHRUG01 trajectories, uses OpenSim offline to realize body positions, then exports clavicle/scapula/humerus position + normalized quaternion frames. Browser interpolation occurs only between source-derived poses.
+
+
+## Teaching-phase extraction from source trials — 2026-09-26
+
+The Thoracoscapular source files are experimental trials, not ready-made UI animations. Their body transforms remain source-derived; no bone pose is manually corrected or smoothed.
+
+For teaching clips, the exporter now isolates one increasing movement phase from the original coordinate trajectory. It smooths only the selected scalar source coordinate for event detection, finds the pre-peak baseline and first peak, then keeps the 5%-95% progression window. The actual exported clavicle/scapula/humerus transforms are the untouched OpenSim poses at those source rows.
+
+Current event coordinates:
+- ABD01: `shoulder_elv`;
+- FLX01: `shoulder_elv`;
+- SHRUG01: `scapula_elevation`.
+
+Each clip records the source time window, fractions, smoothing window, original/selected row counts and a monotonic-progress quality score. CI rejects clips with poor phase monotonicity, implausible teaching duration, >2 cm inter-frame translation jumps or >15° inter-frame rotation jumps. These limits are continuity guards, not normative joint-angle limits.
