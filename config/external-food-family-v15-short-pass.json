@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "policy_version": "external-family-v15-short-pass",
+  "supersedes": "external-family-v14-conflict-resolution-profile-clean",
+  "status": "staging_only",
+  "verified_counts": {
+    "input_core_records": 13764,
+    "family_members": 13680,
+    "secondary": 84,
+    "navigation_families": 6887,
+    "identity_profiles": 8541
+  },
+  "semantic_repairs": [
+    "wolffish_bls_unspecified_not_catfish",
+    "striped_catfish_to_pangasius",
+    "sweet_vs_sour_cherry",
+    "zante_currant_vs_ribes_currant",
+    "black_vs_red_white_currant",
+    "striped_mullet_vs_white_sucker",
+    "pigeon_pea_vs_split_pea",
+    "alaska_vs_atlantic_pollock",
+    "mackerel_species_split",
+    "horse_mackerel_vs_atlantic_mackerel",
+    "cherry_juice_pack_vs_cherry_juice",
+    "plain_pollock_vs_bordelaise_fish_bake"
+  ],
+  "independent_audit": {
+    "pass": true,
+    "errors": []
+  },
+  "sha256": {
+    "builder": "09174842b338645e94e23ab3bce9071abb2d364dd8c61ea119ebc5af9654e48f",
+    "audit": "02b6247fa58f38ef0855598c8126864bb26b564497e89184a7d2082f252e7a2f",
+    "members": "144db74691f6c08af3405f621d6471289aad6740beb77e519b47949604d31188",
+    "report": "20ea45444e3cefc970ed269db1f5655fb0f77518c43ac22e28842e5cb406e138",
+    "semantic_audit": "de32d252caafe26bd925e35f731616f2ac016585610625b91ffa8ebe912ddabd"
+  }
+}
