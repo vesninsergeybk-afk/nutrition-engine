@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "policy_version": "external-family-v14-conflict-resolution-profile-clean",
+  "status": "staging_only",
+  "invariant": "Family metadata must never overwrite or average source nutrient values.",
+  "quarantine": [
+    {
+      "source_registry_id": "GERMANY_BLS",
+      "source_record_ids": [
+        "T604100",
+        "T604600",
+        "T604152",
+        "T604182",
+        "T604200",
+        "T604252",
+        "T604282"
+      ],
+      "reason": "ambiguous_catfish_wolffish_source_label",
+      "note": "BLS source label Katfisch/Steinbeißer is intrinsically ambiguous; do not guess catfish vs wolffish."
+    }
+  ],
+  "resolved_families": [
+    {
+      "family_key": "channel catfish",
+      "name_ru": "Канальный сом",
+      "source_record_ids": [
+        "USDA_FDC:173714",
+        "USDA_FDC:174186",
+        "USDA_FDC:174187",
+        "USDA_FDC:175165",
+        "USDA_FDC:175166",
+        "HEALTH_CANADA_CNF:2993",
+        "HEALTH_CANADA_CNF:2994",
+        "HEALTH_CANADA_CNF:3179",
+        "HEALTH_CANADA_CNF:3180",
+        "HEALTH_CANADA_CNF:3181"
+      ]
+    },
+    {
+      "family_key": "atlantic wolffish",
+      "name_ru": "Атлантическая зубатка",
+      "source_record_ids": [
+        "USDA_FDC:174247",
+        "USDA_FDC:175162",
+        "HEALTH_CANADA_CNF:3091",
+        "HEALTH_CANADA_CNF:3170"
+      ]
+    },
+    {
+      "family_key": "catfish farmed unspecified",
+      "name_ru": "Сом, выращенный (вид не указан)",
+      "source_record_ids": [
+        "USDA_FDC:2684445"
+      ]
+    },
+    {
+      "family_key": "european catfish",
+      "name_ru": "Европейский сом",
+      "source_record_ids": [
+        "GERMANY_BLS:T506100",
+        "GERMANY_BLS:T506152",
+        "GERMANY_BLS:T506600",
+        "GERMANY_BLS:T506182",
+        "GERMANY_BLS:T506200",
+        "GERMANY_BLS:T506252",
+        "GERMANY_BLS:T506400",
+        "GERMANY_BLS:T506282"
+      ]
+    },
+    {
+      "family_key": "striped catfish",
+      "name_ru": "Полосатый сом",
+      "source_record_ids": [
+        "GERMANY_BLS:T507100",
+        "GERMANY_BLS:T507152",
+        "GERMANY_BLS:T507182"
+      ]
+    },
+    {
+      "family_key": "northern pike",
+      "name_ru": "Щука обыкновенная",
+      "source_record_ids": [
+        "GERMANY_BLS:T064100",
+        "GERMANY_BLS:T064152",
+        "GERMANY_BLS:T060182",
+        "GERMANY_BLS:T060132",
+        "USDA_FDC:173680",
+        "USDA_FDC:175127"
+      ]
+    },
+    {
+      "family_key": "zander",
+      "name_ru": "Судак",
+      "source_record_ids": [
+        "GERMANY_BLS:T603100",
+        "GERMANY_BLS:T603200",
+        "GERMANY_BLS:T603152",
+        "GERMANY_BLS:T603172",
+        "GERMANY_BLS:T603400",
+        "GERMANY_BLS:T603182",
+        "GERMANY_BLS:T603600",
+        "GERMANY_BLS:T603132",
+        "GERMANY_BLS:T603252",
+        "GERMANY_BLS:T603282"
+      ]
+    },
+    {
+      "family_key": "walleye",
+      "name_ru": "Walleye (Sander vitreus)",
+      "source_record_ids": [
+        "USDA_FDC:171997",
+        "USDA_FDC:175128",
+        "HEALTH_CANADA_CNF:3151",
+        "HEALTH_CANADA_CNF:3202"
+      ]
+    },
+    {
+      "family_key": "sauger",
+      "name_ru": "Sauger (Sander canadensis)",
+      "source_record_ids": [
+        "HEALTH_CANADA_CNF:3235"
+      ]
+    },
+    {
+      "family_key": "cheese queso chihuahua",
+      "name_ru": "Сыр чихуахуа",
+      "source_record_ids": [
+        "USDA_FDC:173438",
+        "HEALTH_CANADA_CNF:104"
+      ]
+    },
+    {
+      "family_key": "cheese queso asadero",
+      "name_ru": "Сыр асадеро",
+      "source_record_ids": [
+        "USDA_FDC:173437",
+        "HEALTH_CANADA_CNF:103"
+      ]
+    },
+    {
+      "family_key": "cheese queso cotija",
+      "name_ru": "Сыр котиха",
+      "source_record_ids": [
+        "USDA_FDC:170898"
+      ]
+    },
+    {
+      "family_key": "cheese queso anejo",
+      "name_ru": "Сыр аньехо",
+      "source_record_ids": [
+        "USDA_FDC:172201",
+        "HEALTH_CANADA_CNF:102"
+      ]
+    },
+    {
+      "family_key": "cheese queso blanco",
+      "name_ru": "Сыр queso blanco",
+      "source_record_ids": [
+        "USDA_FDC:172224"
+      ]
+    },
+    {
+      "family_key": "cheese queso seco",
+      "name_ru": "Сыр queso seco",
+      "source_record_ids": [
+        "USDA_FDC:172222",
+        "USDA_FDC:746765"
+      ]
+    },
+    {
+      "family_key": "cheese queso fresco",
+      "name_ru": "Сыр queso fresco",
+      "source_record_ids": [
+        "USDA_FDC:172223",
+        "USDA_FDC:2647442"
+      ]
+    },
+    {
+      "family_key": "cheese munster european bls",
+      "name_ru": "Сыр мюнстер/мунстер (европейский профиль BLS)",
+      "source_record_ids": [
+        "GERMANY_BLS:M604600",
+        "GERMANY_BLS:M604700"
+      ]
+    },
+    {
+      "family_key": "cheese muenster us",
+      "name_ru": "Сыр мюнстер (американский тип)",
+      "source_record_ids": [
+        "USDA_FDC:169050",
+        "USDA_FDC:171245",
+        "HEALTH_CANADA_CNF:37",
+        "HEALTH_CANADA_CNF:5511"
+      ]
+    },
+    {
+      "family_key": "cheese neufchatel us",
+      "name_ru": "Сыр Neufchatel (американский стандарт)",
+      "source_record_ids": [
+        "USDA_FDC:171246",
+        "HEALTH_CANADA_CNF:38"
+      ]
+    },
+    {
+      "family_key": "cheese romano us",
+      "name_ru": "Сыр романо (американский стандарт; вид молока не указан)",
+      "source_record_ids": [
+        "USDA_FDC:171249",
+        "HEALTH_CANADA_CNF:45"
+      ]
+    },
+    {
+      "family_key": "ocean perch atlantic sebastes",
+      "name_ru": "Атлантический морской окунь (Sebastes spp.)",
+      "source_record_ids": [
+        "USDA_FDC:175125",
+        "USDA_FDC:175126",
+        "HEALTH_CANADA_CNF:3031",
+        "HEALTH_CANADA_CNF:3032"
+      ]
+    },
+    {
+      "family_key": "rockfish pacific mixed species",
+      "name_ru": "Тихоокеанский rockfish, смешанные виды",
+      "source_record_ids": [
+        "USDA_FDC:173684",
+        "USDA_FDC:175131",
+        "HEALTH_CANADA_CNF:3043",
+        "HEALTH_CANADA_CNF:3044"
+      ]
+    }
+  ],
+  "production_label_review": [
+    {
+      "fdc_id": 173694,
+      "current_name_en": "Sea bass, baked",
+      "current_name_ru": "Морской окунь, запечённый",
+      "issue": "Russian label collides with Sebastes/ocean perch terminology.",
+      "recommendation": "Rename in a separate staging patch to preserve sea bass vs Sebastes distinction; do not change nutrient values."
+    }
+  ]
+}
