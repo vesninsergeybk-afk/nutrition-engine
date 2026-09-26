@@ -16,6 +16,10 @@ for (const file of files) {
       " frames, duration=" +
       clip.duration.toFixed(3) +
       "s, source=" +
-      clip.sourceId
+      clip.sourceId +
+      ", space=" +
+      (clip.coordinateSpace || "unspecified") +
+      ", reference=" +
+      (clip.referenceBody || "ground")
   );
 }

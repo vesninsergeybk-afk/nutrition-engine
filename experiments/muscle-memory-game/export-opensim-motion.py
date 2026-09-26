@@ -50,16 +50,70 @@ def simtk_values(value, count: int) -> List[float]:
     return out
 
 
-def body_transform(body, state) -> Dict[str, List[float]]:
-    transform = body.getTransformInGround(state)
-    position = simtk_values(transform.p(), 3)
-    quat = simtk_values(transform.R().convertRotationToQuaternion(), 4)
-    norm = math.sqrt(sum(v * v for v in quat))
+def normalize_quaternion(quat: List[float]) -> List[float]:
+    norm = math.sqrt(sum(value * value for value in quat))
     if not norm > 1e-12:
         raise ValueError("OpenSim returned a zero quaternion")
+    return [value / norm for value in quat]
+
+
+def quaternion_conjugate(quat: List[float]) -> List[float]:
+    return [quat[0], -quat[1], -quat[2], -quat[3]]
+
+
+def quaternion_multiply(a: List[float], b: List[float]) -> List[float]:
+    aw, ax, ay, az = a
+    bw, bx, by, bz = b
+    return [
+        aw * bw - ax * bx - ay * by - az * bz,
+        aw * bx + ax * bw + ay * bz - az * by,
+        aw * by - ax * bz + ay * bw + az * bx,
+        aw * bz + ax * by - ay * bx + az * bw,
+    ]
+
+
+def rotate_vector(quat: List[float], vector: List[float]) -> List[float]:
+    rotated = quaternion_multiply(
+        quaternion_multiply(quat, [0.0, *vector]),
+        quaternion_conjugate(quat),
+    )
+    return rotated[1:]
+
+
+def transform_in_ground(body, state) -> Dict[str, List[float]]:
+    transform = body.getTransformInGround(state)
     return {
-        "position": position,
-        "quaternion": [value / norm for value in quat],
+        "position": simtk_values(transform.p(), 3),
+        "quaternion": normalize_quaternion(
+            simtk_values(transform.R().convertRotationToQuaternion(), 4)
+        ),
+    }
+
+
+def body_transform(
+    body,
+    state,
+    reference_body=None,
+) -> Dict[str, List[float]]:
+    body_world = transform_in_ground(body, state)
+    if reference_body is None:
+        return body_world
+
+    reference_world = transform_in_ground(reference_body, state)
+    reference_inverse = quaternion_conjugate(reference_world["quaternion"])
+    relative_position = rotate_vector(
+        reference_inverse,
+        [
+            body_world["position"][i] - reference_world["position"][i]
+            for i in range(3)
+        ],
+    )
+    relative_quaternion = normalize_quaternion(
+        quaternion_multiply(reference_inverse, body_world["quaternion"])
+    )
+    return {
+        "position": relative_position,
+        "quaternion": relative_quaternion,
     }
 
 
@@ -79,6 +133,11 @@ def main() -> None:
     parser.add_argument("--source-revision", required=True)
     parser.add_argument("--source-motion", required=True)
     parser.add_argument("--body-map", required=True, help="atlasId=opensimBody,...")
+    parser.add_argument(
+        "--reference-body",
+        default=None,
+        help="Optional OpenSim body used as the coordinate frame for exported poses",
+    )
     parser.add_argument("--stride", type=int, default=1)
     args = parser.parse_args()
 
@@ -109,6 +168,12 @@ def main() -> None:
     if missing_bodies:
         raise ValueError("Model missing bodies: " + ", ".join(missing_bodies))
 
+    reference_body = None
+    if args.reference_body:
+        if args.reference_body not in source_body_names:
+            raise ValueError("Model missing reference body: " + args.reference_body)
+        reference_body = body_set.get(args.reference_body)
+
     coordinate_columns = {
         label: labels.index(label)
         for label in labels[1:]
@@ -134,9 +199,28 @@ def main() -> None:
         model.realizePosition(state)
 
         bodies = {
-            atlas_id: body_transform(body_set.get(source_name), state)
+            atlas_id: body_transform(
+                body_set.get(source_name),
+                state,
+                reference_body=reference_body,
+            )
             for atlas_id, source_name in body_map.items()
         }
+
+        if reference_body is not None:
+            reference_pose = body_transform(
+                reference_body,
+                state,
+                reference_body=reference_body,
+            )
+            if any(abs(value) > 1e-8 for value in reference_pose["position"]):
+                raise ValueError("Reference-body translation did not cancel")
+            identity = reference_pose["quaternion"]
+            if min(abs(identity[0] - 1.0), abs(identity[0] + 1.0)) > 1e-8:
+                raise ValueError("Reference-body rotation did not cancel")
+            if any(abs(value) > 1e-8 for value in identity[1:]):
+                raise ValueError("Reference-body rotation did not cancel")
+
         frames.append({"time": source_time - first_time, "bodies": bodies})
 
     clip = {
@@ -147,6 +231,10 @@ def main() -> None:
         "sourceId": args.source_id,
         "sourceRevision": args.source_revision,
         "sourceMotion": args.source_motion,
+        "coordinateSpace": (
+            "body-relative" if args.reference_body else "opensim-ground"
+        ),
+        "referenceBody": args.reference_body,
         "frames": frames,
     }
     output = pathlib.Path(args.output)

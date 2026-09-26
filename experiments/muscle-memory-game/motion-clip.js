@@ -44,6 +44,8 @@ export function createMotionClip({
   sourceId,
   sourceRevision,
   sourceMotion = null,
+  coordinateSpace = null,
+  referenceBody = null,
   frames,
 } = {}) {
   if (schema !== "motion-clip-v1") {
@@ -93,6 +95,8 @@ export function createMotionClip({
     sourceId,
     sourceRevision,
     sourceMotion,
+    coordinateSpace,
+    referenceBody,
     duration:
       normalizedFrames[normalizedFrames.length - 1].time -
       normalizedFrames[0].time,
