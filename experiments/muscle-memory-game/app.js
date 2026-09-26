@@ -5626,7 +5626,10 @@ function createMotionPlaybackSegment(direction, startDeg, now) {
 }
 
 function setMotionPlaying(playing) {
-  if (!motionRig) return;
+  if (!motionRig) {
+    if (motionCanvas) motionCanvas.dataset.motionPlaying = "false";
+    return;
+  }
   if (!playing) {
     motionPlayback = null;
   } else {
@@ -6110,19 +6113,41 @@ function prepareMotionComparison(sid) {
   const muscleIds = targetSideStructureIds(target, sid);
   const ids = muscleIds.length ? muscleIds : [sid];
 
-  setVisibleStructures(ids);
-  focusedStructureIds = [...ids];
-  showSelectedMuscleBoneContext(ids);
-  isolated = true;
-  focusSelectedStructures(1.62);
+  // Build the Motion scene before mutating the static atlas. Previously the
+  // atlas was isolated first; if a rig could not be created, the user was left
+  // with disappearing context and a Play button that could not run.
   buildMotionPreview(ids);
+
+  const nativeReady =
+    motionCanvas?.dataset.motionState === "source-native-rest-pose" ||
+    motionCanvas?.dataset.motionState === "source-native-loading";
+  const motionReady = Boolean(motionRig) || nativeReady;
+
+  if (motionReady) {
+    setVisibleStructures(ids);
+    focusedStructureIds = [...ids];
+    showSelectedMuscleBoneContext(ids);
+    isolated = true;
+    focusSelectedStructures(1.62);
+  } else {
+    // Keep the atlas intact when Motion is not executable. A failed or
+    // unsupported Motion mapping must never destroy the user's anatomical
+    // context.
+    restoreExploreContext();
+    selectedExploreSid = sid;
+    focusedStructureIds = [sid];
+    highlightStructures([sid], "selected");
+    isolated = false;
+  }
 
   questionLabelEl.textContent = "Движение";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
   feedbackEl.textContent = motionRig
-    ? "Слева — исходная анатомия. Справа — учебный кинематический preview: выберите движение, меняйте угол вручную или запустите анимацию."
-    : "Слева — статический анатомический эталон. Справа — Motion-сцена; для выбранной мышцы суставная кинематика ещё не подключена.";
+    ? "Слева — исходная анатомия. Справа — учебное движение: выберите вариант, меняйте положение вручную или запустите анимацию."
+    : nativeReady
+      ? "Справа загружена независимая Motion-сцена. Статический атлас сохранён как анатомический контекст."
+      : "Для выбранной мышцы движение пока не готово. Анатомический атлас оставлен без изменений.";
   updateLayerButtons();
 }
 

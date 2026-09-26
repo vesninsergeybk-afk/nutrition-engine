@@ -465,3 +465,12 @@ A first full-phase exporter now targets the acromial/middle deltoid representati
 The fixed centerline is a rendering contract for the later procedural muscle envelope. It prevents a volumetric mesh from being driven by a direct origin-to-insertion chord through bone and avoids assuming one-to-one correspondence between a changing number of OpenSim wrap points.
 
 This checkpoint validates continuity across the entire teaching phase before any volumetric belly is rendered. It does not yet claim that a thick muscle envelope is collision-free: tube radius/contact handling remains a separate visual layer, because a centerline tangent to a wrapping surface can still place part of a thick envelope inside the surface if rendered naively.
+
+
+## Motion entry safety hotfix — 2026-09-26
+
+The user-visible Motion path previously mutated/isolate the static atlas before confirming that an executable motion rig existed. If rig construction failed or the selected muscle had no executable mapping, the atlas context could disappear while Play silently did nothing.
+
+Motion scene construction now happens first. Static atlas isolation is applied only after an executable rig (or an explicitly loading/ready source-native scene) exists. Otherwise the atlas remains intact and the UI states that movement is not ready.
+
+The mobile Motion checkpoint now verifies actual functionality rather than layout alone: bone context must be present, Play must set the playing state, and the motion angle must change within the checkpoint.

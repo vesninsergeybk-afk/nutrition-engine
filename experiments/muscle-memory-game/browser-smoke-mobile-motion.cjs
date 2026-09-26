@@ -75,6 +75,32 @@ const assert = require('node:assert/strict');
     assert.ok(controlsTop <= rolesTop,
       'Primary motion controls must precede long explanatory role text');
 
+    const motionCanvas = page.locator('#motion-viewer');
+    const boneCount = Number(await motionCanvas.getAttribute('data-motion-bones') || 0);
+    assert.ok(boneCount > 0,
+      'Motion must contain bone context before playback starts');
+
+    const startAngle = Number(await motionCanvas.getAttribute('data-motion-angle') || 0);
+    await page.click('#motion-play');
+    await page.waitForFunction(
+      () =>
+        document.querySelector('#motion-viewer')?.dataset.motionPlaying === 'true',
+      null,
+      { timeout: 5000 }
+    );
+    await page.waitForFunction(
+      start =>
+        Number(document.querySelector('#motion-viewer')?.dataset.motionAngle || 0) !== start,
+      startAngle,
+      { timeout: 5000 }
+    );
+    await page.click('#motion-play');
+    assert.equal(
+      await motionCanvas.getAttribute('data-motion-playing'),
+      'false',
+      'Second Play/Pause click must stop playback'
+    );
+
     await page.click('#motion-atlas-return');
     await page.waitForFunction(
       () => document.body.classList.contains('explore-mode') &&
