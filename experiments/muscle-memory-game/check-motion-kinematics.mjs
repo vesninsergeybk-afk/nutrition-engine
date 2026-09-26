@@ -11,6 +11,7 @@ import {
   elbowFlexionRadians,
   elbowMotionAction,
   motionActionsForUnits,
+  motionActionById,
   motionActionActivation,
   shoulderPreviewRotation,
 } from "./motion-kinematics.js";
