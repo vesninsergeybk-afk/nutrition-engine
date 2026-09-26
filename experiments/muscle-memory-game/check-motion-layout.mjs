@@ -57,14 +57,20 @@ assert(
   "Motion split view is not responsive"
 );
 assert(
-  /Исходное положение/.test(app) &&
-    /после калибровки/.test(app),
-  "Motion UI risks presenting the static preview as real simulated movement"
+  /кинематическ/i.test(app) &&
+    /ещ[её] не силовая симуляция MyoSim/i.test(app) &&
+    app.includes('motionCanvas.dataset.motionAuthority = action.authority'),
+  "Motion UI does not distinguish the kinematic preview from MyoSim simulation"
+);
+assert(
+  app.includes('"kinematic-preview"') ||
+    app.includes("action.authority"),
+  "Motion authority is not explicit"
 );
 
 console.log("Motion split comparison: static reference + independent motion scene ready");
 console.log("Motion camera synchronization: ready");
-console.log("Motion simulation labeling: honest rest-pose state");
+console.log("Motion simulation labeling: kinematic preview is explicitly not MyoSim");
 
 assert(
   css.includes("body:not(.motion-mode) .comparison-pane-static") &&
