@@ -81,11 +81,10 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
 
 const tsmBones = MOTION_VISUAL_ASSETS["tsm-native-bones"];
 for (const [semanticId, path] of Object.entries({
+  thorax: "thorax.vtp",
   clavicle: "clavicle.vtp",
   scapula: "scapula.vtp",
   humerus: "humerus.vtp",
-  radius: "radius.vtp",
-  ulna: "ulna.vtp",
 })) {
   assert(
     tsmBones.assets[semanticId]?.endsWith(path),
