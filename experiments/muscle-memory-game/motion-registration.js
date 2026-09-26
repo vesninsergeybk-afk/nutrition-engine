@@ -46,6 +46,34 @@ export const MOTION_REGISTRATION_SPECS = Object.freeze({
       forearmRotation: joint("forearmRotation", ["pro_sup_r"]),
     }),
   }),
+  wrist: Object.freeze({
+    pilotId: "wrist",
+    method: "rest-pose-landmarks-plus-rigid-refinement",
+    scalePolicy: "uniform-per-pilot",
+    atlasSpace: "atlas-world",
+    simulationSpace: "myoarm-right",
+    bodies: Object.freeze({
+      radius: body("radius", "radius_r", [
+        "radial-head-center",
+        "radial-styloid",
+        "dorsal-tubercle",
+      ]),
+      ulna: body("ulna", "ulna_r", [
+        "olecranon",
+        "ulnar-head-center",
+        "ulnar-styloid",
+      ]),
+      hand: body("hand", "lunate_r", [
+        "lunate-center",
+        "capitate-center",
+        "third-metacarpal-base",
+      ]),
+    }),
+    joints: Object.freeze({
+      wristFlexionExtension: joint("wristFlexionExtension", ["flexion_r"]),
+      wristDeviation: joint("wristDeviation", ["deviation_r"]),
+    }),
+  }),
   shoulder: Object.freeze({
     pilotId: "shoulder",
     method: "rest-pose-landmarks-plus-rigid-refinement",
@@ -92,6 +120,7 @@ export const MOTION_REGISTRATION_SPECS = Object.freeze({
 export const MOTION_CALIBRATION = Object.freeze({
   "z-anatomy": Object.freeze({
     elbow: Object.freeze({ status: "pending-landmark-calibration" }),
+    wrist: Object.freeze({ status: "pending-landmark-calibration" }),
     shoulder: Object.freeze({ status: "pending-landmark-calibration" }),
   }),
   bodyparts4: Object.freeze({
