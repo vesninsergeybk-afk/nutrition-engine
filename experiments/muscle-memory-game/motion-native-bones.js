@@ -18,6 +18,18 @@ export function tsmNativeBoneUrl(boneId) {
   return new URL(path, import.meta.url).toString();
 }
 
+export function profileScaleFactors(boneId) {
+  const profile = MOTION_VISUAL_ASSETS["tsm-native-bones"];
+  const scale = profile?.scaleFactors?.[boneId];
+  if (!Array.isArray(scale) || scale.length !== 3) {
+    throw new Error("Missing TSM native scale factors: " + boneId);
+  }
+  if (scale.some((value) => !Number.isFinite(value) || value <= 0)) {
+    throw new Error("Invalid TSM native scale factors: " + boneId);
+  }
+  return scale;
+}
+
 export async function loadTsmNativeBoneGeometries({
   boneIds = DEFAULT_TSM_BONES,
   fetchFn = globalThis.fetch,
@@ -38,12 +50,14 @@ export async function loadTsmNativeBoneGeometries({
         );
       }
       const parsed = parseAsciiVtpPolyData(await response.text());
+      const scale = profileScaleFactors(boneId);
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute(
         "position",
         new THREE.BufferAttribute(parsed.positions, 3)
       );
       geometry.setIndex(new THREE.BufferAttribute(parsed.indices, 1));
+      geometry.scale(scale[0], scale[1], scale[2]);
       geometry.computeVertexNormals();
       geometry.computeBoundingBox();
       geometry.computeBoundingSphere();
@@ -51,6 +65,7 @@ export async function loadTsmNativeBoneGeometries({
       geometry.userData.motionAssetId = "tsm-native-bones";
       geometry.userData.motionSourcePointCount = parsed.pointCount;
       geometry.userData.motionSourcePolygonCount = parsed.polygonCount;
+      geometry.userData.motionScaleFactors = [...scale];
       return [boneId, geometry];
     })
   );

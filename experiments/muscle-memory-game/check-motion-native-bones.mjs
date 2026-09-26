@@ -32,6 +32,24 @@ const expected = {
   humerus: [309, 588],
 };
 
+const expectedScaleFactors = {
+  thorax: [1.0612295946419767, 1.0205202882662845, 1.0652798878430603],
+  clavicle: [1.2957403918317758, 0.9349803545070169, 1.1327604475172277],
+  scapula: [0.8716829718428957, 0.9637981739424081, 0.9551799151227053],
+  humerus: [1.21539941612184, 0.8478717777354424, 1.03029990449119],
+};
+
+for (const [boneId, expectedScale] of Object.entries(expectedScaleFactors)) {
+  const actual = profile.scaleFactors?.[boneId];
+  assert(Array.isArray(actual) && actual.length === 3, boneId + ": missing model scale factors");
+  for (let axis = 0; axis < 3; axis += 1) {
+    assert(
+      Math.abs(actual[axis] - expectedScale[axis]) < 1e-12,
+      boneId + ": TSM mesh scale factor mismatch"
+    );
+  }
+}
+
 for (const [boneId, [points, polygons]] of Object.entries(expected)) {
   const localUrl = new URL(profile.assets[boneId], import.meta.url);
   const parsed = parseAsciiVtpPolyData(await readFile(localUrl, "utf8"));
@@ -55,6 +73,15 @@ for (const [boneId, [points, polygons]] of Object.entries(expected)) {
 }
 
 const appSource = await readFile(new URL("app.js", import.meta.url), "utf8");
+const nativeLoaderSource = await readFile(
+  new URL("motion-native-bones.js", import.meta.url),
+  "utf8"
+);
+assert(
+  nativeLoaderSource.includes("geometry.scale(scale[0], scale[1], scale[2])"),
+  "TSM native loader must bake OpenSim mesh scale_factors into geometry"
+);
+
 for (const marker of [
   "motionBones",
   "buildTsmNativeBoneProbeScene",

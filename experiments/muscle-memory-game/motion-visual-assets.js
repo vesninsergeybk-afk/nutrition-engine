@@ -33,6 +33,30 @@ export const MOTION_VISUAL_ASSETS = Object.freeze({
       scapula: "./assets/motion/tsm/geometry/scapula.vtp",
       humerus: "./assets/motion/tsm/geometry/humerus.vtp",
     }),
+    // These are the Mesh.scale_factors serialized by the same pinned
+    // Thoracoscapular CMC model. They must be applied before body transforms.
+    scaleFactors: Object.freeze({
+      thorax: Object.freeze([
+        1.0612295946419767,
+        1.0205202882662845,
+        1.0652798878430603,
+      ]),
+      clavicle: Object.freeze([
+        1.2957403918317758,
+        0.9349803545070169,
+        1.1327604475172277,
+      ]),
+      scapula: Object.freeze([
+        0.8716829718428957,
+        0.9637981739424081,
+        0.9551799151227053,
+      ]),
+      humerus: Object.freeze([
+        1.21539941612184,
+        0.8478717777354424,
+        1.03029990449119,
+      ]),
+    }),
     upstreamAssets: Object.freeze({
       thorax: "OpenSim Models/for CMC/Geometry/thorax.vtp",
       clavicle: "OpenSim Models/for CMC/Geometry/clavicle.vtp",

@@ -481,3 +481,10 @@ The mobile Motion checkpoint now verifies actual functionality rather than layou
 The independent shoulder Motion Lab now loads its four required source-native bones from project-local assets under `assets/motion/tsm/geometry/` instead of `raw.githubusercontent.com`. Upstream repository, pinned revision, original paths/blob IDs, citation and CC BY 4.0 data/model notice are preserved alongside the files.
 
 This is intentionally limited to runtime assets. The full upstream OpenSim model remains a pinned build source for regenerating biomechanics clips and muscle paths, not a browser dependency.
+
+
+### TSM native mesh scale-factor correction — 2026-09-27
+
+A verification pass found that the first native-bone probe loaded the correct pinned VTP files but omitted the non-unit `Mesh.scale_factors` serialized by the same Thoracoscapular CMC model. That meant the visual meshes did not yet exactly represent the geometry used by the source OpenSim model.
+
+The native loader now applies the pinned model scale factors for thorax, clavicle, scapula and humerus directly to the VTP geometry before any body pose is applied. This keeps the source-native mesh in the same scaled body-local geometry as the model that produced the CMC transforms. No atlas registration is involved.
