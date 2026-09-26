@@ -47,6 +47,7 @@ jobs:
           node --check experiments/muscle-memory-game/motion-registration.js
           node --check experiments/muscle-memory-game/motion-contract.js
           node --check experiments/muscle-memory-game/motion-geometry.js
+          node --check experiments/muscle-memory-game/motion-three.js
           node --check experiments/muscle-memory-game/virtual-specimens.js
           node --check experiments/muscle-memory-game/regional-depth-map.js
           node --check experiments/muscle-memory-game/learning-session.js
@@ -74,6 +75,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-regional-performance.mjs
           node --check experiments/muscle-memory-game/check-motion-readiness.mjs
           node --check experiments/muscle-memory-game/check-motion-simulation-contract.mjs
+          node --check experiments/muscle-memory-game/check-motion-three.mjs
           node --check experiments/muscle-memory-game/check-anatomical-depth.mjs
           node --check experiments/muscle-memory-game/study-layer-terms-ru.js
           node --check experiments/muscle-memory-game/check-z-anatomy-ru.mjs
@@ -146,6 +148,7 @@ jobs:
           node experiments/muscle-memory-game/check-regional-performance.mjs
           node experiments/muscle-memory-game/check-motion-readiness.mjs
           node experiments/muscle-memory-game/check-motion-simulation-contract.mjs
+          node experiments/muscle-memory-game/check-motion-three.mjs
           node experiments/muscle-memory-game/check-anatomical-depth.mjs
           node experiments/muscle-memory-game/check-region-depth.mjs
           node experiments/muscle-memory-game/check-deeper-links.mjs
