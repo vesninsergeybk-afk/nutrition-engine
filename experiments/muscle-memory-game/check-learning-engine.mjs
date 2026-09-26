@@ -22,6 +22,11 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+assert(
+  learningConceptSourceName("(Adductor minimus).l") === "Adductor minimus",
+  "Parenthesized Z-Anatomy source names are not normalized"
+);
+
 const response = await fetch(ATLAS_URL);
 assert(response.ok, "Could not fetch pinned BodyParts3D atlas");
 const atlas = await response.json();
