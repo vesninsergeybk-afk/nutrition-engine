@@ -262,11 +262,13 @@ assert(
   "Latissimus dorsi shoulder actions are incomplete"
 );
 assert(
-  abductionAction.stabilizers.includes("trapezius") &&
-    abductionAction.stabilizers.includes("serratus-anterior"),
-  "Shoulder elevation must expose scapular stabilizing context"
+  abductionAction.scapularDrivers.includes("trapezius") &&
+    abductionAction.scapularDrivers.includes("serratus-anterior") &&
+    abductionAction.stabilizers.includes("infraspinatus") &&
+    abductionAction.stabilizers.includes("subscapularis"),
+  "Shoulder elevation must separate scapular drivers from cuff stabilizers"
 );
-console.log("Upper-limb kinematics: latissimus and scapular context ok");
+console.log("Upper-limb kinematics: latissimus, scapular drivers, and cuff context ok");
 
 const horizontalAdduction = motionActionsForUnits(["pectoralis-major"]).find(
   (item) => item.movementId === "shoulder-horizontal-adduction"
