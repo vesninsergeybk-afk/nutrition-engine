@@ -186,6 +186,7 @@ const assert = require('node:assert/strict');
     'shoulder-extension',
     'shoulder-external-rotation',
     'shoulder-internal-rotation',
+    'shoulder-scaption',
   ]) {
     assert.ok(shoulderOptions.includes(movement), 'Missing shoulder movement: ' + movement);
   }
@@ -244,6 +245,44 @@ const assert = require('node:assert/strict');
   assert.match(
     await page.locator('#motion-state').innerText(),
     /Основные двигатели:|Стабилизирующий контекст:/i
+  );
+
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-pivot-strategy'),
+    'bone-end-centroid'
+  );
+  assert.ok(
+    Number(
+      await page.locator('#motion-viewer').getAttribute('data-motion-distal-followers')
+    ) >= 2,
+    'Shoulder preview must move radius/ulna with a fixed elbow'
+  );
+
+  await page.selectOption('#motion-movement', 'shoulder-scaption');
+  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '90');
+  await page.locator('#motion-angle').evaluate((el) => {
+    el.value = '60';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionMovement ===
+        'shoulder-scaption' &&
+      Math.abs(
+        Number(
+          document.querySelector('#motion-viewer')?.dataset.motionShoulderRotation || 0
+        )
+      ) > 0.5,
+    null,
+    { timeout: 5000 }
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-assistants'),
+    /deltoid-clavicular/
+  );
+  assert.match(
+    await page.locator('#motion-state').innerText(),
+    /Вспомогательные двигатели:/i
   );
 
   await page.click('#mode-explore');

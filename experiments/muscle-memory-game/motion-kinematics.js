@@ -20,9 +20,11 @@ function frozenAction(config) {
     playDirection: 1,
     speedDegPerSecond: 55,
     referenceMaxDeg: config.maxDeg,
-    synergists: Object.freeze([...(config.synergists || [])]),
-    stabilizers: Object.freeze([...(config.stabilizers || [])]),
+    referencePose: "rest",
     ...config,
+    synergists: Object.freeze([...(config.synergists || [])]),
+    assistants: Object.freeze([...(config.assistants || [])]),
+    stabilizers: Object.freeze([...(config.stabilizers || [])]),
   });
 }
 
@@ -49,6 +51,7 @@ export const WRIST_PREVIEW_LIMITS = Object.freeze({
 export const SHOULDER_PREVIEW_LIMITS = Object.freeze({
   flexion: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 160 }),
   abduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
+  scaption: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
   adduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 90 }),
   extension: Object.freeze({ previewMaxDeg: 45, referenceMaxDeg: 45 }),
   externalRotation: Object.freeze({ previewMaxDeg: 60, referenceMaxDeg: 60 }),
@@ -177,6 +180,7 @@ const MOTION_ACTIONS = Object.freeze({
     maxDeg: SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg,
     synergists: ["deltoid-clavicular", "coracobrachialis", "pectoralis-major"],
+    assistants: ["biceps-long", "biceps-short"],
     stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
   }),
   "shoulder-abduction": frozenAction({
@@ -192,6 +196,20 @@ const MOTION_ACTIONS = Object.freeze({
     synergists: ["supraspinatus", "deltoid-acromial"],
     stabilizers: ["infraspinatus", "subscapularis", "teres-minor"],
   }),
+  "shoulder-scaption": frozenAction({
+    pilotId: "shoulder",
+    movementId: "shoulder-scaption",
+    direction: "scaption",
+    nameRu: "Подъём в плоскости лопатки",
+    controlLabelRu: "Подъём в плоскости лопатки",
+    descriptionRu:
+      "Подъём плечевой кости примерно на 30° кпереди от фронтальной плоскости. Preview ограничен 90° до проверенной лопаточно-ключичной регистрации.",
+    maxDeg: SHOULDER_PREVIEW_LIMITS.scaption.previewMaxDeg,
+    referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.scaption.referenceMaxDeg,
+    synergists: ["supraspinatus", "deltoid-acromial"],
+    assistants: ["deltoid-clavicular"],
+    stabilizers: ["infraspinatus", "subscapularis", "teres-minor"],
+  }),
   "shoulder-adduction": frozenAction({
     pilotId: "shoulder",
     movementId: "shoulder-adduction",
@@ -205,12 +223,9 @@ const MOTION_ACTIONS = Object.freeze({
     startDeg: SHOULDER_PREVIEW_LIMITS.adduction.previewMaxDeg,
     playDirection: -1,
     speedDegPerSecond: 40,
-    synergists: [
-      "pectoralis-major",
-      "teres-major",
-      "coracobrachialis",
-      "triceps-long",
-    ],
+    referencePose: "abducted-90",
+    synergists: ["pectoralis-major", "teres-major"],
+    assistants: ["coracobrachialis", "triceps-long"],
     stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
   }),
   "shoulder-extension": frozenAction({
@@ -225,6 +240,7 @@ const MOTION_ACTIONS = Object.freeze({
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.extension.referenceMaxDeg,
     speedDegPerSecond: 35,
     synergists: ["deltoid-spinal", "teres-major"],
+    assistants: ["triceps-long"],
     stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
   }),
   "shoulder-external-rotation": frozenAction({
@@ -309,14 +325,18 @@ const UNIT_ACTION_IDS = Object.freeze({
   "palmaris-longus": Object.freeze(["wrist-flexion"]),
   "deltoid-clavicular": Object.freeze([
     "shoulder-flexion",
+    "shoulder-scaption",
     "shoulder-internal-rotation",
   ]),
-  "deltoid-acromial": Object.freeze(["shoulder-abduction"]),
+  "deltoid-acromial": Object.freeze([
+    "shoulder-abduction",
+    "shoulder-scaption",
+  ]),
   "deltoid-spinal": Object.freeze([
     "shoulder-extension",
     "shoulder-external-rotation",
   ]),
-  supraspinatus: Object.freeze(["shoulder-abduction"]),
+  supraspinatus: Object.freeze(["shoulder-abduction", "shoulder-scaption"]),
   infraspinatus: Object.freeze(["shoulder-external-rotation"]),
   subscapularis: Object.freeze(["shoulder-internal-rotation"]),
   "teres-minor": Object.freeze(["shoulder-external-rotation"]),
@@ -374,6 +394,59 @@ export function motionActionActivation(action, angleDeg) {
   const span = Math.max(1e-6, action.maxDeg - action.minDeg);
   const progress = (value - action.minDeg) / span;
   return action.playDirection < 0 ? 1 - progress : progress;
+}
+
+export function shoulderPreviewRotation(action, angleDeg, sideSign = 1) {
+  if (!action) {
+    return Object.freeze({ axis: Object.freeze([0, 1, 0]), angleRad: 0 });
+  }
+
+  const value = clampMotionValue(action, angleDeg);
+  const radians = (value * Math.PI) / 180;
+  const side = sideSign < 0 ? -1 : 1;
+
+  if (action.movementId === "shoulder-flexion") {
+    return Object.freeze({
+      axis: Object.freeze([1, 0, 0]),
+      angleRad: -radians,
+    });
+  }
+  if (action.movementId === "shoulder-extension") {
+    return Object.freeze({
+      axis: Object.freeze([1, 0, 0]),
+      angleRad: radians,
+    });
+  }
+  if (
+    action.movementId === "shoulder-abduction" ||
+    action.movementId === "shoulder-adduction"
+  ) {
+    return Object.freeze({
+      axis: Object.freeze([0, 0, 1]),
+      angleRad: radians * side,
+    });
+  }
+  if (action.movementId === "shoulder-scaption") {
+    const planeRad = Math.PI / 6;
+    return Object.freeze({
+      axis: Object.freeze([
+        -Math.sin(planeRad),
+        0,
+        Math.cos(planeRad) * side,
+      ]),
+      angleRad: radians,
+    });
+  }
+  if (action.movementId === "shoulder-external-rotation") {
+    return Object.freeze({
+      axis: Object.freeze([0, 1, 0]),
+      angleRad: -radians * side,
+    });
+  }
+  return Object.freeze({
+    axis: Object.freeze([0, 1, 0]),
+    angleRad: radians * side,
+  });
 }
 
 export function clampElbowAngle(angleDeg) {

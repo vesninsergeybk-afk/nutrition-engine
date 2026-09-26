@@ -12,6 +12,7 @@ import {
   elbowMotionAction,
   motionActionsForUnits,
   motionActionActivation,
+  shoulderPreviewRotation,
 } from "./motion-kinematics.js";
 
 function assert(condition, message) {
@@ -74,6 +75,7 @@ for (const movementId of [
   "shoulder-extension",
   "shoulder-external-rotation",
   "shoulder-internal-rotation",
+  "shoulder-scaption",
 ]) {
   assert(
     deltoidActions.some((item) => item.movementId === movementId),
@@ -192,3 +194,50 @@ console.log("Upper-limb kinematics: elbow flexion/extension 0–146°");
 console.log("Upper-limb kinematics: pronation/supination actions present");
 console.log("Upper-limb kinematics: shoulder preview contract ok");
 console.log("Upper-limb kinematics: wrist flexion/extension and deviation contract ok");
+
+
+const scaptionAction = deltoidActions.find(
+  (item) => item.movementId === "shoulder-scaption"
+);
+assert(
+  scaptionAction &&
+    scaptionAction.maxDeg === 90 &&
+    scaptionAction.assistants.includes("deltoid-clavicular"),
+  "Scaption preview must expose the scapular-plane elevation contract"
+);
+const scaptionRotation = shoulderPreviewRotation(scaptionAction, 60, 1);
+assert(
+  Math.abs(scaptionRotation.axis[0]) > 0.1 &&
+    Math.abs(scaptionRotation.axis[2]) > 0.1 &&
+    Math.abs(scaptionRotation.angleRad) > 0.5,
+  "Scaption must use an oblique axis rather than pure flexion or abduction"
+);
+
+const flexionAction = deltoidActions.find(
+  (item) => item.movementId === "shoulder-flexion"
+);
+assert(
+  flexionAction.assistants.includes("biceps-long") &&
+    flexionAction.assistants.includes("biceps-short"),
+  "Biceps heads must be shown as assisting shoulder flexors"
+);
+const extensionAction = deltoidActions.find(
+  (item) => item.movementId === "shoulder-extension"
+);
+assert(
+  extensionAction.assistants.includes("triceps-long"),
+  "Long head of triceps must be shown as an assisting shoulder extensor"
+);
+assert(
+  adductionAction.synergists.includes("pectoralis-major") &&
+    adductionAction.synergists.includes("teres-major") &&
+    adductionAction.assistants.includes("coracobrachialis") &&
+    adductionAction.assistants.includes("triceps-long"),
+  "Shoulder adduction must separate main and assisting movers"
+);
+assert(
+  adductionAction.referencePose === "abducted-90",
+  "Adduction start pose must not masquerade as anatomical rest"
+);
+
+console.log("Upper-limb kinematics: scaption and assistant roles ok");
