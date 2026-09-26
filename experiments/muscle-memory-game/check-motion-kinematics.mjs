@@ -282,3 +282,13 @@ assert(
   "Horizontal abduction must start from 90° abduction with posterior cuff assistance"
 );
 console.log("Upper-limb kinematics: horizontal shoulder plane actions ok");
+
+const shoulderFlexion = motionActionById("shoulder-flexion");
+const shoulderAbduction = motionActionById("shoulder-abduction");
+for (const action of [shoulderFlexion, shoulderAbduction]) {
+  assert(
+    /гленогумеральн/i.test(action.descriptionRu) &&
+      /лопатк/i.test(action.descriptionRu),
+    "Shoulder preview must disclose that scapular motion is not modeled"
+  );
+}
