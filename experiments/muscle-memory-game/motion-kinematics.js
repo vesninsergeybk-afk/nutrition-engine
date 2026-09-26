@@ -178,7 +178,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Сгибание плеча",
     controlLabelRu: "Сгибание плеча",
     descriptionRu:
-      "Гленогумеральный компонент сгибания. Выше 90° движение лопатки и ключицы пока не моделируется без проверенной регистрации.",
+      "Показан только гленогумеральный компонент сгибания. Лопатка и ключица участвуют в реальном подъёме руки уже в пределах этого диапазона, но их движение пока не моделируется без проверенной регистрации.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg,
     synergists: ["deltoid-clavicular", "coracobrachialis", "pectoralis-major"],
@@ -199,7 +199,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Отведение плеча",
     controlLabelRu: "Отведение плеча",
     descriptionRu:
-      "Гленогумеральный компонент отведения. Надостная особенно важна в начале движения, далее возрастает вклад дельтовидной.",
+      "Показан только гленогумеральный компонент отведения. Надостная и дельтовидная участвуют в подъёме плечевой кости, а движение лопатки и ключицы в этом preview пока не моделируется.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.abduction.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.abduction.referenceMaxDeg,
     synergists: ["supraspinatus", "deltoid-acromial"],
@@ -218,7 +218,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Подъём в плоскости лопатки",
     controlLabelRu: "Подъём в плоскости лопатки",
     descriptionRu:
-      "Подъём плечевой кости примерно на 30° кпереди от фронтальной плоскости. Preview ограничен 90° до проверенной лопаточно-ключичной регистрации.",
+      "Подъём плечевой кости примерно на 30° кпереди от фронтальной плоскости. Показан гленогумеральный компонент; лопаточно-ключичный вклад пока не моделируется, поэтому preview ограничен 90°.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.scaption.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.scaption.referenceMaxDeg,
     synergists: ["supraspinatus", "deltoid-acromial"],
