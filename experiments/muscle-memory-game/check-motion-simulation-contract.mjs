@@ -20,6 +20,10 @@ import {
   primaryMotionSource,
 } from "./motion-sources.js";
 
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
 const MYO = MOTION_SOURCES["myosim-arm"];
 const TSM = MOTION_SOURCES["thoracoscapular-shoulder"];
 

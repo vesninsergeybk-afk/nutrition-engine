@@ -1,6 +1,14 @@
 name: Export biomechanics motion clips
 
 on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - experiments/muscle-memory-game/export-opensim-motion.py
+      - experiments/muscle-memory-game/motion-clip.js
+      - experiments/muscle-memory-game/motion-sources.js
+      - .github/workflows/export-motion-clips.yml
   workflow_dispatch:
     inputs:
       stride:
@@ -48,11 +56,12 @@ jobs:
           set -euo pipefail
           REV=d40ebd8ba658633993e531e408c0d96df30ff367
           SCRIPT=experiments/muscle-memory-game/export-opensim-motion.py
-          COMMON="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id shoulder --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --stride ${{ inputs.stride }}"
+          STRIDE="${{ github.event_name == 'workflow_dispatch' && inputs.stride || '2' }}"
+          COMMON="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id shoulder --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --stride $STRIDE"
           python "$SCRIPT" $COMMON --motion /tmp/tsm/ABD01.mot --source-motion "Results/IK solutions/ABD01.mot" --clip-id tsm-abduction-01 --movement-id shoulder-abduction --output /tmp/motion-clips/tsm-abduction-01.json
           python "$SCRIPT" $COMMON --motion /tmp/tsm/FLX01.mot --source-motion "Results/IK solutions/FLX01.mot" --clip-id tsm-flexion-01 --movement-id shoulder-flexion --output /tmp/motion-clips/tsm-flexion-01.json
 
-          COMMON_SCAP="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id scapula --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --stride ${{ inputs.stride }}"
+          COMMON_SCAP="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id scapula --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --stride $STRIDE"
           python "$SCRIPT" $COMMON_SCAP --motion /tmp/tsm/SHRUG01.mot --source-motion "Results/IK solutions/SHRUG01.mot" --clip-id tsm-shrug-01 --movement-id scapular-elevation --output /tmp/motion-clips/tsm-shrug-01.json
 
       - name: Validate exported clip contract
