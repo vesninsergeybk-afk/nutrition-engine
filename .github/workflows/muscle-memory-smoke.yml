@@ -86,6 +86,7 @@ jobs:
           node --check experiments/muscle-memory-game/browser-smoke-z-anatomy.cjs
           node --check experiments/muscle-memory-game/browser-smoke-bodyparts.cjs
           node --check experiments/muscle-memory-game/browser-smoke-mobile-atlas.cjs
+          node --check experiments/muscle-memory-game/browser-smoke-motion.cjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
           import { bodyPartsAnatomyKind } from './experiments/muscle-memory-game/bodyparts4-classification.js';
@@ -169,6 +170,7 @@ jobs:
           - z-anatomy
           - bodyparts
           - mobile-atlas
+          - motion
 
     steps:
       - uses: actions/checkout@v4

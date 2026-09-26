@@ -1241,3 +1241,19 @@ button:disabled {
     right: 9px;
   }
 }
+
+
+/* Outside Motion the wrapper must behave exactly like the original single canvas. */
+body:not(.motion-mode) .comparison-pane-static {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+}
+
+.motion-mode .comparison-pane-static {
+  position: relative;
+  inset: auto;
+  width: auto;
+  height: auto;
+}

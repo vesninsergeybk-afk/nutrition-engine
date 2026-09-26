@@ -65,3 +65,10 @@ assert(
 console.log("Motion split comparison: static reference + independent motion scene ready");
 console.log("Motion camera synchronization: ready");
 console.log("Motion simulation labeling: honest rest-pose state");
+
+assert(
+  css.includes("body:not(.motion-mode) .comparison-pane-static") &&
+    css.includes("position: absolute") &&
+    css.includes(".motion-mode .comparison-pane-static"),
+  "The split-view wrapper can change normal Atlas/Training canvas sizing"
+);
