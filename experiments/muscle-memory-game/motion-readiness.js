@@ -31,7 +31,7 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
   brachialis: unit(
     "brachialis",
     "Плечевая мышца",
-    [/^(?:right |left )?brachialis(?: muscle)?$/i],
+    [/\bbrachialis\b/i],
     ["BRA"]
   ),
   brachioradialis: unit(
