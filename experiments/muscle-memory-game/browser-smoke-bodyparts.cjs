@@ -285,6 +285,11 @@ const assert = require('node:assert/strict');
   assert.doesNotMatch(tibialisLabel, /tibialis anterior/i);
 
   await page.selectOption('#learning-region', 'all');
+  assert.equal(
+    await page.locator('#region-isolation-field').isHidden(),
+    true,
+    'Whole-body scope must not show a meaningless isolation control'
+  );
   if (await page.locator('#region-isolation').isChecked()) {
     await page.locator('#region-isolation').uncheck();
   }
