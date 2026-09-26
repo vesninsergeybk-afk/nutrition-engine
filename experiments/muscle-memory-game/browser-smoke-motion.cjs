@@ -392,6 +392,75 @@ const assert = require('node:assert/strict');
   );
 
   await page.click('#mode-explore');
+  await page.selectOption('#learning-region', 'scapular-stabilizers');
+  await page.fill('#structure-search', 'передняя зубчатая');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  await page.locator('.search-result').first().click();
+  await page.click('#mode-motion');
+  await page.waitForFunction(
+    () => document.querySelector('#motion-viewer')?.dataset.motionPilot === 'scapula',
+    null,
+    { timeout: 15000 }
+  );
+
+  const scapularOptions = await page.locator('#motion-movement option').evaluateAll(
+    nodes => nodes.map(node => node.value)
+  );
+  assert.ok(scapularOptions.includes('scapular-protraction'));
+  assert.ok(scapularOptions.includes('scapular-upward-rotation'));
+
+  await page.selectOption('#motion-movement', 'scapular-protraction');
+  assert.equal(await page.locator('#motion-angle-value').innerText(), '0%');
+  await page.locator('#motion-angle').evaluate((el) => {
+    el.value = '60';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionMovement ===
+        'scapular-protraction' &&
+      Number(
+        document.querySelector('#motion-viewer')?.dataset
+          .motionScapularTranslation || 0
+      ) > 0,
+    null,
+    { timeout: 5000 }
+  );
+
+  await page.selectOption('#motion-movement', 'scapular-upward-rotation');
+  await page.locator('#motion-angle').evaluate((el) => {
+    el.value = '30';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionMovement ===
+        'scapular-upward-rotation' &&
+      Math.abs(
+        Number(
+          document.querySelector('#motion-viewer')?.dataset
+            .motionScapularRotation || 0
+        )
+      ) > 0.4 &&
+      Math.abs(
+        Number(
+          document.querySelector('#motion-viewer')?.dataset
+            .motionClavicleRotation || 0
+        )
+      ) > 0.05,
+    null,
+    { timeout: 5000 }
+  );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-authority'),
+    'kinematic-preview'
+  );
+
+  await page.click('#mode-explore');
   const viewerBox = await page.locator('#viewer').boundingBox();
   assert.ok(viewerBox && viewerBox.width > 700, 'Atlas did not return to a single wide viewer');
 
