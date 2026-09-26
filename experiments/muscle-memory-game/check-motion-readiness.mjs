@@ -127,8 +127,6 @@ for (const unitId of shoulderContextUnits) {
     unit.myoActuators.length === 0,
     "Visual-only context must not expose unvalidated MyoArm actuators: " + unitId
   );
-  const unit = motionVisualUnit(unitId);
-  assert(unit, "Missing visual scapular context unit: " + unitId);
   const zMatches = sourceNamesForMotionUnit(zMuscles, unitId);
   const bpMatches = sourceNamesForMotionUnit(bpMuscles, unitId);
   console.log(
