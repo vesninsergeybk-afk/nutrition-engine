@@ -76,6 +76,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-motion-readiness.mjs
           node --check experiments/muscle-memory-game/check-motion-simulation-contract.mjs
           node --check experiments/muscle-memory-game/check-motion-three.mjs
+          node --check experiments/muscle-memory-game/check-motion-kinematics.mjs
           node --check experiments/muscle-memory-game/check-motion-layout.mjs
           node --check experiments/muscle-memory-game/check-anatomical-depth.mjs
           node --check experiments/muscle-memory-game/study-layer-terms-ru.js
@@ -151,6 +152,7 @@ jobs:
           node experiments/muscle-memory-game/check-motion-readiness.mjs
           node experiments/muscle-memory-game/check-motion-simulation-contract.mjs
           node experiments/muscle-memory-game/check-motion-three.mjs
+          node experiments/muscle-memory-game/check-motion-kinematics.mjs
           node experiments/muscle-memory-game/check-motion-layout.mjs
           node experiments/muscle-memory-game/check-anatomical-depth.mjs
           node experiments/muscle-memory-game/check-region-depth.mjs

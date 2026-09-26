@@ -66,10 +66,51 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#motion-viewer').getAttribute('data-motion-state'), 'rest-pose');
   assert.ok(Number(await page.locator('#motion-viewer').getAttribute('data-motion-muscles')) > 0);
   assert.ok(Number(await page.locator('#motion-viewer').getAttribute('data-motion-bones')) > 0);
+  assert.equal(await page.locator('#motion-viewer').getAttribute('data-motion-pilot'), 'elbow');
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-authority'),
+    'kinematic-preview'
+  );
 
   const stateText = await page.locator('#motion-state').innerText();
-  assert.match(stateText, /Исходное положение/i);
-  assert.match(stateText, /движение подключится|сопоставление ещё не подготовлено/i);
+  assert.match(stateText, /кинематическ/i);
+  assert.equal(await page.locator('#motion-angle').count(), 1);
+  assert.equal(await page.locator('#motion-play').count(), 1);
+
+  await page.locator('#motion-angle').evaluate((el) => {
+    el.value = '90';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionAngle === '90' &&
+      document.querySelector('#motion-viewer')?.dataset.motionState === 'posed'
+  );
+  assert.ok(
+    Math.abs(
+      Number(
+        await page.locator('#motion-viewer').getAttribute('data-motion-forearm-rotation')
+      )
+    ) > 1
+  );
+
+  await page.click('#motion-reset');
+  assert.equal(await page.locator('#motion-viewer').getAttribute('data-motion-angle'), '0');
+  await page.click('#motion-play');
+  await page.waitForFunction(
+    () => Number(document.querySelector('#motion-viewer')?.dataset.motionAngle || 0) >= 2,
+    null,
+    { timeout: 5000 }
+  );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-playing'),
+    'true'
+  );
+  await page.click('#motion-play');
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-playing'),
+    'false'
+  );
 
   const staticBox = await page.locator('#static-pane').boundingBox();
   const motionBox = await page.locator('#motion-pane').boundingBox();

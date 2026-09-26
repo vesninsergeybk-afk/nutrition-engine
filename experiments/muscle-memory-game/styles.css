@@ -1279,3 +1279,47 @@ body:not(.motion-mode) .comparison-pane-static {
     width: 100%;
   }
 }
+
+
+.motion-state {
+  pointer-events: auto;
+}
+
+.motion-controls {
+  display: grid;
+  gap: 7px;
+  margin-top: 7px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(27,27,29,.10);
+}
+
+.motion-angle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.motion-angle-row output {
+  font-variant-numeric: tabular-nums;
+}
+
+#motion-angle {
+  width: 100%;
+  margin: 0;
+  accent-color: currentColor;
+}
+
+.motion-control-buttons {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+
+.motion-control-buttons button {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 11px;
+}
