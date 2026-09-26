@@ -118,6 +118,11 @@ const assert = require('node:assert/strict');
   assert.match(await page.locator('#learning-summary').innerText(), /Плечевой пояс/);
 
   await page.selectOption('#learning-region', 'all');
+  assert.equal(
+    await page.locator('#region-isolation-field').isHidden(),
+    true,
+    'Whole-body scope must not show a meaningless isolation control'
+  );
   assert.equal(await page.locator('#viewer').getAttribute('data-learning-region'), 'all');
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip'),
