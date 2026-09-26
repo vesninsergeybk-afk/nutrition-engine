@@ -76,3 +76,10 @@ export async function loadTsmNativeBoneGeometries({
 export function defaultTsmNativeBoneIds() {
   return [...DEFAULT_TSM_BONES];
 }
+
+
+export function tsmNativeBoneScale(boneId) {
+  const profile = MOTION_VISUAL_ASSETS["tsm-native-bones"];
+  const values = profile?.scaleFactors?.[boneId];
+  return values?.length === 3 ? [...values] : [1, 1, 1];
+}

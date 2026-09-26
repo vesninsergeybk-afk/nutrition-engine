@@ -34,6 +34,12 @@ export const MOTION_VISUAL_ASSETS = Object.freeze({
       radius: "OpenSim Models/for CMC/Geometry/radius.vtp",
       ulna: "OpenSim Models/for CMC/Geometry/ulna.vtp",
     }),
+    scaleFactors: Object.freeze({
+      thorax: Object.freeze([1.0612295946419767, 1.0205202882662845, 1.0652798878430603]),
+      clavicle: Object.freeze([1.2957403918317758, 0.9349803545070169, 1.1327604475172277]),
+      scapula: Object.freeze([0.8716829718428957, 0.9637981739424081, 0.9551799151227053]),
+      humerus: Object.freeze([1.21539941612184, 0.8478717777354424, 1.03029990449119]),
+    }),
     note:
       "These meshes belong to the same Thoracoscapular/OpenSim model that supplies the shoulder motion clips, so no static-atlas registration is required for their own motion.",
   }),

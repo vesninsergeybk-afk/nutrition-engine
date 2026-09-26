@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/muscle-memory-mvp
+      - feature/motion-lab-source-native
     paths:
       - experiments/muscle-memory-game/**
       - .github/workflows/muscle-memory-smoke.yml
@@ -20,8 +21,8 @@ permissions:
 # checkpoints. Full-smoke runs share one group: a newer checkpoint supersedes
 # an older checkpoint, but ordinary pushes cannot cancel it.
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
-  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || contains(github.event.head_commit.message, '[native-motion-smoke]') && 'muscle-memory-native-motion-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') || contains(github.event.head_commit.message, '[native-motion-smoke]') }}
 
 jobs:
   fast:
@@ -50,6 +51,7 @@ jobs:
           node --check experiments/muscle-memory-game/motion-muscle-assets.js
           node --check experiments/muscle-memory-game/motion-vtp.js
           node --check experiments/muscle-memory-game/motion-native-bones.js
+          node --check experiments/muscle-memory-game/motion-native-playback.js
           node --check experiments/muscle-memory-game/motion-clip.js
           node --check experiments/muscle-memory-game/motion-registration.js
           node --check experiments/muscle-memory-game/motion-contract.js
@@ -84,6 +86,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-motion-semantics.mjs
           node --check experiments/muscle-memory-game/check-motion-muscle-assets.mjs
           node --check experiments/muscle-memory-game/check-motion-native-bones.mjs
+          node --check experiments/muscle-memory-game/check-motion-native-playback.mjs
           python -m py_compile experiments/muscle-memory-game/probe-opensim-muscle-paths.py
           node --check experiments/muscle-memory-game/check-motion-sources.mjs
           node --check experiments/muscle-memory-game/check-motion-clip-file.mjs
@@ -102,6 +105,7 @@ jobs:
           node --check experiments/muscle-memory-game/browser-smoke-mobile-atlas.cjs
           node --check experiments/muscle-memory-game/browser-smoke-motion.cjs
           node --check experiments/muscle-memory-game/browser-smoke-native-bones.cjs
+          node --check experiments/muscle-memory-game/browser-smoke-native-motion.cjs
           node --check experiments/muscle-memory-game/browser-smoke-mobile-motion.cjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
@@ -168,6 +172,7 @@ jobs:
           node experiments/muscle-memory-game/check-motion-semantics.mjs
           node experiments/muscle-memory-game/check-motion-muscle-assets.mjs
           node experiments/muscle-memory-game/check-motion-native-bones.mjs
+          node experiments/muscle-memory-game/check-motion-native-playback.mjs
           node experiments/muscle-memory-game/check-motion-sources.mjs
           node experiments/muscle-memory-game/check-motion-simulation-contract.mjs
           node experiments/muscle-memory-game/check-motion-three.mjs
@@ -323,3 +328,33 @@ jobs:
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           timeout 4m node experiments/muscle-memory-game/browser-smoke-mobile-motion.cjs
+
+
+  browser-native-motion:
+    if: ${{ contains(github.event.head_commit.message, '[native-motion-smoke]') }}
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run source-native motion checkpoint
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          timeout 4m node experiments/muscle-memory-game/browser-smoke-native-motion.cjs
