@@ -10,7 +10,7 @@
   var VERSION='release1-navigation-reversibility-2026-09-26';
   var CONTEXT_KEY='nutritionCalculator.navigationContext.v1';
   var RETURN_KEY='nutritionCalculator.navigationReturn.v1';
-  var timer=0,contextTimer=0,observer=null,shellPatched=false;
+  var timer=0,contextTimer=0,observer=null;
   var routeContexts={},targetByRoute={},returnContext=null,pendingHistorySemantic=null,pendingManualContext=null;
 
   function byId(id){return d.getElementById(id);}
@@ -268,7 +268,7 @@
 
   function patchShell(){
     var api=shell(),originalNavigate,originalSetMode;
-    if(!api||shellPatched||api.__release1SemanticPatched)return;
+    if(!api||api.__release1SemanticPatched)return;
     originalNavigate=api.navigate;
     originalSetMode=api.setMode;
     if(typeof originalNavigate==='function'){
@@ -281,7 +281,7 @@
     if(typeof originalSetMode==='function'){
       api.setMode=function(mode){persistCurrent();return originalSetMode.call(api,mode);};
     }
-    api.__release1SemanticPatched=true;shellPatched=true;
+    api.__release1SemanticPatched=true;
   }
 
   function refresh(){
