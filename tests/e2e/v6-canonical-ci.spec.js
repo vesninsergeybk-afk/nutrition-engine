@@ -917,10 +917,10 @@ test('Release 2 preserves theme voice while sharing the same foundation roles', 
   }
 
   expect(observations.modern.surface.length).toBeGreaterThan(0);
-  expect(observations.retro.surface.length).toBeGreaterThan(0);
+  expect(observations['retro-2bit'].surface.length).toBeGreaterThan(0);
   expect(observations['ivory-brass'].surface.length).toBeGreaterThan(0);
-  expect(observations.retro.radius).toBe(0);
+  expect(observations['retro-2bit'].radius).toBe(0);
   expect(observations.modern.radius).toBeGreaterThan(0);
   expect(observations['ivory-brass'].radius).toBeGreaterThan(0);
-  expect(observations.retro.displayFont).not.toBe(observations.modern.displayFont);
+  expect(observations['retro-2bit'].displayFont).not.toBe(observations.modern.displayFont);
 });
