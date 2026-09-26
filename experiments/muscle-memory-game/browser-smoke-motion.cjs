@@ -259,6 +259,7 @@ const assert = require('node:assert/strict');
     'rhomboid-minor',
     'levator-scapulae',
     'pectoralis-minor',
+    'subclavius',
   ]) {
     assert.match(
       visualContext || '',
