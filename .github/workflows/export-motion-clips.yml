@@ -35,8 +35,21 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Install OpenSim runtime dependency
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libopenblas0-pthread
+
       - name: Install portable OpenSim bindings
-        run: python -m pip install --disable-pip-version-check pyopensim==4.5.2.0
+        run: |
+          python -m pip install --disable-pip-version-check pyopensim==4.5.2.0
+          python - <<'PY'
+          import pyopensim as osim
+          assert hasattr(osim, "Model"), "pyopensim SWIG Model API did not load"
+          model = osim.Model()
+          state = model.initSystem()
+          print("pyopensim/OpenSim import smoke:", osim.__version__, osim.__opensim_version__)
+          PY
 
       - name: Fetch pinned Thoracoscapular source
         shell: bash
