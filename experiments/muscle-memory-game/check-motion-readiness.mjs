@@ -113,6 +113,29 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
   }
 }
 
+// Scapular movers are visual context for elevation until SC/AC registration
+// is calibrated; they still must exist in both anatomy sources.
+for (const unitId of ["trapezius", "serratus-anterior"]) {
+  const unit = motionVisualUnit(unitId);
+  assert(unit, "Missing visual scapular context unit: " + unitId);
+  const zMatches = sourceNamesForMotionUnit(zMuscles, unitId);
+  const bpMatches = sourceNamesForMotionUnit(bpMuscles, unitId);
+  console.log(
+    "Motion scapular context:",
+    unitId,
+    "Z=" + zMatches.length,
+    "BodyParts=" + bpMatches.length
+  );
+  assert(zMatches.length > 0, "Z-Anatomy missing scapular context " + unitId);
+  assert(bpMatches.length > 0, "BodyParts3D missing scapular context " + unitId);
+}
+
+const latissimus = motionVisualUnit("latissimus-dorsi");
+assert(
+  latissimus?.requiredSources?.join(",") === "z-anatomy",
+  "Latissimus geometry-source limitation must stay explicit"
+);
+
 // The atlas keeps merged geometry for speed, but Motion Lab must be able to
 // reconstruct a standalone object from structureRanges/boneRanges.
 const nonIndexed = geometryRangeIndexPlan({ start: 9, count: 6 });
