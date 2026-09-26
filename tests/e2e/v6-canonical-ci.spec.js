@@ -731,3 +731,113 @@ test('empty report does not present missing ration data as measured zeros', asyn
   await expect(hei.locator('strong')).toHaveText('не рассчитан');
   await expect(preview).toContainText('Нет данных для анализа нутриентов');
 });
+
+
+test('Release 1 restores semantic analysis context through ration, browser history and reload', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+  await page.waitForFunction(() =>
+    window.NutritionNavigationAccessHotfix &&
+    window.NutritionNavigationAccessHotfix.version === 'release1-navigation-reversibility-2026-09-26'
+  );
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await page.waitForFunction(() => window.State && window.DB && Array.isArray(window.DB.items) && window.DB.items.length > 10);
+
+  await page.evaluate(() => {
+    const first = window.DB.items.find(p => p && p.key);
+    if (!first) throw new Error('No product available for Release 1 setup');
+    window.State.add(first.key, 150);
+  });
+  await page.waitForFunction(() => window.State.get().length >= 1);
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('analysis/nutrients'));
+  await page.waitForFunction(() =>
+    window.NutritionAnalysisWorkspaceHF7 &&
+    window.NutritionAnalysisWorkspaceHF7.getViewModel &&
+    window.NutritionAnalysisWorkspaceHF7.getViewModel().nutrients.length > 0
+  );
+
+  const target = await page.evaluate(() => {
+    const api = window.NutritionAnalysisWorkspaceHF7;
+    const rows = api.getViewModel().nutrients || [];
+    let row = rows.find(x => x && x.group === 'vitamins' && x.key);
+    if (!row) row = rows.find(x => x && x.key);
+    if (!row) throw new Error('No nutrient row available');
+    api.openNutrient(row.key);
+    return { id: 'workspaceNutrientRow-' + row.key, key: row.key, title: row.title || row.key };
+  });
+
+  await page.waitForFunction(id => {
+    const el = document.getElementById(id);
+    return document.documentElement.getAttribute('data-navigation-route') === 'analysis/nutrients' &&
+      el && el.getBoundingClientRect().height > 0;
+  }, target.id);
+
+  await page.waitForTimeout(250);
+  const before = await page.evaluate(() => ({
+    filters: window.NutritionAnalysisWorkspaceHF7.getFilters(),
+    semantic: window.history.state && window.history.state.navigationSemantic,
+    apiContext: window.NutritionNavigationAccessHotfix.getSemanticContext()
+  }));
+  expect(before.semantic).toBeTruthy();
+  expect(before.semantic.context.route).toBe('analysis/nutrients');
+  expect(before.apiContext.targetId).toContain('workspaceNutrientRow-');
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'ration');
+  await expect(page.locator('#navigationSemanticReturn')).toBeVisible();
+  await expect(page.locator('[data-navigation-semantic-return]')).toContainText(/Вернуться/);
+
+  await page.evaluate(() => {
+    const used = new Set(window.State.get().map(x => x.key || x.id));
+    const next = window.DB.items.find(p => p && p.key && !used.has(p.key));
+    if (next) window.State.add(next.key, 80);
+  });
+  await page.waitForTimeout(250);
+
+  await page.locator('[data-navigation-semantic-return]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'analysis/nutrients');
+  await page.waitForFunction(id => {
+    const el = document.getElementById(id);
+    return el && el.getBoundingClientRect().height > 0;
+  }, target.id);
+
+  const afterReturn = await page.evaluate(() => window.NutritionAnalysisWorkspaceHF7.getFilters());
+  expect(afterReturn.nutrientGroup).toBe(before.filters.nutrientGroup);
+  expect(afterReturn.nutrientFilter).toBe(before.filters.nutrientFilter);
+
+  await page.goBack();
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'ration');
+  await expect(page.locator('#navigationSemanticReturn')).toBeVisible();
+
+  await page.goForward();
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'analysis/nutrients');
+  await page.waitForFunction(id => {
+    const el = document.getElementById(id);
+    return el && el.getBoundingClientRect().height > 0;
+  }, target.id);
+
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() =>
+    window.__RUNTIME_LOADER_CLOSED__ === true &&
+    window.NutritionNavigationAccessHotfix &&
+    window.NutritionNavigationAccessHotfix.version === 'release1-navigation-reversibility-2026-09-26'
+  , null, { timeout: 70000 });
+
+  await page.evaluate(() => window.NavigationShellV1.navigate('analysis/nutrients'));
+  await page.waitForFunction(id => {
+    const el = document.getElementById(id);
+    return el && el.getBoundingClientRect().height > 0;
+  }, target.id, { timeout: 15000 });
+
+  const afterReload = await page.evaluate(() => ({
+    filters: window.NutritionAnalysisWorkspaceHF7.getFilters(),
+    context: window.NutritionNavigationAccessHotfix.getSemanticContext()
+  }));
+  expect(afterReload.filters.nutrientGroup).toBe(before.filters.nutrientGroup);
+  expect(afterReload.filters.nutrientFilter).toBe(before.filters.nutrientFilter);
+  expect(afterReload.context.targetId).toBe(target.id);
+});
