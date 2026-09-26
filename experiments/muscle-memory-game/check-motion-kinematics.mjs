@@ -14,6 +14,7 @@ import {
   motionActionById,
   motionActionActivation,
   scapularPreviewTransform,
+  shoulderComplexElevationPreview,
   shoulderPreviewRotation,
 } from "./motion-kinematics.js";
 
@@ -209,7 +210,7 @@ const scaptionAction = deltoidActions.find(
 );
 assert(
   scaptionAction &&
-    scaptionAction.maxDeg === 90 &&
+    scaptionAction.maxDeg === 150 &&
     scaptionAction.assistants.includes("deltoid-clavicular"),
   "Scaption preview must expose the scapular-plane elevation contract"
 );
@@ -289,11 +290,37 @@ const shoulderFlexion = motionActionById("shoulder-flexion");
 const shoulderAbduction = motionActionById("shoulder-abduction");
 for (const action of [shoulderFlexion, shoulderAbduction]) {
   assert(
-    /гленогумеральн/i.test(action.descriptionRu) &&
-      /лопатк/i.test(action.descriptionRu),
-    "Shoulder preview must disclose that scapular motion is not modeled"
+    action.combinedShoulderComplex === true &&
+      action.scapularDrivers.includes("serratus-anterior") &&
+      action.scapularDrivers.includes("trapezius"),
+    "Full-range shoulder elevation must declare the scapular component"
   );
 }
+
+const shoulder60 = shoulderComplexElevationPreview(shoulderAbduction, 60, 1);
+const shoulder120 = shoulderComplexElevationPreview(shoulderAbduction, 120, 1);
+const shoulder150 = shoulderComplexElevationPreview(shoulderAbduction, 150, 1);
+assert(
+  Math.abs(shoulder60.scapularUpwardRotationDeg - 24) < 0.01 &&
+    Math.abs(shoulder120.scapularUpwardRotationDeg - 35) < 0.01 &&
+    Math.abs(
+      shoulder150.glenohumeralDeg +
+        shoulder150.scapularUpwardRotationDeg -
+        150
+    ) < 0.01,
+  "Combined shoulder elevation decomposition is broken"
+);
+assert(
+  shoulder60.glenohumeralDeg / shoulder60.scapularUpwardRotationDeg !==
+    shoulder120.glenohumeralDeg / shoulder120.scapularUpwardRotationDeg,
+  "Scapulohumeral preview must not collapse back to a constant 2:1 ratio"
+);
+assert(
+  shoulder150.clavicleElevationDeg > 0 &&
+    shoulder150.clavicleRetractionDeg > 0 &&
+    shoulder150.claviclePosteriorRotationDeg > 0,
+  "Combined shoulder elevation must include a clavicular component"
+);
 
 const scapUp = motionActionById("scapular-upward-rotation");
 const scapPro = motionActionById("scapular-protraction");

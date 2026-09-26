@@ -84,6 +84,7 @@ import {
   motionActionActivation,
   motionActionsForUnits,
   scapularPreviewTransform,
+  shoulderComplexElevationPreview,
   shoulderPreviewRotation,
 } from "./motion-kinematics.js";
 import {
@@ -3738,6 +3739,11 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionAuthority = "";
     motionCanvas.dataset.motionAngle = "";
     motionCanvas.dataset.motionPlaying = "false";
+    motionCanvas.dataset.motionScapularDrivers = "";
+    motionCanvas.dataset.motionGlenohumeralDeg = "";
+    motionCanvas.dataset.motionScapularDeg = "";
+    motionCanvas.dataset.motionClavicleElevationDeg = "";
+    motionCanvas.dataset.motionClavicleRetractionDeg = "";
   }
 }
 
@@ -3747,9 +3753,13 @@ function motionMuscleMaterial(role = "context") {
       ? 1
       : role === "assistant"
         ? 0.88
-        : role === "stabilizer"
-          ? 0.68
-          : 0.42;
+        : role === "scapular"
+          ? 0.92
+          : role === "scapular"
+          ? 0.92
+          : role === "stabilizer"
+            ? 0.68
+            : 0.42;
   return new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.52,
@@ -3757,7 +3767,8 @@ function motionMuscleMaterial(role = "context") {
     side: THREE.DoubleSide,
     transparent: opacity < 1,
     opacity,
-    depthWrite: role === "mover" || role === "assistant",
+    depthWrite:
+      role === "mover" || role === "assistant" || role === "scapular",
   });
 }
 
@@ -3896,6 +3907,34 @@ function estimateWristPivot(radius, ulna, handMeshes) {
 
 function estimateShoulderPivot(humerus) {
   return motionMeshEndCentroid(humerus, "max", 0.14);
+}
+
+function motionMeshMedialEndCentroid(mesh, fraction = 0.2) {
+  const position = mesh?.geometry?.getAttribute("position");
+  if (!position) return null;
+
+  let minAbsX = Infinity;
+  let maxAbsX = -Infinity;
+  for (let i = 0; i < position.count; i += 1) {
+    const absX = Math.abs(position.getX(i));
+    minAbsX = Math.min(minAbsX, absX);
+    maxAbsX = Math.max(maxAbsX, absX);
+  }
+  const cutoff =
+    minAbsX + Math.max(1e-6, maxAbsX - minAbsX) * fraction;
+
+  const center = new THREE.Vector3();
+  let count = 0;
+  for (let i = 0; i < position.count; i += 1) {
+    if (Math.abs(position.getX(i)) > cutoff) continue;
+    center.x += position.getX(i);
+    center.y += position.getY(i);
+    center.z += position.getZ(i);
+    count += 1;
+  }
+  return count
+    ? center.multiplyScalar(1 / count)
+    : motionMeshBox(mesh).getCenter(new THREE.Vector3());
 }
 
 function reparentMotionMeshAtPivot(mesh, pivot, parent) {
@@ -4293,15 +4332,34 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
   const radius = boneMeshes.get("radius") || null;
   const ulna = boneMeshes.get("ulna") || null;
   const handMeshes = motionBoneMeshesByUnit("hand");
-  if (!humerus || !scapula) return null;
+  if (!humerus || !scapula || !clavicle) return null;
 
   const pivot = estimateShoulderPivot(humerus);
-  if (!pivot) return null;
+  const scapulaBox = motionMeshBox(scapula);
+  const clavicleBox = motionMeshBox(clavicle);
+  if (!pivot || scapulaBox.isEmpty() || clavicleBox.isEmpty()) return null;
+
+  const scapulaPivotPoint = scapulaBox.getCenter(new THREE.Vector3());
+  const claviclePivotPoint =
+    motionMeshMedialEndCentroid(clavicle) ||
+    clavicleBox.getCenter(new THREE.Vector3());
 
   const humerusPivot = new THREE.Group();
   humerusPivot.name = "shoulder-humerus-pivot";
   humerusPivot.position.copy(pivot);
   motionModelGroup.add(humerusPivot);
+
+  const scapulaPivot = new THREE.Group();
+  scapulaPivot.name = "shoulder-scapula-pivot";
+  scapulaPivot.position.copy(scapulaPivotPoint);
+  motionModelGroup.add(scapulaPivot);
+  reparentMotionMeshAtPivot(scapula, scapulaPivotPoint, scapulaPivot);
+
+  const claviclePivot = new THREE.Group();
+  claviclePivot.name = "shoulder-clavicle-pivot";
+  claviclePivot.position.copy(claviclePivotPoint);
+  motionModelGroup.add(claviclePivot);
+  reparentMotionMeshAtPivot(clavicle, claviclePivotPoint, claviclePivot);
 
   const distalFollowers = [radius, ulna, ...handMeshes].filter(Boolean);
   for (const mesh of [humerus, ...distalFollowers]) {
@@ -4318,6 +4376,11 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
     humerusPivot,
     scapula,
     clavicle,
+    scapulaPivot,
+    claviclePivot,
+    scapulaPivotPoint,
+    claviclePivotPoint,
+    scapulaSize: scapulaBox.getSize(new THREE.Vector3()),
     radius,
     ulna,
     distalFollowerCount: distalFollowers.length,
@@ -4377,9 +4440,73 @@ function buildScapularKinematicRig(action, muscleMeshes, boneMeshes) {
   };
 }
 
+function deformAttachmentFollower(
+  mesh,
+  pivot,
+  rotation,
+  translation,
+  activation = 0,
+  strength = 1
+) {
+  captureMotionRestGeometry(mesh);
+  const rest = mesh.userData.motionRestPositions;
+  const box = mesh.userData.motionRestBox;
+  const position = mesh.geometry.getAttribute("position");
+  if (!rest || !box || !position) return;
+
+  let minDistance = Infinity;
+  let maxDistance = -Infinity;
+  for (let i = 0; i < rest.length; i += 3) {
+    const d = Math.hypot(
+      rest[i] - pivot.x,
+      rest[i + 1] - pivot.y,
+      rest[i + 2] - pivot.z
+    );
+    minDistance = Math.min(minDistance, d);
+    maxDistance = Math.max(maxDistance, d);
+  }
+
+  const span = Math.max(1e-6, maxDistance - minDistance);
+  const center = box.getCenter(new THREE.Vector3());
+  const point = new THREE.Vector3();
+  const relative = new THREE.Vector3();
+  const q = new THREE.Quaternion();
+  const identity = new THREE.Quaternion();
+
+  for (let i = 0; i < position.count; i += 1) {
+    point.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
+    const distance = point.distanceTo(pivot);
+    const attachment =
+      (1 - THREE.MathUtils.clamp((distance - minDistance) / span, 0, 1)) *
+      strength;
+
+    relative.copy(point).sub(pivot);
+    q.copy(identity).slerp(rotation, attachment);
+    relative.applyQuaternion(q);
+    point.copy(pivot)
+      .add(relative)
+      .addScaledVector(translation, attachment);
+
+    const belly = 4 * attachment * (1 - attachment);
+    point.x =
+      center.x +
+      (point.x - center.x) * (1 + activation * 0.02 * belly);
+    point.z =
+      center.z +
+      (point.z - center.z) * (1 + activation * 0.02 * belly);
+    position.setXYZ(i, point.x, point.y, point.z);
+  }
+
+  position.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
+}
+
 function setMotionMuscleActivation(meshes, action, activation) {
   const moverUnits = new Set(action?.synergists || []);
   const assistantUnits = new Set(action?.assistants || []);
+  const scapularUnits = new Set(action?.scapularDrivers || []);
   const stabilizerUnits = new Set(action?.stabilizers || []);
   for (const mesh of meshes || []) {
     const material = mesh.material;
@@ -4390,9 +4517,11 @@ function setMotionMuscleActivation(meshes, action, activation) {
       ? "mover"
       : assistantUnits.has(unitId)
         ? "assistant"
-        : stabilizerUnits.has(unitId)
-          ? "stabilizer"
-          : "context";
+        : scapularUnits.has(unitId)
+          ? "scapular"
+          : stabilizerUnits.has(unitId)
+            ? "stabilizer"
+            : "context";
     mesh.userData.motionRole = role;
 
     material.emissive?.set?.(0x8b1f24);
@@ -4401,6 +4530,8 @@ function setMotionMuscleActivation(meshes, action, activation) {
         ? 0.08 + activation * 0.48
         : role === "assistant"
           ? 0.05 + activation * 0.24
+          : role === "scapular"
+          ? 0.06 + activation * 0.34
           : role === "stabilizer"
             ? 0.065
             : 0.02;
@@ -4413,7 +4544,8 @@ function setMotionMuscleActivation(meshes, action, activation) {
             ? 0.68
             : 0.42;
     material.transparent = role !== "mover";
-    material.depthWrite = role === "mover" || role === "assistant";
+    material.depthWrite =
+      role === "mover" || role === "assistant" || role === "scapular";
     material.needsUpdate = true;
   }
 }
@@ -4707,12 +4839,65 @@ function applyShoulderMotionValue(angleDeg) {
   const value = clampMotionValue(motionRig.action, angleDeg);
   motionRig.valueDeg = value;
 
+  const complex = shoulderComplexElevationPreview(
+    motionRig.action,
+    value,
+    motionRig.sideSign
+  );
   const pose = shoulderPoseQuaternion(
     motionRig.action,
     value,
     motionRig.sideSign
   );
   motionRig.humerusPivot.quaternion.copy(pose.quaternion);
+
+  motionRig.scapulaPivot.position.copy(motionRig.scapulaPivotPoint);
+  motionRig.scapulaPivot.quaternion.identity();
+  motionRig.claviclePivot.position.copy(motionRig.claviclePivotPoint);
+  motionRig.claviclePivot.quaternion.identity();
+
+  const scapulaTranslation = new THREE.Vector3();
+  const scapulaQuaternion = new THREE.Quaternion();
+  const clavicleQuaternion = new THREE.Quaternion();
+
+  if (motionRig.action.combinedShoulderComplex) {
+    const scapulaAngle =
+      THREE.MathUtils.degToRad(complex.scapularUpwardRotationDeg) *
+      motionRig.sideSign;
+    scapulaQuaternion.setFromAxisAngle(
+      new THREE.Vector3(0, 0, 1),
+      scapulaAngle
+    );
+
+    const scapulaProgress =
+      complex.totalDeg /
+      Math.max(1, motionRig.action.maxDeg || complex.totalDeg || 1);
+    scapulaTranslation.set(
+      motionRig.scapulaSize.x * 0.012 * motionRig.sideSign * scapulaProgress,
+      motionRig.scapulaSize.y * 0.018 * scapulaProgress,
+      0
+    );
+    motionRig.scapulaPivot.position.add(scapulaTranslation);
+    motionRig.scapulaPivot.quaternion.copy(scapulaQuaternion);
+
+    const qElevation = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(0, 0, 1),
+      THREE.MathUtils.degToRad(complex.clavicleElevationDeg) *
+        motionRig.sideSign
+    );
+    const qRetraction = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      THREE.MathUtils.degToRad(complex.clavicleRetractionDeg) *
+        -motionRig.sideSign
+    );
+    const qPosterior = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(1, 0, 0),
+      THREE.MathUtils.degToRad(complex.claviclePosteriorRotationDeg) *
+        motionRig.sideSign
+    );
+    clavicleQuaternion.copy(qElevation).multiply(qRetraction).multiply(qPosterior);
+    motionRig.claviclePivot.quaternion.copy(clavicleQuaternion);
+  }
 
   const activation = motionActionActivation(motionRig.action, value);
   const humeralCrossingUnits = new Set([
@@ -4731,23 +4916,73 @@ function applyShoulderMotionValue(angleDeg) {
     "coracobrachialis",
     "teres-major",
   ]);
+  const scapularFollowerUnits = new Set([
+    "trapezius",
+    "serratus-anterior",
+    "rhomboid-major",
+    "rhomboid-minor",
+    "levator-scapulae",
+    "pectoralis-minor",
+  ]);
+
   for (const mesh of motionRig.muscleMeshes) {
     restoreMotionRestGeometry(mesh);
-    if (!humeralCrossingUnits.has(mesh.userData.motionUnit)) continue;
-    deformShoulderMusclePose(
-      mesh,
-      motionRig.pivot,
-      pose.quaternion,
-      activation
-    );
+    const unitId = mesh.userData.motionUnit;
+    if (humeralCrossingUnits.has(unitId)) {
+      deformShoulderMusclePose(
+        mesh,
+        motionRig.pivot,
+        pose.quaternion,
+        activation
+      );
+    } else if (
+      motionRig.action.combinedShoulderComplex &&
+      scapularFollowerUnits.has(unitId)
+    ) {
+      deformAttachmentFollower(
+        mesh,
+        motionRig.scapulaPivotPoint,
+        scapulaQuaternion,
+        scapulaTranslation,
+        (motionRig.action.scapularDrivers || []).includes(unitId)
+          ? activation
+          : 0,
+        0.9
+      );
+    } else if (
+      motionRig.action.combinedShoulderComplex &&
+      unitId === "subclavius"
+    ) {
+      deformAttachmentFollower(
+        mesh,
+        motionRig.claviclePivotPoint,
+        clavicleQuaternion,
+        new THREE.Vector3(),
+        0,
+        0.9
+      );
+    }
   }
-  setMotionMuscleActivation(motionRig.muscleMeshes, motionRig.action, activation);
+
+  setMotionMuscleActivation(
+    motionRig.muscleMeshes,
+    motionRig.action,
+    activation
+  );
 
   if (motionCanvas) {
     motionCanvas.dataset.motionShoulderRotation = pose.angle.toFixed(6);
     motionCanvas.dataset.motionShoulderBaseRotation = pose.baseAngle.toFixed(6);
     motionCanvas.dataset.motionReferencePose =
       motionRig.action.referencePose || "rest";
+    motionCanvas.dataset.motionGlenohumeralDeg =
+      complex.glenohumeralDeg.toFixed(1);
+    motionCanvas.dataset.motionScapularDeg =
+      complex.scapularUpwardRotationDeg.toFixed(1);
+    motionCanvas.dataset.motionClavicleElevationDeg =
+      complex.clavicleElevationDeg.toFixed(1);
+    motionCanvas.dataset.motionClavicleRetractionDeg =
+      complex.clavicleRetractionDeg.toFixed(1);
   }
 }
 
@@ -4843,6 +5078,9 @@ function renderMotionControls(
   const assistantNames = (action.assistants || [])
     .map((id) => motionVisualUnit(id)?.nameRu)
     .filter(Boolean);
+  const scapularNames = (action.scapularDrivers || [])
+    .map((id) => motionVisualUnit(id)?.nameRu)
+    .filter(Boolean);
   const stabilizerNames = (action.stabilizers || [])
     .map((id) => motionVisualUnit(id)?.nameRu)
     .filter(Boolean);
@@ -4860,6 +5098,14 @@ function renderMotionControls(
       assistantNames.join(", ");
     roles.appendChild(row);
   }
+  if (scapularNames.length) {
+    const row = document.createElement("span");
+    row.innerHTML =
+      "<strong>Лопаточный компонент:</strong> " +
+      scapularNames.join(", ") +
+      ".";
+    roles.appendChild(row);
+  }
   if (stabilizerNames.length) {
     const row = document.createElement("span");
     row.innerHTML =
@@ -4872,6 +5118,7 @@ function renderMotionControls(
   const activeRoleUnits = new Set([
     ...(action.synergists || []),
     ...(action.assistants || []),
+    ...(action.scapularDrivers || []),
     ...(action.stabilizers || []),
   ]);
   const visualContextNames = (motionPilot(action.pilotId)?.visualContextUnits || [])
@@ -5033,6 +5280,7 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
         ...new Set([
           ...(action.synergists || []),
           ...(action.assistants || []),
+          ...(action.scapularDrivers || []),
           ...(action.stabilizers || []),
           ...visualContextUnitIds,
         ]),
@@ -5054,9 +5302,11 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
       ? "mover"
       : action?.assistants?.includes(unit?.id)
         ? "assistant"
-        : action?.stabilizers?.includes(unit?.id)
-          ? "stabilizer"
-          : "context";
+        : action?.scapularDrivers?.includes(unit?.id)
+          ? "scapular"
+          : action?.stabilizers?.includes(unit?.id)
+            ? "stabilizer"
+            : "context";
     const mesh = createMotionMesh(anatomyMesh, range, {
       material: motionMuscleMaterial(role),
       name: displayStructureName(sid),
@@ -5123,6 +5373,7 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
         ...new Set([
           ...(action.synergists || []),
           ...(action.assistants || []),
+          ...(action.scapularDrivers || []),
           ...(action.stabilizers || []),
         ]),
       ]
@@ -5136,6 +5387,8 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   motionCanvas.dataset.motionSelectedUnits = [...selectedUnits].join(",");
   motionCanvas.dataset.motionMovers = (action?.synergists || []).join(",");
   motionCanvas.dataset.motionAssistants = (action?.assistants || []).join(",");
+  motionCanvas.dataset.motionScapularDrivers =
+    (action?.scapularDrivers || []).join(",");
   motionCanvas.dataset.motionStabilizers = (action?.stabilizers || []).join(",");
   motionCanvas.dataset.motionVisualContext = visualContextUnitIds.join(",");
   motionCanvas.dataset.motionMissingContext = visualContextUnitIds
@@ -5169,7 +5422,11 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
     motionCanvas.dataset.motionPilot = motionRig.pilotId;
     motionCanvas.dataset.motionAuthority = action.authority;
     motionCanvas.dataset.motionScope =
-      action.pilotId === "shoulder" ? "glenohumeral-preview" : action.pilotId;
+      action.pilotId === "shoulder"
+        ? action.combinedShoulderComplex
+          ? "shoulder-complex-preview"
+          : "glenohumeral-preview"
+        : action.pilotId;
     motionCanvas.dataset.motionReferenceMax = String(action.referenceMaxDeg);
     motionCanvas.dataset.motionPreviewMax = String(action.maxDeg);
     motionCanvas.dataset.motionReferencePose = action.referencePose || "rest";

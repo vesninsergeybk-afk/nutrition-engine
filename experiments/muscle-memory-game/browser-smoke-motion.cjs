@@ -195,7 +195,7 @@ const assert = require('node:assert/strict');
   }
 
   await page.selectOption('#motion-movement', 'shoulder-abduction');
-  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '90');
+  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '150');
   assert.equal(
     await page.locator('#motion-viewer').getAttribute('data-motion-reference-max'),
     '150'
@@ -206,7 +206,7 @@ const assert = require('node:assert/strict');
   );
 
   await page.locator('#motion-angle').evaluate((el) => {
-    el.value = '60';
+    el.value = '120';
     el.dispatchEvent(new Event('input', { bubbles: true }));
   });
   await page.waitForFunction(
@@ -223,7 +223,7 @@ const assert = require('node:assert/strict');
   );
   assert.match(
     await page.locator('#motion-state').innerText(),
-    /90°|150°|лопатк|ключиц/i
+    /150°|лопатк|ключиц|Combined/i
   );
   assert.match(
     await page.locator('#motion-viewer').getAttribute('data-motion-units'),
@@ -240,6 +240,30 @@ const assert = require('node:assert/strict');
   assert.match(
     await page.locator('#motion-viewer').getAttribute('data-motion-movers'),
     /supraspinatus/
+  );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-scope'),
+    'shoulder-complex-preview'
+  );
+  assert.ok(
+    Number(await page.locator('#motion-viewer').getAttribute('data-motion-scapular-deg')) > 20,
+    'Full-range abduction must rotate the scapula'
+  );
+  assert.ok(
+    Number(await page.locator('#motion-viewer').getAttribute('data-motion-glenohumeral-deg')) > 60,
+    'Full-range abduction must retain a glenohumeral component'
+  );
+  assert.ok(
+    Number(await page.locator('#motion-viewer').getAttribute('data-motion-clavicle-elevation-deg')) > 0,
+    'Full-range abduction must move the clavicle'
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-scapular-drivers'),
+    /serratus-anterior/
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-scapular-drivers'),
+    /trapezius/
   );
   assert.match(
     await page.locator('#motion-viewer').getAttribute('data-motion-stabilizers'),
@@ -317,7 +341,7 @@ const assert = require('node:assert/strict');
   );
 
   await page.selectOption('#motion-movement', 'shoulder-scaption');
-  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '90');
+  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '150');
   await page.locator('#motion-angle').evaluate((el) => {
     el.value = '60';
     el.dispatchEvent(new Event('input', { bubbles: true }));
