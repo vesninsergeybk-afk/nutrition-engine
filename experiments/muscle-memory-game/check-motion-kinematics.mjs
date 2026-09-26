@@ -13,6 +13,7 @@ import {
   motionActionsForUnits,
   motionActionById,
   motionActionActivation,
+  scapularPreviewTransform,
   shoulderPreviewRotation,
 } from "./motion-kinematics.js";
 
@@ -293,3 +294,38 @@ for (const action of [shoulderFlexion, shoulderAbduction]) {
     "Shoulder preview must disclose that scapular motion is not modeled"
   );
 }
+
+const scapUp = motionActionById("scapular-upward-rotation");
+const scapPro = motionActionById("scapular-protraction");
+const scapRet = motionActionById("scapular-retraction");
+assert(scapUp?.pilotId === "scapula", "Scapular upward rotation action missing");
+assert(scapPro?.displayUnit === "%", "Scapular translation must not masquerade as degrees");
+assert(scapRet?.displayUnit === "%", "Scapular retraction must use normalized preview units");
+const scapUpPose = scapularPreviewTransform(scapUp, 30, 1);
+assert(
+  Math.abs(scapUpPose.angleRad) > 0.4 &&
+    scapUpPose.clavicleRotationRad !== 0,
+  "Upward rotation must move scapula and couple clavicle"
+);
+const scapProPose = scapularPreviewTransform(scapPro, 100, 1);
+assert(
+  scapProPose.translationFraction[0] > 0 &&
+    scapProPose.translationFraction[2] > 0,
+  "Right scapular protraction must move laterally and anteriorly"
+);
+const scapRetPose = scapularPreviewTransform(scapRet, 100, 1);
+assert(
+  scapRetPose.translationFraction[0] < 0,
+  "Right scapular retraction must move medially"
+);
+for (const id of [
+  "scapular-protraction",
+  "scapular-retraction",
+  "scapular-elevation",
+  "scapular-depression",
+  "scapular-upward-rotation",
+  "scapular-downward-rotation",
+]) {
+  assert(motionActionById(id), "Missing scapular movement: " + id);
+}
+console.log("Upper-limb kinematics: scapular translation and rotation preview ok");
