@@ -80,6 +80,7 @@ import {
 import {
   clampMotionValue,
   elbowFlexionRadians,
+  horizontalShoulderComplexPreview,
   motionActionActivation,
   motionActionsForUnits,
   scapularPreviewTransform,
@@ -3753,6 +3754,9 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionShoulderChain = "";
     motionCanvas.dataset.motionShoulderRotationDeg = "";
     motionCanvas.dataset.motionHumeralExternalRotationDeg = "";
+    motionCanvas.dataset.motionReferenceElevationDeg = "";
+    motionCanvas.dataset.motionHorizontalScapularDeltaDeg = "";
+    motionCanvas.dataset.motionHorizontalClavicleDeltaDeg = "";
     motionCanvas.dataset.motionPlaybackCurve = "";
     motionCanvas.dataset.motionForearmAxis = "";
     motionCanvas.dataset.motionRadiusRigid = "";
@@ -4870,7 +4874,12 @@ function shoulderActionAxisAndAngle(action, value, sideSign) {
   };
 }
 
-function shoulderPoseQuaternion(action, value, sideSign) {
+function shoulderPoseQuaternion(
+  action,
+  value,
+  sideSign,
+  { horizontalBaseDeg = 90 } = {}
+) {
   const { axis, angle } = shoulderActionAxisAndAngle(
     action,
     value,
@@ -4890,7 +4899,9 @@ function shoulderPoseQuaternion(action, value, sideSign) {
     };
   }
 
-  const baseAngle = (Math.PI / 2) * (sideSign < 0 ? -1 : 1);
+  const baseAngle =
+    THREE.MathUtils.degToRad(horizontalBaseDeg) *
+    (sideSign < 0 ? -1 : 1);
   const baseQuaternion = new THREE.Quaternion().setFromAxisAngle(
     new THREE.Vector3(0, 0, 1),
     baseAngle
@@ -5087,23 +5098,42 @@ function applyShoulderMotionValue(angleDeg) {
   const value = clampMotionValue(motionRig.action, angleDeg);
   motionRig.valueDeg = value;
 
-  const complex = shoulderComplexElevationPreview(
-    motionRig.action,
-    value,
-    motionRig.sideSign
-  );
-  const glenohumeralValue =
-    motionRig.action.combinedShoulderComplex
-      ? complex.glenohumeralDeg
-      : value;
+  const isElevationComplex =
+    Boolean(motionRig.action.combinedShoulderComplex);
+  const isHorizontalComplex =
+    Boolean(motionRig.action.horizontalShoulderComplex);
+  const linkedShoulderComplex =
+    isElevationComplex || isHorizontalComplex;
+
+  const complex = isHorizontalComplex
+    ? horizontalShoulderComplexPreview(
+        motionRig.action,
+        value,
+        motionRig.sideSign
+      )
+    : shoulderComplexElevationPreview(
+        motionRig.action,
+        value,
+        motionRig.sideSign
+      );
+
+  const poseValue = isElevationComplex
+    ? complex.glenohumeralDeg
+    : value;
   const pose = shoulderPoseQuaternion(
     motionRig.action,
-    glenohumeralValue,
-    motionRig.sideSign
+    poseValue,
+    motionRig.sideSign,
+    {
+      horizontalBaseDeg: isHorizontalComplex
+        ? complex.glenohumeralDeg
+        : 90,
+    }
   );
+
   const coupledAxialQuaternion = new THREE.Quaternion();
   if (
-    motionRig.action.combinedShoulderComplex &&
+    linkedShoulderComplex &&
     complex.humeralExternalRotationDeg > 0
   ) {
     coupledAxialQuaternion.setFromAxisAngle(
@@ -5112,9 +5142,6 @@ function applyShoulderMotionValue(angleDeg) {
         -motionRig.sideSign
     );
   }
-  // Apply axial rotation around the resting humeral long axis first, then
-  // carry that rotated humerus through the glenohumeral elevation. This is
-  // equivalent to axial rotation around the moving humeral shaft.
   const humerusQuaternion = pose.quaternion
     .clone()
     .multiply(coupledAxialQuaternion);
@@ -5129,9 +5156,7 @@ function applyShoulderMotionValue(angleDeg) {
   const scapulaQuaternion = new THREE.Quaternion();
   const clavicleQuaternion = new THREE.Quaternion();
 
-  if (motionRig.action.combinedShoulderComplex) {
-    // First move the clavicle about its medial (sternoclavicular) base.
-    // Its lateral end then becomes the moving base of the scapula.
+  if (linkedShoulderComplex) {
     const qElevation = new THREE.Quaternion().setFromAxisAngle(
       new THREE.Vector3(0, 0, 1),
       THREE.MathUtils.degToRad(complex.clavicleElevationDeg) *
@@ -5162,8 +5187,6 @@ function applyShoulderMotionValue(angleDeg) {
       .copy(movingScapularBase)
       .sub(motionRig.scapulaPivotPoint);
 
-    // The scapula has three coupled rotational components during elevation.
-    // These are broad teaching trajectories, not an individual normative path.
     const qUpward = new THREE.Quaternion().setFromAxisAngle(
       new THREE.Vector3(0, 0, 1),
       THREE.MathUtils.degToRad(complex.scapularUpwardRotationDeg) *
@@ -5228,11 +5251,11 @@ function applyShoulderMotionValue(angleDeg) {
   ]);
   const clavicularOriginUnits = new Set(["deltoid-clavicular"]);
 
-  const worldHumerusQuaternion = motionRig.action.combinedShoulderComplex
+  const worldHumerusQuaternion = linkedShoulderComplex
     ? scapulaQuaternion.clone().multiply(humerusQuaternion)
     : humerusQuaternion.clone();
   const movingShoulderPivot = motionRig.pivot.clone();
-  if (motionRig.action.combinedShoulderComplex) {
+  if (linkedShoulderComplex) {
     movingShoulderPivot
       .sub(motionRig.scapulaPivotPoint)
       .applyQuaternion(scapulaQuaternion)
@@ -5248,10 +5271,10 @@ function applyShoulderMotionValue(angleDeg) {
     const unitId = mesh.userData.motionUnit;
     if (humeralCrossingUnits.has(unitId)) {
       const followsScapula =
-        motionRig.action.combinedShoulderComplex &&
+        linkedShoulderComplex &&
         scapularOriginUnits.has(unitId);
       const followsClavicle =
-        motionRig.action.combinedShoulderComplex &&
+        linkedShoulderComplex &&
         clavicularOriginUnits.has(unitId);
 
       deformShoulderMusclePose(
@@ -5277,7 +5300,7 @@ function applyShoulderMotionValue(angleDeg) {
         }
       );
     } else if (
-      motionRig.action.combinedShoulderComplex &&
+      linkedShoulderComplex &&
       scapularFollowerUnits.has(unitId)
     ) {
       deformAttachmentFollower(
@@ -5291,7 +5314,7 @@ function applyShoulderMotionValue(angleDeg) {
         0.9
       );
     } else if (
-      motionRig.action.combinedShoulderComplex &&
+      linkedShoulderComplex &&
       unitId === "subclavius"
     ) {
       deformAttachmentFollower(
@@ -5324,6 +5347,18 @@ function applyShoulderMotionValue(angleDeg) {
     motionCanvas.dataset.motionShoulderBaseRotation = pose.baseAngle.toFixed(6);
     motionCanvas.dataset.motionReferencePose =
       motionRig.action.referencePose || "rest";
+    motionCanvas.dataset.motionReferenceElevationDeg =
+      isHorizontalComplex
+        ? complex.referenceElevationDeg.toFixed(1)
+        : "";
+    motionCanvas.dataset.motionHorizontalScapularDeltaDeg =
+      isHorizontalComplex
+        ? complex.scapularExternalRotationDeltaDeg.toFixed(1)
+        : "";
+    motionCanvas.dataset.motionHorizontalClavicleDeltaDeg =
+      isHorizontalComplex
+        ? complex.clavicleRetractionDeltaDeg.toFixed(1)
+        : "";
     motionCanvas.dataset.motionGlenohumeralDeg =
       complex.glenohumeralDeg.toFixed(1);
     motionCanvas.dataset.motionScapularDeg =
@@ -5339,14 +5374,16 @@ function applyShoulderMotionValue(angleDeg) {
     motionCanvas.dataset.motionClaviclePosteriorRotationDeg =
       complex.claviclePosteriorRotationDeg.toFixed(1);
     motionCanvas.dataset.motionScapulaAnchor =
-      motionRig.scapulaAnchorMode || "";
+      linkedShoulderComplex
+        ? motionRig.scapulaAnchorMode || ""
+        : "";
   }
 
   const kinematicSummary = motionStateEl?.querySelector(
     "#motion-kinematic-summary"
   );
   if (kinematicSummary) {
-    if (motionRig.action.combinedShoulderComplex) {
+    if (isElevationComplex) {
       const externalText =
         complex.scapularExternalRotationDeg >= 0.75
           ? ` и немного ротируется кнаружи (≈${Math.round(
@@ -5367,6 +5404,21 @@ function applyShoulderMotionValue(angleDeg) {
         )}° — на верхнюю ротацию лопатки. Лопатка одновременно наклоняется кзади (≈${Math.round(
           complex.scapularPosteriorTiltDeg
         )}°)${externalText}; ключица поднимается, ретрагируется и ротируется кзади.${humeralAxialText}`;
+    } else if (isHorizontalComplex) {
+      const tendency =
+        motionRig.action.movementId === "shoulder-horizontal-adduction"
+          ? "протракции и внутренней ротации"
+          : "ретракции и наружной ротации";
+      kinematicSummary.textContent =
+        `Исходные ${Math.round(
+          complex.referenceElevationDeg
+        )}° отведения построены как связанная поза: ≈${Math.round(
+          complex.glenohumeralDeg
+        )}° гленогумерального подъёма и ≈${Math.round(
+          complex.scapularUpwardRotationDeg
+        )}° верхней ротации лопатки. При горизонтальном движении на ${Math.round(
+          value
+        )}° лопатка умеренно следует в сторону ${tendency}; это учебная траектория, а не фиксированная индивидуальная норма.`;
     } else {
       kinematicSummary.textContent =
         `Сейчас: ${Math.round(
@@ -5859,7 +5911,8 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
     motionCanvas.dataset.motionAuthority = action.authority;
     motionCanvas.dataset.motionScope =
       action.pilotId === "shoulder"
-        ? action.combinedShoulderComplex
+        ? action.combinedShoulderComplex ||
+          action.horizontalShoulderComplex
           ? "shoulder-complex-preview"
           : "glenohumeral-preview"
         : action.pilotId;

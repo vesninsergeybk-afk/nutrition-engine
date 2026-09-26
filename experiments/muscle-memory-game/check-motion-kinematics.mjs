@@ -10,6 +10,7 @@ import {
   elbowActivation,
   elbowFlexionRadians,
   elbowMotionAction,
+  horizontalShoulderComplexPreview,
   motionActionsForUnits,
   motionActionById,
   motionActionActivation,
@@ -276,8 +277,11 @@ const horizontalAdduction = motionActionsForUnits(["pectoralis-major"]).find(
 assert(
   horizontalAdduction &&
     horizontalAdduction.referencePose === "abducted-90" &&
-    horizontalAdduction.synergists.includes("deltoid-clavicular"),
-  "Horizontal adduction must start from 90° abduction with anterior deltoid/pectoralis context"
+    horizontalAdduction.referenceElevationDeg === 90 &&
+    horizontalAdduction.horizontalShoulderComplex === true &&
+    horizontalAdduction.synergists.includes("deltoid-clavicular") &&
+    horizontalAdduction.scapularDrivers.includes("serratus-anterior"),
+  "Horizontal adduction must start from a linked 90° shoulder-complex pose"
 );
 const horizontalAbduction = motionActionsForUnits(["deltoid-spinal"]).find(
   (item) => item.movementId === "shoulder-horizontal-abduction"
@@ -285,11 +289,48 @@ const horizontalAbduction = motionActionsForUnits(["deltoid-spinal"]).find(
 assert(
   horizontalAbduction &&
     horizontalAbduction.referencePose === "abducted-90" &&
+    horizontalAbduction.referenceElevationDeg === 90 &&
+    horizontalAbduction.horizontalShoulderComplex === true &&
     horizontalAbduction.assistants.includes("infraspinatus") &&
-    horizontalAbduction.assistants.includes("teres-minor"),
-  "Horizontal abduction must start from 90° abduction with posterior cuff assistance"
+    horizontalAbduction.assistants.includes("teres-minor") &&
+    horizontalAbduction.scapularDrivers.includes("trapezius") &&
+    horizontalAbduction.scapularDrivers.includes("rhomboid-major"),
+  "Horizontal abduction must start from a linked 90° shoulder-complex pose"
 );
-console.log("Upper-limb kinematics: horizontal shoulder plane actions ok");
+
+const horizontalAdductionStart =
+  horizontalShoulderComplexPreview(horizontalAdduction, 0, 1);
+const horizontalAdductionEnd =
+  horizontalShoulderComplexPreview(
+    horizontalAdduction,
+    horizontalAdduction.maxDeg,
+    1
+  );
+const horizontalAbductionEnd =
+  horizontalShoulderComplexPreview(
+    horizontalAbduction,
+    horizontalAbduction.maxDeg,
+    1
+  );
+assert(
+  horizontalAdductionStart.totalDeg === 90 &&
+    horizontalAdductionStart.scapularUpwardRotationDeg > 20 &&
+    horizontalAdductionStart.glenohumeralDeg < 90 &&
+    Math.abs(
+      horizontalAdductionStart.glenohumeralDeg +
+        horizontalAdductionStart.scapularUpwardRotationDeg -
+        90
+    ) < 0.01,
+  "Horizontal shoulder reference pose must not be a humerus-only 90° abduction"
+);
+assert(
+  horizontalAdductionEnd.scapularExternalRotationDeltaDeg < 0 &&
+    horizontalAdductionEnd.clavicleRetractionDeltaDeg < 0 &&
+    horizontalAbductionEnd.scapularExternalRotationDeltaDeg > 0 &&
+    horizontalAbductionEnd.clavicleRetractionDeltaDeg > 0,
+  "Horizontal adduction/abduction must add opposite modest scapular tendencies"
+);
+console.log("Upper-limb kinematics: horizontal shoulder plane actions use linked 90° reference pose");
 
 const shoulderFlexion = motionActionById("shoulder-flexion");
 const shoulderAbduction = motionActionById("shoulder-abduction");

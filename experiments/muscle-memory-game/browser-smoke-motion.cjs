@@ -412,9 +412,37 @@ const assert = require('node:assert/strict');
           document.querySelector('#motion-viewer')?.dataset
             .motionShoulderBaseRotation || 0
         )
-      ) > 1.4,
+      ) > 0.9,
     null,
     { timeout: 5000 }
+  );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-reference-elevation-deg'),
+    '90.0',
+    'Horizontal shoulder motion must build a real 90° shoulder-complex reference pose'
+  );
+  assert.ok(
+    Number(await page.locator('#motion-viewer').getAttribute('data-motion-glenohumeral-deg')) < 80 &&
+      Number(await page.locator('#motion-viewer').getAttribute('data-motion-scapular-deg')) > 20,
+    'Reference 90° abduction must be split between GH elevation and scapular upward rotation'
+  );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-horizontal-scapular-delta-deg')
+    ) < 0,
+    'Horizontal adduction must add a protraction/internal-rotation scapular tendency'
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-scapular-drivers'),
+    /serratus-anterior/,
+    'Horizontal adduction must expose serratus anterior as the scapular driver'
+  );
+  assert.match(
+    await page.locator('#motion-state').innerText(),
+    /связанн.*поз|верхн.*ротац.*лопат/i,
+    'Teaching UI must explain the linked 90° reference pose'
   );
 
   await page.selectOption('#motion-movement', 'shoulder-scaption');

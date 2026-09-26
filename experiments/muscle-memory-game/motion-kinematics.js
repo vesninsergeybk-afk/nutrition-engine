@@ -281,8 +281,13 @@ const MOTION_ACTIONS = Object.freeze({
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.horizontalAdduction.referenceMaxDeg,
     speedDegPerSecond: 35,
     referencePose: "abducted-90",
+    referenceElevationDeg: 90,
+    horizontalShoulderComplex: true,
+    rangeNoteRu:
+      "Исходные 90° отведения строятся как связанная поза плечевой кости, лопатки и ключицы. Горизонтальное движение добавляет умеренный лопаточный компонент; точная индивидуальная траектория не заявляется.",
     synergists: ["pectoralis-major", "deltoid-clavicular"],
     assistants: ["coracobrachialis"],
+    scapularDrivers: ["serratus-anterior"],
     stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
   }),
   "shoulder-horizontal-abduction": frozenAction({
@@ -297,8 +302,13 @@ const MOTION_ACTIONS = Object.freeze({
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.horizontalAbduction.referenceMaxDeg,
     speedDegPerSecond: 32,
     referencePose: "abducted-90",
+    referenceElevationDeg: 90,
+    horizontalShoulderComplex: true,
+    rangeNoteRu:
+      "Исходные 90° отведения строятся как связанная поза плечевой кости, лопатки и ключицы. При движении кзади лопатка умеренно следует в сторону ретракции; точная индивидуальная траектория не заявляется.",
     synergists: ["deltoid-spinal"],
     assistants: ["infraspinatus", "teres-minor"],
+    scapularDrivers: ["trapezius", "rhomboid-major", "rhomboid-minor"],
     stabilizers: ["supraspinatus", "subscapularis"],
   }),
   "shoulder-extension": frozenAction({
@@ -731,6 +741,57 @@ function shoulderElevationHumeralExternalRotationDeg(action, totalDeg) {
   return 0;
 }
 
+function shoulderElevationComplexComponents(totalDeg, sideSign = 1) {
+  const side = sideSign < 0 ? -1 : 1;
+  const scapularUpwardRotationDeg = Math.min(
+    totalDeg,
+    interpolateControlPoints(SHOULDER_ELEVATION_SCAPULA_POINTS, totalDeg)
+  );
+  const glenohumeralDeg = Math.max(
+    0,
+    totalDeg - scapularUpwardRotationDeg
+  );
+  const scapularPosteriorTiltDeg = interpolateControlPoints(
+    SHOULDER_ELEVATION_POSTERIOR_TILT_POINTS,
+    totalDeg
+  );
+  const scapularExternalRotationDeg = interpolateControlPoints(
+    SHOULDER_ELEVATION_EXTERNAL_ROTATION_POINTS,
+    totalDeg
+  );
+
+  const elevationProgress = Math.min(1, totalDeg / 180);
+
+  return Object.freeze({
+    totalDeg,
+    glenohumeralDeg,
+    scapularUpwardRotationDeg,
+    scapularPosteriorTiltDeg,
+    scapularExternalRotationDeg,
+    clavicleElevationDeg: 13 * elevationProgress,
+    clavicleRetractionDeg: 20 * elevationProgress,
+    claviclePosteriorRotationDeg: 24 * elevationProgress,
+    side,
+  });
+}
+
+export function shoulderReferenceElevationPreview(
+  totalElevationDeg,
+  sideSign = 1
+) {
+  const totalDeg = clamp(totalElevationDeg, 0, 180);
+  const base = shoulderElevationComplexComponents(totalDeg, sideSign);
+  const humeralExternalRotationDeg =
+    interpolateControlPoints(
+      SHOULDER_ABDUCTION_HUMERAL_EXTERNAL_ROTATION_POINTS,
+      totalDeg
+    );
+  return Object.freeze({
+    ...base,
+    humeralExternalRotationDeg,
+  });
+}
+
 export function shoulderComplexElevationPreview(
   action,
   totalElevationDeg,
@@ -755,41 +816,63 @@ export function shoulderComplexElevationPreview(
     });
   }
 
-  const scapularUpwardRotationDeg = Math.min(
-    totalDeg,
-    interpolateControlPoints(SHOULDER_ELEVATION_SCAPULA_POINTS, totalDeg)
-  );
-  const glenohumeralDeg = Math.max(
-    0,
-    totalDeg - scapularUpwardRotationDeg
-  );
-  const scapularPosteriorTiltDeg = interpolateControlPoints(
-    SHOULDER_ELEVATION_POSTERIOR_TILT_POINTS,
-    totalDeg
-  );
-  const scapularExternalRotationDeg = interpolateControlPoints(
-    SHOULDER_ELEVATION_EXTERNAL_ROTATION_POINTS,
-    totalDeg
-  );
-  const humeralExternalRotationDeg =
-    shoulderElevationHumeralExternalRotationDeg(action, totalDeg);
+  const base = shoulderElevationComplexComponents(totalDeg, side);
+  return Object.freeze({
+    ...base,
+    humeralExternalRotationDeg:
+      shoulderElevationHumeralExternalRotationDeg(action, totalDeg),
+  });
+}
 
-  // Clavicular motion is scaled to the elevation itself rather than to the
-  // preview's local maximum. That prevents a 90° teaching action from being
-  // assigned the same clavicular excursion as a full overhead raise.
-  const elevationProgress = Math.min(1, totalDeg / 180);
+export function horizontalShoulderComplexPreview(
+  action,
+  horizontalDeg,
+  sideSign = 1
+) {
+  const valueDeg = clampMotionValue(action, horizontalDeg);
+  const referenceElevationDeg = clamp(
+    action?.referenceElevationDeg ?? 90,
+    0,
+    180
+  );
+  const base = shoulderReferenceElevationPreview(
+    referenceElevationDeg,
+    sideSign
+  );
+  const progress =
+    action.maxDeg > action.minDeg
+      ? (valueDeg - action.minDeg) / (action.maxDeg - action.minDeg)
+      : 0;
+  const isAdduction =
+    action.movementId === "shoulder-horizontal-adduction";
+
+  // Horizontal adduction usually accompanies a protraction tendency, while
+  // horizontal abduction accompanies a retraction tendency. Keep this
+  // deliberately modest because the exact scapular contribution depends on
+  // the task, thorax and individual movement strategy.
+  const scapularExternalRotationDeltaDeg =
+    (isAdduction ? -6 : 5) * progress;
+  const scapularPosteriorTiltDeltaDeg =
+    (isAdduction ? -2 : 2) * progress;
+  const clavicleRetractionDeltaDeg =
+    (isAdduction ? -5 : 5) * progress;
 
   return Object.freeze({
-    totalDeg,
-    glenohumeralDeg,
-    scapularUpwardRotationDeg,
-    scapularPosteriorTiltDeg,
-    scapularExternalRotationDeg,
-    humeralExternalRotationDeg,
-    clavicleElevationDeg: 13 * elevationProgress,
-    clavicleRetractionDeg: 20 * elevationProgress,
-    claviclePosteriorRotationDeg: 24 * elevationProgress,
-    side,
+    ...base,
+    valueDeg,
+    referenceElevationDeg,
+    scapularExternalRotationDeltaDeg,
+    scapularPosteriorTiltDeltaDeg,
+    clavicleRetractionDeltaDeg,
+    scapularExternalRotationDeg:
+      base.scapularExternalRotationDeg +
+      scapularExternalRotationDeltaDeg,
+    scapularPosteriorTiltDeg:
+      base.scapularPosteriorTiltDeg +
+      scapularPosteriorTiltDeltaDeg,
+    clavicleRetractionDeg:
+      base.clavicleRetractionDeg +
+      clavicleRetractionDeltaDeg,
   });
 }
 
