@@ -3750,6 +3750,9 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionScapulaAnchor = "";
     motionCanvas.dataset.motionShoulderChain = "";
     motionCanvas.dataset.motionShoulderRotationDeg = "";
+    motionCanvas.dataset.motionForearmAxis = "";
+    motionCanvas.dataset.motionRadiusRigid = "";
+    motionCanvas.dataset.motionWristModel = "";
   }
 }
 
@@ -4228,25 +4231,37 @@ function deformShoulderMusclePose(
   mesh.geometry.computeBoundingSphere();
 }
 
-function deformRadiusForForearmRotation(radius, ulna, angleRad) {
-  captureMotionRestGeometry(radius);
-  const rest = radius?.userData?.motionRestPositions;
-  const box = radius?.userData?.motionRestBox;
-  const position = radius?.geometry?.getAttribute("position");
+function deformForearmRotationMuscle(
+  mesh,
+  axisOrigin,
+  axis,
+  angleRad,
+  activation,
+  sideSign = 1
+) {
+  captureMotionRestGeometry(mesh);
+  const rest = mesh?.userData?.motionRestPositions;
+  const box = mesh?.userData?.motionRestBox;
+  const position = mesh?.geometry?.getAttribute("position");
   if (!rest || !box || !position) return;
 
-  const ulnaBox = motionMeshBox(ulna);
-  const axisCenter = ulnaBox.isEmpty()
-    ? box.getCenter(new THREE.Vector3())
-    : ulnaBox.getCenter(new THREE.Vector3());
-  const axisOrigin = new THREE.Vector3(axisCenter.x, box.max.y, axisCenter.z);
-  const axis = new THREE.Vector3(0, -1, 0);
+  const unitId = mesh.userData.motionUnit || "";
   const spanY = Math.max(1e-6, box.max.y - box.min.y);
+  const side = sideSign < 0 ? -1 : 1;
+  let minLateral = Infinity;
+  let maxLateral = -Infinity;
+  for (let i = 0; i < rest.length; i += 3) {
+    const lateral = rest[i] * side;
+    minLateral = Math.min(minLateral, lateral);
+    maxLateral = Math.max(maxLateral, lateral);
+  }
+  const lateralSpan = Math.max(1e-6, maxLateral - minLateral);
+  const radialSideUnits = new Set(["pronator-quadratus", "supinator"]);
+  const center = box.getCenter(new THREE.Vector3());
   const p = new THREE.Vector3();
   const rel = new THREE.Vector3();
-  const axial = new THREE.Vector3();
-  const radial = new THREE.Vector3();
   const q = new THREE.Quaternion();
+  const axisN = axis.clone().normalize();
 
   for (let i = 0; i < position.count; i += 1) {
     p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
@@ -4255,19 +4270,34 @@ function deformRadiusForForearmRotation(radius, ulna, angleRad) {
       0,
       1
     );
+    const lateralWeight = THREE.MathUtils.clamp(
+      (p.x * side - minLateral) / lateralSpan,
+      0,
+      1
+    );
+    const attachmentWeight = radialSideUnits.has(unitId)
+      ? lateralWeight
+      : distalWeight;
+
+    const belly = 4 * attachmentWeight * (1 - attachmentWeight);
+    p.x =
+      center.x +
+      (p.x - center.x) * (1 + activation * 0.025 * belly);
+    p.z =
+      center.z +
+      (p.z - center.z) * (1 + activation * 0.025 * belly);
+
     rel.copy(p).sub(axisOrigin);
-    axial.copy(axis).multiplyScalar(rel.dot(axis));
-    radial.copy(rel).sub(axial);
-    q.setFromAxisAngle(axis, angleRad * distalWeight);
-    radial.applyQuaternion(q);
-    p.copy(axisOrigin).add(axial).add(radial);
+    q.setFromAxisAngle(axisN, angleRad * attachmentWeight);
+    rel.applyQuaternion(q);
+    p.copy(axisOrigin).add(rel);
     position.setXYZ(i, p.x, p.y, p.z);
   }
 
   position.needsUpdate = true;
-  radius.geometry.computeVertexNormals();
-  radius.geometry.computeBoundingBox();
-  radius.geometry.computeBoundingSphere();
+  mesh.geometry.computeVertexNormals();
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
 }
 
 function motionBoneMeshesByUnit(unitId) {
@@ -4314,26 +4344,28 @@ function buildForearmRotationRig(action, muscleMeshes, boneMeshes) {
   const ulna = boneMeshes.get("ulna") || null;
   if (!humerus || !radius || !ulna) return null;
 
-  const pivot = estimateElbowPivot(humerus, radius, ulna);
-  if (!pivot) return null;
-  captureMotionRestGeometry(radius);
+  const elbowPivot = estimateElbowPivot(humerus, radius, ulna);
+  const axisOrigin =
+    motionMeshEndCentroid(radius, "max", 0.12) || elbowPivot;
+  const axisDistal =
+    motionMeshEndCentroid(ulna, "min", 0.12) ||
+    motionMeshEndCentroid(radius, "min", 0.12);
+  if (!elbowPivot || !axisOrigin || !axisDistal) return null;
+
+  const axis = axisDistal.clone().sub(axisOrigin);
+  if (axis.lengthSq() < 1e-8) axis.set(0, -1, 0);
+  axis.normalize();
+
   const handMeshes = motionBoneMeshesByUnit("hand");
-  const ulnaBox = motionMeshBox(ulna);
-  const radiusBox = motionMeshBox(radius);
-  const axisCenter = ulnaBox.isEmpty()
-    ? radiusBox.getCenter(new THREE.Vector3())
-    : ulnaBox.getCenter(new THREE.Vector3());
-  const axisOrigin = new THREE.Vector3(
-    axisCenter.x,
-    radiusBox.max.y,
-    axisCenter.z
-  );
-  const handRotationPivot = new THREE.Group();
-  handRotationPivot.name = "forearm-hand-rotation-pivot";
-  handRotationPivot.position.copy(axisOrigin);
-  motionModelGroup.add(handRotationPivot);
-  for (const mesh of handMeshes) {
-    reparentMotionMeshAtPivot(mesh, axisOrigin, handRotationPivot);
+  const forearmRotationPivot = new THREE.Group();
+  forearmRotationPivot.name = "forearm-radius-hand-rotation-pivot";
+  forearmRotationPivot.position.copy(axisOrigin);
+  motionModelGroup.add(forearmRotationPivot);
+
+  // Radius is a rigid bone. It and the hand rotate together around the
+  // approximate pronosupination axis from radial head to distal ulna.
+  for (const mesh of [radius, ...handMeshes]) {
+    reparentMotionMeshAtPivot(mesh, axisOrigin, forearmRotationPivot);
   }
   for (const mesh of muscleMeshes) captureMotionRestGeometry(mesh);
 
@@ -4341,13 +4373,16 @@ function buildForearmRotationRig(action, muscleMeshes, boneMeshes) {
     pilotId: "elbow",
     kind: "forearm-rotation",
     action,
-    pivot,
+    pivot: elbowPivot,
+    axisOrigin,
+    axisDistal,
+    axis,
     radius,
     ulna,
-    handRotationPivot,
+    forearmRotationPivot,
     distalFollowerCount: handMeshes.length + 1,
     muscleMeshes,
-    sideSign: Math.sign(pivot.x) || 1,
+    sideSign: Math.sign(axisOrigin.x) || Math.sign(elbowPivot.x) || 1,
     valueDeg: action.startDeg,
   };
 }
@@ -4647,6 +4682,16 @@ function applyElbowMotionValue(angleDeg) {
     motionCanvas.dataset.motionForearmRotation =
       motionRig.forearmPivot.rotation.x.toFixed(6);
   }
+
+  const kinematicSummary = motionStateEl?.querySelector(
+    "#motion-kinematic-summary"
+  );
+  if (kinematicSummary) {
+    kinematicSummary.textContent =
+      `Сейчас: ${Math.round(
+        value
+      )}° сгибания в локте. Предплечье и кисть движутся как единый сегмент вокруг локтевой оси; мышечная деформация служит учебной визуализацией, а не расчётом силы.`;
+  }
 }
 
 function applyForearmRotationValue(angleDeg) {
@@ -4659,33 +4704,29 @@ function applyForearmRotationValue(angleDeg) {
       : motionRig.sideSign;
   const angleRad = THREE.MathUtils.degToRad(value) * sign;
 
-  restoreMotionRestGeometry(motionRig.radius);
-  deformRadiusForForearmRotation(
-    motionRig.radius,
-    motionRig.ulna,
+  motionRig.forearmRotationPivot.quaternion.setFromAxisAngle(
+    motionRig.axis,
     angleRad
   );
-  if (motionRig.handRotationPivot) {
-    motionRig.handRotationPivot.quaternion.setFromAxisAngle(
-      new THREE.Vector3(0, -1, 0),
-      angleRad
-    );
-  }
 
   const activation = motionActionActivation(motionRig.action, value);
+  const rotatingAttachmentUnits = new Set([
+    "pronator-teres",
+    "pronator-quadratus",
+    "supinator",
+    "biceps-long",
+    "biceps-short",
+  ]);
   for (const mesh of motionRig.muscleMeshes) {
     restoreMotionRestGeometry(mesh);
-    if (
-      ["pronator-teres", "pronator-quadratus", "supinator"].includes(
-        mesh.userData.motionUnit
-      )
-    ) {
-      deformHingeMuscle(
+    if (rotatingAttachmentUnits.has(mesh.userData.motionUnit)) {
+      deformForearmRotationMuscle(
         mesh,
-        motionRig.pivot,
-        new THREE.Vector3(0, -1, 0),
-        angleRad * 0.45,
-        activation
+        motionRig.axisOrigin,
+        motionRig.axis,
+        angleRad,
+        activation,
+        motionRig.sideSign
       );
     }
   }
@@ -4693,6 +4734,20 @@ function applyForearmRotationValue(angleDeg) {
 
   if (motionCanvas) {
     motionCanvas.dataset.motionForearmAxialRotation = angleRad.toFixed(6);
+    motionCanvas.dataset.motionForearmAxis = "radial-head>ulnar-head";
+    motionCanvas.dataset.motionRadiusRigid = "true";
+  }
+
+  const kinematicSummary = motionStateEl?.querySelector(
+    "#motion-kinematic-summary"
+  );
+  if (kinematicSummary) {
+    const movement =
+      motionRig.action.direction === "pronation" ? "пронации" : "супинации";
+    kinematicSummary.textContent =
+      `Сейчас: ${Math.round(
+        value
+      )}° ${movement}. Лучевая кость и кисть движутся как жёсткая цепь вокруг приближённой оси от головки лучевой кости к дистальной локтевой кости; локтевая кость в этом изолированном preview остаётся опорной.`;
   }
 }
 
@@ -4741,6 +4796,17 @@ function applyWristMotionValue(angleDeg) {
 
   if (motionCanvas) {
     motionCanvas.dataset.motionWristRotation = angle.toFixed(6);
+    motionCanvas.dataset.motionWristModel = "rigid-hand-block";
+  }
+
+  const kinematicSummary = motionStateEl?.querySelector(
+    "#motion-kinematic-summary"
+  );
+  if (kinematicSummary) {
+    kinematicSummary.textContent =
+      `Сейчас: ${Math.round(
+        value
+      )}°. Кисть движется относительно предплечья как единый блок; тонкие движения отдельных костей запястья в этом preview не моделируются.`;
   }
 }
 

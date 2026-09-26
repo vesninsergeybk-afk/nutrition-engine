@@ -120,6 +120,21 @@ const assert = require('node:assert/strict');
           )
         ) > 0.5
     );
+    assert.equal(
+      await page.locator('#motion-viewer').getAttribute('data-motion-forearm-axis'),
+      'radial-head>ulnar-head',
+      'Forearm rotation must use the radial-head to distal-ulna teaching axis'
+    );
+    assert.equal(
+      await page.locator('#motion-viewer').getAttribute('data-motion-radius-rigid'),
+      'true',
+      'Radius must remain a rigid bone during pronosupination'
+    );
+    assert.match(
+      await page.locator('#motion-state').innerText(),
+      /головк.*луч|локтев.*кост|ось/i,
+      'Forearm rotation UI must explain the anatomical rotation axis'
+    );
     await page.selectOption('#motion-movement', 'elbow-flexion');
   }
 

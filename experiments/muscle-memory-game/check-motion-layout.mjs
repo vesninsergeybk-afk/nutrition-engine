@@ -108,6 +108,17 @@ assert(
 console.log("Motion primary navigation: direct one-click top-level mode");
 
 assert(
+  app.includes('forearm-radius-hand-rotation-pivot') &&
+    app.includes('motionMeshEndCentroid(radius, "max", 0.12)') &&
+    app.includes('motionMeshEndCentroid(ulna, "min", 0.12)') &&
+    app.includes('motionCanvas.dataset.motionRadiusRigid = "true"') &&
+    !app.includes("deformRadiusForForearmRotation"),
+  "Forearm pronosupination must rotate a rigid radius/hand chain around a bone-derived axis"
+);
+
+console.log("Forearm pronosupination: rigid radius + hand around radial-head/ulnar-head axis");
+
+assert(
   app.includes("<strong>Анатомический контекст:</strong>") &&
     app.includes("visualContextNames"),
   "Motion UI does not explain visual-only anatomical context"
