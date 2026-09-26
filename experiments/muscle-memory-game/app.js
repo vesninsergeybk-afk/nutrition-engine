@@ -72,6 +72,13 @@ import {
   classifyFindSelection,
 } from "./learning-navigation.js";
 import {
+  matchMotionMuscleUnit,
+} from "./motion-readiness.js";
+import {
+  createMotionMesh,
+  disposeMotionMesh,
+} from "./motion-three.js";
+import {
   buildTopographyChoices,
   buildTopographyRelations,
   createTopographySession,
@@ -102,6 +109,9 @@ const COVER_RE =
   /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
 
 const canvas = document.querySelector("#viewer");
+const motionCanvas = document.querySelector("#motion-viewer");
+const motionPane = document.querySelector("#motion-pane");
+const motionStateEl = document.querySelector("#motion-state");
 const viewerWrap = document.querySelector(".viewer-wrap");
 const panelEl = document.querySelector(".panel");
 const questionCardEl = document.querySelector(".question-card");
@@ -168,6 +178,7 @@ const focusSelectedButton = document.querySelector("#focus-selected");
 const viewPreset = document.querySelector("#view-preset");
 const modeQuizButton = document.querySelector("#mode-quiz");
 const modeExploreButton = document.querySelector("#mode-explore");
+const modeMotionButton = document.querySelector("#mode-motion");
 const quizActions = document.querySelector("#quiz-actions");
 const exploreControls = document.querySelector("#explore-controls");
 const searchInput = document.querySelector("#structure-search");
@@ -185,7 +196,14 @@ scene.background = new THREE.Color(0xdedbd4);
 const modelGroup = new THREE.Group();
 scene.add(modelGroup);
 
+const motionScene = new THREE.Scene();
+motionScene.background = new THREE.Color(0xdedbd4);
+const motionModelGroup = new THREE.Group();
+motionScene.add(motionModelGroup);
+
 const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 5000);
+const motionCamera = new THREE.PerspectiveCamera(38, 1, 0.01, 5000);
+let motionRenderer = null;
 camera.position.set(0, 0, 4);
 
 const renderer = new THREE.WebGLRenderer({
@@ -222,6 +240,17 @@ scene.add(fill);
 const rim = new THREE.DirectionalLight(0xffffff, 0.5);
 rim.position.set(0, 2, -4);
 scene.add(rim);
+
+motionScene.add(new THREE.HemisphereLight(0xffffff, 0x777777, 1.35));
+const motionKey = new THREE.DirectionalLight(0xffffff, 2.45);
+motionKey.position.set(3, 5, 4);
+motionScene.add(motionKey);
+const motionFill = new THREE.DirectionalLight(0xffffff, 0.62);
+motionFill.position.set(-4, 1, -3);
+motionScene.add(motionFill);
+const motionRim = new THREE.DirectionalLight(0xffffff, 0.5);
+motionRim.position.set(0, 2, -4);
+motionScene.add(motionRim);
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
@@ -269,7 +298,7 @@ let selectedExploreSid = null;
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
 
 function syncQuestionCardPlacement() {
-  const shouldDock = mobileTaskMedia.matches;
+  const shouldDock = mobileTaskMedia.matches && appMode !== "motion";
 
   if (shouldDock) {
     if (questionCardEl.parentElement !== viewerWrap) viewerWrap.appendChild(questionCardEl);
@@ -2559,8 +2588,9 @@ function resetLearningSessionUi(message = "Выберите режим и нач
 }
 
 function applyLearningRegion() {
-  if (appMode === "explore") {
+  if (appMode === "explore" || appMode === "motion") {
     clearDeeperStructures();
+    if (appMode === "motion") clearMotionPreview();
     restoreStudyHighlight();
     restoreHighlights();
     selectedStudyId = null;
@@ -3591,6 +3621,11 @@ function selectExploreStructure(sid, hitStack = null) {
   isolated = keepIsolation;
   highlightStructures([sid], "selected");
 
+  if (appMode === "motion") {
+    prepareMotionComparison(sid);
+    return;
+  }
+
   questionLabelEl.textContent = "Мышца";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
@@ -3653,8 +3688,182 @@ function selectStudyStructure(studyId) {
   updateLayerButtons();
 }
 
+function ensureMotionRenderer() {
+  if (motionRenderer || !motionCanvas) return motionRenderer;
+
+  motionRenderer = new THREE.WebGLRenderer({
+    canvas: motionCanvas,
+    antialias: true,
+    powerPreference: "high-performance",
+  });
+  motionRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  motionRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  return motionRenderer;
+}
+
+function clearMotionPreview() {
+  for (const child of [...motionModelGroup.children]) {
+    motionModelGroup.remove(child);
+    disposeMotionMesh(child);
+  }
+  if (motionCanvas) {
+    motionCanvas.dataset.motionMuscles = "";
+    motionCanvas.dataset.motionBones = "";
+    motionCanvas.dataset.motionUnits = "";
+    motionCanvas.dataset.motionState = "empty";
+  }
+}
+
+function motionMuscleMaterial() {
+  return new THREE.MeshStandardMaterial({
+    vertexColors: true,
+    roughness: 0.52,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+}
+
+function motionBoneMaterial() {
+  return new THREE.MeshStandardMaterial({
+    color: 0xe7d8b7,
+    roughness: 0.72,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+}
+
+function syncMotionCamera() {
+  if (!motionCanvas || motionPane?.hidden) return;
+
+  motionCamera.position.copy(camera.position);
+  motionCamera.quaternion.copy(camera.quaternion);
+  motionCamera.up.copy(camera.up);
+  motionCamera.fov = camera.fov;
+  motionCamera.near = camera.near;
+  motionCamera.far = camera.far;
+  motionCamera.zoom = camera.zoom;
+
+  const width = motionCanvas.clientWidth;
+  const height = motionCanvas.clientHeight;
+  if (width > 0 && height > 0) {
+    motionCamera.aspect = width / height;
+  }
+  motionCamera.updateProjectionMatrix();
+}
+
+function resizeMotionViewer() {
+  if (!motionRenderer || !motionCanvas || motionPane?.hidden) return;
+  const width = motionCanvas.clientWidth;
+  const height = motionCanvas.clientHeight;
+  if (!width || !height) return;
+
+  const pixelRatio = motionRenderer.getPixelRatio();
+  if (
+    motionCanvas.width !== Math.floor(width * pixelRatio) ||
+    motionCanvas.height !== Math.floor(height * pixelRatio)
+  ) {
+    motionRenderer.setSize(width, height, false);
+  }
+}
+
+function buildMotionPreview(muscleIds) {
+  clearMotionPreview();
+  if (!anatomyMesh || !muscleIds?.length) return;
+
+  ensureMotionRenderer();
+
+  motionModelGroup.position.copy(modelGroup.position);
+  motionModelGroup.quaternion.copy(modelGroup.quaternion);
+  motionModelGroup.scale.copy(modelGroup.scale);
+
+  const units = new Set();
+  let muscleCount = 0;
+  for (const sid of muscleIds) {
+    const range = structureRanges[sid];
+    if (!range) continue;
+
+    const mesh = createMotionMesh(anatomyMesh, range, {
+      material: motionMuscleMaterial(),
+      name: displayStructureName(sid),
+      kind: "muscle",
+    });
+    mesh.userData.sourceSid = sid;
+    motionModelGroup.add(mesh);
+    muscleCount += 1;
+
+    const unit = matchMotionMuscleUnit(structureNames[sid]);
+    if (unit) units.add(unit.id);
+  }
+
+  let boneCount = 0;
+  if (skeletonMesh) {
+    for (let boneId = 0; boneId < boneVisibility.length; boneId += 1) {
+      if (!boneVisibility[boneId] || !boneRanges[boneId]) continue;
+      const mesh = createMotionMesh(skeletonMesh, boneRanges[boneId], {
+        material: motionBoneMaterial(),
+        name: boneNames[boneId] || "Кость",
+        kind: "bone",
+      });
+      mesh.userData.sourceBoneId = boneId;
+      motionModelGroup.add(mesh);
+      boneCount += 1;
+    }
+  }
+
+  motionCanvas.dataset.motionMuscles = String(muscleCount);
+  motionCanvas.dataset.motionBones = String(boneCount);
+  motionCanvas.dataset.motionUnits = [...units].join(",");
+  motionCanvas.dataset.motionState = "rest-pose";
+
+  if (motionStateEl) {
+    const selectedName =
+      muscleIds.length === 1
+        ? displayStructureName(muscleIds[0])
+        : displayStructureName(muscleIds[0]).replace(/\s*\((?:справа|слева)\)\s*$/u, "");
+    motionStateEl.replaceChildren();
+
+    const strong = document.createElement("strong");
+    strong.textContent = selectedName;
+    const span = document.createElement("span");
+    span.textContent = units.size
+      ? "Исходное положение. Мышца сопоставлена с Motion-моделью; движение подключится после калибровки атласа к MyoSim."
+      : "Исходное положение. Для этой мышцы Motion-сопоставление ещё не подготовлено.";
+    motionStateEl.append(strong, span);
+  }
+}
+
+function prepareMotionComparison(sid) {
+  if (appMode !== "motion" || sid == null || !anatomyMesh) return;
+
+  clearDeeperStructures();
+  const target = learningTargetBySid.get(sid) || null;
+  const muscleIds = targetSideStructureIds(target, sid);
+  const ids = muscleIds.length ? muscleIds : [sid];
+
+  setVisibleStructures(ids);
+  focusedStructureIds = [...ids];
+  showSelectedMuscleBoneContext(ids);
+  isolated = true;
+  focusSelectedStructures(1.62);
+  buildMotionPreview(ids);
+
+  questionLabelEl.textContent = "Движение";
+  questionEl.textContent = displayStructureName(sid);
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    "Слева — статический анатомический эталон. Справа — отдельная Motion-сцена в том же ракурсе. Пока показано исходное положение; физическое движение будет добавлено после калибровки MyoSim.";
+  updateLayerButtons();
+}
+
 function setMode(mode) {
-  if (mode !== "quiz" && mode !== "explore") return;
+  if (!["quiz", "explore", "motion"].includes(mode)) return;
+
+  const previousMode = appMode;
+  const preservedSid =
+    (mode === "explore" || mode === "motion") &&
+    (previousMode === "explore" || previousMode === "motion")
+      ? selectedExploreSid
+      : null;
 
   appMode = mode;
   clearDeeperStructures();
@@ -3671,23 +3880,30 @@ function setMode(mode) {
 
   modeQuizButton.classList.toggle("active", mode === "quiz");
   modeExploreButton.classList.toggle("active", mode === "explore");
+  modeMotionButton.classList.toggle("active", mode === "motion");
   modeQuizButton.setAttribute("aria-pressed", String(mode === "quiz"));
   modeExploreButton.setAttribute("aria-pressed", String(mode === "explore"));
+  modeMotionButton.setAttribute("aria-pressed", String(mode === "motion"));
 
   quizActions.hidden = mode !== "quiz";
-  exploreControls.hidden = mode !== "explore";
+  exploreControls.hidden = mode === "quiz";
   scopeControls.hidden = false;
   learningControls.hidden = mode !== "quiz";
   learningSummaryEl.hidden = mode !== "quiz";
   sessionProgressEl.hidden = mode !== "quiz" || !learningSession;
   scoreEl.hidden = true;
+
   document.body.classList.toggle("explore-mode", mode === "explore");
+  document.body.classList.toggle("motion-mode", mode === "motion");
+  if (motionPane) motionPane.hidden = mode !== "motion";
+
   updateTodayAction();
   renderProgressPanel();
   if (mode !== "quiz") document.body.classList.remove("session-active");
   syncQuestionCardPlacement();
 
   if (mode === "quiz") {
+    clearMotionPreview();
     if (learningSession && !sessionSummaryShown) {
       document.body.classList.add("session-active");
       syncQuestionCardPlacement();
@@ -3695,7 +3911,8 @@ function setMode(mode) {
     } else {
       resetLearningSessionUi();
     }
-  } else {
+  } else if (mode === "explore") {
+    clearMotionPreview();
     locked = true;
     restoreDisplayAfterTraining();
     questionLabelEl.textContent = "Атлас";
@@ -3703,12 +3920,39 @@ function setMode(mode) {
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
       "Коснитесь мышцы, связки, сухожилия, фасциальной структуры или наружного слоя. Здесь можно свободно изучать их взаимное расположение.";
+
+    if (preservedSid != null && structureNames[preservedSid]) {
+      selectExploreStructure(preservedSid);
+      focusSelectedStructures();
+    }
+    searchInput.focus({ preventScroll: true });
+  } else {
+    locked = true;
+    restoreDisplayAfterTraining();
+    ensureMotionRenderer();
+    questionLabelEl.textContent = "Движение";
+    questionEl.textContent = "Выберите мышцу";
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent =
+      "Motion сравнивает статическую анатомию слева и отдельную сцену движения справа. Выберите мышцу на модели или через поиск.";
+
+    if (motionStateEl) {
+      motionStateEl.innerHTML =
+        "<strong>Выберите мышцу</strong><span>Справа появится её исходное положение с костными ориентирами.</span>";
+    }
+    if (preservedSid != null && structureNames[preservedSid]) {
+      selectedExploreSid = preservedSid;
+      focusedStructureIds = [preservedSid];
+      highlightStructures([preservedSid], "selected");
+      prepareMotionComparison(preservedSid);
+    } else {
+      clearMotionPreview();
+    }
     searchInput.focus({ preventScroll: true });
   }
 
   notifyEmbedHeight();
 }
-
 function ensureStudyLayerShown(entry) {
   if (!entry) return;
 
@@ -4317,6 +4561,7 @@ function applyInitialQueryState() {
   }
 
   if (params.get("mode") === "explore") setMode("explore");
+  if (params.get("mode") === "motion") setMode("motion");
 
   if (requestedArea && requestedArea !== "all") {
     focusLearningRegion();
@@ -4348,6 +4593,7 @@ function disposeMaterial(material) {
 }
 
 function resetLoadedModel() {
+  clearMotionPreview();
   regionalClipPlanes = [];
   regionalClipBounds = null;
   canvas.dataset.specimenClip = "";
@@ -5598,6 +5844,7 @@ focusSelectedButton.addEventListener("click", focusSelectedStructures);
 viewPreset.addEventListener("change", () => setViewPreset(viewPreset.value));
 modeQuizButton.addEventListener("click", () => setMode("quiz"));
 modeExploreButton.addEventListener("click", () => setMode("explore"));
+modeMotionButton.addEventListener("click", () => setMode("motion"));
 nextButton.addEventListener("click", nextSessionStep);
 answerButton.addEventListener("click", revealAnswer);
 revealDeeperButton.addEventListener("click", revealDeeperAfterMistake);
@@ -5693,6 +5940,13 @@ function animate() {
   resize();
   controls.update();
   renderer.render(scene, camera);
+
+  if (appMode === "motion" && motionRenderer && !motionPane?.hidden) {
+    resizeMotionViewer();
+    syncMotionCamera();
+    motionRenderer.render(motionScene, motionCamera);
+  }
+
   requestAnimationFrame(animate);
 }
 

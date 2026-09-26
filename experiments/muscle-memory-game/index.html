@@ -27,6 +27,7 @@
           <div class="mode-switch" role="group" aria-label="Режим работы">
             <button id="mode-quiz" type="button" class="active" aria-pressed="true">Тренировка</button>
             <button id="mode-explore" type="button" aria-pressed="false">Атлас</button>
+            <button id="mode-motion" type="button" aria-pressed="false">Движение</button>
           </div>
 
           <div id="score" class="score" aria-live="polite" hidden>
@@ -37,7 +38,18 @@
       </div>
 
       <div class="viewer-wrap">
-        <canvas id="viewer" aria-label="Интерактивная трёхмерная модель мышц" tabindex="0"></canvas>
+        <div id="static-pane" class="comparison-pane comparison-pane-static">
+          <canvas id="viewer" aria-label="Интерактивная трёхмерная модель мышц" tabindex="0"></canvas>
+          <div class="comparison-pane-label motion-only-label">Анатомия</div>
+        </div>
+        <div id="motion-pane" class="comparison-pane comparison-pane-motion" hidden>
+          <canvas id="motion-viewer" aria-label="Сравнительная модель движения"></canvas>
+          <div class="comparison-pane-label">Движение</div>
+          <div id="motion-state" class="motion-state" aria-live="polite">
+            <strong>Выберите мышцу</strong>
+            <span>Справа появится её исходное положение с костными ориентирами.</span>
+          </div>
+        </div>
         <div id="loading" class="loading">Загружаю мышечную модель…</div>
 
         <div class="viewer-tools" aria-label="Управление моделью">
