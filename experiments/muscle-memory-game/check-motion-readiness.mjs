@@ -133,6 +133,6 @@ assert(
   "Motion geometry descriptor contract is broken"
 );
 
-console.log("Motion readiness: elbow and shoulder visual units available in both anatomy sources");
+console.log("Motion readiness: elbow, wrist, and shoulder visual units available in both anatomy sources");
 console.log("Motion readiness: MyoSim actuator mapping present");
 console.log("Motion readiness: merged-atlas geometry can be split into standalone motion units");
