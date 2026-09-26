@@ -63,6 +63,22 @@ const assert = require('node:assert/strict');
       'opensim-model-scale-factors'
     );
 
+    // The demo may have already advanced while the assertions above were
+    // crossing the browser boundary. Restart it explicitly so this checkpoint
+    // measures one deterministic playback cycle rather than racing autoplay.
+    await page.click('#motion-replay');
+    await page.waitForFunction(
+      () => {
+        const viewer = document.querySelector('#motion-viewer');
+        return (
+          viewer?.dataset.motionState === 'source-native-motion-playing' &&
+          Number(viewer?.dataset.motionNativeProgress || 1) < 0.05
+        );
+      },
+      null,
+      { timeout: 1500 }
+    );
+
     const qStart = await canvas.getAttribute(
       'data-motion-native-humerus-quaternion'
     );
