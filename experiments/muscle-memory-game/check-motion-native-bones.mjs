@@ -12,6 +12,10 @@ function assert(condition, message) {
 const profile = MOTION_VISUAL_ASSETS["tsm-native-bones"];
 assert(profile?.revision, "TSM native geometry must be pinned to a revision");
 assert(
+  profile.delivery === "project-local",
+  "TSM native geometry must be served from project-local assets"
+);
+assert(
   MOTION_VISUAL_POLICY.shoulder.target.bones === profile.id &&
     MOTION_VISUAL_POLICY.scapula.target.bones === profile.id,
   "Shoulder/scapula target policy must use TSM-native bones"
@@ -28,21 +32,9 @@ const expected = {
   humerus: [309, 588],
 };
 
-function rawUrl(path) {
-  return (
-    "https://raw.githubusercontent.com/" +
-    profile.repository +
-    "/" +
-    profile.revision +
-    "/" +
-    path.split("/").map(encodeURIComponent).join("/")
-  );
-}
-
 for (const [boneId, [points, polygons]] of Object.entries(expected)) {
-  const response = await fetch(rawUrl(profile.assets[boneId]));
-  assert(response.ok, "Could not fetch pinned native bone: " + boneId);
-  const parsed = parseAsciiVtpPolyData(await response.text());
+  const localUrl = new URL(profile.assets[boneId], import.meta.url);
+  const parsed = parseAsciiVtpPolyData(await readFile(localUrl, "utf8"));
   assert(
     parsed.pointCount === points,
     boneId + ": unexpected VTP point count"

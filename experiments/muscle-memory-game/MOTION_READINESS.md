@@ -474,3 +474,10 @@ The user-visible Motion path previously mutated/isolate the static atlas before 
 Motion scene construction now happens first. Static atlas isolation is applied only after an executable rig (or an explicitly loading/ready source-native scene) exists. Otherwise the atlas remains intact and the UI states that movement is not ready.
 
 The mobile Motion checkpoint now verifies actual functionality rather than layout alone: bone context must be present, Play must set the playing state, and the motion angle must change within the checkpoint.
+
+
+## Localized TSM runtime geometry — 2026-09-26
+
+The independent shoulder Motion Lab now loads its four required source-native bones from project-local assets under `assets/motion/tsm/geometry/` instead of `raw.githubusercontent.com`. Upstream repository, pinned revision, original paths/blob IDs, citation and CC BY 4.0 data/model notice are preserved alongside the files.
+
+This is intentionally limited to runtime assets. The full upstream OpenSim model remains a pinned build source for regenerating biomechanics clips and muscle paths, not a browser dependency.

@@ -9,28 +9,13 @@ const DEFAULT_TSM_BONES = Object.freeze([
   "humerus",
 ]);
 
-function rawGitHubUrl(profile, path) {
-  const encodedPath = String(path)
-    .split("/")
-    .map(encodeURIComponent)
-    .join("/");
-  return (
-    "https://raw.githubusercontent.com/" +
-    profile.repository +
-    "/" +
-    profile.revision +
-    "/" +
-    encodedPath
-  );
-}
-
 export function tsmNativeBoneUrl(boneId) {
   const profile = MOTION_VISUAL_ASSETS["tsm-native-bones"];
   const path = profile?.assets?.[boneId];
   if (!profile || !path) {
     throw new Error("Unknown TSM native bone asset: " + boneId);
   }
-  return rawGitHubUrl(profile, path);
+  return new URL(path, import.meta.url).toString();
 }
 
 export async function loadTsmNativeBoneGeometries({

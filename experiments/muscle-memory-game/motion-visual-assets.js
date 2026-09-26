@@ -26,16 +26,21 @@ export const MOTION_VISUAL_ASSETS = Object.freeze({
     repository: "ComputationalBiomechanicsLab/rmr-solver",
     revision: TSM_REVISION,
     format: "vtp",
+    delivery: "project-local",
     assets: Object.freeze({
+      thorax: "./assets/motion/tsm/geometry/thorax.vtp",
+      clavicle: "./assets/motion/tsm/geometry/clavicle.vtp",
+      scapula: "./assets/motion/tsm/geometry/scapula.vtp",
+      humerus: "./assets/motion/tsm/geometry/humerus.vtp",
+    }),
+    upstreamAssets: Object.freeze({
       thorax: "OpenSim Models/for CMC/Geometry/thorax.vtp",
       clavicle: "OpenSim Models/for CMC/Geometry/clavicle.vtp",
       scapula: "OpenSim Models/for CMC/Geometry/scapula.vtp",
       humerus: "OpenSim Models/for CMC/Geometry/humerus.vtp",
-      radius: "OpenSim Models/for CMC/Geometry/radius.vtp",
-      ulna: "OpenSim Models/for CMC/Geometry/ulna.vtp",
     }),
     note:
-      "These meshes belong to the same Thoracoscapular/OpenSim model that supplies the shoulder motion clips, so no static-atlas registration is required for their own motion.",
+      "Project-local copies of the pinned Thoracoscapular/OpenSim meshes. They belong to the same biomechanics model that supplies the shoulder motion clips, so no static-atlas registration is required for their own motion.",
   }),
 
   "myoarm-native-bones": profile({
