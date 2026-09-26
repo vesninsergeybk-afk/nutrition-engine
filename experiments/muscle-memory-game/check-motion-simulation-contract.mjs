@@ -80,18 +80,15 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
   );
 }
 
-assert(
-  !registrationReady("z-anatomy", "elbow") &&
-    !registrationReady("bodyparts4", "elbow") &&
-    !registrationReady("z-anatomy", "shoulder") &&
-    !registrationReady("bodyparts4", "shoulder"),
-  "Uncalibrated atlas-to-MyoSim registration must not be reported as verified"
-);
-
 for (const source of ["z-anatomy", "bodyparts4"]) {
-  for (const pilotId of ["elbow", "shoulder"]) {
+  for (const pilotId of Object.keys(MOTION_REGISTRATION_SPECS)) {
     assert(
-      MOTION_CALIBRATION[source][pilotId].status === "pending-landmark-calibration",
+      !registrationReady(source, pilotId),
+      source + "/" + pilotId + ": uncalibrated registration must not be reported as verified"
+    );
+    assert(
+      MOTION_CALIBRATION[source][pilotId]?.status ===
+        "pending-landmark-calibration",
       source + "/" + pilotId + ": calibration state must remain explicit"
     );
   }
