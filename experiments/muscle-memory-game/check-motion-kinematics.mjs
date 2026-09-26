@@ -88,15 +88,16 @@ for (const movementId of [
   );
 }
 assert(
-  SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg === 90 &&
-    SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg === 160 &&
-    SHOULDER_PREVIEW_LIMITS.abduction.previewMaxDeg === 90 &&
+  SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg === 160 &&
+    SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg === 180 &&
+    SHOULDER_PREVIEW_LIMITS.abduction.previewMaxDeg === 150 &&
     SHOULDER_PREVIEW_LIMITS.abduction.referenceMaxDeg === 150 &&
+    SHOULDER_PREVIEW_LIMITS.scaption.previewMaxDeg === 150 &&
     SHOULDER_PREVIEW_LIMITS.horizontalAdduction.previewMaxDeg === 60 &&
     SHOULDER_PREVIEW_LIMITS.horizontalAdduction.referenceMaxDeg === 120 &&
     SHOULDER_PREVIEW_LIMITS.horizontalAbduction.previewMaxDeg === 30 &&
     SHOULDER_PREVIEW_LIMITS.horizontalAbduction.referenceMaxDeg === 45,
-  "Shoulder preview ranges must remain distinct from broader clinical references"
+  "Shoulder-complex preview ranges must preserve combined elevation and separate clinical references"
 );
 const abductionAction = deltoidActions.find(
   (item) => item.movementId === "shoulder-abduction"
@@ -104,10 +105,12 @@ const abductionAction = deltoidActions.find(
 assert(
   abductionAction.synergists.includes("deltoid-acromial") &&
     abductionAction.synergists.includes("supraspinatus") &&
+    abductionAction.scapularDrivers.includes("trapezius") &&
+    abductionAction.scapularDrivers.includes("serratus-anterior") &&
     abductionAction.stabilizers.includes("infraspinatus") &&
     abductionAction.stabilizers.includes("subscapularis") &&
     abductionAction.stabilizers.includes("teres-minor"),
-  "Shoulder abduction must distinguish movers from rotator-cuff stabilizing context"
+  "Shoulder abduction must separate humeral movers, scapular drivers, and cuff stabilizers"
 );
 
 
