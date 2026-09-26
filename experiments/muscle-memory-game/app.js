@@ -4777,7 +4777,7 @@ function renderMotionControls(
   if (action.referenceMaxDeg > action.maxDeg) {
     const limitation =
       action.pilotId === "shoulder"
-        ? "выше нужна проверенная кинематика лопатки и ключицы"
+        ? "показан только гленогумеральный компонент; для полного движения во всём диапазоне нужна проверенная кинематика лопатки и ключицы"
         : action.pilotId === "wrist"
           ? "исполняемый диапазон пока ограничен текущей регистрацией запястья"
           : "исполняемый диапазон пока ограничен текущей регистрацией модели";
@@ -4985,6 +4985,8 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   if (motionRig) {
     motionCanvas.dataset.motionPilot = motionRig.pilotId;
     motionCanvas.dataset.motionAuthority = action.authority;
+    motionCanvas.dataset.motionScope =
+      action.pilotId === "shoulder" ? "glenohumeral-preview" : action.pilotId;
     motionCanvas.dataset.motionReferenceMax = String(action.referenceMaxDeg);
     motionCanvas.dataset.motionPreviewMax = String(action.maxDeg);
     motionCanvas.dataset.motionReferencePose = action.referencePose || "rest";
