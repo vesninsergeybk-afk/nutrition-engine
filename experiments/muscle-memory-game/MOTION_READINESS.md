@@ -499,3 +499,17 @@ No new adduction biomechanics were invented. The runtime loads the verified loca
 The source phase spans approximately 96.95° -> 22.52° on the recorded `shoulder_elv` coordinate when reversed. The Motion Lab does not extrapolate the trajectory from ~22.5° to 0°. Source-native TSM geometry is used directly, with the OpenSim mesh scale factors baked into the VTP geometry before clip poses are applied.
 
 This checkpoint still renders bones only. Volumetric adductor muscles remain a later visual layer.
+
+
+## MyoArm elbow source-path checkpoint — 2026-09-27
+
+The old atlas-derived biceps deformation visible in the current UI is not a production path. A dedicated exporter now evaluates the pinned `MyoHub/myo_sim` MyoArm model directly with MuJoCo.
+
+For the `elbow_flexion_r` source range it records:
+- rigid-body world transforms for `humerus_r`, `ulna_r`, and `radius_r`;
+- MuJoCo-computed spatial-tendon wrapping paths for `BIClong_tendon` and `BICshort_tendon`;
+- tendon length at every sampled elbow angle.
+
+The muscle path is therefore sourced from MuJoCo after `mj_forward`, including its tendon-site and wrapping solution. Browser code does not invent or hand-tune a biceps curve.
+
+This checkpoint intentionally does not change the visible Motion Lab yet. The next checkpoint may replace the biceps/elbow atlas-derived fallback only after this exported source layer passes validation.

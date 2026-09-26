@@ -1,0 +1,49 @@
+name: Export MyoArm elbow checkpoint
+
+on:
+  push:
+    branches:
+      - feature/muscle-memory-mvp
+    paths:
+      - experiments/muscle-memory-game/export-myoarm-elbow.py
+      - experiments/muscle-memory-game/check-myoarm-elbow-file.mjs
+      - .github/workflows/export-myoarm-elbow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  elbow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pinned MyoSim source
+        run: |
+          python -m pip install --disable-pip-version-check             "git+https://github.com/MyoHub/myo_sim.git@93b0ca8f4ec90c9899ee7f05fee561e9911da91b"
+
+      - name: Export source-derived elbow and biceps paths
+        run: |
+          python experiments/muscle-memory-game/export-myoarm-elbow.py             --output /tmp/myoarm-elbow-flexion.json             --frames 121
+
+      - name: Validate elbow checkpoint
+        run: |
+          node experiments/muscle-memory-game/check-myoarm-elbow-file.mjs             /tmp/myoarm-elbow-flexion.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: myoarm-elbow-flexion
+          path: /tmp/myoarm-elbow-flexion.json
+          if-no-files-found: error
+          retention-days: 30
