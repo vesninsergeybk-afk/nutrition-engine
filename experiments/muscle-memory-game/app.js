@@ -3803,6 +3803,11 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionGeometryTargetMuscles = "";
     motionCanvas.dataset.motionGeometryRuntimeBones = "";
     motionCanvas.dataset.motionNativeBoneIds = "";
+    motionCanvas.dataset.motionReferenceClip = "";
+    motionCanvas.dataset.motionReferenceProgress = "";
+    motionCanvas.dataset.motionSourceRangeStart = "";
+    motionCanvas.dataset.motionSourceRangeEnd = "";
+    motionCanvas.dataset.motionSourceCoordinate = "";
   }
 }
 
@@ -3826,19 +3831,13 @@ function fitIndependentMotionCamera(box) {
   motionCamera.updateProjectionMatrix();
 }
 
-function applyTsmNativePose(playback, progress) {
-  if (!playback?.loaded || !playback?.meshes) return;
-  const frame = sampleTsmNativeMotion(playback.loaded, progress);
-
+function applyTsmNativeFrame(meshes, frame) {
+  if (!meshes || !frame?.bodies) return;
   for (const bodyId of ["clavicle", "scapula", "humerus"]) {
-    const mesh = playback.meshes.get(bodyId);
+    const mesh = meshes.get(bodyId);
     const pose = frame.bodies?.[bodyId];
     if (!mesh || !pose) continue;
-    mesh.position.set(
-      pose.position[0],
-      pose.position[1],
-      pose.position[2]
-    );
+    mesh.position.set(pose.position[0], pose.position[1], pose.position[2]);
     // Motion clips store SimTK quaternions as [w,x,y,z].
     mesh.quaternion.set(
       pose.quaternion[1],
@@ -3847,6 +3846,18 @@ function applyTsmNativePose(playback, progress) {
       pose.quaternion[0]
     );
   }
+}
+
+function fitTsmNativeAssembledScene() {
+  fitIndependentMotionCamera(
+    new THREE.Box3().setFromObject(motionModelGroup)
+  );
+}
+
+function applyTsmNativePose(playback, progress) {
+  if (!playback?.loaded || !playback?.meshes) return;
+  const frame = sampleTsmNativeMotion(playback.loaded, progress);
+  applyTsmNativeFrame(playback.meshes, frame);
 
   playback.progress = progress;
   if (motionCanvas) {
@@ -3867,19 +3878,17 @@ function renderTsmNativeAdductionControls(selectedName, playback) {
   const description = document.createElement("span");
   const range = tsmNativeMotionSourceRange(playback.loaded);
   description.textContent =
-    "Приведение показано как обратное воспроизведение проверенной CMC-траектории отведения: ключица, лопатка и плечевая кость движутся согласованно. Это source-derived кинематический участок, а не отдельный эксперимент активного приведения.";
+    "Сведение плеча: рука движется к туловищу, а ключица, лопатка и плечевая кость перемещаются согласованно.";
 
   const sourceNote = document.createElement("small");
   sourceNote.className = "motion-range-note";
   sourceNote.textContent = range
-    ? "Покрытый источником участок: " +
-      range.start.toFixed(1) +
-      "° → " +
-      range.end.toFixed(1) +
-      "° по координате " +
-      range.coordinate +
-      ". До 0° траектория не достраивается вручную."
-    : "Диапазон определяется исходным CMC-клипом.";
+    ? "Показан проверенный участок примерно от " +
+      Math.round(range.start) +
+      "° до " +
+      Math.round(range.end) +
+      "°. Недостающий крайний участок до полного приведения мы не достраиваем искусственно."
+    : "Показан только подтверждённый биомеханическим источником участок движения.";
 
   const controls = document.createElement("div");
   controls.className = "motion-controls";
@@ -3901,7 +3910,7 @@ function renderTsmNativeAdductionControls(selectedName, playback) {
   const reset = document.createElement("button");
   reset.type = "button";
   reset.id = "motion-native-reset";
-  reset.textContent = "Исходное";
+  reset.textContent = "В начало";
   reset.addEventListener("click", () => {
     playback.playing = false;
     playback.progress = 0;
@@ -3964,7 +3973,6 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       return;
     }
 
-    const box = new THREE.Box3();
     const ids = [];
     const nativeMeshes = new Map();
     for (const boneId of defaultTsmNativeBoneIds()) {
@@ -3976,42 +3984,47 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       mesh.userData.motionGeometrySource = "tsm-native-bones";
       motionModelGroup.add(mesh);
       nativeMeshes.set(boneId, mesh);
-      box.expandByObject(mesh);
       ids.push(boneId);
     }
 
-    fitIndependentMotionCamera(box);
-
     const supportsAdduction =
       action?.movementId === "shoulder-adduction";
+    const referenceLoaded = await loadTsmNativeMotionClip(
+      "shoulder-adduction"
+    );
+    if (
+      generation !== motionNativeLoadGeneration ||
+      appMode !== "motion"
+    ) {
+      return;
+    }
+
     if (supportsAdduction) {
-      const loaded = await loadTsmNativeMotionClip("shoulder-adduction");
-      if (
-        generation !== motionNativeLoadGeneration ||
-        appMode !== "motion"
-      ) {
-        return;
-      }
       motionNativePlayback = {
         kind: "tsm-source-clip",
         movementId: "shoulder-adduction",
-        loaded,
+        loaded: referenceLoaded,
         meshes: nativeMeshes,
         playing: false,
         startTime: 0,
         progress: 0,
       };
       applyTsmNativePose(motionNativePlayback, 0);
+      fitTsmNativeAssembledScene();
       renderTsmNativeAdductionControls(
         selectedName,
         motionNativePlayback
       );
+    } else {
+      const referenceFrame = sampleTsmNativeMotion(referenceLoaded, 1);
+      applyTsmNativeFrame(nativeMeshes, referenceFrame);
+      fitTsmNativeAssembledScene();
     }
 
     if (motionCanvas) {
       motionCanvas.dataset.motionState = supportsAdduction
         ? "source-native-adduction-ready"
-        : "source-native-rest-pose";
+        : "source-native-reference-pose";
       motionCanvas.dataset.motionPilot = action?.pilotId || "";
       motionCanvas.dataset.motionAuthority = supportsAdduction
         ? "source-derived-clip"
@@ -4020,12 +4033,31 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       motionCanvas.dataset.motionNativeBoneIds = ids.join(",");
       motionCanvas.dataset.motionBones = String(ids.length);
       motionCanvas.dataset.motionMuscles = "0";
-      motionCanvas.dataset.motionSourceClip = supportsAdduction
-        ? "tsm-abduction-teaching-01"
-        : "";
-      motionCanvas.dataset.motionSourcePlaybackDirection = supportsAdduction
-        ? "reverse"
-        : "";
+      const loadedForTelemetry =
+        motionNativePlayback?.loaded || referenceLoaded;
+      const sourceRange = tsmNativeMotionSourceRange(loadedForTelemetry);
+      motionCanvas.dataset.motionSourceClip =
+        loadedForTelemetry?.clip?.id || "";
+      motionCanvas.dataset.motionSourcePlaybackDirection =
+        supportsAdduction
+          ? loadedForTelemetry?.spec?.playbackDirection || ""
+          : "";
+      motionCanvas.dataset.motionReferenceClip =
+        referenceLoaded?.clip?.id || "";
+      motionCanvas.dataset.motionReferenceProgress =
+        supportsAdduction ? "0" : "1";
+      motionCanvas.dataset.motionSourceRangeStart =
+        supportsAdduction && sourceRange
+          ? sourceRange.start.toFixed(3)
+          : "";
+      motionCanvas.dataset.motionSourceRangeEnd =
+        supportsAdduction && sourceRange
+          ? sourceRange.end.toFixed(3)
+          : "";
+      motionCanvas.dataset.motionSourceCoordinate =
+        supportsAdduction && sourceRange
+          ? sourceRange.coordinate
+          : "";
     }
     if (motionStateEl && !supportsAdduction) {
       motionStateEl.replaceChildren();
@@ -4033,7 +4065,7 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       strong.textContent = selectedName || "Плечевой комплекс";
       const span = document.createElement("span");
       span.textContent =
-        "Source-native TSM: грудная клетка, ключица, лопатка и плечевая кость загружены как самостоятельная Motion Lab-сцена. Регистрация со статическим атласом не применялась; движение в этом диагностическом проходе ещё не подключено.";
+        "Самостоятельная модель движения собрана в проверенной биомеханической опорной позе. Она не использует геометрию статического атласа; анимация для выбранного действия пока не подключена.";
       motionStateEl.append(strong, span);
     }
   } catch (error) {

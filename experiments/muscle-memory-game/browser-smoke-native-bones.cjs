@@ -36,7 +36,7 @@ const assert = require('node:assert/strict');
     await page.waitForFunction(
       () =>
         document.querySelector('#motion-viewer')?.dataset.motionState ===
-          'source-native-rest-pose',
+          'source-native-reference-pose',
       null,
       { timeout: 30000 }
     );
@@ -59,7 +59,15 @@ const assert = require('node:assert/strict');
     assert.equal(await page.locator('#motion-angle').count(), 0);
     assert.match(
       await page.locator('#motion-state').innerText(),
-      /Source-native TSM|статическ.*атлас/i
+      /опорн.*поз|не использует геометр.*атлас/i
+    );
+    assert.equal(
+      await canvas.getAttribute('data-motion-reference-clip'),
+      'tsm-abduction-teaching-01'
+    );
+    assert.equal(
+      await canvas.getAttribute('data-motion-reference-progress'),
+      '1'
     );
 
     if (errors.length) {
@@ -119,7 +127,23 @@ const assert = require('node:assert/strict');
     );
     assert.match(
       await adductionPage.locator('#motion-state').innerText(),
-      /96\.9|22\.5|обратн.*CMC|source-derived/i
+      /Сведение плеча|движется к туловищу/i
+    );
+    assert.match(
+      await adductionPage.locator('#motion-state').innerText(),
+      /примерно от 97° до 23°|проверенн.*участок/i
+    );
+    assert.equal(
+      await adductionCanvas.getAttribute('data-motion-source-range-start'),
+      '96.946'
+    );
+    assert.equal(
+      await adductionCanvas.getAttribute('data-motion-source-range-end'),
+      '22.524'
+    );
+    assert.equal(
+      await adductionCanvas.getAttribute('data-motion-source-coordinate'),
+      'shoulder_elv'
     );
 
     const before = Number(

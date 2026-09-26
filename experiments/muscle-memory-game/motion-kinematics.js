@@ -255,7 +255,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Приведение плеча",
     controlLabelRu: "Положение плеча при приведении",
     descriptionRu:
-      "Приведение показано как возврат плеча из 90° отведения к нейтральному положению. Это позволяет не изображать сомнительное приведение через туловище.",
+      "Приведение плеча — движение руки к туловищу. В source-backed Motion Lab показывается только подтверждённый источником участок траектории; недостающий крайний участок не достраивается вручную.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.adduction.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.adduction.referenceMaxDeg,
     startDeg: SHOULDER_PREVIEW_LIMITS.adduction.previewMaxDeg,
@@ -264,7 +264,7 @@ const MOTION_ACTIONS = Object.freeze({
     referencePose: "abducted-90",
     combinedShoulderComplex: true,
     rangeNoteRu:
-      "Возврат из 90° отведения к нейтрали показан как связное движение плечевой кости, лопатки и ключицы; точная индивидуальная траектория не заявляется.",
+      "Для source-backed сцены используется обратный ход проверенного TSM-клипа отведения примерно от 97° до 23°. Fallback-preview остаётся отдельной демонстрационной моделью и не считается источником биомеханической истины.",
     synergists: ["pectoralis-major", "latissimus-dorsi", "teres-major"],
     assistants: ["coracobrachialis", "triceps-long"],
     stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],

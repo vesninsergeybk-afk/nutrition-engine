@@ -4,6 +4,11 @@ import {
   MOTION_VISUAL_POLICY,
 } from "./motion-visual-assets.js";
 import { parseAsciiVtpPolyData } from "./motion-vtp.js";
+import { createMotionClip } from "./motion-clip.js";
+import {
+  tsmNativeMotionSourceRange,
+  tsmNativeMotionSpec,
+} from "./motion-native-clips.js";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -72,6 +77,33 @@ for (const [boneId, [points, polygons]] of Object.entries(expected)) {
   );
 }
 
+const adductionSpec = tsmNativeMotionSpec("shoulder-adduction");
+assert(
+  adductionSpec?.playbackDirection === "reverse" &&
+    adductionSpec.sourceMovementId === "shoulder-abduction",
+  "Shoulder adduction must remain the kinematic reverse of the verified abduction clip"
+);
+const adductionRaw = JSON.parse(
+  await readFile(new URL(adductionSpec.path, import.meta.url), "utf8")
+);
+const adductionClip = createMotionClip(adductionRaw);
+const adductionRange = tsmNativeMotionSourceRange({
+  spec: adductionSpec,
+  clip: adductionClip,
+});
+assert(
+  adductionClip.coordinateSpace === "body-relative" &&
+    adductionClip.referenceBody === "thorax",
+  "Native adduction source must remain thorax-relative"
+);
+assert(
+  adductionRange &&
+    adductionRange.start > adductionRange.end &&
+    Math.abs(adductionRange.start - 96.946) < 0.02 &&
+    Math.abs(adductionRange.end - 22.524) < 0.02,
+  "Native adduction source range changed unexpectedly"
+);
+
 const appSource = await readFile(new URL("app.js", import.meta.url), "utf8");
 const nativeLoaderSource = await readFile(
   new URL("motion-native-bones.js", import.meta.url),
@@ -86,7 +118,8 @@ for (const marker of [
   "motionBones",
   "buildTsmNativeBoneProbeScene",
   "motionGeometryRuntimeBones",
-  "source-native-rest-pose",
+  "source-native-reference-pose",
+  "fitTsmNativeAssembledScene",
 ]) {
   assert(
     appSource.includes(marker),

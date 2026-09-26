@@ -513,3 +513,14 @@ For the `elbow_flexion_r` source range it records:
 The muscle path is therefore sourced from MuJoCo after `mj_forward`, including its tendon-site and wrapping solution. Browser code does not invent or hand-tune a biceps curve.
 
 This checkpoint intentionally does not change the visible Motion Lab yet. The next checkpoint may replace the biceps/elbow atlas-derived fallback only after this exported source layer passes validation.
+
+
+### Shoulder-adduction correction after source-native audit — 2026-09-27
+
+A post-integration audit found two presentation/runtime issues without changing the underlying biomechanics.
+
+The native VTP files are body-local meshes. The earlier diagnostic scene framed the camera before applying source body poses, and the no-motion probe left the bones at identity transforms. The scene now always assembles TSM bones from a verified source pose before camera fitting. The static diagnostic view uses the low-elevation endpoint of the verified abduction clip and is explicitly called a reference pose rather than a neutral/rest pose.
+
+Learner-facing shoulder-adduction copy is now deliberately simple: the arm moves toward the trunk, the clavicle/scapula/humerus move together, and only the verified approximately 97° -> 23° excursion is shown. Technical provenance, exact source coordinate and reverse-playback direction remain in diagnostic telemetry/tests rather than the learning text.
+
+No new adduction trajectory was created. The motion remains the exact reverse playback of the pinned, thorax-relative TSM abduction teaching clip.
