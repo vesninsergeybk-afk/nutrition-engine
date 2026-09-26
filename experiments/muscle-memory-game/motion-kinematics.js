@@ -41,6 +41,7 @@ export const FOREARM_ROTATION_LIMITS = Object.freeze({
 export const SHOULDER_PREVIEW_LIMITS = Object.freeze({
   flexion: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 160 }),
   abduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
+  adduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 90 }),
   extension: Object.freeze({ previewMaxDeg: 45, referenceMaxDeg: 45 }),
   externalRotation: Object.freeze({ previewMaxDeg: 60, referenceMaxDeg: 60 }),
   internalRotation: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 90 }),
@@ -123,6 +124,27 @@ const MOTION_ACTIONS = Object.freeze({
     synergists: ["supraspinatus", "deltoid-acromial"],
     stabilizers: ["infraspinatus", "subscapularis", "teres-minor"],
   }),
+  "shoulder-adduction": frozenAction({
+    pilotId: "shoulder",
+    movementId: "shoulder-adduction",
+    direction: "adduction",
+    nameRu: "Приведение плеча",
+    controlLabelRu: "Положение плеча при приведении",
+    descriptionRu:
+      "Приведение показано как возврат плеча из 90° отведения к нейтральному положению. Это позволяет не изображать сомнительное приведение через туловище.",
+    maxDeg: SHOULDER_PREVIEW_LIMITS.adduction.previewMaxDeg,
+    referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.adduction.referenceMaxDeg,
+    startDeg: SHOULDER_PREVIEW_LIMITS.adduction.previewMaxDeg,
+    playDirection: -1,
+    speedDegPerSecond: 40,
+    synergists: [
+      "pectoralis-major",
+      "teres-major",
+      "coracobrachialis",
+      "triceps-long",
+    ],
+    stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
+  }),
   "shoulder-extension": frozenAction({
     pilotId: "shoulder",
     movementId: "shoulder-extension",
@@ -173,11 +195,23 @@ const MOTION_ACTIONS = Object.freeze({
 });
 
 const UNIT_ACTION_IDS = Object.freeze({
-  "biceps-long": Object.freeze(["elbow-flexion", "forearm-supination"]),
-  "biceps-short": Object.freeze(["elbow-flexion", "forearm-supination"]),
+  "biceps-long": Object.freeze([
+    "elbow-flexion",
+    "forearm-supination",
+    "shoulder-flexion",
+  ]),
+  "biceps-short": Object.freeze([
+    "elbow-flexion",
+    "forearm-supination",
+    "shoulder-flexion",
+  ]),
   brachialis: Object.freeze(["elbow-flexion"]),
   brachioradialis: Object.freeze(["elbow-flexion"]),
-  "triceps-long": Object.freeze(["elbow-extension"]),
+  "triceps-long": Object.freeze([
+    "elbow-extension",
+    "shoulder-extension",
+    "shoulder-adduction",
+  ]),
   "triceps-lateral": Object.freeze(["elbow-extension"]),
   "triceps-medial": Object.freeze(["elbow-extension"]),
   anconeus: Object.freeze(["elbow-extension"]),
@@ -199,11 +233,16 @@ const UNIT_ACTION_IDS = Object.freeze({
   "teres-minor": Object.freeze(["shoulder-external-rotation"]),
   "pectoralis-major": Object.freeze([
     "shoulder-flexion",
+    "shoulder-adduction",
     "shoulder-internal-rotation",
   ]),
-  coracobrachialis: Object.freeze(["shoulder-flexion"]),
+  coracobrachialis: Object.freeze([
+    "shoulder-flexion",
+    "shoulder-adduction",
+  ]),
   "teres-major": Object.freeze([
     "shoulder-extension",
+    "shoulder-adduction",
     "shoulder-internal-rotation",
   ]),
 });
@@ -245,7 +284,7 @@ export function motionActionActivation(action, angleDeg) {
   const value = clampMotionValue(action, angleDeg);
   const span = Math.max(1e-6, action.maxDeg - action.minDeg);
   const progress = (value - action.minDeg) / span;
-  return action.direction === "extension" ? 1 - progress : progress;
+  return action.playDirection < 0 ? 1 - progress : progress;
 }
 
 export function clampElbowAngle(angleDeg) {

@@ -10,6 +10,7 @@ import {
   elbowFlexionRadians,
   elbowMotionAction,
   motionActionsForUnits,
+  motionActionActivation,
 } from "./motion-kinematics.js";
 
 function assert(condition, message) {
@@ -77,24 +78,54 @@ assert(
 const pectoralisActions = motionActionsForUnits(["pectoralis-major"]);
 assert(
   pectoralisActions.some((item) => item.movementId === "shoulder-flexion") &&
+    pectoralisActions.some((item) => item.movementId === "shoulder-adduction") &&
     pectoralisActions.some(
       (item) => item.movementId === "shoulder-internal-rotation"
     ),
-  "Pectoralis major must contribute to shoulder flexion/internal rotation preview"
+  "Pectoralis major must contribute to shoulder flexion/adduction/internal rotation preview"
 );
 const coracobrachialisActions = motionActionsForUnits(["coracobrachialis"]);
 assert(
-  coracobrachialisActions.length === 1 &&
-    coracobrachialisActions[0].movementId === "shoulder-flexion",
-  "Coracobrachialis must contribute to shoulder flexion preview"
+  coracobrachialisActions.some((item) => item.movementId === "shoulder-flexion") &&
+    coracobrachialisActions.some((item) => item.movementId === "shoulder-adduction"),
+  "Coracobrachialis must contribute to shoulder flexion/adduction preview"
 );
 const teresMajorActions = motionActionsForUnits(["teres-major"]);
 assert(
   teresMajorActions.some((item) => item.movementId === "shoulder-extension") &&
+    teresMajorActions.some((item) => item.movementId === "shoulder-adduction") &&
     teresMajorActions.some(
       (item) => item.movementId === "shoulder-internal-rotation"
     ),
-  "Teres major must contribute to shoulder extension/internal rotation preview"
+  "Teres major must contribute to shoulder extension/adduction/internal rotation preview"
+);
+
+const adductionAction = motionActionsForUnits(["pectoralis-major"]).find(
+  (item) => item.movementId === "shoulder-adduction"
+);
+assert(adductionAction, "Shoulder adduction preview is missing");
+assert(
+  adductionAction.startDeg === 90 &&
+    adductionAction.playDirection === -1 &&
+    adductionAction.maxDeg === 90,
+  "Shoulder adduction must run from 90° abduction back to neutral"
+);
+assert(
+  motionActionActivation(adductionAction, 90) === 0 &&
+    motionActionActivation(adductionAction, 0) === 1,
+  "Adductor activation direction is reversed incorrectly"
+);
+
+const shoulderBiceps = motionActionsForUnits(["biceps-long"]);
+assert(
+  shoulderBiceps.some((item) => item.movementId === "shoulder-flexion"),
+  "Biceps long head should expose its shoulder-flexion contribution"
+);
+const shoulderTriceps = motionActionsForUnits(["triceps-long"]);
+assert(
+  shoulderTriceps.some((item) => item.movementId === "shoulder-extension") &&
+    shoulderTriceps.some((item) => item.movementId === "shoulder-adduction"),
+  "Triceps long head shoulder contribution is incomplete"
 );
 
 const triceps = elbowMotionAction(["triceps-long"]);

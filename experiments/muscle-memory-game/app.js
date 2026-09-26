@@ -4238,7 +4238,10 @@ function shoulderActionAxisAndAngle(action, value, sideSign) {
   if (action.movementId === "shoulder-extension") {
     return { axis: new THREE.Vector3(1, 0, 0), angle: radians };
   }
-  if (action.movementId === "shoulder-abduction") {
+  if (
+    action.movementId === "shoulder-abduction" ||
+    action.movementId === "shoulder-adduction"
+  ) {
     return { axis: new THREE.Vector3(0, 0, 1), angle: radians * sideSign };
   }
   if (action.movementId === "shoulder-external-rotation") {
