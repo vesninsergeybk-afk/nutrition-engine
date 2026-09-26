@@ -531,6 +531,32 @@ const assert = require('node:assert/strict');
     null,
     { timeout: 5000 }
   );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-scapula-anchor'),
+    'clavicle-lateral',
+    'Standalone scapular motion must share the lateral-clavicle base with combined shoulder motion'
+  );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-scapular-external-rotation-deg')
+    ) < -3,
+    'Protraction must include scapular internal rotation'
+  );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-clavicle-retraction-deg')
+    ) < -3,
+    'Protraction must include clavicular protraction around the medial anchor'
+  );
+  assert.match(
+    await page.locator('#motion-state').innerText(),
+    /медиальн.*ключиц|медиальн.*конец|опор/i,
+    'Standalone scapular teaching text must explain the medial clavicular anchor'
+  );
 
   await page.selectOption('#motion-movement', 'scapular-upward-rotation');
   await page.locator('#motion-angle').evaluate((el) => {
@@ -559,6 +585,22 @@ const assert = require('node:assert/strict');
   assert.equal(
     await page.locator('#motion-viewer').getAttribute('data-motion-authority'),
     'kinematic-preview'
+  );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-scapular-posterior-tilt-deg')
+    ) > 4,
+    'Standalone upward rotation must include posterior tilt'
+  );
+  assert.ok(
+    Number(
+      await page
+        .locator('#motion-viewer')
+        .getAttribute('data-motion-clavicle-posterior-rotation-deg')
+    ) > 5,
+    'Standalone upward rotation must include a clavicular posterior-rotation component'
   );
 
   await page.click('#mode-explore');

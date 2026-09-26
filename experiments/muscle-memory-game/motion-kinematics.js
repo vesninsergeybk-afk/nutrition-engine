@@ -357,7 +357,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Протракция лопатки",
     controlLabelRu: "Протракция",
     descriptionRu:
-      "Лопатка скользит латерально и кпереди по грудной клетке. Это учебный scapular preview; абсолютная амплитуда зависит от конкретной 3D-модели.",
+      "Протракция показана как связанное трёхмерное движение плечевого пояса: ключица движется в грудино-ключичном сочленении, а лопатка относительно её латеральной базы ротируется внутрь и слегка наклоняется кпереди.",
     maxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     referenceMaxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     speedDegPerSecond: SCAPULAR_PREVIEW_LIMITS.speedPercentPerSecond,
@@ -374,7 +374,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Ретракция лопатки",
     controlLabelRu: "Ретракция",
     descriptionRu:
-      "Лопатка смещается медиально с небольшим возвратом кзади.",
+      "Ретракция показана как связанное движение ключицы и лопатки: плечевой пояс уходит кзади, а лопатка относительно латеральной ключичной базы ротируется кнаружи и слегка наклоняется кзади.",
     maxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     referenceMaxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     speedDegPerSecond: SCAPULAR_PREVIEW_LIMITS.speedPercentPerSecond,
@@ -391,7 +391,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Подъём лопатки",
     controlLabelRu: "Подъём",
     descriptionRu:
-      "Учебное вертикальное смещение лопатки и плечевого пояса вверх.",
+      "Подъём плечевого пояса показан через движение ключицы вокруг её медиальной опоры; латеральный конец ключицы переносит основание лопатки вверх.",
     maxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     referenceMaxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     speedDegPerSecond: SCAPULAR_PREVIEW_LIMITS.speedPercentPerSecond,
@@ -408,7 +408,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Опускание лопатки",
     controlLabelRu: "Опускание",
     descriptionRu:
-      "Учебное смещение лопатки и плечевого пояса вниз; показано без силового расчёта.",
+      "Опускание плечевого пояса показано как связанное движение ключицы и лопатки вниз; это кинематический preview без расчёта мышечной силы.",
     maxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     referenceMaxDeg: SCAPULAR_PREVIEW_LIMITS.translationPercent,
     speedDegPerSecond: SCAPULAR_PREVIEW_LIMITS.speedPercentPerSecond,
@@ -425,7 +425,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Верхняя ротация лопатки",
     controlLabelRu: "Верхняя ротация",
     descriptionRu:
-      "Верхняя ротация суставной впадины при подъёме руки. Передняя зубчатая и трапециевидная показаны как основной силовой союз.",
+      "Верхняя ротация лопатки показана вместе с небольшим задним наклоном и ключичным компонентом. Передняя зубчатая и трапециевидная выделены как основные двигатели этого учебного движения.",
     maxDeg: SCAPULAR_PREVIEW_LIMITS.upwardRotationDeg,
     referenceMaxDeg: SCAPULAR_PREVIEW_LIMITS.upwardRotationReferenceDeg,
     speedDegPerSecond: SCAPULAR_PREVIEW_LIMITS.speedDegPerSecond,
@@ -439,7 +439,7 @@ const MOTION_ACTIONS = Object.freeze({
     nameRu: "Нижняя ротация лопатки",
     controlLabelRu: "Нижняя ротация",
     descriptionRu:
-      "Нижняя ротация лопатки в консервативном учебном диапазоне.",
+      "Нижняя ротация лопатки показана как обратное связанное движение лопаточно-ключичного комплекса в консервативном учебном диапазоне.",
     maxDeg: SCAPULAR_PREVIEW_LIMITS.downwardRotationDeg,
     referenceMaxDeg: SCAPULAR_PREVIEW_LIMITS.downwardRotationDeg,
     speedDegPerSecond: SCAPULAR_PREVIEW_LIMITS.speedDegPerSecond,
@@ -866,54 +866,90 @@ export function scapularPreviewTransform(action, value, sideSign = 1) {
       ? (clamped - action.minDeg) / (action.maxDeg - action.minDeg)
       : 0;
 
+  // Standalone scapular actions use the same structural idea as the combined
+  // shoulder preview: the medial clavicle is the thoracic anchor, its lateral
+  // end carries the scapular base, and the scapula then adds AC-like 3D
+  // rotation. Values are conservative teaching deltas from the source rest
+  // pose, not a universal normative trajectory.
   const result = {
     translationFraction: [0, 0, 0],
-    axis: [0, 0, 1],
-    angleRad: 0,
-    clavicleRotationRad: 0,
-    clavicleTranslationFraction: [0, 0, 0],
+    scapularUpwardRotationDeg: 0,
+    scapularPosteriorTiltDeg: 0,
+    scapularExternalRotationDeg: 0,
+    clavicleElevationDeg: 0,
+    clavicleRetractionDeg: 0,
+    claviclePosteriorRotationDeg: 0,
   };
 
   if (action.movementId === "scapular-protraction") {
-    result.translationFraction = [0.10 * side * progress, 0, 0.045 * progress];
-    result.axis = [0, 1, 0];
-    result.angleRad = -0.12 * side * progress;
-    result.clavicleRotationRad = -0.055 * side * progress;
-    result.clavicleTranslationFraction = [0.035 * side * progress, 0, 0.012 * progress];
+    result.scapularUpwardRotationDeg = -1.5 * progress;
+    result.scapularPosteriorTiltDeg = -4 * progress;
+    result.scapularExternalRotationDeg = -10 * progress;
+    result.clavicleRetractionDeg = -9 * progress;
   } else if (action.movementId === "scapular-retraction") {
-    result.translationFraction = [-0.085 * side * progress, 0, -0.03 * progress];
-    result.axis = [0, 1, 0];
-    result.angleRad = 0.09 * side * progress;
-    result.clavicleRotationRad = 0.05 * side * progress;
-    result.clavicleTranslationFraction = [-0.025 * side * progress, 0, -0.008 * progress];
+    result.scapularUpwardRotationDeg = 1 * progress;
+    result.scapularPosteriorTiltDeg = 3 * progress;
+    result.scapularExternalRotationDeg = 8 * progress;
+    result.clavicleRetractionDeg = 9 * progress;
   } else if (action.movementId === "scapular-elevation") {
-    result.translationFraction = [0, 0.085 * progress, 0];
-    result.clavicleRotationRad = 0.08 * side * progress;
-    result.clavicleTranslationFraction = [0, 0.035 * progress, 0];
+    result.scapularUpwardRotationDeg = -3 * progress;
+    result.scapularPosteriorTiltDeg = -2 * progress;
+    result.scapularExternalRotationDeg = -1 * progress;
+    result.clavicleElevationDeg = 9 * progress;
+    result.clavicleRetractionDeg = 1 * progress;
+    result.claviclePosteriorRotationDeg = 2 * progress;
   } else if (action.movementId === "scapular-depression") {
-    result.translationFraction = [0, -0.07 * progress, 0];
-    result.clavicleRotationRad = -0.06 * side * progress;
-    result.clavicleTranslationFraction = [0, -0.028 * progress, 0];
-  } else if (
-    action.movementId === "scapular-upward-rotation" ||
-    action.movementId === "scapular-downward-rotation"
-  ) {
-    const direction =
-      action.movementId === "scapular-upward-rotation" ? 1 : -1;
-    const radians = (clamped * Math.PI) / 180;
-    result.axis = [0, 0, 1];
-    result.angleRad = radians * side * direction;
-    result.translationFraction = [0.018 * side * progress, 0.02 * direction * progress, 0];
-    result.clavicleRotationRad = result.angleRad * 0.35;
-    result.clavicleTranslationFraction = [0, 0.012 * direction * progress, 0];
+    result.scapularUpwardRotationDeg = 3 * progress;
+    result.scapularPosteriorTiltDeg = 2 * progress;
+    result.scapularExternalRotationDeg = 1 * progress;
+    result.clavicleElevationDeg = -8 * progress;
+    result.clavicleRetractionDeg = -1 * progress;
+    result.claviclePosteriorRotationDeg = -2 * progress;
+  } else if (action.movementId === "scapular-upward-rotation") {
+    result.scapularUpwardRotationDeg = clamped;
+    result.scapularPosteriorTiltDeg = clamped * 0.23;
+    result.scapularExternalRotationDeg = clamped * 0.08;
+    result.clavicleElevationDeg = clamped * 0.22;
+    result.clavicleRetractionDeg = clamped * 0.12;
+    result.claviclePosteriorRotationDeg = clamped * 0.28;
+  } else if (action.movementId === "scapular-downward-rotation") {
+    result.scapularUpwardRotationDeg = -clamped;
+    result.scapularPosteriorTiltDeg = -clamped * 0.16;
+    result.scapularExternalRotationDeg = -clamped * 0.06;
+    result.clavicleElevationDeg = -clamped * 0.16;
+    result.clavicleRetractionDeg = -clamped * 0.08;
+    result.claviclePosteriorRotationDeg = -clamped * 0.20;
   }
+
+  let axis = [0, 0, 1];
+  let primaryScapularDeg = result.scapularUpwardRotationDeg;
+  if (
+    action.movementId === "scapular-protraction" ||
+    action.movementId === "scapular-retraction"
+  ) {
+    axis = [0, 1, 0];
+    primaryScapularDeg = result.scapularExternalRotationDeg;
+  }
+
+  const clavicleCompositeDeg = Math.hypot(
+    result.clavicleElevationDeg,
+    result.clavicleRetractionDeg,
+    result.claviclePosteriorRotationDeg
+  );
 
   return Object.freeze({
     translationFraction: Object.freeze(result.translationFraction),
-    axis: Object.freeze(result.axis),
-    angleRad: result.angleRad,
-    clavicleRotationRad: result.clavicleRotationRad,
-    clavicleTranslationFraction: Object.freeze(result.clavicleTranslationFraction),
+    axis: Object.freeze(axis),
+    angleRad: (primaryScapularDeg * Math.PI * side) / 180,
+    clavicleRotationRad: (clavicleCompositeDeg * Math.PI) / 180,
+    clavicleTranslationFraction: Object.freeze([0, 0, 0]),
+    scapularUpwardRotationDeg: result.scapularUpwardRotationDeg,
+    scapularPosteriorTiltDeg: result.scapularPosteriorTiltDeg,
+    scapularExternalRotationDeg: result.scapularExternalRotationDeg,
+    clavicleElevationDeg: result.clavicleElevationDeg,
+    clavicleRetractionDeg: result.clavicleRetractionDeg,
+    claviclePosteriorRotationDeg: result.claviclePosteriorRotationDeg,
+    side,
   });
 }
 

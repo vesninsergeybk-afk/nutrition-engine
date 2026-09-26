@@ -372,20 +372,41 @@ assert(scapPro?.displayUnit === "%", "Scapular translation must not masquerade a
 assert(scapRet?.displayUnit === "%", "Scapular retraction must use normalized preview units");
 const scapUpPose = scapularPreviewTransform(scapUp, 30, 1);
 assert(
-  Math.abs(scapUpPose.angleRad) > 0.4 &&
-    scapUpPose.clavicleRotationRad !== 0,
-  "Upward rotation must move scapula and couple clavicle"
+  scapUpPose.scapularUpwardRotationDeg === 30 &&
+    scapUpPose.scapularPosteriorTiltDeg > 5 &&
+    scapUpPose.clavicleElevationDeg > 5 &&
+    scapUpPose.claviclePosteriorRotationDeg > 5,
+  "Upward rotation must be a coupled 3D scapula-clavicle movement"
 );
 const scapProPose = scapularPreviewTransform(scapPro, 100, 1);
 assert(
-  scapProPose.translationFraction[0] > 0 &&
-    scapProPose.translationFraction[2] > 0,
-  "Right scapular protraction must move laterally and anteriorly"
+  scapProPose.scapularExternalRotationDeg < -5 &&
+    scapProPose.scapularPosteriorTiltDeg < 0 &&
+    scapProPose.clavicleRetractionDeg < -5 &&
+    scapProPose.translationFraction.every((item) => item === 0),
+  "Protraction must come from linked SC/AC-like rotations rather than detaching the scapula with an arbitrary translation"
 );
 const scapRetPose = scapularPreviewTransform(scapRet, 100, 1);
 assert(
-  scapRetPose.translationFraction[0] < 0,
-  "Right scapular retraction must move medially"
+  scapRetPose.scapularExternalRotationDeg > 5 &&
+    scapRetPose.scapularPosteriorTiltDeg > 0 &&
+    scapRetPose.clavicleRetractionDeg > 5,
+  "Retraction must reverse the linked protraction pattern"
+);
+const scapElev = scapularPreviewTransform(
+  motionActionById("scapular-elevation"),
+  100,
+  1
+);
+const scapDep = scapularPreviewTransform(
+  motionActionById("scapular-depression"),
+  100,
+  1
+);
+assert(
+  scapElev.clavicleElevationDeg > 5 &&
+    scapDep.clavicleElevationDeg < -5,
+  "Scapular elevation/depression must be carried by the clavicle around its medial anchor"
 );
 for (const id of [
   "scapular-protraction",

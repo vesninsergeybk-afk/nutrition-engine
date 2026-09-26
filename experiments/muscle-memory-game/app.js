@@ -3747,6 +3747,9 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionScapularPosteriorTiltDeg = "";
     motionCanvas.dataset.motionScapularExternalRotationDeg = "";
     motionCanvas.dataset.motionScapulaAnchor = "";
+    motionCanvas.dataset.motionScapularRotation = "";
+    motionCanvas.dataset.motionScapularTranslation = "";
+    motionCanvas.dataset.motionClavicleRotation = "";
     motionCanvas.dataset.motionShoulderChain = "";
     motionCanvas.dataset.motionShoulderRotationDeg = "";
     motionCanvas.dataset.motionHumeralExternalRotationDeg = "";
@@ -4519,11 +4522,25 @@ function buildScapularKinematicRig(action, muscleMeshes, boneMeshes) {
   const clavicleBox = motionMeshBox(clavicle);
   if (scapulaBox.isEmpty() || clavicleBox.isEmpty()) return null;
 
-  const scapulaPivotPoint = scapulaBox.getCenter(new THREE.Vector3());
-  const claviclePivotPoint = clavicleBox.getCenter(new THREE.Vector3());
+  const claviclePivotPoint =
+    motionMeshMedialEndCentroid(clavicle) ||
+    clavicleBox.getCenter(new THREE.Vector3());
+  const clavicleLateralPoint =
+    motionMeshLateralEndCentroid(clavicle) ||
+    clavicleBox.getCenter(new THREE.Vector3());
+  const scapulaPivotPoint = clavicleLateralPoint.clone();
+
+  // The isolated scapular lesson now uses the same chain as combined shoulder
+  // elevation: the medial clavicle approximates the SC anchor, while the
+  // lateral clavicle carries the AC/scapular base.
+  const claviclePivot = new THREE.Group();
+  claviclePivot.name = "scapular-sternoclavicular-pivot";
+  claviclePivot.position.copy(claviclePivotPoint);
+  motionModelGroup.add(claviclePivot);
+  reparentMotionMeshAtPivot(clavicle, claviclePivotPoint, claviclePivot);
 
   const scapulaPivot = new THREE.Group();
-  scapulaPivot.name = "scapular-complex-pivot";
+  scapulaPivot.name = "scapular-acromioclavicular-base";
   scapulaPivot.position.copy(scapulaPivotPoint);
   motionModelGroup.add(scapulaPivot);
 
@@ -4531,12 +4548,6 @@ function buildScapularKinematicRig(action, muscleMeshes, boneMeshes) {
   for (const mesh of [scapula, ...distalFollowers]) {
     reparentMotionMeshAtPivot(mesh, scapulaPivotPoint, scapulaPivot);
   }
-
-  const claviclePivot = new THREE.Group();
-  claviclePivot.name = "scapular-clavicle-pivot";
-  claviclePivot.position.copy(claviclePivotPoint);
-  motionModelGroup.add(claviclePivot);
-  reparentMotionMeshAtPivot(clavicle, claviclePivotPoint, claviclePivot);
 
   for (const mesh of muscleMeshes) captureMotionRestGeometry(mesh);
 
@@ -4548,9 +4559,14 @@ function buildScapularKinematicRig(action, muscleMeshes, boneMeshes) {
     claviclePivot,
     scapulaPivotPoint,
     claviclePivotPoint,
+    clavicleLateralPoint,
+    scapulaAnchorMode: "clavicle-lateral",
     scapulaSize: scapulaBox.getSize(new THREE.Vector3()),
     muscleMeshes,
-    sideSign: Math.sign(scapulaPivotPoint.x) || 1,
+    sideSign:
+      Math.sign(clavicleLateralPoint.x) ||
+      Math.sign(scapulaBox.getCenter(new THREE.Vector3()).x) ||
+      1,
     distalFollowerCount: distalFollowers.length,
     valueDeg: action.startDeg,
   };
@@ -4613,6 +4629,32 @@ function deformAttachmentFollower(
     position.setXYZ(i, point.x, point.y, point.z);
   }
 
+  position.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
+}
+
+function transformWholeMotionMesh(
+  mesh,
+  pivot,
+  rotation,
+  translation
+) {
+  captureMotionRestGeometry(mesh);
+  const rest = mesh?.userData?.motionRestPositions;
+  const position = mesh?.geometry?.getAttribute("position");
+  if (!rest || !position) return;
+
+  const p = new THREE.Vector3();
+  for (let i = 0; i < position.count; i += 1) {
+    p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2])
+      .sub(pivot)
+      .applyQuaternion(rotation)
+      .add(pivot)
+      .add(translation);
+    position.setXYZ(i, p.x, p.y, p.z);
+  }
   position.needsUpdate = true;
   mesh.geometry.computeVertexNormals();
   mesh.geometry.computeBoundingBox();
@@ -4873,98 +4915,110 @@ function applyScapularMotionValue(value) {
     motionRig.sideSign
   );
 
-  const sx = Math.max(motionRig.scapulaSize.x, 1e-6);
-  const sy = Math.max(motionRig.scapulaSize.y, 1e-6);
-  const sz = Math.max(motionRig.scapulaSize.z, 1e-6);
-  const translation = new THREE.Vector3(
-    transform.translationFraction[0] * sx,
-    transform.translationFraction[1] * sy,
-    transform.translationFraction[2] * sz
-  );
+  motionRig.claviclePivot.position.copy(motionRig.claviclePivotPoint);
+  motionRig.scapulaPivot.position.copy(motionRig.scapulaPivotPoint);
 
-  motionRig.scapulaPivot.position
-    .copy(motionRig.scapulaPivotPoint)
-    .add(translation);
-  motionRig.scapulaPivot.quaternion.setFromAxisAngle(
-    new THREE.Vector3(...transform.axis).normalize(),
-    transform.angleRad
-  );
-
-  const clavicleTranslation = new THREE.Vector3(
-    transform.clavicleTranslationFraction[0] * sx,
-    transform.clavicleTranslationFraction[1] * sy,
-    transform.clavicleTranslationFraction[2] * sz
-  );
-  motionRig.claviclePivot.position
-    .copy(motionRig.claviclePivotPoint)
-    .add(clavicleTranslation);
-  motionRig.claviclePivot.quaternion.setFromAxisAngle(
+  const qClavicleElevation = new THREE.Quaternion().setFromAxisAngle(
     new THREE.Vector3(0, 0, 1),
-    transform.clavicleRotationRad
+    THREE.MathUtils.degToRad(transform.clavicleElevationDeg) *
+      motionRig.sideSign
   );
+  const qClavicleRetraction = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    THREE.MathUtils.degToRad(transform.clavicleRetractionDeg) *
+      -motionRig.sideSign
+  );
+  const qClaviclePosterior = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(1, 0, 0),
+    THREE.MathUtils.degToRad(transform.claviclePosteriorRotationDeg) *
+      motionRig.sideSign
+  );
+  const clavicleQuaternion = qClavicleElevation
+    .clone()
+    .multiply(qClavicleRetraction)
+    .multiply(qClaviclePosterior);
+  motionRig.claviclePivot.quaternion.copy(clavicleQuaternion);
+
+  const movingScapularBase = motionRig.clavicleLateralPoint
+    .clone()
+    .sub(motionRig.claviclePivotPoint)
+    .applyQuaternion(clavicleQuaternion)
+    .add(motionRig.claviclePivotPoint);
+  const scapulaTranslation = movingScapularBase
+    .clone()
+    .sub(motionRig.scapulaPivotPoint);
+
+  const qUpward = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(0, 0, 1),
+    THREE.MathUtils.degToRad(transform.scapularUpwardRotationDeg) *
+      motionRig.sideSign
+  );
+  const qExternal = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    THREE.MathUtils.degToRad(transform.scapularExternalRotationDeg) *
+      motionRig.sideSign
+  );
+  const qPosteriorTilt = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(1, 0, 0),
+    THREE.MathUtils.degToRad(transform.scapularPosteriorTiltDeg) *
+      motionRig.sideSign
+  );
+  const scapulaQuaternion = qUpward
+    .clone()
+    .multiply(qExternal)
+    .multiply(qPosteriorTilt);
+
+  motionRig.scapulaPivot.position.copy(movingScapularBase);
+  motionRig.scapulaPivot.quaternion.copy(scapulaQuaternion);
 
   const activation = motionActionActivation(motionRig.action, clamped);
-  const axis = new THREE.Vector3(...transform.axis).normalize();
+  const rigidScapularContext = new Set([
+    "deltoid-acromial",
+    "supraspinatus",
+    "infraspinatus",
+    "subscapularis",
+    "teres-minor",
+  ]);
+
   for (const mesh of motionRig.muscleMeshes) {
     restoreMotionRestGeometry(mesh);
-    const rest = mesh.userData.motionRestPositions;
-    const box = mesh.userData.motionRestBox;
-    const position = mesh.geometry.getAttribute("position");
-    if (!rest || !box || !position) continue;
+    const unitId = mesh.userData.motionUnit || "";
 
-    let minDistance = Infinity;
-    let maxDistance = -Infinity;
-    for (let i = 0; i < rest.length; i += 3) {
-      const d = Math.hypot(
-        rest[i] - motionRig.scapulaPivotPoint.x,
-        rest[i + 1] - motionRig.scapulaPivotPoint.y,
-        rest[i + 2] - motionRig.scapulaPivotPoint.z
+    if (rigidScapularContext.has(unitId)) {
+      // In this isolated lesson the GH angle is held fixed, so muscles spanning
+      // scapula to humerus move with the whole scapula-arm block.
+      transformWholeMotionMesh(
+        mesh,
+        motionRig.scapulaPivotPoint,
+        scapulaQuaternion,
+        scapulaTranslation
       );
-      minDistance = Math.min(minDistance, d);
-      maxDistance = Math.max(maxDistance, d);
-    }
-    const distanceSpan = Math.max(1e-6, maxDistance - minDistance);
-    const center = box.getCenter(new THREE.Vector3());
-    const p = new THREE.Vector3();
-    const rel = new THREE.Vector3();
-    const q = new THREE.Quaternion();
-
-    for (let i = 0; i < position.count; i += 1) {
-      p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
-      const d = p.distanceTo(motionRig.scapulaPivotPoint);
-      const scapularAttachment =
-        1 -
-        THREE.MathUtils.clamp(
-          (d - minDistance) / distanceSpan,
-          0,
-          1
-        );
-
-      rel.copy(p).sub(motionRig.scapulaPivotPoint);
-      q.setFromAxisAngle(
-        axis,
-        transform.angleRad * scapularAttachment
-      );
-      rel.applyQuaternion(q);
-      p.copy(motionRig.scapulaPivotPoint)
-        .add(rel)
-        .addScaledVector(translation, scapularAttachment);
-
-      const belly = 4 * scapularAttachment * (1 - scapularAttachment);
-      p.x =
-        center.x +
-        (p.x - center.x) * (1 + activation * 0.025 * belly);
-      p.z =
-        center.z +
-        (p.z - center.z) * (1 + activation * 0.025 * belly);
-
-      position.setXYZ(i, p.x, p.y, p.z);
+      continue;
     }
 
-    position.needsUpdate = true;
-    mesh.geometry.computeVertexNormals();
-    mesh.geometry.computeBoundingBox();
-    mesh.geometry.computeBoundingSphere();
+    if (unitId === "subclavius") {
+      deformAttachmentFollower(
+        mesh,
+        motionRig.claviclePivotPoint,
+        clavicleQuaternion,
+        new THREE.Vector3(),
+        0,
+        0.85
+      );
+      continue;
+    }
+
+    deformAttachmentFollower(
+      mesh,
+      motionRig.scapulaPivotPoint,
+      scapulaQuaternion,
+      scapulaTranslation,
+      (motionRig.action.synergists || []).includes(unitId) ||
+        (motionRig.action.assistants || []).includes(unitId)
+        ? activation
+        : 0,
+      0.92
+    );
   }
 
   setMotionMuscleActivation(
@@ -4973,13 +5027,58 @@ function applyScapularMotionValue(value) {
     activation
   );
 
+  const quaternionAngle = (q) =>
+    2 * Math.acos(THREE.MathUtils.clamp(Math.abs(q.w), -1, 1));
+
   if (motionCanvas) {
     motionCanvas.dataset.motionScapularRotation =
-      transform.angleRad.toFixed(6);
+      quaternionAngle(scapulaQuaternion).toFixed(6);
     motionCanvas.dataset.motionScapularTranslation =
-      translation.length().toFixed(6);
+      scapulaTranslation.length().toFixed(6);
     motionCanvas.dataset.motionClavicleRotation =
-      transform.clavicleRotationRad.toFixed(6);
+      quaternionAngle(clavicleQuaternion).toFixed(6);
+    motionCanvas.dataset.motionScapularDeg =
+      transform.scapularUpwardRotationDeg.toFixed(1);
+    motionCanvas.dataset.motionScapularPosteriorTiltDeg =
+      transform.scapularPosteriorTiltDeg.toFixed(1);
+    motionCanvas.dataset.motionScapularExternalRotationDeg =
+      transform.scapularExternalRotationDeg.toFixed(1);
+    motionCanvas.dataset.motionClavicleElevationDeg =
+      transform.clavicleElevationDeg.toFixed(1);
+    motionCanvas.dataset.motionClavicleRetractionDeg =
+      transform.clavicleRetractionDeg.toFixed(1);
+    motionCanvas.dataset.motionClaviclePosteriorRotationDeg =
+      transform.claviclePosteriorRotationDeg.toFixed(1);
+    motionCanvas.dataset.motionScapulaAnchor =
+      motionRig.scapulaAnchorMode || "";
+  }
+
+  const kinematicSummary = motionStateEl?.querySelector(
+    "#motion-kinematic-summary"
+  );
+  if (kinematicSummary) {
+    const amount =
+      Math.round(clamped) + (motionRig.action.displayUnit || "°");
+    if (motionRig.action.movementId === "scapular-protraction") {
+      kinematicSummary.textContent =
+        `Сейчас: ${amount}. Медиальный конец ключицы остаётся опорой, ключица протрагируется, а лопатка относительно её латеральной базы ротируется внутрь и слегка наклоняется кпереди. Это связанное трёхмерное движение, а не чистое линейное скольжение.`;
+    } else if (motionRig.action.movementId === "scapular-retraction") {
+      kinematicSummary.textContent =
+        `Сейчас: ${amount}. Медиальный конец ключицы остаётся опорой; ключица ретрагируется, а лопатка относительно латеральной базы ротируется кнаружи и слегка наклоняется кзади.`;
+    } else if (motionRig.action.movementId === "scapular-elevation") {
+      kinematicSummary.textContent =
+        `Сейчас: ${amount}. Подъём начинается с движения ключицы вокруг медиальной опоры; её латеральный конец переносит лопатку вверх, сохраняя связанность плечевого пояса.`;
+    } else if (motionRig.action.movementId === "scapular-depression") {
+      kinematicSummary.textContent =
+        `Сейчас: ${amount}. Латеральный конец ключицы переносит основание лопатки вниз; небольшие сопутствующие ротации показаны как учебная траектория, а не индивидуальная норма.`;
+    } else {
+      const direction =
+        motionRig.action.movementId === "scapular-upward-rotation"
+          ? "верхней"
+          : "нижней";
+      kinematicSummary.textContent =
+        `Сейчас: ${amount} ${direction} ротации. Лопатка движется трёхмерно относительно латеральной ключичной базы; ключица одновременно меняет положение вокруг грудино-ключичной опоры. Сопутствующие компоненты заданы консервативно для обучения.`;
+    }
   }
 }
 
