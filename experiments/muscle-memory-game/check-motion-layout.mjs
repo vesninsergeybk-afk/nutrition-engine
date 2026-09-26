@@ -1,10 +1,11 @@
 import { readFile } from "node:fs/promises";
 
 const root = new URL("./", import.meta.url);
-const [html, app, css] = await Promise.all([
+const [html, app, css, kinematics] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("app.js", root), "utf8"),
   readFile(new URL("styles.css", root), "utf8"),
+  readFile(new URL("motion-kinematics.js", root), "utf8"),
 ]);
 
 function assert(condition, message) {
@@ -57,10 +58,10 @@ assert(
   "Motion split view is not responsive"
 );
 assert(
-  /кинематическ/i.test(app) &&
-    app.includes('motionCanvas.dataset.motionAuthority = action.authority') &&
+  app.includes('motionCanvas.dataset.motionAuthority = action.authority') &&
     app.includes('action.referenceMaxDeg > action.maxDeg') &&
-    /без проверенной регистрации|не силовая симуляция|кинематический preview/i.test(app),
+    /кинематическ.*preview/i.test(kinematics) &&
+    /без проверенной регистрации|не расч[её]т мышечной силы|не силовая симуляция/i.test(kinematics),
   "Motion UI does not distinguish the kinematic preview from calibrated MyoSim simulation"
 );
 assert(
