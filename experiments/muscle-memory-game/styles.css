@@ -1323,3 +1323,25 @@ body:not(.motion-mode) .comparison-pane-static {
   padding: 7px 10px;
   font-size: 11px;
 }
+
+
+.motion-movement-row {
+  display: grid;
+  gap: 5px;
+}
+
+.motion-movement-row > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.motion-movement-row select {
+  width: 100%;
+}
+
+.motion-range-note {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}

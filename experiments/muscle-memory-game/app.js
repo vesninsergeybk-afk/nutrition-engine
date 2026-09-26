@@ -76,10 +76,11 @@ import {
   matchMotionMuscleUnit,
 } from "./motion-readiness.js";
 import {
-  advanceElbowAngle,
-  contractionScale,
+  advanceMotionValue,
+  clampMotionValue,
   elbowFlexionRadians,
-  elbowMotionAction,
+  motionActionActivation,
+  motionActionsForUnits,
 } from "./motion-kinematics.js";
 import {
   createMotionMesh,
@@ -3736,12 +3737,15 @@ function clearMotionPreview() {
   }
 }
 
-function motionMuscleMaterial() {
+function motionMuscleMaterial(selected = true) {
   return new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.52,
     metalness: 0,
     side: THREE.DoubleSide,
+    transparent: !selected,
+    opacity: selected ? 1 : 0.52,
+    depthWrite: selected,
   });
 }
 
@@ -3767,9 +3771,7 @@ function syncMotionCamera() {
 
   const width = motionCanvas.clientWidth;
   const height = motionCanvas.clientHeight;
-  if (width > 0 && height > 0) {
-    motionCamera.aspect = width / height;
-  }
+  if (width > 0 && height > 0) motionCamera.aspect = width / height;
   motionCamera.updateProjectionMatrix();
 }
 
@@ -3792,6 +3794,27 @@ function motionMeshBox(mesh) {
   if (!mesh?.geometry) return new THREE.Box3().makeEmpty();
   mesh.geometry.computeBoundingBox();
   return mesh.geometry.boundingBox?.clone() || new THREE.Box3().makeEmpty();
+}
+
+function captureMotionRestGeometry(mesh) {
+  if (!mesh?.geometry) return;
+  if (!mesh.userData.motionRestPositions) {
+    mesh.userData.motionRestPositions =
+      mesh.geometry.getAttribute("position")?.array.slice() || null;
+    mesh.geometry.computeBoundingBox();
+    mesh.userData.motionRestBox = mesh.geometry.boundingBox?.clone() || null;
+  }
+}
+
+function restoreMotionRestGeometry(mesh) {
+  const rest = mesh?.userData?.motionRestPositions;
+  const position = mesh?.geometry?.getAttribute("position");
+  if (!rest || !position || rest.length !== position.array.length) return;
+  position.array.set(rest);
+  position.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
 }
 
 function estimateElbowPivot(humerus, radius, ulna) {
@@ -3817,19 +3840,193 @@ function estimateElbowPivot(humerus, radius, ulna) {
   return new THREE.Vector3(x, y, z);
 }
 
+function estimateShoulderPivot(humerus) {
+  const box = motionMeshBox(humerus);
+  if (box.isEmpty()) return null;
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  return new THREE.Vector3(
+    center.x,
+    box.max.y - size.y * 0.06,
+    center.z
+  );
+}
+
 function reparentMotionMeshAtPivot(mesh, pivot, parent) {
   motionModelGroup.remove(mesh);
   mesh.position.set(-pivot.x, -pivot.y, -pivot.z);
   parent.add(mesh);
 }
 
-function combinedMotionBox(meshes) {
-  const box = new THREE.Box3().makeEmpty();
-  for (const mesh of meshes) {
-    const childBox = motionMeshBox(mesh);
-    if (!childBox.isEmpty()) box.union(childBox);
+function motionStructureIdsForUnits(unitIds, selectedSide) {
+  const desired = new Set(unitIds || []);
+  const ids = [];
+
+  for (let sid = 0; sid < structureNames.length; sid += 1) {
+    const unit = matchMotionMuscleUnit(structureNames[sid]);
+    if (!unit || !desired.has(unit.id)) continue;
+
+    const target = learningTargetBySid.get(sid) || null;
+    const side = targetSideForSid(target, sid);
+    if (
+      selectedSide &&
+      side &&
+      !sidesCanShareDepthPath(selectedSide, side)
+    ) {
+      continue;
+    }
+    ids.push(sid);
   }
-  return box;
+
+  return ids;
+}
+
+function deformHingeMuscle(mesh, pivot, axis, angleRad, activation) {
+  captureMotionRestGeometry(mesh);
+  const rest = mesh.userData.motionRestPositions;
+  const box = mesh.userData.motionRestBox;
+  const position = mesh.geometry.getAttribute("position");
+  if (!rest || !box || !position) return;
+
+  const span = Math.max(1e-6, box.max.y - box.min.y);
+  const center = box.getCenter(new THREE.Vector3());
+  const p = new THREE.Vector3();
+  const rel = new THREE.Vector3();
+  const q = new THREE.Quaternion();
+  const axisN = axis.clone().normalize();
+
+  for (let i = 0; i < position.count; i += 1) {
+    p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
+    const distalWeight = THREE.MathUtils.clamp(
+      (box.max.y - p.y) / span,
+      0,
+      1
+    );
+    const belly = Math.sin(Math.PI * distalWeight) ** 2;
+    p.x = center.x + (p.x - center.x) * (1 + activation * 0.065 * belly);
+    p.z = center.z + (p.z - center.z) * (1 + activation * 0.065 * belly);
+
+    rel.copy(p).sub(pivot);
+    q.setFromAxisAngle(axisN, angleRad * distalWeight);
+    rel.applyQuaternion(q);
+    p.copy(pivot).add(rel);
+    position.setXYZ(i, p.x, p.y, p.z);
+  }
+
+  position.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
+}
+
+function deformShoulderMuscle(mesh, pivot, axis, angleRad, activation) {
+  captureMotionRestGeometry(mesh);
+  const rest = mesh.userData.motionRestPositions;
+  const box = mesh.userData.motionRestBox;
+  const position = mesh.geometry.getAttribute("position");
+  if (!rest || !box || !position) return;
+
+  const unitId = mesh.userData.motionUnit || "";
+  const isDeltoid = unitId.startsWith("deltoid-");
+  const spanY = Math.max(1e-6, box.max.y - box.min.y);
+  let minDistance = Infinity;
+  let maxDistance = -Infinity;
+
+  if (!isDeltoid) {
+    for (let i = 0; i < rest.length; i += 3) {
+      const dx = rest[i] - pivot.x;
+      const dy = rest[i + 1] - pivot.y;
+      const dz = rest[i + 2] - pivot.z;
+      const d = Math.hypot(dx, dy, dz);
+      minDistance = Math.min(minDistance, d);
+      maxDistance = Math.max(maxDistance, d);
+    }
+  }
+
+  const distanceSpan = Math.max(1e-6, maxDistance - minDistance);
+  const p = new THREE.Vector3();
+  const rel = new THREE.Vector3();
+  const q = new THREE.Quaternion();
+  const axisN = axis.clone().normalize();
+
+  for (let i = 0; i < position.count; i += 1) {
+    p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
+
+    let attachmentWeight;
+    if (isDeltoid) {
+      attachmentWeight = THREE.MathUtils.clamp(
+        (box.max.y - p.y) / spanY,
+        0,
+        1
+      );
+    } else {
+      const distance = p.distanceTo(pivot);
+      attachmentWeight = 1 - THREE.MathUtils.clamp(
+        (distance - minDistance) / distanceSpan,
+        0,
+        1
+      );
+    }
+
+    rel.copy(p).sub(pivot);
+    q.setFromAxisAngle(axisN, angleRad * attachmentWeight);
+    rel.applyQuaternion(q);
+    p.copy(pivot).add(rel);
+
+    const belly = 4 * attachmentWeight * (1 - attachmentWeight);
+    const centerX = (box.min.x + box.max.x) / 2;
+    const centerZ = (box.min.z + box.max.z) / 2;
+    p.x = centerX + (p.x - centerX) * (1 + activation * 0.04 * belly);
+    p.z = centerZ + (p.z - centerZ) * (1 + activation * 0.04 * belly);
+    position.setXYZ(i, p.x, p.y, p.z);
+  }
+
+  position.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
+}
+
+function deformRadiusForForearmRotation(radius, ulna, angleRad) {
+  captureMotionRestGeometry(radius);
+  const rest = radius?.userData?.motionRestPositions;
+  const box = radius?.userData?.motionRestBox;
+  const position = radius?.geometry?.getAttribute("position");
+  if (!rest || !box || !position) return;
+
+  const ulnaBox = motionMeshBox(ulna);
+  const axisCenter = ulnaBox.isEmpty()
+    ? box.getCenter(new THREE.Vector3())
+    : ulnaBox.getCenter(new THREE.Vector3());
+  const axisOrigin = new THREE.Vector3(axisCenter.x, box.max.y, axisCenter.z);
+  const axis = new THREE.Vector3(0, -1, 0);
+  const spanY = Math.max(1e-6, box.max.y - box.min.y);
+  const p = new THREE.Vector3();
+  const rel = new THREE.Vector3();
+  const axial = new THREE.Vector3();
+  const radial = new THREE.Vector3();
+  const q = new THREE.Quaternion();
+
+  for (let i = 0; i < position.count; i += 1) {
+    p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
+    const distalWeight = THREE.MathUtils.clamp(
+      (box.max.y - p.y) / spanY,
+      0,
+      1
+    );
+    rel.copy(p).sub(axisOrigin);
+    axial.copy(axis).multiplyScalar(rel.dot(axis));
+    radial.copy(rel).sub(axial);
+    q.setFromAxisAngle(axis, angleRad * distalWeight);
+    radial.applyQuaternion(q);
+    p.copy(axisOrigin).add(axial).add(radial);
+    position.setXYZ(i, p.x, p.y, p.z);
+  }
+
+  position.needsUpdate = true;
+  radius.geometry.computeVertexNormals();
+  radius.geometry.computeBoundingBox();
+  radius.geometry.computeBoundingSphere();
 }
 
 function buildElbowKinematicRig(action, muscleMeshes, boneMeshes) {
@@ -3849,78 +4046,223 @@ function buildElbowKinematicRig(action, muscleMeshes, boneMeshes) {
     reparentMotionMeshAtPivot(mesh, pivot, forearmPivot);
   }
 
-  const muscleBox = combinedMotionBox(muscleMeshes);
-  const muscleAnchor = muscleBox.isEmpty()
-    ? null
-    : new THREE.Vector3(
-        (muscleBox.min.x + muscleBox.max.x) / 2,
-        muscleBox.max.y,
-        (muscleBox.min.z + muscleBox.max.z) / 2
-      );
-  let contractionGroup = null;
-  if (muscleAnchor) {
-    contractionGroup = new THREE.Group();
-    contractionGroup.name = "elbow-muscle-contraction";
-    contractionGroup.position.copy(muscleAnchor);
-    motionModelGroup.add(contractionGroup);
-    for (const mesh of muscleMeshes) {
-      reparentMotionMeshAtPivot(mesh, muscleAnchor, contractionGroup);
-    }
-  }
+  for (const mesh of muscleMeshes) captureMotionRestGeometry(mesh);
 
   return {
     pilotId: "elbow",
+    kind: "elbow-hinge",
     action,
     pivot,
     forearmPivot,
-    contractionGroup,
     muscleMeshes,
-    angleDeg: action.startDeg,
+    valueDeg: action.startDeg,
   };
 }
 
-function setMotionMuscleActivation(meshes, activation) {
+function buildForearmRotationRig(action, muscleMeshes, boneMeshes) {
+  const humerus = boneMeshes.get("humerus") || null;
+  const radius = boneMeshes.get("radius") || null;
+  const ulna = boneMeshes.get("ulna") || null;
+  if (!humerus || !radius || !ulna) return null;
+
+  const pivot = estimateElbowPivot(humerus, radius, ulna);
+  if (!pivot) return null;
+  captureMotionRestGeometry(radius);
+  for (const mesh of muscleMeshes) captureMotionRestGeometry(mesh);
+
+  return {
+    pilotId: "elbow",
+    kind: "forearm-rotation",
+    action,
+    pivot,
+    radius,
+    ulna,
+    muscleMeshes,
+    sideSign: Math.sign(pivot.x) || 1,
+    valueDeg: action.startDeg,
+  };
+}
+
+function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
+  const humerus = boneMeshes.get("humerus") || null;
+  const scapula = boneMeshes.get("scapula") || null;
+  const clavicle = boneMeshes.get("clavicle") || null;
+  if (!humerus || !scapula) return null;
+
+  const pivot = estimateShoulderPivot(humerus);
+  if (!pivot) return null;
+
+  const humerusPivot = new THREE.Group();
+  humerusPivot.name = "shoulder-humerus-pivot";
+  humerusPivot.position.copy(pivot);
+  motionModelGroup.add(humerusPivot);
+  reparentMotionMeshAtPivot(humerus, pivot, humerusPivot);
+
+  for (const mesh of muscleMeshes) captureMotionRestGeometry(mesh);
+
+  return {
+    pilotId: "shoulder",
+    kind: "shoulder-gh",
+    action,
+    pivot,
+    humerusPivot,
+    scapula,
+    clavicle,
+    muscleMeshes,
+    sideSign: Math.sign(pivot.x) || 1,
+    valueDeg: action.startDeg,
+  };
+}
+
+function setMotionMuscleActivation(meshes, action, activation) {
+  const activeUnits = new Set(action?.synergists || []);
   for (const mesh of meshes || []) {
     const material = mesh.material;
     if (!material || Array.isArray(material)) continue;
+    const active = activeUnits.has(mesh.userData.motionUnit);
     material.emissive?.set?.(0x8b1f24);
-    material.emissiveIntensity = 0.05 + activation * 0.42;
+    material.emissiveIntensity =
+      active ? 0.08 + activation * 0.48 : 0.025;
     material.needsUpdate = true;
   }
 }
 
-function applyElbowMotionAngle(angleDeg) {
-  if (!motionRig || motionRig.pilotId !== "elbow") return;
+function applyElbowMotionValue(angleDeg) {
+  if (!motionRig || motionRig.kind !== "elbow-hinge") return;
+  const value = clampMotionValue(motionRig.action, angleDeg);
+  motionRig.valueDeg = value;
+  const angleRad = elbowFlexionRadians(value);
+  motionRig.forearmPivot.rotation.set(angleRad, 0, 0);
 
-  motionRig.angleDeg = Math.max(0, Math.min(120, Number(angleDeg) || 0));
-  motionRig.forearmPivot.rotation.set(
-    elbowFlexionRadians(motionRig.angleDeg),
-    0,
-    0
-  );
-
-  const scale = contractionScale(
-    motionRig.angleDeg,
-    motionRig.action.direction
-  );
-  if (motionRig.contractionGroup) {
-    motionRig.contractionGroup.scale.set(scale.x, scale.y, scale.z);
+  const activation = motionActionActivation(motionRig.action, value);
+  for (const mesh of motionRig.muscleMeshes) {
+    restoreMotionRestGeometry(mesh);
+    deformHingeMuscle(
+      mesh,
+      motionRig.pivot,
+      new THREE.Vector3(1, 0, 0),
+      angleRad,
+      activation
+    );
   }
-  setMotionMuscleActivation(motionRig.muscleMeshes, scale.activation);
+  setMotionMuscleActivation(motionRig.muscleMeshes, motionRig.action, activation);
+
+  if (motionCanvas) {
+    motionCanvas.dataset.motionForearmRotation =
+      motionRig.forearmPivot.rotation.x.toFixed(6);
+  }
+}
+
+function applyForearmRotationValue(angleDeg) {
+  if (!motionRig || motionRig.kind !== "forearm-rotation") return;
+  const value = clampMotionValue(motionRig.action, angleDeg);
+  motionRig.valueDeg = value;
+  const sign =
+    motionRig.action.direction === "pronation"
+      ? -motionRig.sideSign
+      : motionRig.sideSign;
+  const angleRad = THREE.MathUtils.degToRad(value) * sign;
+
+  restoreMotionRestGeometry(motionRig.radius);
+  deformRadiusForForearmRotation(
+    motionRig.radius,
+    motionRig.ulna,
+    angleRad
+  );
+
+  const activation = motionActionActivation(motionRig.action, value);
+  for (const mesh of motionRig.muscleMeshes) {
+    restoreMotionRestGeometry(mesh);
+    if (
+      ["pronator-teres", "pronator-quadratus", "supinator"].includes(
+        mesh.userData.motionUnit
+      )
+    ) {
+      deformHingeMuscle(
+        mesh,
+        motionRig.pivot,
+        new THREE.Vector3(0, -1, 0),
+        angleRad * 0.45,
+        activation
+      );
+    }
+  }
+  setMotionMuscleActivation(motionRig.muscleMeshes, motionRig.action, activation);
+
+  if (motionCanvas) {
+    motionCanvas.dataset.motionForearmAxialRotation = angleRad.toFixed(6);
+  }
+}
+
+function shoulderActionAxisAndAngle(action, value, sideSign) {
+  const radians = THREE.MathUtils.degToRad(value);
+  if (action.movementId === "shoulder-flexion") {
+    return { axis: new THREE.Vector3(1, 0, 0), angle: -radians };
+  }
+  if (action.movementId === "shoulder-extension") {
+    return { axis: new THREE.Vector3(1, 0, 0), angle: radians };
+  }
+  if (action.movementId === "shoulder-abduction") {
+    return { axis: new THREE.Vector3(0, 0, 1), angle: radians * sideSign };
+  }
+  if (action.movementId === "shoulder-external-rotation") {
+    return { axis: new THREE.Vector3(0, 1, 0), angle: -radians * sideSign };
+  }
+  return { axis: new THREE.Vector3(0, 1, 0), angle: radians * sideSign };
+}
+
+function applyShoulderMotionValue(angleDeg) {
+  if (!motionRig || motionRig.kind !== "shoulder-gh") return;
+  const value = clampMotionValue(motionRig.action, angleDeg);
+  motionRig.valueDeg = value;
+
+  const { axis, angle } = shoulderActionAxisAndAngle(
+    motionRig.action,
+    value,
+    motionRig.sideSign
+  );
+  motionRig.humerusPivot.quaternion.setFromAxisAngle(axis, angle);
+
+  const activation = motionActionActivation(motionRig.action, value);
+  for (const mesh of motionRig.muscleMeshes) {
+    restoreMotionRestGeometry(mesh);
+    deformShoulderMuscle(
+      mesh,
+      motionRig.pivot,
+      axis,
+      angle,
+      activation
+    );
+  }
+  setMotionMuscleActivation(motionRig.muscleMeshes, motionRig.action, activation);
+
+  if (motionCanvas) {
+    motionCanvas.dataset.motionShoulderRotation = angle.toFixed(6);
+  }
+}
+
+function applyMotionValue(angleDeg) {
+  if (!motionRig) return;
+  if (motionRig.kind === "elbow-hinge") {
+    applyElbowMotionValue(angleDeg);
+  } else if (motionRig.kind === "forearm-rotation") {
+    applyForearmRotationValue(angleDeg);
+  } else if (motionRig.kind === "shoulder-gh") {
+    applyShoulderMotionValue(angleDeg);
+  }
 
   const slider = motionStateEl?.querySelector("#motion-angle");
   const output = motionStateEl?.querySelector("#motion-angle-value");
-  if (slider && Number(slider.value) !== Math.round(motionRig.angleDeg)) {
-    slider.value = String(Math.round(motionRig.angleDeg));
+  if (slider && Number(slider.value) !== Math.round(motionRig.valueDeg)) {
+    slider.value = String(Math.round(motionRig.valueDeg));
   }
-  if (output) output.textContent = Math.round(motionRig.angleDeg) + "°";
+  if (output) output.textContent = Math.round(motionRig.valueDeg) + "°";
 
   if (motionCanvas) {
     motionCanvas.dataset.motionState =
-      motionRig.angleDeg === motionRig.action.startDeg ? "rest-pose" : "posed";
-    motionCanvas.dataset.motionAngle = String(Math.round(motionRig.angleDeg));
-    motionCanvas.dataset.motionForearmRotation =
-      motionRig.forearmPivot.rotation.x.toFixed(6);
+      motionRig.valueDeg === motionRig.action.startDeg ? "rest-pose" : "posed";
+    motionCanvas.dataset.motionAngle = String(Math.round(motionRig.valueDeg));
+    motionCanvas.dataset.motionMovement = motionRig.action.movementId;
   }
 }
 
@@ -3941,38 +4283,60 @@ function setMotionPlaying(playing) {
 }
 
 function updateMotionPlayback(now) {
-  if (!motionPlayback || !motionRig || motionRig.pilotId !== "elbow") return;
+  if (!motionPlayback || !motionRig) return;
 
   const delta = Math.min(0.05, Math.max(0, (now - motionPlayback.lastTime) / 1000));
   motionPlayback.lastTime = now;
-  const next = advanceElbowAngle(
-    motionRig.angleDeg,
+  const next = advanceMotionValue(
+    motionRig.valueDeg,
     motionPlayback.direction,
-    delta
+    delta,
+    motionRig.action
   );
   motionPlayback.direction = next.direction;
-  applyElbowMotionAngle(next.angleDeg);
+  applyMotionValue(next.angleDeg);
 }
 
-function renderMotionControls(selectedName, action) {
+function renderMotionControls(selectedName, action, actions, selectedIds) {
   if (!motionStateEl) return;
   motionStateEl.replaceChildren();
 
   const strong = document.createElement("strong");
   strong.textContent = selectedName;
   const description = document.createElement("span");
-  description.textContent =
-    action.direction === "flexion"
-      ? "Учебная кинематическая демонстрация сгибания в локте. Это ещё не силовая симуляция MyoSim."
-      : "Учебная кинематическая демонстрация разгибания в локте. Это ещё не силовая симуляция MyoSim.";
+  description.textContent = action.descriptionRu;
+  motionStateEl.append(strong, description);
 
   const controls = document.createElement("div");
   controls.className = "motion-controls";
 
+  if (actions.length > 1) {
+    const movementRow = document.createElement("label");
+    movementRow.className = "motion-movement-row";
+    const movementLabel = document.createElement("span");
+    movementLabel.textContent = "Движение";
+    const movementSelect = document.createElement("select");
+    movementSelect.id = "motion-movement";
+    movementSelect.setAttribute("aria-label", "Выберите движение");
+    for (const candidate of actions) {
+      const option = document.createElement("option");
+      option.value = candidate.movementId;
+      option.textContent = candidate.nameRu;
+      movementSelect.appendChild(option);
+    }
+    movementSelect.value = action.movementId;
+    movementSelect.addEventListener("change", () => {
+      setMotionPlaying(false);
+      buildMotionPreview(selectedIds, movementSelect.value);
+    });
+    movementRow.append(movementLabel, movementSelect);
+    controls.appendChild(movementRow);
+  }
+
   const angleRow = document.createElement("label");
   angleRow.className = "motion-angle-row";
   const label = document.createElement("span");
-  label.textContent = "Угол локтя";
+  label.textContent = action.controlLabelRu;
   const output = document.createElement("output");
   output.id = "motion-angle-value";
   output.textContent = Math.round(action.startDeg) + "°";
@@ -3985,11 +4349,29 @@ function renderMotionControls(selectedName, action) {
   slider.max = String(action.maxDeg);
   slider.step = "1";
   slider.value = String(action.startDeg);
-  slider.setAttribute("aria-label", "Угол сгибания в локтевом суставе");
+  slider.setAttribute("aria-label", action.controlLabelRu);
   slider.addEventListener("input", () => {
     setMotionPlaying(false);
-    applyElbowMotionAngle(Number(slider.value));
+    applyMotionValue(Number(slider.value));
   });
+
+  const rangeNote = document.createElement("small");
+  rangeNote.className = "motion-range-note";
+  if (action.referenceMaxDeg > action.maxDeg) {
+    rangeNote.textContent =
+      "Референс активного движения ≈ " +
+      Math.round(action.referenceMaxDeg) +
+      "°. Текущий preview ограничен " +
+      Math.round(action.maxDeg) +
+      "°: выше нужна проверенная кинематика лопатки и ключицы.";
+  } else {
+    rangeNote.textContent =
+      "Учебный диапазон preview: " +
+      Math.round(action.minDeg) +
+      "–" +
+      Math.round(action.maxDeg) +
+      "°.";
+  }
 
   const buttons = document.createElement("div");
   buttons.className = "motion-control-buttons";
@@ -4004,15 +4386,15 @@ function renderMotionControls(selectedName, action) {
   reset.textContent = "Исходное";
   reset.addEventListener("click", () => {
     setMotionPlaying(false);
-    applyElbowMotionAngle(action.startDeg);
+    applyMotionValue(action.startDeg);
   });
   buttons.append(play, reset);
 
-  controls.append(angleRow, slider, buttons);
-  motionStateEl.append(strong, description, controls);
+  controls.append(angleRow, slider, rangeNote, buttons);
+  motionStateEl.append(controls);
 }
 
-function buildMotionPreview(muscleIds) {
+function buildMotionPreview(muscleIds, preferredMovementId = null) {
   clearMotionPreview();
   if (!anatomyMesh || !muscleIds?.length) return;
 
@@ -4022,22 +4404,45 @@ function buildMotionPreview(muscleIds) {
   motionModelGroup.quaternion.copy(modelGroup.quaternion);
   motionModelGroup.scale.copy(modelGroup.scale);
 
-  const units = new Set();
+  const selectedIds = [...new Set(muscleIds)];
+  const selectedUnits = new Set();
+  for (const sid of selectedIds) {
+    const unit = matchMotionMuscleUnit(structureNames[sid]);
+    if (unit) selectedUnits.add(unit.id);
+  }
+
+  const actions = motionActionsForUnits([...selectedUnits]);
+  const action =
+    actions.find((item) => item.movementId === preferredMovementId) ||
+    actions[0] ||
+    null;
+
+  const firstSid = selectedIds[0];
+  const selectedTarget = learningTargetBySid.get(firstSid) || null;
+  const selectedSide = targetSideForSid(selectedTarget, firstSid);
+  const relatedIds = action
+    ? motionStructureIdsForUnits(action.synergists, selectedSide)
+    : [];
+  const renderIds = [...new Set([...selectedIds, ...relatedIds])];
+  const selectedSet = new Set(selectedIds);
+
   const muscleMeshes = [];
+  const renderedUnits = new Set();
   let muscleCount = 0;
-  for (const sid of muscleIds) {
+  for (const sid of renderIds) {
     const range = structureRanges[sid];
     if (!range) continue;
-
+    const selected = selectedSet.has(sid);
     const mesh = createMotionMesh(anatomyMesh, range, {
-      material: motionMuscleMaterial(),
+      material: motionMuscleMaterial(selected),
       name: displayStructureName(sid),
       kind: "muscle",
     });
     mesh.userData.sourceSid = sid;
+    mesh.userData.motionSelected = selected;
     const unit = matchMotionMuscleUnit(structureNames[sid]);
     if (unit) {
-      units.add(unit.id);
+      renderedUnits.add(unit.id);
       mesh.userData.motionUnit = unit.id;
     }
     motionModelGroup.add(mesh);
@@ -4045,17 +4450,19 @@ function buildMotionPreview(muscleIds) {
     muscleCount += 1;
   }
 
-  const action = elbowMotionAction([...units]);
   const boneMeshes = new Map();
   let boneCount = 0;
+  const allowedBones = new Set(
+    action?.pilotId === "shoulder"
+      ? ["scapula", "clavicle", "humerus"]
+      : ["humerus", "radius", "ulna"]
+  );
+
   if (skeletonMesh) {
     for (let boneId = 0; boneId < boneVisibility.length; boneId += 1) {
       if (!boneVisibility[boneId] || !boneRanges[boneId]) continue;
-
       const boneUnit = matchMotionBoneUnit(boneNames[boneId]);
-      if (action?.pilotId === "elbow" && !["humerus", "radius", "ulna"].includes(boneUnit?.id)) {
-        continue;
-      }
+      if (action && !allowedBones.has(boneUnit?.id)) continue;
 
       const mesh = createMotionMesh(skeletonMesh, boneRanges[boneId], {
         material: motionBoneMaterial(),
@@ -4072,24 +4479,35 @@ function buildMotionPreview(muscleIds) {
 
   motionCanvas.dataset.motionMuscles = String(muscleCount);
   motionCanvas.dataset.motionBones = String(boneCount);
-  motionCanvas.dataset.motionUnits = [...units].join(",");
+  motionCanvas.dataset.motionUnits = [...renderedUnits].join(",");
+  motionCanvas.dataset.motionSelectedUnits = [...selectedUnits].join(",");
   motionCanvas.dataset.motionState = "rest-pose";
   motionCanvas.dataset.motionPlaying = "false";
+  motionCanvas.dataset.motionMovement = action?.movementId || "";
 
   const selectedName =
-    muscleIds.length === 1
-      ? displayStructureName(muscleIds[0])
-      : displayStructureName(muscleIds[0]).replace(/s*((?:справа|слева))s*$/u, "");
+    selectedIds.length === 1
+      ? displayStructureName(selectedIds[0])
+      : displayStructureName(selectedIds[0]).replace(
+          /\s*\((?:справа|слева)\)\s*$/u,
+          ""
+        );
 
   if (action?.pilotId === "elbow") {
-    motionRig = buildElbowKinematicRig(action, muscleMeshes, boneMeshes);
+    motionRig = action.movementId.startsWith("forearm-")
+      ? buildForearmRotationRig(action, muscleMeshes, boneMeshes)
+      : buildElbowKinematicRig(action, muscleMeshes, boneMeshes);
+  } else if (action?.pilotId === "shoulder") {
+    motionRig = buildShoulderKinematicRig(action, muscleMeshes, boneMeshes);
   }
 
   if (motionRig) {
     motionCanvas.dataset.motionPilot = motionRig.pilotId;
     motionCanvas.dataset.motionAuthority = action.authority;
-    renderMotionControls(selectedName, action);
-    applyElbowMotionAngle(action.startDeg);
+    motionCanvas.dataset.motionReferenceMax = String(action.referenceMaxDeg);
+    motionCanvas.dataset.motionPreviewMax = String(action.maxDeg);
+    renderMotionControls(selectedName, action, actions, selectedIds);
+    applyMotionValue(action.startDeg);
     return;
   }
 
@@ -4098,8 +4516,8 @@ function buildMotionPreview(muscleIds) {
     const strong = document.createElement("strong");
     strong.textContent = selectedName;
     const span = document.createElement("span");
-    span.textContent = units.size
-      ? "Исходное положение. Для этой мышцы Motion-сопоставление подготовлено, но кинематика этого сустава ещё не подключена."
+    span.textContent = selectedUnits.size
+      ? "Исходное положение. Для этой мышцы Motion-сопоставление подготовлено, но её суставная кинематика ещё не подключена."
       : "Исходное положение. Для этой мышцы Motion-сопоставление ещё не подготовлено.";
     motionStateEl.append(strong, span);
   }

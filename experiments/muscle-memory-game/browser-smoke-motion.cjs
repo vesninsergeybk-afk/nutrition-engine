@@ -76,6 +76,11 @@ const assert = require('node:assert/strict');
   assert.match(stateText, /кинематическ/i);
   assert.equal(await page.locator('#motion-angle').count(), 1);
   assert.equal(await page.locator('#motion-play').count(), 1);
+  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '146');
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-movement'),
+    'elbow-flexion'
+  );
 
   await page.locator('#motion-angle').evaluate((el) => {
     el.value = '90';
@@ -93,6 +98,30 @@ const assert = require('node:assert/strict');
       )
     ) > 1
   );
+
+  if (await page.locator('#motion-movement').count()) {
+    const options = await page.locator('#motion-movement option').evaluateAll(
+      nodes => nodes.map(node => node.value)
+    );
+    assert.ok(options.includes('forearm-supination'));
+    await page.selectOption('#motion-movement', 'forearm-supination');
+    await page.locator('#motion-angle').evaluate((el) => {
+      el.value = '80';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await page.waitForFunction(
+      () =>
+        document.querySelector('#motion-viewer')?.dataset.motionMovement ===
+          'forearm-supination' &&
+        Math.abs(
+          Number(
+            document.querySelector('#motion-viewer')?.dataset
+              .motionForearmAxialRotation || 0
+          )
+        ) > 0.5
+    );
+    await page.selectOption('#motion-movement', 'elbow-flexion');
+  }
 
   await page.click('#motion-reset');
   assert.equal(await page.locator('#motion-viewer').getAttribute('data-motion-angle'), '0');

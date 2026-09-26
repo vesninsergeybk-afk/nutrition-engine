@@ -58,6 +58,30 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
     [/medial head of .*triceps brachii/i],
     ["TRImed"]
   ),
+  anconeus: unit(
+    "anconeus",
+    "Локтевая мышца",
+    [/\banconeus\b/i],
+    ["ANC"]
+  ),
+  "pronator-teres": unit(
+    "pronator-teres",
+    "Круглый пронатор",
+    [/pronator teres/i],
+    ["PT"]
+  ),
+  "pronator-quadratus": unit(
+    "pronator-quadratus",
+    "Квадратный пронатор",
+    [/pronator quadratus/i],
+    ["PQ"]
+  ),
+  supinator: unit(
+    "supinator",
+    "Супинатор",
+    [/\bsupinator\b/i],
+    ["SUP"]
+  ),
   "deltoid-clavicular": unit(
     "deltoid-clavicular",
     "Ключичная часть дельтовидной мышцы",
@@ -126,6 +150,10 @@ export const MOTION_PILOTS = Object.freeze({
       "triceps-long",
       "triceps-lateral",
       "triceps-medial",
+      "anconeus",
+      "pronator-teres",
+      "pronator-quadratus",
+      "supinator",
     ]),
     degreesOfFreedom: Object.freeze([
       Object.freeze({
