@@ -50,7 +50,7 @@ SECONDARY_RE = re.compile(
     r"babyfood|infant formula|formula,? ready-to-feed|formula,? powder|"
     r"pupusa|empanada|chow mein|chop suey|tamale|burrito|taco|enchilada|"
     r"prepared from recipe|homemade|with sauce|in sauce|sandwich|pizza|"
-    r"casserole|souffle|instant powder|dry mix|ready-to-serve)\b",
+    r"casserole|souffle|instant powder|dry mix|ready-to-serve|cake|cookies?|doughnut|donut|torte|brownie)\b",
     re.I,
 )
 
