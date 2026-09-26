@@ -1,23 +1,39 @@
+import { anatomySemantic } from "./anatomy-semantics.js";
+
 function unit(
   id,
-  nameRu,
+  legacyNameRu,
   sourcePatterns,
   myoActuators = [],
   requiredSources = ["z-anatomy", "bodyparts4"]
 ) {
+  const semantic = anatomySemantic(id);
+  if (!semantic || semantic.kind !== "muscle") {
+    throw new Error("Missing canonical muscle semantic: " + id);
+  }
   return Object.freeze({
     id,
-    nameRu,
+    semanticId: id,
+    nameRu: semantic.nameRu,
+    // These patterns are an adapter for the current static-atlas fallback.
+    // They do not define anatomical identity and are not required for future
+    // source-native Motion Lab geometry.
     sourcePatterns: Object.freeze([...sourcePatterns]),
     myoActuators: Object.freeze([...myoActuators]),
     requiredSources: Object.freeze([...requiredSources]),
   });
 }
 
-function bone(id, nameRu, sourcePatterns) {
+function bone(id, legacyNameRu, sourcePatterns) {
+  const semantic = anatomySemantic(id);
+  if (!semantic || !semantic.kind.startsWith("bone")) {
+    throw new Error("Missing canonical bone semantic: " + id);
+  }
   return Object.freeze({
     id,
-    nameRu,
+    semanticId: id,
+    nameRu: semantic.nameRu,
+    // Static-atlas lookup adapter only.
     sourcePatterns: Object.freeze([...sourcePatterns]),
   });
 }

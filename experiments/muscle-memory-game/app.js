@@ -77,6 +77,7 @@ import {
   motionPilot,
   motionVisualUnit,
 } from "./motion-readiness.js";
+import { motionVisualAssetPolicy } from "./motion-visual-assets.js";
 import {
   clampMotionValue,
   elbowFlexionRadians,
@@ -3761,6 +3762,11 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionForearmAxis = "";
     motionCanvas.dataset.motionRadiusRigid = "";
     motionCanvas.dataset.motionWristModel = "";
+    motionCanvas.dataset.motionSemanticBinding = "";
+    motionCanvas.dataset.motionGeometryCurrentBones = "";
+    motionCanvas.dataset.motionGeometryCurrentMuscles = "";
+    motionCanvas.dataset.motionGeometryTargetBones = "";
+    motionCanvas.dataset.motionGeometryTargetMuscles = "";
   }
 }
 
@@ -5762,6 +5768,9 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   const selectedTarget = learningTargetBySid.get(firstSid) || null;
   const selectedSide = targetSideForSid(selectedTarget, firstSid);
   const pilot = action ? motionPilot(action.pilotId) : null;
+  const visualAssetPolicy = action
+    ? motionVisualAssetPolicy(action.pilotId)
+    : null;
   const visualContextUnitIds = pilot?.visualContextUnits || [];
   const relatedUnitIds = action
     ? [
@@ -5885,6 +5894,15 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   motionCanvas.dataset.motionState = "rest-pose";
   motionCanvas.dataset.motionPlaying = "false";
   motionCanvas.dataset.motionMovement = action?.movementId || "";
+  motionCanvas.dataset.motionSemanticBinding = "canonical-id";
+  motionCanvas.dataset.motionGeometryCurrentBones =
+    visualAssetPolicy?.current?.bones || "";
+  motionCanvas.dataset.motionGeometryCurrentMuscles =
+    visualAssetPolicy?.current?.muscles || "";
+  motionCanvas.dataset.motionGeometryTargetBones =
+    visualAssetPolicy?.target?.bones || "";
+  motionCanvas.dataset.motionGeometryTargetMuscles =
+    visualAssetPolicy?.target?.muscles || "";
 
   const selectedName =
     selectedIds.length === 1

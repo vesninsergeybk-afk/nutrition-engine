@@ -373,3 +373,23 @@ Independent inspection of the generated CMC artifacts found one harmless playbac
 CI now verifies cadence against the target rate (each interval must remain within 0.5-1.5 nominal frame intervals) and uses tighter source-specific discontinuity guards for the pinned teaching clips: 0.25 m/s translational speed and 180°/s angular speed. These remain engineering guards, not physiological limits.
 
 Metadata terminology was corrected as well: the documented 3 Hz setting is `desiredKinematicsLowpassHz`, because the OpenSim CMC setup applies the low-pass filter to the desired kinematics that CMC tracks; it is not described as a separate 3 Hz filter applied to the exported body-transform clip itself.
+
+
+## Static Atlas and Motion Lab geometry are now separate concerns — 2026-09-26
+
+The project no longer treats the static atlas mesh as the required body for Motion Lab.
+
+Canonical anatomical identity is represented by stable semantic IDs such as `scapula`, `humerus`, `supraspinatus`, `deltoid-clavicular`, and `biceps-long`. A static-atlas mesh and a future motion-specific mesh may both bind to the same semantic ID without sharing vertices, topology, scale, rig, rest pose, or source name.
+
+The current Motion Lab still extracts meshes from the static atlas for compatibility. This path is explicitly named `atlas-derived-fallback`; it is no longer the target architecture.
+
+Target bone geometry is source-native:
+- shoulder/scapular complex: Thoracoscapular/OpenSim VTP bones from the same pinned model that produces the verified CMC motion clips;
+- elbow/forearm/wrist: MyoArm STL bones from the pinned MuJoCo source.
+
+Because those bone meshes belong to their own biomechanics models, they do not require registration to the static atlas in order to move correctly. Registration remains useful only when an external visual asset is attached to a biomechanics skeleton.
+
+Target volumetric muscle geometry is intentionally unresolved and represented as `motion-muscles-pending`. It will be selected as a separate Motion Lab asset based on anatomical correspondence, riggability/path compatibility, visual quality, and license. It does not need to be the same mesh used by the static atlas.
+
+The Atlas ↔ Motion Lab bridge is semantic, not geometric:
+`static atlas structure -> canonical semantic ID -> Motion Lab structure`.
