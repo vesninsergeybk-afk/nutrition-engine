@@ -349,10 +349,47 @@ export const MOTION_PILOTS = Object.freeze({
       Object.freeze({
         id: "scapular-complex",
         nameRu: "Лопаточно-ключичный комплекс",
-        simulationAuthority: "mujoco",
+        simulationAuthority: "kinematic-preview",
       }),
     ]),
-  }),
+  }),,
+  scapula: Object.freeze({
+    id: "scapula",
+    nameRu: "Лопаточно-ключичный комплекс",
+    specimenId: "scapular-stabilizers",
+    simulatedSide: "right",
+    mirrorLeft: true,
+    requiresMyoActuators: false,
+    bodies: Object.freeze(["scapula", "clavicle", "humerus"]),
+    muscleUnits: Object.freeze([
+      "trapezius",
+      "serratus-anterior",
+      "rhomboid-major",
+      "rhomboid-minor",
+      "levator-scapulae",
+      "pectoralis-minor",
+    ]),
+    visualContextUnits: Object.freeze([
+      "deltoid-acromial",
+      "supraspinatus",
+      "infraspinatus",
+      "subscapularis",
+      "teres-minor",
+      "subclavius",
+    ]),
+    degreesOfFreedom: Object.freeze([
+      Object.freeze({
+        id: "scapular-translation",
+        nameRu: "Протракция/ретракция и подъём/опускание",
+        simulationAuthority: "kinematic-preview",
+      }),
+      Object.freeze({
+        id: "scapular-rotation",
+        nameRu: "Верхняя/нижняя ротация",
+        simulationAuthority: "kinematic-preview",
+      }),
+    ]),
+  })
 });
 
 function matchesAny(name, patterns) {
