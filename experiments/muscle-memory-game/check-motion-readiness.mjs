@@ -117,7 +117,7 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
 // be a numerically activated MyoArm actuator until that mapping is validated.
 const shoulderContextUnits = MOTION_PILOTS.shoulder.visualContextUnits || [];
 assert(
-  shoulderContextUnits.length >= 6,
+  shoulderContextUnits.length >= 7,
   "Shoulder visual context is incomplete"
 );
 for (const unitId of shoulderContextUnits) {
