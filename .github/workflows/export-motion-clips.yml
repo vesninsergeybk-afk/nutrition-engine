@@ -1,0 +1,67 @@
+name: Export biomechanics motion clips
+
+on:
+  workflow_dispatch:
+    inputs:
+      stride:
+        description: "Keep every Nth source row"
+        required: false
+        default: "2"
+
+permissions:
+  contents: read
+
+jobs:
+  thoracoscapular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install portable OpenSim bindings
+        run: python -m pip install --disable-pip-version-check pyopensim==4.5.2.0
+
+      - name: Fetch pinned Thoracoscapular source
+        shell: bash
+        run: |
+          set -euo pipefail
+          REV=d40ebd8ba658633993e531e408c0d96df30ff367
+          BASE=https://raw.githubusercontent.com/ComputationalBiomechanicsLab/rmr-solver/$REV
+          mkdir -p /tmp/tsm /tmp/motion-clips
+          curl -fL "$BASE/OpenSim%20Models/for%20RMR%20solver/TSM_subject_noWeight.osim" -o /tmp/tsm/model.osim
+          curl -fL "$BASE/Results/IK%20solutions/ABD01.mot" -o /tmp/tsm/ABD01.mot
+          curl -fL "$BASE/Results/IK%20solutions/FLX01.mot" -o /tmp/tsm/FLX01.mot
+          curl -fL "$BASE/Results/IK%20solutions/SHRUG01.mot" -o /tmp/tsm/SHRUG01.mot
+
+      - name: Export OpenSim rigid-body transforms
+        shell: bash
+        run: |
+          set -euo pipefail
+          REV=d40ebd8ba658633993e531e408c0d96df30ff367
+          SCRIPT=experiments/muscle-memory-game/export-opensim-motion.py
+          COMMON="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id shoulder --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --stride ${{ inputs.stride }}"
+          python "$SCRIPT" $COMMON --motion /tmp/tsm/ABD01.mot --source-motion "Results/IK solutions/ABD01.mot" --clip-id tsm-abduction-01 --movement-id shoulder-abduction --output /tmp/motion-clips/tsm-abduction-01.json
+          python "$SCRIPT" $COMMON --motion /tmp/tsm/FLX01.mot --source-motion "Results/IK solutions/FLX01.mot" --clip-id tsm-flexion-01 --movement-id shoulder-flexion --output /tmp/motion-clips/tsm-flexion-01.json
+
+          COMMON_SCAP="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id scapula --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --stride ${{ inputs.stride }}"
+          python "$SCRIPT" $COMMON_SCAP --motion /tmp/tsm/SHRUG01.mot --source-motion "Results/IK solutions/SHRUG01.mot" --clip-id tsm-shrug-01 --movement-id scapular-elevation --output /tmp/motion-clips/tsm-shrug-01.json
+
+      - name: Validate exported clip contract
+        run: |
+          node experiments/muscle-memory-game/check-motion-clip-file.mjs /tmp/motion-clips/*.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: thoracoscapular-motion-clips
+          path: /tmp/motion-clips/*.json
+          if-no-files-found: error
+          retention-days: 30
