@@ -3961,11 +3961,19 @@ function deformShoulderMuscle(mesh, pivot, axis, angleRad, activation) {
       );
     } else {
       const distance = p.distanceTo(pivot);
-      attachmentWeight = 1 - THREE.MathUtils.clamp(
+      const normalizedDistance = THREE.MathUtils.clamp(
         (distance - minDistance) / distanceSpan,
         0,
         1
       );
+      // Most cuff/chest/teres origins lie away from the glenohumeral
+      // center while their humeral insertion is nearer the pivot. The
+      // coracobrachialis is the opposite: its coracoid origin is near the
+      // shoulder and its humeral insertion lies distally.
+      attachmentWeight =
+        unitId === "coracobrachialis"
+          ? normalizedDistance
+          : 1 - normalizedDistance;
     }
 
     rel.copy(p).sub(pivot);

@@ -106,7 +106,7 @@ const MOTION_ACTIONS = Object.freeze({
       "Гленогумеральный компонент сгибания. Выше 90° движение лопатки и ключицы пока не моделируется без проверенной регистрации.",
     maxDeg: SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg,
-    synergists: ["deltoid-clavicular"],
+    synergists: ["deltoid-clavicular", "coracobrachialis", "pectoralis-major"],
   }),
   "shoulder-abduction": frozenAction({
     pilotId: "shoulder",
@@ -131,7 +131,7 @@ const MOTION_ACTIONS = Object.freeze({
     maxDeg: SHOULDER_PREVIEW_LIMITS.extension.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.extension.referenceMaxDeg,
     speedDegPerSecond: 35,
-    synergists: ["deltoid-spinal"],
+    synergists: ["deltoid-spinal", "teres-major"],
   }),
   "shoulder-external-rotation": frozenAction({
     pilotId: "shoulder",
@@ -157,7 +157,12 @@ const MOTION_ACTIONS = Object.freeze({
     maxDeg: SHOULDER_PREVIEW_LIMITS.internalRotation.previewMaxDeg,
     referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.internalRotation.referenceMaxDeg,
     speedDegPerSecond: 40,
-    synergists: ["subscapularis", "deltoid-clavicular"],
+    synergists: [
+      "subscapularis",
+      "deltoid-clavicular",
+      "pectoralis-major",
+      "teres-major",
+    ],
   }),
 });
 
@@ -186,6 +191,15 @@ const UNIT_ACTION_IDS = Object.freeze({
   infraspinatus: Object.freeze(["shoulder-external-rotation"]),
   subscapularis: Object.freeze(["shoulder-internal-rotation"]),
   "teres-minor": Object.freeze(["shoulder-external-rotation"]),
+  "pectoralis-major": Object.freeze([
+    "shoulder-flexion",
+    "shoulder-internal-rotation",
+  ]),
+  coracobrachialis: Object.freeze(["shoulder-flexion"]),
+  "teres-major": Object.freeze([
+    "shoulder-extension",
+    "shoulder-internal-rotation",
+  ]),
 });
 
 function clamp(value, min, max) {

@@ -82,6 +82,24 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
     [/\bsupinator\b/i],
     ["SUP"]
   ),
+  "pectoralis-major": unit(
+    "pectoralis-major",
+    "Большая грудная мышца",
+    [/pectoralis major/i],
+    ["PECM1", "PECM2", "PECM3"]
+  ),
+  coracobrachialis: unit(
+    "coracobrachialis",
+    "Клювовидно-плечевая мышца",
+    [/\bcoracobrachialis\b/i],
+    ["CORB"]
+  ),
+  "teres-major": unit(
+    "teres-major",
+    "Большая круглая мышца",
+    [/(?:right |left )?teres major/i],
+    ["TMAJ"]
+  ),
   "deltoid-clavicular": unit(
     "deltoid-clavicular",
     "Ключичная часть дельтовидной мышцы",
@@ -183,6 +201,9 @@ export const MOTION_PILOTS = Object.freeze({
       "infraspinatus",
       "subscapularis",
       "teres-minor",
+      "pectoralis-major",
+      "coracobrachialis",
+      "teres-major",
     ]),
     degreesOfFreedom: Object.freeze([
       Object.freeze({

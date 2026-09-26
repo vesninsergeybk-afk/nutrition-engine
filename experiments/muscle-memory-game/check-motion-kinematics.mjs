@@ -62,6 +62,30 @@ assert(
   "Shoulder elevation preview must remain honest about the uncalibrated scapular component"
 );
 
+
+const pectoralisActions = motionActionsForUnits(["pectoralis-major"]);
+assert(
+  pectoralisActions.some((item) => item.movementId === "shoulder-flexion") &&
+    pectoralisActions.some(
+      (item) => item.movementId === "shoulder-internal-rotation"
+    ),
+  "Pectoralis major must contribute to shoulder flexion/internal rotation preview"
+);
+const coracobrachialisActions = motionActionsForUnits(["coracobrachialis"]);
+assert(
+  coracobrachialisActions.length === 1 &&
+    coracobrachialisActions[0].movementId === "shoulder-flexion",
+  "Coracobrachialis must contribute to shoulder flexion preview"
+);
+const teresMajorActions = motionActionsForUnits(["teres-major"]);
+assert(
+  teresMajorActions.some((item) => item.movementId === "shoulder-extension") &&
+    teresMajorActions.some(
+      (item) => item.movementId === "shoulder-internal-rotation"
+    ),
+  "Teres major must contribute to shoulder extension/internal rotation preview"
+);
+
 const triceps = elbowMotionAction(["triceps-long"]);
 assert(triceps?.direction === "extension", "Triceps must resolve to extension");
 assert(triceps.startDeg === 146, "Extension preview must start flexed");

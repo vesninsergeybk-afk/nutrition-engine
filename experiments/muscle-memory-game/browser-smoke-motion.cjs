@@ -156,6 +156,81 @@ const assert = require('node:assert/strict');
     false
   );
 
+  // Shoulder pilot: a deltoid selection must expose its distinct
+  // movement components without pretending that humerus-only elevation is
+  // a complete scapulohumeral simulation.
+  await page.selectOption('#learning-region', 'shoulder');
+  await page.fill('#structure-search', 'дельтовидная');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  await page.locator('.search-result').first().click();
+  await page.click('#mode-motion');
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionPilot ===
+        'shoulder' &&
+      document.querySelector('#motion-movement'),
+    null,
+    { timeout: 15000 }
+  );
+
+  const shoulderOptions = await page.locator('#motion-movement option').evaluateAll(
+    nodes => nodes.map(node => node.value)
+  );
+  for (const movement of [
+    'shoulder-flexion',
+    'shoulder-abduction',
+    'shoulder-extension',
+    'shoulder-external-rotation',
+    'shoulder-internal-rotation',
+  ]) {
+    assert.ok(shoulderOptions.includes(movement), 'Missing shoulder movement: ' + movement);
+  }
+
+  await page.selectOption('#motion-movement', 'shoulder-abduction');
+  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '90');
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-reference-max'),
+    '150'
+  );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-authority'),
+    'kinematic-preview'
+  );
+
+  await page.locator('#motion-angle').evaluate((el) => {
+    el.value = '60';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionMovement ===
+        'shoulder-abduction' &&
+      Math.abs(
+        Number(
+          document.querySelector('#motion-viewer')?.dataset.motionShoulderRotation || 0
+        )
+      ) > 0.5,
+    null,
+    { timeout: 5000 }
+  );
+  assert.match(
+    await page.locator('#motion-state').innerText(),
+    /90°|150°|лопатк|ключиц/i
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-units'),
+    /deltoid-acromial/
+  );
+  assert.match(
+    await page.locator('#motion-viewer').getAttribute('data-motion-units'),
+    /supraspinatus/
+  );
+
+  await page.click('#mode-explore');
   const viewerBox = await page.locator('#viewer').boundingBox();
   assert.ok(viewerBox && viewerBox.width > 700, 'Atlas did not return to a single wide viewer');
 
