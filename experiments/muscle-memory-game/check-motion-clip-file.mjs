@@ -54,7 +54,7 @@ for (const file of files) {
     }
     if (
       clip.sourceStage !== "opensim-cmc-kinematics" ||
-      Math.abs(clip.sourceLowpassHz - 3) > 1e-9
+      Math.abs(clip.desiredKinematicsLowpassHz - 3) > 1e-9
     ) {
       throw new Error(
         file + ": TSM teaching clip must identify the CMC source stage and 3 Hz desired-kinematics filter"
@@ -115,14 +115,29 @@ for (const file of files) {
     }
   }
 
-  // Technical discontinuity guards. They are not anatomical ROM norms.
-  if (maxFrameDt > 0.04) {
-    throw new Error(file + ": exported frame cadence has a gap >40 ms");
+  // Technical discontinuity guards for these pinned teaching clips.
+  // They are not anatomical ROM norms.
+  if (clip.targetSampleHz) {
+    const nominalDt = 1 / clip.targetSampleHz;
+    const minAllowedDt = nominalDt * 0.5;
+    const maxAllowedDt = nominalDt * 1.5;
+    let minFrameDt = Infinity;
+    for (let index = 1; index < clip.frames.length; index += 1) {
+      minFrameDt = Math.min(
+        minFrameDt,
+        clip.frames[index].time - clip.frames[index - 1].time
+      );
+    }
+    if (minFrameDt < minAllowedDt || maxFrameDt > maxAllowedDt) {
+      throw new Error(
+        file + ": exported cadence deviates too far from target sample rate"
+      );
+    }
   }
-  if (maxTranslationSpeed > 1.0) {
+  if (maxTranslationSpeed > 0.25) {
     throw new Error(file + ": body translation speed indicates a discontinuity");
   }
-  if (maxRotationSpeed > (360 * Math.PI) / 180) {
+  if (maxRotationSpeed > (180 * Math.PI) / 180) {
     throw new Error(file + ": body rotation speed indicates a discontinuity");
   }
 

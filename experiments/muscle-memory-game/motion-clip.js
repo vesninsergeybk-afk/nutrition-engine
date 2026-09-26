@@ -48,7 +48,7 @@ export function createMotionClip({
   sourceRevision,
   sourceMotion = null,
   sourceStage = null,
-  sourceLowpassHz = null,
+  desiredKinematicsLowpassHz = null,
   coordinateSpace = null,
   referenceBody = null,
   sourcePhase = null,
@@ -104,8 +104,13 @@ export function createMotionClip({
     sourceRevision,
     sourceMotion,
     sourceStage,
-    sourceLowpassHz:
-      sourceLowpassHz == null ? null : finiteNumber(sourceLowpassHz, "sourceLowpassHz"),
+    desiredKinematicsLowpassHz:
+      desiredKinematicsLowpassHz == null
+        ? null
+        : finiteNumber(
+            desiredKinematicsLowpassHz,
+            "desiredKinematicsLowpassHz"
+          ),
     coordinateSpace,
     referenceBody,
     sourcePhase: sourcePhase ? Object.freeze({ ...sourcePhase }) : null,

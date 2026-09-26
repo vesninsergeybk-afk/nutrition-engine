@@ -327,14 +327,14 @@ Production authority for movement is now separated from the rendering layer.
 - Elbow, forearm rotation and wrist primary candidate: `myosim-arm` (MyoArm/MyoSim). Runtime may later use official MuJoCo WASM or precomputed clips. Upstream model provenance/licensing remains a product gate.
 - `motion-kinematics.js` is retained as `kinematic-preview` fallback only. It is no longer the target production biomechanics engine.
 
-The first exporter workflow is intentionally manual. It downloads a pinned Thoracoscapular model and pinned ABD01 / FLX01 / SHRUG01 trajectories, uses OpenSim offline to realize body positions, then exports clavicle/scapula/humerus position + normalized quaternion frames. Browser interpolation occurs only between source-derived poses.
+The exporter workflow runs reproducibly in CI (and can also be dispatched manually). It downloads the pinned Thoracoscapular CMC model and pinned ABD01 / FLX01 / SHRUG01 CMC kinematics, uses OpenSim offline to realize body positions, then exports clavicle/scapula/humerus position + normalized quaternion frames. Browser interpolation occurs only between source-derived poses.
 
 
 ## Teaching-phase extraction from source trials — 2026-09-26
 
 The Thoracoscapular source files are experimental trials, not ready-made UI animations. Their body transforms remain source-derived; no bone pose is manually corrected or smoothed.
 
-For teaching clips, the exporter now isolates one increasing movement phase from the original coordinate trajectory. It smooths only the selected scalar source coordinate for event detection, finds the pre-peak baseline and first peak, then keeps the 5%-95% progression window. The actual exported clavicle/scapula/humerus transforms are the untouched OpenSim poses at those source rows.
+For teaching clips, the exporter isolates one increasing movement phase from the source coordinate trajectory. It smooths only the selected scalar source coordinate for event detection using a 0.2 s temporal window, finds the pre-peak baseline and the dominant global peak of these one-repetition trials, then keeps the 5%-95% progression window. The actual exported clavicle/scapula/humerus transforms are the untouched OpenSim poses at those source rows.
 
 Current event coordinates:
 - ABD01: `shoulder_elv`;
@@ -364,3 +364,12 @@ Important scope limitation: these source trials demonstrate a subrange of the re
 ### CMC storage timestamp audit
 
 The pinned ABD/FLX/SHRUG CMC kinematics files each contain one duplicated terminal row: the final timestamp is repeated once with numerically identical coordinate values. The exporter now removes only exact duplicate-time / identical-state rows. A duplicate timestamp with any different state value is treated as an error rather than silently choosing one state.
+
+
+### Final cadence and metadata tightening after artifact audit
+
+Independent inspection of the generated CMC artifacts found one harmless playback-detail issue: the exact endpoint of the ABD phase was only 4.7 ms after the preceding 60 Hz target sample. The sampler now replaces a target sample with the exact endpoint when the remaining tail is shorter than half a nominal frame, rather than appending a tiny terminal interval.
+
+CI now verifies cadence against the target rate (each interval must remain within 0.5-1.5 nominal frame intervals) and uses tighter source-specific discontinuity guards for the pinned teaching clips: 0.25 m/s translational speed and 180°/s angular speed. These remain engineering guards, not physiological limits.
+
+Metadata terminology was corrected as well: the documented 3 Hz setting is `desiredKinematicsLowpassHz`, because the OpenSim CMC setup applies the low-pass filter to the desired kinematics that CMC tracks; it is not described as a separate 3 Hz filter applied to the exported body-transform clip itself.

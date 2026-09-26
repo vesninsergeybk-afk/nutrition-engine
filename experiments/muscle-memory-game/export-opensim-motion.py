@@ -351,7 +351,17 @@ def sample_rows_by_rate(
         target_time += interval
 
     if selected_indices[-1] != len(rows) - 1:
-        selected_indices.append(len(rows) - 1)
+        tail_gap = rows[-1][0] - rows[selected_indices[-1]][0]
+        if (
+            len(selected_indices) > 1
+            and tail_gap < interval * 0.5
+        ):
+            # Avoid a tiny terminal interval that would create an artificial
+            # playback-speed spike. Replace the last target sample with the
+            # exact phase endpoint instead of adding an extra near-duplicate.
+            selected_indices[-1] = len(rows) - 1
+        else:
+            selected_indices.append(len(rows) - 1)
 
     return [rows[index] for index in selected_indices]
 
@@ -368,7 +378,11 @@ def main() -> None:
     parser.add_argument("--source-revision", required=True)
     parser.add_argument("--source-motion", required=True)
     parser.add_argument("--source-stage", default=None)
-    parser.add_argument("--source-lowpass-hz", type=float, default=None)
+    parser.add_argument(
+        "--desired-kinematics-lowpass-hz",
+        type=float,
+        default=None,
+    )
     parser.add_argument("--body-map", required=True, help="atlasId=opensimBody,...")
     parser.add_argument(
         "--reference-body",
@@ -486,7 +500,7 @@ def main() -> None:
         "sourceRevision": args.source_revision,
         "sourceMotion": args.source_motion,
         "sourceStage": args.source_stage,
-        "sourceLowpassHz": args.source_lowpass_hz,
+        "desiredKinematicsLowpassHz": args.desired_kinematics_lowpass_hz,
         "coordinateSpace": (
             "body-relative" if args.reference_body else "opensim-ground"
         ),
