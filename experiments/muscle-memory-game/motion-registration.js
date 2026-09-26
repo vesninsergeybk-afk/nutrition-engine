@@ -115,6 +115,41 @@ export const MOTION_REGISTRATION_SPECS = Object.freeze({
       ]),
     }),
   }),
+  scapula: Object.freeze({
+    pilotId: "scapula",
+    method: "rest-pose-landmarks-plus-rigid-refinement",
+    scalePolicy: "uniform-per-pilot",
+    atlasSpace: "atlas-world",
+    simulationSpace: "myoarm-right",
+    bodies: Object.freeze({
+      clavicle: body("clavicle", "clavicle_r", [
+        "sternal-end-center",
+        "acromial-end-center",
+        "clavicle-shaft-reference",
+      ]),
+      scapula: body("scapula", "scapula_r", [
+        "acromion",
+        "inferior-angle",
+        "root-of-scapular-spine",
+      ]),
+      humerus: body("humerus", "humerus_r", [
+        "humeral-head-center",
+        "medial-epicondyle",
+        "lateral-epicondyle",
+      ]),
+    }),
+    joints: Object.freeze({
+      sternoclavicular: joint("sternoclavicular", [
+        "sternoclavicular_r2_r",
+        "sternoclavicular_r3_r",
+      ]),
+      acromioclavicular: joint("acromioclavicular", [
+        "acromioclavicular_r1_r",
+        "acromioclavicular_r2_r",
+        "acromioclavicular_r3_r",
+      ]),
+    }),
+  }),
 });
 
 export const MOTION_CALIBRATION = Object.freeze({
@@ -122,6 +157,8 @@ export const MOTION_CALIBRATION = Object.freeze({
     elbow: Object.freeze({ status: "pending-landmark-calibration" }),
     wrist: Object.freeze({ status: "pending-landmark-calibration" }),
     shoulder: Object.freeze({ status: "pending-landmark-calibration" }),
+    scapula: Object.freeze({ status: "pending-landmark-calibration" }),
+    scapula: Object.freeze({ status: "pending-landmark-calibration" }),
   }),
   bodyparts4: Object.freeze({
     elbow: Object.freeze({ status: "pending-landmark-calibration" }),
