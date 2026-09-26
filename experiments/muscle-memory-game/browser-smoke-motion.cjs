@@ -249,9 +249,24 @@ const assert = require('node:assert/strict');
     Number(await page.locator('#motion-viewer').getAttribute('data-motion-scapular-deg')) > 20,
     'Full-range abduction must rotate the scapula'
   );
+  const ghDeg = Number(
+    await page.locator('#motion-viewer').getAttribute('data-motion-glenohumeral-deg')
+  );
+  const ghMeshDeg = Number(
+    await page.locator('#motion-viewer').getAttribute('data-motion-shoulder-rotation-deg')
+  );
   assert.ok(
-    Number(await page.locator('#motion-viewer').getAttribute('data-motion-glenohumeral-deg')) > 60,
+    ghDeg > 60,
     'Full-range abduction must retain a glenohumeral component'
+  );
+  assert.ok(
+    Math.abs(ghMeshDeg - ghDeg) < 1.1,
+    'Humerus rotation must use the residual glenohumeral angle, not the total arm elevation'
+  );
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-shoulder-chain'),
+    'scapula>glenohumeral',
+    'Glenohumeral pivot must follow the moving scapular base'
   );
   assert.ok(
     Number(await page.locator('#motion-viewer').getAttribute('data-motion-clavicle-elevation-deg')) > 0,

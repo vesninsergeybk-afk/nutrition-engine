@@ -3744,6 +3744,8 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionScapularDeg = "";
     motionCanvas.dataset.motionClavicleElevationDeg = "";
     motionCanvas.dataset.motionClavicleRetractionDeg = "";
+    motionCanvas.dataset.motionShoulderChain = "";
+    motionCanvas.dataset.motionShoulderRotationDeg = "";
   }
 }
 
@@ -3754,8 +3756,6 @@ function motionMuscleMaterial(role = "context") {
       : role === "assistant"
         ? 0.88
         : role === "scapular"
-          ? 0.92
-          : role === "scapular"
           ? 0.92
           : role === "stabilizer"
             ? 0.68
@@ -4089,8 +4089,14 @@ function deformShoulderMuscle(mesh, pivot, axis, angleRad, activation) {
 function deformShoulderMusclePose(
   mesh,
   pivot,
-  poseQuaternion,
-  activation
+  distalQuaternion,
+  activation,
+  {
+    distalTranslation = null,
+    proximalPivot = null,
+    proximalQuaternion = null,
+    proximalTranslation = null,
+  } = {}
 ) {
   captureMotionRestGeometry(mesh);
   const rest = mesh.userData.motionRestPositions;
@@ -4123,25 +4129,27 @@ function deformShoulderMusclePose(
     "triceps-long",
   ]);
   const movesDistalWithHumerus = distalInsertionUnits.has(unitId);
-  const p = new THREE.Vector3();
-  const rel = new THREE.Vector3();
-  const q = new THREE.Quaternion();
-  const identity = new THREE.Quaternion();
+  const restPoint = new THREE.Vector3();
+  const proximalPoint = new THREE.Vector3();
+  const distalPoint = new THREE.Vector3();
+  const relative = new THREE.Vector3();
+  const distalShift = distalTranslation || new THREE.Vector3();
+  const proximalShift = proximalTranslation || new THREE.Vector3();
   const centerX = (box.min.x + box.max.x) / 2;
   const centerZ = (box.min.z + box.max.z) / 2;
 
   for (let i = 0; i < position.count; i += 1) {
-    p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
+    restPoint.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
 
     let attachmentWeight;
     if (isDeltoid) {
       attachmentWeight = THREE.MathUtils.clamp(
-        (box.max.y - p.y) / spanY,
+        (box.max.y - restPoint.y) / spanY,
         0,
         1
       );
     } else {
-      const distance = p.distanceTo(pivot);
+      const distance = restPoint.distanceTo(pivot);
       const normalizedDistance = THREE.MathUtils.clamp(
         (distance - minDistance) / distanceSpan,
         0,
@@ -4152,15 +4160,34 @@ function deformShoulderMusclePose(
         : 1 - normalizedDistance;
     }
 
-    rel.copy(p).sub(pivot);
-    q.copy(identity).slerp(poseQuaternion, attachmentWeight);
-    rel.applyQuaternion(q);
-    p.copy(pivot).add(rel);
-
+    // A small belly change is applied in rest space first so it travels with
+    // the attachment transforms instead of swelling around a stale world axis.
     const belly = 4 * attachmentWeight * (1 - attachmentWeight);
-    p.x = centerX + (p.x - centerX) * (1 + activation * 0.04 * belly);
-    p.z = centerZ + (p.z - centerZ) * (1 + activation * 0.04 * belly);
-    position.setXYZ(i, p.x, p.y, p.z);
+    restPoint.x =
+      centerX +
+      (restPoint.x - centerX) * (1 + activation * 0.04 * belly);
+    restPoint.z =
+      centerZ +
+      (restPoint.z - centerZ) * (1 + activation * 0.04 * belly);
+
+    proximalPoint.copy(restPoint);
+    if (proximalPivot && proximalQuaternion) {
+      proximalPoint
+        .sub(proximalPivot)
+        .applyQuaternion(proximalQuaternion)
+        .add(proximalPivot)
+        .add(proximalShift);
+    }
+
+    distalPoint
+      .copy(restPoint)
+      .sub(pivot)
+      .applyQuaternion(distalQuaternion)
+      .add(pivot)
+      .add(distalShift);
+
+    proximalPoint.lerp(distalPoint, attachmentWeight);
+    position.setXYZ(i, proximalPoint.x, proximalPoint.y, proximalPoint.z);
   }
 
   position.needsUpdate = true;
@@ -4344,16 +4371,19 @@ function buildShoulderKinematicRig(action, muscleMeshes, boneMeshes) {
     motionMeshMedialEndCentroid(clavicle) ||
     clavicleBox.getCenter(new THREE.Vector3());
 
-  const humerusPivot = new THREE.Group();
-  humerusPivot.name = "shoulder-humerus-pivot";
-  humerusPivot.position.copy(pivot);
-  motionModelGroup.add(humerusPivot);
-
   const scapulaPivot = new THREE.Group();
   scapulaPivot.name = "shoulder-scapula-pivot";
   scapulaPivot.position.copy(scapulaPivotPoint);
   motionModelGroup.add(scapulaPivot);
   reparentMotionMeshAtPivot(scapula, scapulaPivotPoint, scapulaPivot);
+
+  // The glenohumeral joint is carried by the scapula. Keeping this pivot
+  // independent would double-count full-range elevation: the humerus would
+  // receive the whole humerothoracic angle while the scapula also rotates.
+  const humerusPivot = new THREE.Group();
+  humerusPivot.name = "shoulder-glenohumeral-pivot";
+  humerusPivot.position.copy(pivot).sub(scapulaPivotPoint);
+  scapulaPivot.add(humerusPivot);
 
   const claviclePivot = new THREE.Group();
   claviclePivot.name = "shoulder-clavicle-pivot";
@@ -4540,9 +4570,11 @@ function setMotionMuscleActivation(meshes, action, activation) {
         ? 1
         : role === "assistant"
           ? 0.88
-          : role === "stabilizer"
-            ? 0.68
-            : 0.42;
+          : role === "scapular"
+            ? 0.92
+            : role === "stabilizer"
+              ? 0.68
+              : 0.42;
     material.transparent = role !== "mover";
     material.depthWrite =
       role === "mover" || role === "assistant" || role === "scapular";
@@ -4844,9 +4876,13 @@ function applyShoulderMotionValue(angleDeg) {
     value,
     motionRig.sideSign
   );
+  const glenohumeralValue =
+    motionRig.action.combinedShoulderComplex
+      ? complex.glenohumeralDeg
+      : value;
   const pose = shoulderPoseQuaternion(
     motionRig.action,
-    value,
+    glenohumeralValue,
     motionRig.sideSign
   );
   motionRig.humerusPivot.quaternion.copy(pose.quaternion);
@@ -4924,16 +4960,68 @@ function applyShoulderMotionValue(angleDeg) {
     "levator-scapulae",
     "pectoralis-minor",
   ]);
+  const scapularOriginUnits = new Set([
+    "deltoid-acromial",
+    "deltoid-spinal",
+    "supraspinatus",
+    "infraspinatus",
+    "subscapularis",
+    "teres-minor",
+    "teres-major",
+    "coracobrachialis",
+    "biceps-long",
+    "biceps-short",
+    "triceps-long",
+  ]);
+  const clavicularOriginUnits = new Set(["deltoid-clavicular"]);
+
+  const worldHumerusQuaternion = motionRig.action.combinedShoulderComplex
+    ? scapulaQuaternion.clone().multiply(pose.quaternion)
+    : pose.quaternion.clone();
+  const movingShoulderPivot = motionRig.pivot.clone();
+  if (motionRig.action.combinedShoulderComplex) {
+    movingShoulderPivot
+      .sub(motionRig.scapulaPivotPoint)
+      .applyQuaternion(scapulaQuaternion)
+      .add(motionRig.scapulaPivotPoint)
+      .add(scapulaTranslation);
+  }
+  const shoulderPivotTranslation = movingShoulderPivot
+    .clone()
+    .sub(motionRig.pivot);
 
   for (const mesh of motionRig.muscleMeshes) {
     restoreMotionRestGeometry(mesh);
     const unitId = mesh.userData.motionUnit;
     if (humeralCrossingUnits.has(unitId)) {
+      const followsScapula =
+        motionRig.action.combinedShoulderComplex &&
+        scapularOriginUnits.has(unitId);
+      const followsClavicle =
+        motionRig.action.combinedShoulderComplex &&
+        clavicularOriginUnits.has(unitId);
+
       deformShoulderMusclePose(
         mesh,
         motionRig.pivot,
-        pose.quaternion,
-        activation
+        worldHumerusQuaternion,
+        activation,
+        {
+          distalTranslation: shoulderPivotTranslation,
+          proximalPivot: followsScapula
+            ? motionRig.scapulaPivotPoint
+            : followsClavicle
+              ? motionRig.claviclePivotPoint
+              : null,
+          proximalQuaternion: followsScapula
+            ? scapulaQuaternion
+            : followsClavicle
+              ? clavicleQuaternion
+              : null,
+          proximalTranslation: followsScapula
+            ? scapulaTranslation
+            : null,
+        }
       );
     } else if (
       motionRig.action.combinedShoulderComplex &&
@@ -4972,6 +5060,12 @@ function applyShoulderMotionValue(angleDeg) {
 
   if (motionCanvas) {
     motionCanvas.dataset.motionShoulderRotation = pose.angle.toFixed(6);
+    motionCanvas.dataset.motionShoulderRotationDeg =
+      THREE.MathUtils.radToDeg(Math.abs(pose.angle)).toFixed(1);
+    motionCanvas.dataset.motionShoulderChain =
+      motionRig.humerusPivot.parent === motionRig.scapulaPivot
+        ? "scapula>glenohumeral"
+        : "unlinked";
     motionCanvas.dataset.motionShoulderBaseRotation = pose.baseAngle.toFixed(6);
     motionCanvas.dataset.motionReferencePose =
       motionRig.action.referencePose || "rest";

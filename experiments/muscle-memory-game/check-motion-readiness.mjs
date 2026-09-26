@@ -221,3 +221,20 @@ for (const unitId of [
   );
 }
 console.log("Motion readiness: scapular visual pilot available in both anatomy sources");
+
+assert(
+  appSource.includes('humerusPivot.position.copy(pivot).sub(scapulaPivotPoint)') &&
+    appSource.includes('scapulaPivot.add(humerusPivot)'),
+  "Combined shoulder rig must carry the glenohumeral pivot with the scapula"
+);
+assert(
+  appSource.includes("? complex.glenohumeralDeg") &&
+    appSource.includes("worldHumerusQuaternion"),
+  "Combined shoulder rig still risks double-counting humerothoracic elevation"
+);
+assert(
+  appSource.includes('role === "scapular"') &&
+    appSource.includes("? 0.92"),
+  "Scapular driver meshes lose their visual role after activation refresh"
+);
+console.log("Motion readiness: shoulder chain uses scapular base + residual glenohumeral motion");
