@@ -339,7 +339,7 @@ const MOTION_ACTIONS = Object.freeze({
       "teres-major",
     ],
     stabilizers: ["supraspinatus", "infraspinatus", "teres-minor"],
-  }),,
+  }),
   "scapular-protraction": frozenAction({
     pilotId: "scapula",
     movementId: "scapular-protraction",

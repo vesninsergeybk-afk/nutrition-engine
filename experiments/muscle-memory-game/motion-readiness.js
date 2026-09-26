@@ -352,7 +352,7 @@ export const MOTION_PILOTS = Object.freeze({
         simulationAuthority: "kinematic-preview",
       }),
     ]),
-  }),,
+  }),
   scapula: Object.freeze({
     id: "scapula",
     nameRu: "Лопаточно-ключичный комплекс",
