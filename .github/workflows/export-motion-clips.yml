@@ -7,6 +7,8 @@ on:
     paths:
       - experiments/muscle-memory-game/export-opensim-motion.py
       - experiments/muscle-memory-game/probe-opensim-muscle-paths.py
+      - experiments/muscle-memory-game/export-opensim-muscle-path.py
+      - experiments/muscle-memory-game/check-motion-muscle-path-file.mjs
       - experiments/muscle-memory-game/motion-clip.js
       - experiments/muscle-memory-game/motion-sources.js
       - experiments/muscle-memory-game/check-motion-clip-file.mjs
@@ -74,6 +76,17 @@ jobs:
             --motion /tmp/tsm/ABD01.sto \
             --phase-coordinate shoulder_elv \
             --muscles "DeltoideusScapula_M,Supraspinatus_A,SerratusAnterior_M,TrapeziusScapula_M"
+
+      - name: Export wrap-aware deltoid teaching path
+        shell: bash
+        run: |
+          set -euo pipefail
+          SAMPLE_HZ="${{ github.event_name == 'workflow_dispatch' && inputs.sample_hz || '60' }}"
+          python experiments/muscle-memory-game/export-opensim-muscle-path.py             --model /tmp/tsm/model.osim             --motion /tmp/tsm/ABD01.sto             --output /tmp/motion-clips/tsm-deltoid-acromial-abduction-path.json             --semantic-id deltoid-acromial             --muscle DeltoideusScapula_M             --phase-coordinate shoulder_elv             --reference-body thorax             --resampled-points 24             --sample-hz "$SAMPLE_HZ"
+
+      - name: Validate wrap-aware muscle path
+        run: |
+          node experiments/muscle-memory-game/check-motion-muscle-path-file.mjs /tmp/motion-clips/*-path.json
 
       - name: Export verified OpenSim rigid-body transforms
         shell: bash

@@ -454,3 +454,14 @@ On viewports <=760 px, Motion Lab is now the primary workspace rather than the l
 - the control block stays sticky at the top of the compact Motion sheet while explanatory content can scroll inside the sheet.
 
 This changes presentation only. Biomechanical sources, motion rigs and source-native geometry are unchanged.
+
+
+## Wrap-aware muscle centerline checkpoint — 2026-09-26
+
+The visible fallback problem where a deforming volumetric muscle can pass through bone is not treated as a rigid-body collision bug. The production Motion Lab muscle must follow the biomechanics source's current GeometryPath, which already contains origin/insertion plus active via/wrapping geometry.
+
+A first full-phase exporter now targets the acromial/middle deltoid representation `DeltoideusScapula_M` during the verified CMC abduction excursion. Every OpenSim frame is evaluated in thorax-relative coordinates. Because OpenSim may activate or remove intermediate wrap points as the limb moves, the current source polyline is re-parameterized by arc length to a fixed 24-point centerline. This does not invent a new route: every resampled point lies on the source polyline segments.
+
+The fixed centerline is a rendering contract for the later procedural muscle envelope. It prevents a volumetric mesh from being driven by a direct origin-to-insertion chord through bone and avoids assuming one-to-one correspondence between a changing number of OpenSim wrap points.
+
+This checkpoint validates continuity across the entire teaching phase before any volumetric belly is rendered. It does not yet claim that a thick muscle envelope is collision-free: tube radius/contact handling remains a separate visual layer, because a centerline tangent to a wrapping surface can still place part of a thick envelope inside the surface if rendered naively.
