@@ -158,12 +158,12 @@ export const MOTION_CALIBRATION = Object.freeze({
     wrist: Object.freeze({ status: "pending-landmark-calibration" }),
     shoulder: Object.freeze({ status: "pending-landmark-calibration" }),
     scapula: Object.freeze({ status: "pending-landmark-calibration" }),
-    scapula: Object.freeze({ status: "pending-landmark-calibration" }),
   }),
   bodyparts4: Object.freeze({
     elbow: Object.freeze({ status: "pending-landmark-calibration" }),
     wrist: Object.freeze({ status: "pending-landmark-calibration" }),
     shoulder: Object.freeze({ status: "pending-landmark-calibration" }),
+    scapula: Object.freeze({ status: "pending-landmark-calibration" }),
   }),
 });
 
