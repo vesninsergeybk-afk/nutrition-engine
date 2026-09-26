@@ -23,6 +23,9 @@ function quaternion(value, label) {
   const q = value.map((n, i) => finiteNumber(n, label + "[" + i + "]"));
   const norm = Math.hypot(...q);
   if (!(norm > 1e-8)) throw new Error(label + " quaternion has zero norm");
+  if (Math.abs(norm - 1) > 1e-4) {
+    throw new Error(label + " quaternion must already be normalized");
+  }
   return Object.freeze(q.map((n) => n / norm));
 }
 
@@ -44,9 +47,12 @@ export function createMotionClip({
   sourceId,
   sourceRevision,
   sourceMotion = null,
+  sourceStage = null,
+  sourceLowpassHz = null,
   coordinateSpace = null,
   referenceBody = null,
   sourcePhase = null,
+  targetSampleHz = null,
   frames,
 } = {}) {
   if (schema !== "motion-clip-v1") {
@@ -96,9 +102,14 @@ export function createMotionClip({
     sourceId,
     sourceRevision,
     sourceMotion,
+    sourceStage,
+    sourceLowpassHz:
+      sourceLowpassHz == null ? null : finiteNumber(sourceLowpassHz, "sourceLowpassHz"),
     coordinateSpace,
     referenceBody,
     sourcePhase: sourcePhase ? Object.freeze({ ...sourcePhase }) : null,
+    targetSampleHz:
+      targetSampleHz == null ? null : finiteNumber(targetSampleHz, "targetSampleHz"),
     duration:
       normalizedFrames[normalizedFrames.length - 1].time -
       normalizedFrames[0].time,
@@ -110,26 +121,45 @@ function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
-function nlerpQuaternion(a, b, t) {
+function slerpQuaternion(a, b, t) {
   let bx = b[0];
   let by = b[1];
   let bz = b[2];
   let bw = b[3];
-  const dot = a[0] * bx + a[1] * by + a[2] * bz + a[3] * bw;
+  let dot = a[0] * bx + a[1] * by + a[2] * bz + a[3] * bw;
+
   if (dot < 0) {
+    dot = -dot;
     bx = -bx;
     by = -by;
     bz = -bz;
     bw = -bw;
   }
-  const q = [
-    lerp(a[0], bx, t),
-    lerp(a[1], by, t),
-    lerp(a[2], bz, t),
-    lerp(a[3], bw, t),
+  dot = Math.min(1, Math.max(-1, dot));
+
+  if (dot > 0.9995) {
+    const q = [
+      lerp(a[0], bx, t),
+      lerp(a[1], by, t),
+      lerp(a[2], bz, t),
+      lerp(a[3], bw, t),
+    ];
+    const norm = Math.hypot(...q);
+    return q.map((n) => n / norm);
+  }
+
+  const theta0 = Math.acos(dot);
+  const sinTheta0 = Math.sin(theta0);
+  const theta = theta0 * t;
+  const s0 = Math.sin(theta0 - theta) / sinTheta0;
+  const s1 = Math.sin(theta) / sinTheta0;
+
+  return [
+    s0 * a[0] + s1 * bx,
+    s0 * a[1] + s1 * by,
+    s0 * a[2] + s1 * bz,
+    s0 * a[3] + s1 * bw,
   ];
-  const norm = Math.hypot(...q);
-  return q.map((n) => n / norm);
 }
 
 export function sampleMotionClip(clip, time) {
@@ -167,7 +197,7 @@ export function sampleMotionClip(clip, time) {
         ),
       ]),
       quaternion: Object.freeze(
-        nlerpQuaternion(
+        slerpQuaternion(
           a.bodies[bodyId].quaternion,
           b.bodies[bodyId].quaternion,
           alpha

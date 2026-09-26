@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export an OpenSim .mot trajectory to rigid-body transform motion clips."""
+"""Export OpenSim coordinate storage to verified rigid-body motion clips."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple
 import pyopensim as osim
 
 
-def parse_mot(path: pathlib.Path) -> Tuple[bool, List[str], List[List[float]]]:
+def parse_storage(path: pathlib.Path) -> Tuple[bool, List[str], List[List[float]]]:
     lines = path.read_text(encoding="utf-8").splitlines()
     in_degrees = any(
         re.match(r"\s*inDegrees\s*=\s*yes\s*$", line, re.I) for line in lines
@@ -24,6 +24,7 @@ def parse_mot(path: pathlib.Path) -> Tuple[bool, List[str], List[List[float]]]:
         )
     except StopIteration as exc:
         raise ValueError(f"{path}: missing endheader") from exc
+
     labels = re.split(r"\s+", lines[end + 1].strip())
     rows: List[List[float]] = []
     for line in lines[end + 2 :]:
@@ -35,8 +36,12 @@ def parse_mot(path: pathlib.Path) -> Tuple[bool, List[str], List[List[float]]]:
                 f"{path}: row has {len(values)} values; expected {len(labels)}"
             )
         rows.append(values)
+
     if not rows or labels[0] != "time":
-        raise ValueError(f"{path}: invalid motion table")
+        raise ValueError(f"{path}: invalid OpenSim storage table")
+    for index in range(1, len(rows)):
+        if not rows[index][0] > rows[index - 1][0]:
+            raise ValueError(f"{path}: timestamps must be strictly increasing")
     return in_degrees, labels, rows
 
 
@@ -80,10 +85,15 @@ def rotate_vector(quat: List[float], vector: List[float]) -> List[float]:
     return rotated[1:]
 
 
+def max_abs_delta(a: List[float], b: List[float]) -> float:
+    return max(abs(a[i] - b[i]) for i in range(len(a)))
+
+
 def transform_in_ground(body, state) -> Dict[str, List[float]]:
     transform = body.getTransformInGround(state)
     return {
         "position": simtk_values(transform.p(), 3),
+        # SimTK Quaternion uses [e0,e1,e2,e3] = [w,x,y,z].
         "quaternion": normalize_quaternion(
             simtk_values(transform.R().convertRotationToQuaternion(), 4)
         ),
@@ -94,6 +104,7 @@ def body_transform(
     body,
     state,
     reference_body=None,
+    verify_native: bool = True,
 ) -> Dict[str, List[float]]:
     body_world = transform_in_ground(body, state)
     if reference_body is None:
@@ -111,29 +122,80 @@ def body_transform(
     relative_quaternion = normalize_quaternion(
         quaternion_multiply(reference_inverse, body_world["quaternion"])
     )
-    return {
+    pose = {
         "position": relative_position,
         "quaternion": relative_quaternion,
     }
+
+    if verify_native:
+        body_native = body.getTransformInGround(state)
+        reference_native = reference_body.getTransformInGround(state)
+
+        native_position = simtk_values(
+            reference_native.shiftBaseStationToFrame(body_native.p()),
+            3,
+        )
+        if max_abs_delta(native_position, relative_position) > 1e-8:
+            raise ValueError(
+                "Manual thorax-relative translation disagrees with SimTK Transform"
+            )
+
+        basis = (
+            ([1.0, 0.0, 0.0], osim.Vec3(1.0, 0.0, 0.0)),
+            ([0.0, 1.0, 0.0], osim.Vec3(0.0, 1.0, 0.0)),
+            ([0.0, 0.0, 1.0], osim.Vec3(0.0, 0.0, 1.0)),
+        )
+        for basis_list, basis_native in basis:
+            world_axis = body_native.xformFrameVecToBase(basis_native)
+            native_relative_axis = simtk_values(
+                reference_native.xformBaseVecToFrame(world_axis),
+                3,
+            )
+            manual_relative_axis = rotate_vector(
+                relative_quaternion,
+                basis_list,
+            )
+            if max_abs_delta(
+                native_relative_axis,
+                manual_relative_axis,
+            ) > 1e-8:
+                raise ValueError(
+                    "Manual thorax-relative rotation disagrees with SimTK Transform"
+                )
+
+    return pose
 
 
 def is_translation_coordinate(name: str) -> bool:
     return bool(re.search(r"_t[xyz]$", name))
 
 
-def moving_average(values: List[float], window: int) -> List[float]:
-    if window < 1:
-        raise ValueError("Smoothing window must be >= 1")
-    if window % 2 == 0:
-        raise ValueError("Smoothing window must be odd")
-    half = window // 2
-    smoothed: List[float] = []
-    for index in range(len(values)):
-        start = max(0, index - half)
-        end = min(len(values), index + half + 1)
-        chunk = values[start:end]
-        smoothed.append(sum(chunk) / len(chunk))
-    return smoothed
+def time_window_average(
+    rows: List[List[float]],
+    values: List[float],
+    window_seconds: float,
+) -> List[float]:
+    if not window_seconds > 0:
+        raise ValueError("Smoothing window must be > 0 seconds")
+    half = window_seconds / 2.0
+    result: List[float] = []
+    left = 0
+    right = 0
+    running_sum = 0.0
+
+    for index, row in enumerate(rows):
+        time = row[0]
+        while right < len(rows) and rows[right][0] <= time + half + 1e-12:
+            running_sum += values[right]
+            right += 1
+        while left < len(rows) and rows[left][0] < time - half - 1e-12:
+            running_sum -= values[left]
+            left += 1
+        count = right - left
+        if count <= 0:
+            raise ValueError("Empty temporal smoothing window")
+        result.append(running_sum / count)
+    return result
 
 
 def extract_teaching_phase(
@@ -143,7 +205,7 @@ def extract_teaching_phase(
     direction: str,
     start_fraction: float,
     end_fraction: float,
-    smoothing_window: int,
+    smoothing_seconds: float,
 ) -> Tuple[List[List[float]], Dict[str, float | int | str]]:
     if coordinate_name not in labels:
         raise ValueError("Phase coordinate missing from motion: " + coordinate_name)
@@ -155,17 +217,14 @@ def extract_teaching_phase(
     coordinate_index = labels.index(coordinate_name)
     raw_values = [float(row[coordinate_index]) for row in rows]
     oriented_values = (
-        raw_values
-        if direction == "increasing"
-        else [-value for value in raw_values]
+        raw_values if direction == "increasing" else [-value for value in raw_values]
     )
-    smoothed = moving_average(oriented_values, smoothing_window)
+    smoothed = time_window_average(rows, oriented_values, smoothing_seconds)
 
+    # These source files contain one intended repetition. Select its dominant
+    # excursion: the global oriented peak and the minimum preceding that peak.
     peak_index = max(range(len(smoothed)), key=smoothed.__getitem__)
-    baseline_index = min(
-        range(peak_index + 1),
-        key=smoothed.__getitem__,
-    )
+    baseline_index = min(range(peak_index + 1), key=smoothed.__getitem__)
     amplitude = smoothed[peak_index] - smoothed[baseline_index]
     if not amplitude > 1e-8:
         raise ValueError(
@@ -186,7 +245,10 @@ def extract_teaching_phase(
     end_index = next(
         (
             index
-            for index in range(start_index or baseline_index, peak_index + 1)
+            for index in range(
+                start_index if start_index is not None else baseline_index,
+                peak_index + 1,
+            )
             if smoothed[index] >= end_target
         ),
         None,
@@ -212,9 +274,10 @@ def extract_teaching_phase(
     metadata: Dict[str, float | int | str] = {
         "coordinate": coordinate_name,
         "direction": direction,
+        "peakPolicy": "dominant-global-peak",
         "startFraction": start_fraction,
         "endFraction": end_fraction,
-        "smoothingWindow": smoothing_window,
+        "smoothingSeconds": smoothing_seconds,
         "sourceStartTime": float(rows[start_index][0]),
         "sourceEndTime": float(rows[end_index][0]),
         "sourceDuration": float(rows[end_index][0] - rows[start_index][0]),
@@ -229,6 +292,47 @@ def extract_teaching_phase(
     return selected, metadata
 
 
+def sample_rows_by_rate(
+    rows: List[List[float]],
+    target_hz: float,
+) -> List[List[float]]:
+    if not target_hz > 0:
+        raise ValueError("Target sample rate must be > 0")
+    if len(rows) < 2:
+        return rows
+
+    start = rows[0][0]
+    end = rows[-1][0]
+    interval = 1.0 / target_hz
+    selected_indices = [0]
+    source_index = 1
+    target_time = start + interval
+
+    while target_time < end - 1e-12:
+        while (
+            source_index < len(rows)
+            and rows[source_index][0] < target_time
+        ):
+            source_index += 1
+        if source_index >= len(rows):
+            break
+
+        before_index = max(0, source_index - 1)
+        after_index = source_index
+        chosen = min(
+            (before_index, after_index),
+            key=lambda index: abs(rows[index][0] - target_time),
+        )
+        if chosen > selected_indices[-1]:
+            selected_indices.append(chosen)
+        target_time += interval
+
+    if selected_indices[-1] != len(rows) - 1:
+        selected_indices.append(len(rows) - 1)
+
+    return [rows[index] for index in selected_indices]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True)
@@ -240,6 +344,8 @@ def main() -> None:
     parser.add_argument("--source-id", required=True)
     parser.add_argument("--source-revision", required=True)
     parser.add_argument("--source-motion", required=True)
+    parser.add_argument("--source-stage", default=None)
+    parser.add_argument("--source-lowpass-hz", type=float, default=None)
     parser.add_argument("--body-map", required=True, help="atlasId=opensimBody,...")
     parser.add_argument(
         "--reference-body",
@@ -258,11 +364,11 @@ def main() -> None:
     )
     parser.add_argument("--phase-start-fraction", type=float, default=0.05)
     parser.add_argument("--phase-end-fraction", type=float, default=0.95)
-    parser.add_argument("--phase-smoothing-window", type=int, default=21)
-    parser.add_argument("--stride", type=int, default=1)
+    parser.add_argument("--phase-smoothing-seconds", type=float, default=0.2)
+    parser.add_argument("--sample-hz", type=float, default=60.0)
     args = parser.parse_args()
 
-    in_degrees, labels, rows = parse_mot(pathlib.Path(args.motion))
+    in_degrees, labels, rows = parse_storage(pathlib.Path(args.motion))
     model = osim.Model(str(pathlib.Path(args.model)))
     state = model.initSystem()
 
@@ -301,28 +407,30 @@ def main() -> None:
         if label in coord_map
     }
     if not coordinate_columns:
-        raise ValueError("No .mot coordinate names matched the OpenSim model")
+        raise ValueError("No storage coordinate names matched the OpenSim model")
 
     source_phase = None
-    export_rows = rows
+    phase_rows = rows
     if args.phase_coordinate:
-        export_rows, source_phase = extract_teaching_phase(
+        phase_rows, source_phase = extract_teaching_phase(
             labels=labels,
             rows=rows,
             coordinate_name=args.phase_coordinate,
             direction=args.phase_direction,
             start_fraction=args.phase_start_fraction,
             end_fraction=args.phase_end_fraction,
-            smoothing_window=args.phase_smoothing_window,
+            smoothing_seconds=args.phase_smoothing_seconds,
         )
 
+    export_rows = sample_rows_by_rate(phase_rows, args.sample_hz)
+    if source_phase is not None:
+        source_phase["exportedRowCount"] = len(export_rows)
+        source_phase["targetSampleHz"] = args.sample_hz
+
     frames = []
-    stride = max(1, args.stride)
     first_time = float(export_rows[0][0])
 
-    for row_index, row in enumerate(export_rows):
-        if row_index % stride and row_index != len(export_rows) - 1:
-            continue
+    for row in export_rows:
         source_time = float(row[0])
         state.setTime(source_time)
         for name, column in coordinate_columns.items():
@@ -337,23 +445,10 @@ def main() -> None:
                 body_set.get(source_name),
                 state,
                 reference_body=reference_body,
+                verify_native=True,
             )
             for atlas_id, source_name in body_map.items()
         }
-
-        if reference_body is not None:
-            reference_pose = body_transform(
-                reference_body,
-                state,
-                reference_body=reference_body,
-            )
-            if any(abs(value) > 1e-8 for value in reference_pose["position"]):
-                raise ValueError("Reference-body translation did not cancel")
-            identity = reference_pose["quaternion"]
-            if min(abs(identity[0] - 1.0), abs(identity[0] + 1.0)) > 1e-8:
-                raise ValueError("Reference-body rotation did not cancel")
-            if any(abs(value) > 1e-8 for value in identity[1:]):
-                raise ValueError("Reference-body rotation did not cancel")
 
         frames.append({"time": source_time - first_time, "bodies": bodies})
 
@@ -365,11 +460,14 @@ def main() -> None:
         "sourceId": args.source_id,
         "sourceRevision": args.source_revision,
         "sourceMotion": args.source_motion,
+        "sourceStage": args.source_stage,
+        "sourceLowpassHz": args.source_lowpass_hz,
         "coordinateSpace": (
             "body-relative" if args.reference_body else "opensim-ground"
         ),
         "referenceBody": args.reference_body,
         "sourcePhase": source_phase,
+        "targetSampleHz": args.sample_hz,
         "frames": frames,
     }
     output = pathlib.Path(args.output)
@@ -378,17 +476,19 @@ def main() -> None:
         json.dumps(clip, separators=(",", ":")),
         encoding="utf-8",
     )
+
     if source_phase:
         print(
             "teaching phase "
             + f"{source_phase['coordinate']} "
             + f"{source_phase['sourceStartTime']:.3f}-"
             + f"{source_phase['sourceEndTime']:.3f}s, "
-            + f"quality={source_phase['progressQuality']:.3f}"
+            + f"quality={source_phase['progressQuality']:.3f}, "
+            + f"filter={source_phase['smoothingSeconds']:.3f}s"
         )
     print(
-        f"exported {len(frames)} frames from {len(export_rows)} selected rows "
-        + f"({len(rows)} source rows) -> {output}"
+        f"exported {len(frames)} frames at target {args.sample_hz:.1f} Hz "
+        + f"from {len(phase_rows)} selected rows ({len(rows)} source rows) -> {output}"
     )
 
 

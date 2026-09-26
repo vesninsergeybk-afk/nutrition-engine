@@ -342,3 +342,20 @@ Current event coordinates:
 - SHRUG01: `scapula_elevation`.
 
 Each clip records the source time window, fractions, smoothing window, original/selected row counts and a monotonic-progress quality score. CI rejects clips with poor phase monotonicity, implausible teaching duration, >2 cm inter-frame translation jumps or >15° inter-frame rotation jumps. These limits are continuity guards, not normative joint-angle limits.
+
+
+## Audit correction: IK trial clips replaced by CMC kinematics — 2026-09-26
+
+A deeper post-export audit rejected the first IK-based teaching clips as production-ready. The scalar phase coordinate was nearly monotonic, but that did not guarantee smooth 3D kinematics: the raw ABD01 IK trajectory contained an `axial_rot` jump of about 9.25° in 10 ms, producing an 8.52° humeral orientation step after 20 ms subsampling. Similar, smaller plane/axial jumps existed in FLX01 and SHRUG01. Therefore the earlier 15°/frame continuity guard was too permissive, and `progressQuality=1.0` was only evidence about the selected scalar phase coordinate, not proof of whole-chain smoothness.
+
+Teaching clips now use the repository's OpenSim CMC kinematics outputs for ABD01 / FLX01 / SHRUG01 together with the CMC model. The corresponding CMC setup files explicitly use a 3 Hz low-pass cutoff for the desired kinematics. Raw IK files remain registered only as provenance, not as the final teaching transform source.
+
+The phase detector is now time-based rather than sample-count-based: a 0.2 s temporal moving average is used only to locate the dominant movement excursion and its 5%-95% window. It no longer assumes a 100 Hz source. The selected CMC rows are then sampled at a target 60 Hz using nearest source rows; bone poses themselves are not smoothed or manually corrected.
+
+Thorax-relative transform math now has an independent runtime cross-check against native SimTK Transform operations for translation and all three body axes. Quaternion convention is explicitly treated as SimTK `[e0,e1,e2,e3] = [w,x,y,z]`. Exported raw quaternion norms are checked before the JavaScript clip parser can normalize anything.
+
+Clip interpolation now uses shortest-path quaternion SLERP rather than normalized linear interpolation.
+
+Continuity QA is time-aware: it checks frame cadence plus translational and angular speeds instead of relying only on a large per-frame angular threshold. These are technical discontinuity guards, not anatomical ROM limits.
+
+Important scope limitation: these source trials demonstrate a subrange of the recorded movements; they are not full 0-180° normative ROM clips. They must be presented as source-derived teaching excursions until additional validated source trajectories cover larger ranges.

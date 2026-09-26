@@ -16,12 +16,27 @@ export const MOTION_SOURCES = Object.freeze({
     revision: TSM_REVISION,
     license: "CC-BY-4.0",
     citation: "Seth et al. 2019, Frontiers in Neurorobotics 13:90",
-    modelPath: "OpenSim Models/for RMR solver/TSM_subject_noWeight.osim",
+    modelPath: "OpenSim Models/for CMC/TSM_subject_CMC_noWeight.osim",
     sampleMotionPaths: Object.freeze({
+      abduction:
+        "Results/CMC analysis/abd01/ThoracoscapularShoulderCMC_Kinematics_q.sto",
+      flexion:
+        "Results/CMC analysis/flx01/ThoracoscapularShoulderCMC_Kinematics_q.sto",
+      shrug:
+        "Results/CMC analysis/shrug01/ThoracoscapularShoulderCMC_Kinematics_q.sto",
+    }),
+    rawIkMotionPaths: Object.freeze({
       abduction: "Results/IK solutions/ABD01.mot",
       flexion: "Results/IK solutions/FLX01.mot",
       shrug: "Results/IK solutions/SHRUG01.mot",
     }),
+    cmcSetupPaths: Object.freeze({
+      abduction: "Results/CMC analysis/CMC_setup_abd01.xml",
+      flexion: "Results/CMC analysis/CMC_setup_flx01.xml",
+      shrug: "Results/CMC analysis/CMC_setup_shrug01.xml",
+    }),
+    sourceStage: "opensim-cmc-kinematics",
+    desiredKinematicsLowpassHz: 3,
     bodies: frozenList(["clavicle", "scapula", "humerus", "ulna", "hand"]),
     coordinates: frozenList([
       "clav_prot",
@@ -37,7 +52,7 @@ export const MOTION_SOURCES = Object.freeze({
       "pro_sup",
     ]),
     authority:
-      "Primary shoulder/scapular kinematics. OpenSim is used offline; the browser consumes exported rigid-body transforms.",
+      "Primary shoulder/scapular teaching kinematics. Clips use OpenSim CMC output that tracked the source IK trials; the desired CMC kinematics were low-pass filtered at 3 Hz. OpenSim remains offline and the browser consumes exported rigid-body transforms.",
   }),
   "myosim-arm": Object.freeze({
     id: "myosim-arm",

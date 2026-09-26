@@ -8,13 +8,14 @@ on:
       - experiments/muscle-memory-game/export-opensim-motion.py
       - experiments/muscle-memory-game/motion-clip.js
       - experiments/muscle-memory-game/motion-sources.js
+      - experiments/muscle-memory-game/check-motion-clip-file.mjs
       - .github/workflows/export-motion-clips.yml
   workflow_dispatch:
     inputs:
-      stride:
-        description: "Keep every Nth source row"
+      sample_hz:
+        description: "Target teaching-clip sample rate"
         required: false
-        default: "2"
+        default: "60"
 
 permissions:
   contents: read
@@ -51,32 +52,34 @@ jobs:
           print("pyopensim/OpenSim import smoke:", osim.__version__, osim.__opensim_version__)
           PY
 
-      - name: Fetch pinned Thoracoscapular source
+      - name: Fetch pinned Thoracoscapular CMC source
         shell: bash
         run: |
           set -euo pipefail
           REV=d40ebd8ba658633993e531e408c0d96df30ff367
           BASE=https://raw.githubusercontent.com/ComputationalBiomechanicsLab/rmr-solver/$REV
           mkdir -p /tmp/tsm /tmp/motion-clips
-          curl -fL "$BASE/OpenSim%20Models/for%20RMR%20solver/TSM_subject_noWeight.osim" -o /tmp/tsm/model.osim
-          curl -fL "$BASE/Results/IK%20solutions/ABD01.mot" -o /tmp/tsm/ABD01.mot
-          curl -fL "$BASE/Results/IK%20solutions/FLX01.mot" -o /tmp/tsm/FLX01.mot
-          curl -fL "$BASE/Results/IK%20solutions/SHRUG01.mot" -o /tmp/tsm/SHRUG01.mot
+          curl -fL "$BASE/OpenSim%20Models/for%20CMC/TSM_subject_CMC_noWeight.osim" -o /tmp/tsm/model.osim
+          curl -fL "$BASE/Results/CMC%20analysis/abd01/ThoracoscapularShoulderCMC_Kinematics_q.sto" -o /tmp/tsm/ABD01.sto
+          curl -fL "$BASE/Results/CMC%20analysis/flx01/ThoracoscapularShoulderCMC_Kinematics_q.sto" -o /tmp/tsm/FLX01.sto
+          curl -fL "$BASE/Results/CMC%20analysis/shrug01/ThoracoscapularShoulderCMC_Kinematics_q.sto" -o /tmp/tsm/SHRUG01.sto
 
-      - name: Export OpenSim rigid-body transforms
+      - name: Export verified OpenSim rigid-body transforms
         shell: bash
         run: |
           set -euo pipefail
           REV=d40ebd8ba658633993e531e408c0d96df30ff367
           SCRIPT=experiments/muscle-memory-game/export-opensim-motion.py
-          STRIDE="${{ github.event_name == 'workflow_dispatch' && inputs.stride || '2' }}"
-          COMMON="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id shoulder --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --reference-body thorax --stride $STRIDE"
-          PHASE="--phase-direction increasing --phase-start-fraction 0.05 --phase-end-fraction 0.95 --phase-smoothing-window 21"
-          python "$SCRIPT" $COMMON $PHASE --phase-coordinate shoulder_elv --motion /tmp/tsm/ABD01.mot --source-motion "Results/IK solutions/ABD01.mot" --clip-id tsm-abduction-teaching-01 --movement-id shoulder-abduction --output /tmp/motion-clips/tsm-abduction-teaching-01.json
-          python "$SCRIPT" $COMMON $PHASE --phase-coordinate shoulder_elv --motion /tmp/tsm/FLX01.mot --source-motion "Results/IK solutions/FLX01.mot" --clip-id tsm-flexion-teaching-01 --movement-id shoulder-flexion --output /tmp/motion-clips/tsm-flexion-teaching-01.json
+          SAMPLE_HZ="${{ github.event_name == 'workflow_dispatch' && inputs.sample_hz || '60' }}"
+          SOURCE="--source-id thoracoscapular-shoulder --source-revision $REV --source-stage opensim-cmc-kinematics --source-lowpass-hz 3"
+          COMMON="--model /tmp/tsm/model.osim $SOURCE --pilot-id shoulder --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --reference-body thorax --sample-hz $SAMPLE_HZ"
+          PHASE="--phase-direction increasing --phase-start-fraction 0.05 --phase-end-fraction 0.95 --phase-smoothing-seconds 0.2"
 
-          COMMON_SCAP="--model /tmp/tsm/model.osim --source-id thoracoscapular-shoulder --source-revision $REV --pilot-id scapula --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --reference-body thorax --stride $STRIDE"
-          python "$SCRIPT" $COMMON_SCAP $PHASE --phase-coordinate scapula_elevation --motion /tmp/tsm/SHRUG01.mot --source-motion "Results/IK solutions/SHRUG01.mot" --clip-id tsm-shrug-teaching-01 --movement-id scapular-elevation --output /tmp/motion-clips/tsm-shrug-teaching-01.json
+          python "$SCRIPT" $COMMON $PHASE --phase-coordinate shoulder_elv --motion /tmp/tsm/ABD01.sto --source-motion "Results/CMC analysis/abd01/ThoracoscapularShoulderCMC_Kinematics_q.sto" --clip-id tsm-abduction-teaching-01 --movement-id shoulder-abduction --output /tmp/motion-clips/tsm-abduction-teaching-01.json
+          python "$SCRIPT" $COMMON $PHASE --phase-coordinate shoulder_elv --motion /tmp/tsm/FLX01.sto --source-motion "Results/CMC analysis/flx01/ThoracoscapularShoulderCMC_Kinematics_q.sto" --clip-id tsm-flexion-teaching-01 --movement-id shoulder-flexion --output /tmp/motion-clips/tsm-flexion-teaching-01.json
+
+          COMMON_SCAP="--model /tmp/tsm/model.osim $SOURCE --pilot-id scapula --body-map clavicle=clavicle,scapula=scapula,humerus=humerus --reference-body thorax --sample-hz $SAMPLE_HZ"
+          python "$SCRIPT" $COMMON_SCAP $PHASE --phase-coordinate scapula_elevation --motion /tmp/tsm/SHRUG01.sto --source-motion "Results/CMC analysis/shrug01/ThoracoscapularShoulderCMC_Kinematics_q.sto" --clip-id tsm-shrug-teaching-01 --movement-id scapular-elevation --output /tmp/motion-clips/tsm-shrug-teaching-01.json
 
       - name: Validate exported clip contract
         run: |
