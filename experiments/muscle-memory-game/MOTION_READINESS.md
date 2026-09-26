@@ -432,3 +432,10 @@ The probe is enabled only with the URL parameter `motionBones=tsm-native` and on
 The source-native scene uses its own camera framing and identity scene transform. It does not copy atlas mesh transforms, atlas pivots or atlas topology, and no TSM-to-atlas registration is performed.
 
 The ordinary Motion Lab remains unchanged and continues to use `atlas-derived-fallback`. Once the source-native bone scene and later CMC playback are validated, the target path can be promoted without forcing the static atlas to move.
+
+
+### Narrow checkpoint policy for source-native geometry
+
+The first source-native checkpoint exposed a process problem rather than a geometry problem: the large historical Motion browser smoke failed earlier on an unrelated shoulder-action expectation and never reached the new native-bone assertion. Source-native geometry now has a dedicated short browser checkpoint, triggered with `[native-bone-smoke]`. It exercises only the user path needed for this layer: select a shoulder muscle -> enter Motion -> load four TSM-native bones -> confirm no atlas-derived muscle or kinematic controls are present.
+
+This intentionally prevents unrelated legacy Motion assertions from blocking or obscuring validation of the new independent geometry layer.
