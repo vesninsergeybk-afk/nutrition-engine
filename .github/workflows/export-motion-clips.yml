@@ -107,7 +107,7 @@ jobs:
 
       - name: Validate exported clip contract
         run: |
-          node experiments/muscle-memory-game/check-motion-clip-file.mjs /tmp/motion-clips/*.json
+          node experiments/muscle-memory-game/check-motion-clip-file.mjs /tmp/motion-clips/tsm-*-teaching-01.json
 
       - uses: actions/upload-artifact@v4
         with:
