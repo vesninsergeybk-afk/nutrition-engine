@@ -79,6 +79,10 @@ import {
 } from "./motion-readiness.js";
 import { motionVisualAssetPolicy } from "./motion-visual-assets.js";
 import {
+  defaultTsmNativeBoneIds,
+  loadTsmNativeBoneGeometries,
+} from "./motion-native-bones.js";
+import {
   clampMotionValue,
   elbowFlexionRadians,
   horizontalShoulderComplexPreview,
@@ -220,6 +224,11 @@ const motionCamera = new THREE.PerspectiveCamera(38, 1, 0.01, 5000);
 let motionRenderer = null;
 let motionRig = null;
 let motionPlayback = null;
+let motionNativeLoadGeneration = 0;
+let motionCameraIndependent = false;
+const motionNativeBoneProbe =
+  new URLSearchParams(window.location.search).get("motionBones") ===
+  "tsm-native";
 camera.position.set(0, 0, 4);
 
 const renderer = new THREE.WebGLRenderer({
@@ -3726,6 +3735,8 @@ function disposeMotionObject(object) {
 function clearMotionPreview() {
   motionPlayback = null;
   motionRig = null;
+  motionNativeLoadGeneration += 1;
+  motionCameraIndependent = false;
 
   for (const child of [...motionModelGroup.children]) {
     motionModelGroup.remove(child);
@@ -3767,6 +3778,116 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionGeometryCurrentMuscles = "";
     motionCanvas.dataset.motionGeometryTargetBones = "";
     motionCanvas.dataset.motionGeometryTargetMuscles = "";
+    motionCanvas.dataset.motionGeometryRuntimeBones = "";
+    motionCanvas.dataset.motionNativeBoneIds = "";
+  }
+}
+
+function fitIndependentMotionCamera(box) {
+  if (!box || box.isEmpty()) return;
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const radius = Math.max(0.05, size.length() * 0.5);
+  const fovRad = THREE.MathUtils.degToRad(motionCamera.fov);
+  const distance = (radius / Math.tan(fovRad * 0.5)) * 1.28;
+
+  motionCamera.position.set(
+    center.x + radius * 0.55,
+    center.y + radius * 0.28,
+    center.z + distance
+  );
+  motionCamera.up.set(0, 1, 0);
+  motionCamera.near = Math.max(0.001, distance - radius * 2.5);
+  motionCamera.far = distance + radius * 5;
+  motionCamera.lookAt(center);
+  motionCamera.updateProjectionMatrix();
+}
+
+async function buildTsmNativeBoneProbeScene(action, selectedName) {
+  const generation = ++motionNativeLoadGeneration;
+  motionCameraIndependent = true;
+  motionModelGroup.position.set(0, 0, 0);
+  motionModelGroup.quaternion.identity();
+  motionModelGroup.scale.set(1, 1, 1);
+
+  if (motionCanvas) {
+    motionCanvas.dataset.motionState = "source-native-loading";
+    motionCanvas.dataset.motionPilot = action?.pilotId || "";
+    motionCanvas.dataset.motionAuthority = "source-native-geometry-probe";
+    motionCanvas.dataset.motionGeometryRuntimeBones = "tsm-native-bones";
+    motionCanvas.dataset.motionMuscles = "0";
+    motionCanvas.dataset.motionBones = "0";
+  }
+  if (motionStateEl) {
+    motionStateEl.replaceChildren();
+    const strong = document.createElement("strong");
+    strong.textContent = selectedName || "Плечевой комплекс";
+    const span = document.createElement("span");
+    span.textContent =
+      "Загружаю самостоятельную source-native геометрию TSM. Статический атлас для этой сцены не используется.";
+    motionStateEl.append(strong, span);
+  }
+
+  try {
+    const geometries = await loadTsmNativeBoneGeometries();
+    if (
+      generation !== motionNativeLoadGeneration ||
+      appMode !== "motion"
+    ) {
+      for (const geometry of geometries.values()) geometry.dispose();
+      return;
+    }
+
+    const box = new THREE.Box3();
+    const ids = [];
+    for (const boneId of defaultTsmNativeBoneIds()) {
+      const geometry = geometries.get(boneId);
+      if (!geometry) throw new Error("Native TSM bone missing: " + boneId);
+      const mesh = new THREE.Mesh(geometry, motionBoneMaterial());
+      mesh.name = "TSM " + boneId;
+      mesh.userData.motionBoneUnit = boneId;
+      mesh.userData.motionGeometrySource = "tsm-native-bones";
+      motionModelGroup.add(mesh);
+      box.expandByObject(mesh);
+      ids.push(boneId);
+    }
+
+    fitIndependentMotionCamera(box);
+
+    if (motionCanvas) {
+      motionCanvas.dataset.motionState = "source-native-rest-pose";
+      motionCanvas.dataset.motionPilot = action?.pilotId || "";
+      motionCanvas.dataset.motionAuthority = "source-native-geometry-probe";
+      motionCanvas.dataset.motionGeometryRuntimeBones = "tsm-native-bones";
+      motionCanvas.dataset.motionNativeBoneIds = ids.join(",");
+      motionCanvas.dataset.motionBones = String(ids.length);
+      motionCanvas.dataset.motionMuscles = "0";
+    }
+    if (motionStateEl) {
+      motionStateEl.replaceChildren();
+      const strong = document.createElement("strong");
+      strong.textContent = selectedName || "Плечевой комплекс";
+      const span = document.createElement("span");
+      span.textContent =
+        "Source-native TSM: грудная клетка, ключица, лопатка и плечевая кость загружены как самостоятельная Motion Lab-сцена. Регистрация со статическим атласом не применялась; движение в этом диагностическом проходе ещё не подключено.";
+      motionStateEl.append(strong, span);
+    }
+  } catch (error) {
+    if (generation !== motionNativeLoadGeneration) return;
+    console.error("TSM native bone probe failed", error);
+    motionCameraIndependent = false;
+    if (motionCanvas) {
+      motionCanvas.dataset.motionState = "source-native-error";
+    }
+    if (motionStateEl) {
+      motionStateEl.replaceChildren();
+      const strong = document.createElement("strong");
+      strong.textContent = "Source-native TSM";
+      const span = document.createElement("span");
+      span.textContent =
+        "Не удалось загрузить независимую костную сцену. Обычный Motion Lab не изменён.";
+      motionStateEl.append(strong, span);
+    }
   }
 }
 
@@ -3803,7 +3924,7 @@ function motionBoneMaterial() {
 }
 
 function syncMotionCamera() {
-  if (!motionCanvas || motionPane?.hidden) return;
+  if (!motionCanvas || motionPane?.hidden || motionCameraIndependent) return;
 
   motionCamera.position.copy(camera.position);
   motionCamera.quaternion.copy(camera.quaternion);
@@ -5771,6 +5892,17 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   const visualAssetPolicy = action
     ? motionVisualAssetPolicy(action.pilotId)
     : null;
+
+  if (
+    motionNativeBoneProbe &&
+    (action?.pilotId === "shoulder" || action?.pilotId === "scapula")
+  ) {
+    void buildTsmNativeBoneProbeScene(
+      action,
+      displayStructureName(firstSid)
+    );
+    return;
+  }
   const visualContextUnitIds = pilot?.visualContextUnits || [];
   const relatedUnitIds = action
     ? [

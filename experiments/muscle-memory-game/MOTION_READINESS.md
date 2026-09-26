@@ -421,3 +421,14 @@ The first probe uses four representative shoulder-girdle paths:
 - `TrapeziusScapula_M`.
 
 For the start and end of the same verified ABD teaching phase, the probe resolves current path points in thorax-relative coordinates, checks finite/credible path lengths and requires actual path displacement across the movement. This does not yet select procedural envelopes as the final muscle visual asset; it only verifies that the source-derived path data needed for that fallback are accessible in the production OpenSim environment.
+
+
+## Independent TSM native-bone scene probe — 2026-09-26
+
+A diagnostic, opt-in Motion Lab path now loads the pinned Thoracoscapular source-native VTP geometry directly for `thorax`, `clavicle`, `scapula` and `humerus`. The source files are ASCII VTK PolyData, so the probe uses a narrow in-project parser for Points + Polys rather than adding another rendering runtime.
+
+The probe is enabled only with the URL parameter `motionBones=tsm-native` and only for shoulder/scapular pilots. It deliberately renders zero muscle meshes and does not build a kinematic rig. This proves the geometry layer independently before source-derived animation is attached.
+
+The source-native scene uses its own camera framing and identity scene transform. It does not copy atlas mesh transforms, atlas pivots or atlas topology, and no TSM-to-atlas registration is performed.
+
+The ordinary Motion Lab remains unchanged and continues to use `atlas-derived-fallback`. Once the source-native bone scene and later CMC playback are validated, the target path can be promoted without forcing the static atlas to move.

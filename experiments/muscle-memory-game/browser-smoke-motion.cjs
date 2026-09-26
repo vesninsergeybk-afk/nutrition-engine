@@ -635,6 +635,74 @@ const assert = require('node:assert/strict');
   const viewerBox = await page.locator('#viewer').boundingBox();
   assert.ok(viewerBox && viewerBox.width > 700, 'Atlas did not return to a single wide viewer');
 
+  // Opt-in source-native geometry probe. It must build an independent TSM
+  // bone scene without replacing or registering to the static atlas.
+  const nativePage = await browser.newPage({
+    viewport: { width: 1440, height: 1000 }
+  });
+  const nativeErrors = [];
+  nativePage.on('pageerror', e =>
+    nativeErrors.push('pageerror: ' + e.message)
+  );
+  nativePage.on('console', msg => {
+    if (msg.type() === 'error') {
+      nativeErrors.push('console: ' + msg.text());
+    }
+  });
+  await nativePage.goto(
+    'http://127.0.0.1:4173/?mode=explore&scope=shoulder&motionBones=tsm-native',
+    { waitUntil: 'domcontentloaded' }
+  );
+  await nativePage.waitForFunction(
+    () => document.querySelector('#loading')?.classList.contains('is-hidden'),
+    null,
+    { timeout: 150000 }
+  );
+  await nativePage.fill('#structure-search', 'дельтовидная');
+  await nativePage.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  await nativePage.locator('.search-result').first().click();
+  await nativePage.click('#mode-motion');
+  await nativePage.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionState ===
+        'source-native-rest-pose',
+    null,
+    { timeout: 30000 }
+  );
+  assert.equal(
+    await nativePage
+      .locator('#motion-viewer')
+      .getAttribute('data-motion-geometry-runtime-bones'),
+    'tsm-native-bones'
+  );
+  assert.equal(
+    await nativePage.locator('#motion-viewer').getAttribute('data-motion-bones'),
+    '4'
+  );
+  assert.equal(
+    await nativePage.locator('#motion-viewer').getAttribute('data-motion-muscles'),
+    '0'
+  );
+  assert.equal(await nativePage.locator('#motion-angle').count(), 0);
+  assert.match(
+    await nativePage.locator('#motion-state').innerText(),
+    /Source-native TSM|статическ.*атлас/i
+  );
+  assert.match(
+    await nativePage
+      .locator('#motion-viewer')
+      .getAttribute('data-motion-native-bone-ids'),
+    /thorax.*clavicle.*scapula.*humerus/
+  );
+  if (nativeErrors.length) {
+    throw new Error('Native bone browser errors: ' + nativeErrors.join(' || '));
+  }
+  await nativePage.close();
+
   if (errors.length) {
     throw new Error('Browser errors: ' + errors.join(' || '));
   }
