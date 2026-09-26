@@ -1257,3 +1257,25 @@ body:not(.motion-mode) .comparison-pane-static {
   width: auto;
   height: auto;
 }
+
+
+/* Primary workspaces must never collapse into a submenu. */
+@media (max-width: 620px) {
+  .mode-switch {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mode-switch button {
+    min-width: 0;
+    padding-inline: 8px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .topbar-tools .mode-switch {
+    width: 100%;
+  }
+}

@@ -72,3 +72,29 @@ assert(
     css.includes(".motion-mode .comparison-pane-static"),
   "The split-view wrapper can change normal Atlas/Training canvas sizing"
 );
+
+const motionButtonIndex = html.indexOf('id="mode-motion"');
+const settingsIndex = html.indexOf('<details class="viewer-settings">');
+const modeSwitchStart = html.indexOf('<div class="mode-switch"');
+const modeSwitchEnd = html.indexOf('</div>', modeSwitchStart);
+
+assert(
+  motionButtonIndex > modeSwitchStart &&
+    motionButtonIndex < modeSwitchEnd &&
+    motionButtonIndex < settingsIndex,
+  "Motion must remain a direct top-level mode, not a display submenu action"
+);
+assert(
+  !html.slice(settingsIndex, html.indexOf('</details>', settingsIndex)).includes('mode-motion'),
+  "Motion leaked into the Display submenu"
+);
+assert(
+  app.includes("if (viewerSettings) viewerSettings.open = false;"),
+  "Primary mode switching does not dismiss the auxiliary display submenu"
+);
+assert(
+  css.includes("grid-template-columns: repeat(3, minmax(0, 1fr))"),
+  "Mobile primary-mode switch can collapse or hide Motion"
+);
+
+console.log("Motion primary navigation: direct one-click top-level mode");

@@ -3858,6 +3858,10 @@ function prepareMotionComparison(sid) {
 function setMode(mode) {
   if (!["quiz", "explore", "motion"].includes(mode)) return;
 
+  // Primary modes are top-level navigation. An open display submenu must not
+  // remain floating over the newly selected workspace.
+  if (viewerSettings) viewerSettings.open = false;
+
   const previousMode = appMode;
   const preservedSid =
     (mode === "explore" || mode === "motion") &&

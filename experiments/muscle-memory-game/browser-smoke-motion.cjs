@@ -36,7 +36,15 @@ const assert = require('node:assert/strict');
   assert.match(await result.innerText(), /двуглав/i);
   await result.click();
 
+  // Motion is a primary workspace, not a nested Display action. Prove the
+  // user can enter it in one click even if the auxiliary menu is open.
+  if (!(await page.locator('.viewer-settings').evaluate(el => el.open))) {
+    await page.locator('.viewer-settings > summary').click();
+  }
+  assert.equal(await page.locator('.viewer-settings').evaluate(el => el.open), true);
+
   await page.click('#mode-motion');
+  assert.equal(await page.locator('.viewer-settings').evaluate(el => el.open), false);
 
   await page.waitForFunction(
     () => {
