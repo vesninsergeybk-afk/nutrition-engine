@@ -53,6 +53,8 @@ export const SHOULDER_PREVIEW_LIMITS = Object.freeze({
   abduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
   scaption: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 150 }),
   adduction: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 90 }),
+  horizontalAdduction: Object.freeze({ previewMaxDeg: 60, referenceMaxDeg: 120 }),
+  horizontalAbduction: Object.freeze({ previewMaxDeg: 30, referenceMaxDeg: 45 }),
   extension: Object.freeze({ previewMaxDeg: 45, referenceMaxDeg: 45 }),
   externalRotation: Object.freeze({ previewMaxDeg: 60, referenceMaxDeg: 60 }),
   internalRotation: Object.freeze({ previewMaxDeg: 90, referenceMaxDeg: 90 }),
@@ -247,6 +249,38 @@ const MOTION_ACTIONS = Object.freeze({
     assistants: ["coracobrachialis", "triceps-long"],
     stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
   }),
+  "shoulder-horizontal-adduction": frozenAction({
+    pilotId: "shoulder",
+    movementId: "shoulder-horizontal-adduction",
+    direction: "horizontal-adduction",
+    nameRu: "Горизонтальное приведение плеча",
+    controlLabelRu: "Горизонтальное приведение",
+    descriptionRu:
+      "Движение начинается из референсного положения 90° отведения. Preview ограничен 60° и не выдаёт нерассчитанный лопаточно-грудной вклад за полный клинический диапазон.",
+    maxDeg: SHOULDER_PREVIEW_LIMITS.horizontalAdduction.previewMaxDeg,
+    referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.horizontalAdduction.referenceMaxDeg,
+    speedDegPerSecond: 35,
+    referencePose: "abducted-90",
+    synergists: ["pectoralis-major", "deltoid-clavicular"],
+    assistants: ["coracobrachialis"],
+    stabilizers: ["supraspinatus", "infraspinatus", "subscapularis", "teres-minor"],
+  }),
+  "shoulder-horizontal-abduction": frozenAction({
+    pilotId: "shoulder",
+    movementId: "shoulder-horizontal-abduction",
+    direction: "horizontal-abduction",
+    nameRu: "Горизонтальное отведение плеча",
+    controlLabelRu: "Горизонтальное отведение",
+    descriptionRu:
+      "Движение начинается из референсного положения 90° отведения. Preview ограничен 30° до проверки полного лопаточно-грудного вклада.",
+    maxDeg: SHOULDER_PREVIEW_LIMITS.horizontalAbduction.previewMaxDeg,
+    referenceMaxDeg: SHOULDER_PREVIEW_LIMITS.horizontalAbduction.referenceMaxDeg,
+    speedDegPerSecond: 32,
+    referencePose: "abducted-90",
+    synergists: ["deltoid-spinal"],
+    assistants: ["infraspinatus", "teres-minor"],
+    stabilizers: ["supraspinatus", "subscapularis"],
+  }),
   "shoulder-extension": frozenAction({
     pilotId: "shoulder",
     movementId: "shoulder-extension",
@@ -346,6 +380,7 @@ const UNIT_ACTION_IDS = Object.freeze({
   "deltoid-clavicular": Object.freeze([
     "shoulder-flexion",
     "shoulder-scaption",
+    "shoulder-horizontal-adduction",
     "shoulder-internal-rotation",
   ]),
   "deltoid-acromial": Object.freeze([
@@ -354,15 +389,23 @@ const UNIT_ACTION_IDS = Object.freeze({
   ]),
   "deltoid-spinal": Object.freeze([
     "shoulder-extension",
+    "shoulder-horizontal-abduction",
     "shoulder-external-rotation",
   ]),
   supraspinatus: Object.freeze(["shoulder-abduction", "shoulder-scaption"]),
-  infraspinatus: Object.freeze(["shoulder-external-rotation"]),
+  infraspinatus: Object.freeze([
+    "shoulder-external-rotation",
+    "shoulder-horizontal-abduction",
+  ]),
   subscapularis: Object.freeze(["shoulder-internal-rotation"]),
-  "teres-minor": Object.freeze(["shoulder-external-rotation"]),
+  "teres-minor": Object.freeze([
+    "shoulder-external-rotation",
+    "shoulder-horizontal-abduction",
+  ]),
   "pectoralis-major": Object.freeze([
     "shoulder-flexion",
     "shoulder-adduction",
+    "shoulder-horizontal-adduction",
     "shoulder-internal-rotation",
   ]),
   "latissimus-dorsi": Object.freeze([
@@ -373,6 +416,7 @@ const UNIT_ACTION_IDS = Object.freeze({
   coracobrachialis: Object.freeze([
     "shoulder-flexion",
     "shoulder-adduction",
+    "shoulder-horizontal-adduction",
   ]),
   "teres-major": Object.freeze([
     "shoulder-extension",
@@ -460,6 +504,18 @@ export function shoulderPreviewRotation(action, angleDeg, sideSign = 1) {
         Math.cos(planeRad) * side,
       ]),
       angleRad: radians,
+    });
+  }
+  if (action.movementId === "shoulder-horizontal-adduction") {
+    return Object.freeze({
+      axis: Object.freeze([0, 1, 0]),
+      angleRad: -radians * side,
+    });
+  }
+  if (action.movementId === "shoulder-horizontal-abduction") {
+    return Object.freeze({
+      axis: Object.freeze([0, 1, 0]),
+      angleRad: radians * side,
     });
   }
   if (action.movementId === "shoulder-external-rotation") {

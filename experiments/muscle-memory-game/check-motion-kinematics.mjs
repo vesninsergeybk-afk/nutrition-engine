@@ -76,6 +76,8 @@ for (const movementId of [
   "shoulder-external-rotation",
   "shoulder-internal-rotation",
   "shoulder-scaption",
+  "shoulder-horizontal-adduction",
+  "shoulder-horizontal-abduction",
 ]) {
   assert(
     deltoidActions.some((item) => item.movementId === movementId),
@@ -86,8 +88,12 @@ assert(
   SHOULDER_PREVIEW_LIMITS.flexion.previewMaxDeg === 90 &&
     SHOULDER_PREVIEW_LIMITS.flexion.referenceMaxDeg === 160 &&
     SHOULDER_PREVIEW_LIMITS.abduction.previewMaxDeg === 90 &&
-    SHOULDER_PREVIEW_LIMITS.abduction.referenceMaxDeg === 150,
-  "Shoulder elevation preview must remain honest about the uncalibrated scapular component"
+    SHOULDER_PREVIEW_LIMITS.abduction.referenceMaxDeg === 150 &&
+    SHOULDER_PREVIEW_LIMITS.horizontalAdduction.previewMaxDeg === 60 &&
+    SHOULDER_PREVIEW_LIMITS.horizontalAdduction.referenceMaxDeg === 120 &&
+    SHOULDER_PREVIEW_LIMITS.horizontalAbduction.previewMaxDeg === 30 &&
+    SHOULDER_PREVIEW_LIMITS.horizontalAbduction.referenceMaxDeg === 45,
+  "Shoulder preview ranges must remain distinct from broader clinical references"
 );
 const abductionAction = deltoidActions.find(
   (item) => item.movementId === "shoulder-abduction"
@@ -255,3 +261,24 @@ assert(
   "Shoulder elevation must expose scapular stabilizing context"
 );
 console.log("Upper-limb kinematics: latissimus and scapular context ok");
+
+const horizontalAdduction = motionActionsForUnits(["pectoralis-major"]).find(
+  (item) => item.movementId === "shoulder-horizontal-adduction"
+);
+assert(
+  horizontalAdduction &&
+    horizontalAdduction.referencePose === "abducted-90" &&
+    horizontalAdduction.synergists.includes("deltoid-clavicular"),
+  "Horizontal adduction must start from 90° abduction with anterior deltoid/pectoralis context"
+);
+const horizontalAbduction = motionActionsForUnits(["deltoid-spinal"]).find(
+  (item) => item.movementId === "shoulder-horizontal-abduction"
+);
+assert(
+  horizontalAbduction &&
+    horizontalAbduction.referencePose === "abducted-90" &&
+    horizontalAbduction.assistants.includes("infraspinatus") &&
+    horizontalAbduction.assistants.includes("teres-minor"),
+  "Horizontal abduction must start from 90° abduction with posterior cuff assistance"
+);
+console.log("Upper-limb kinematics: horizontal shoulder plane actions ok");

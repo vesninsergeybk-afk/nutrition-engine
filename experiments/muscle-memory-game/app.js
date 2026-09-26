@@ -4045,6 +4045,89 @@ function deformShoulderMuscle(mesh, pivot, axis, angleRad, activation) {
   mesh.geometry.computeBoundingSphere();
 }
 
+function deformShoulderMusclePose(
+  mesh,
+  pivot,
+  poseQuaternion,
+  activation
+) {
+  captureMotionRestGeometry(mesh);
+  const rest = mesh.userData.motionRestPositions;
+  const box = mesh.userData.motionRestBox;
+  const position = mesh.geometry.getAttribute("position");
+  if (!rest || !box || !position) return;
+
+  const unitId = mesh.userData.motionUnit || "";
+  const isDeltoid = unitId.startsWith("deltoid-");
+  const spanY = Math.max(1e-6, box.max.y - box.min.y);
+  let minDistance = Infinity;
+  let maxDistance = -Infinity;
+
+  if (!isDeltoid) {
+    for (let i = 0; i < rest.length; i += 3) {
+      const dx = rest[i] - pivot.x;
+      const dy = rest[i + 1] - pivot.y;
+      const dz = rest[i + 2] - pivot.z;
+      const d = Math.hypot(dx, dy, dz);
+      minDistance = Math.min(minDistance, d);
+      maxDistance = Math.max(maxDistance, d);
+    }
+  }
+
+  const distanceSpan = Math.max(1e-6, maxDistance - minDistance);
+  const distalInsertionUnits = new Set([
+    "coracobrachialis",
+    "biceps-long",
+    "biceps-short",
+    "triceps-long",
+  ]);
+  const movesDistalWithHumerus = distalInsertionUnits.has(unitId);
+  const p = new THREE.Vector3();
+  const rel = new THREE.Vector3();
+  const q = new THREE.Quaternion();
+  const identity = new THREE.Quaternion();
+  const centerX = (box.min.x + box.max.x) / 2;
+  const centerZ = (box.min.z + box.max.z) / 2;
+
+  for (let i = 0; i < position.count; i += 1) {
+    p.set(rest[i * 3], rest[i * 3 + 1], rest[i * 3 + 2]);
+
+    let attachmentWeight;
+    if (isDeltoid) {
+      attachmentWeight = THREE.MathUtils.clamp(
+        (box.max.y - p.y) / spanY,
+        0,
+        1
+      );
+    } else {
+      const distance = p.distanceTo(pivot);
+      const normalizedDistance = THREE.MathUtils.clamp(
+        (distance - minDistance) / distanceSpan,
+        0,
+        1
+      );
+      attachmentWeight = movesDistalWithHumerus
+        ? normalizedDistance
+        : 1 - normalizedDistance;
+    }
+
+    rel.copy(p).sub(pivot);
+    q.copy(identity).slerp(poseQuaternion, attachmentWeight);
+    rel.applyQuaternion(q);
+    p.copy(pivot).add(rel);
+
+    const belly = 4 * attachmentWeight * (1 - attachmentWeight);
+    p.x = centerX + (p.x - centerX) * (1 + activation * 0.04 * belly);
+    p.z = centerZ + (p.z - centerZ) * (1 + activation * 0.04 * belly);
+    position.setXYZ(i, p.x, p.y, p.z);
+  }
+
+  position.needsUpdate = true;
+  mesh.geometry.computeVertexNormals();
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
+}
+
 function deformRadiusForForearmRotation(radius, ulna, angleRad) {
   captureMotionRestGeometry(radius);
   const rest = radius?.userData?.motionRestPositions;
@@ -4412,17 +4495,51 @@ function shoulderActionAxisAndAngle(action, value, sideSign) {
   };
 }
 
+function shoulderPoseQuaternion(action, value, sideSign) {
+  const { axis, angle } = shoulderActionAxisAndAngle(
+    action,
+    value,
+    sideSign
+  );
+  const motionQuaternion = new THREE.Quaternion().setFromAxisAngle(axis, angle);
+  const horizontal =
+    action.movementId === "shoulder-horizontal-adduction" ||
+    action.movementId === "shoulder-horizontal-abduction";
+
+  if (!horizontal) {
+    return {
+      quaternion: motionQuaternion,
+      axis,
+      angle,
+      baseAngle: 0,
+    };
+  }
+
+  const baseAngle = (Math.PI / 2) * (sideSign < 0 ? -1 : 1);
+  const baseQuaternion = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(0, 0, 1),
+    baseAngle
+  );
+
+  return {
+    quaternion: motionQuaternion.multiply(baseQuaternion),
+    axis,
+    angle,
+    baseAngle,
+  };
+}
+
 function applyShoulderMotionValue(angleDeg) {
   if (!motionRig || motionRig.kind !== "shoulder-gh") return;
   const value = clampMotionValue(motionRig.action, angleDeg);
   motionRig.valueDeg = value;
 
-  const { axis, angle } = shoulderActionAxisAndAngle(
+  const pose = shoulderPoseQuaternion(
     motionRig.action,
     value,
     motionRig.sideSign
   );
-  motionRig.humerusPivot.quaternion.setFromAxisAngle(axis, angle);
+  motionRig.humerusPivot.quaternion.copy(pose.quaternion);
 
   const activation = motionActionActivation(motionRig.action, value);
   const humeralCrossingUnits = new Set([
@@ -4444,18 +4561,20 @@ function applyShoulderMotionValue(angleDeg) {
   for (const mesh of motionRig.muscleMeshes) {
     restoreMotionRestGeometry(mesh);
     if (!humeralCrossingUnits.has(mesh.userData.motionUnit)) continue;
-    deformShoulderMuscle(
+    deformShoulderMusclePose(
       mesh,
       motionRig.pivot,
-      axis,
-      angle,
+      pose.quaternion,
       activation
     );
   }
   setMotionMuscleActivation(motionRig.muscleMeshes, motionRig.action, activation);
 
   if (motionCanvas) {
-    motionCanvas.dataset.motionShoulderRotation = angle.toFixed(6);
+    motionCanvas.dataset.motionShoulderRotation = pose.angle.toFixed(6);
+    motionCanvas.dataset.motionShoulderBaseRotation = pose.baseAngle.toFixed(6);
+    motionCanvas.dataset.motionReferencePose =
+      motionRig.action.referencePose || "rest";
   }
 }
 

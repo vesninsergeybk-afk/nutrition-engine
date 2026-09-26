@@ -187,6 +187,8 @@ const assert = require('node:assert/strict');
     'shoulder-external-rotation',
     'shoulder-internal-rotation',
     'shoulder-scaption',
+    'shoulder-horizontal-adduction',
+    'shoulder-horizontal-abduction',
   ]) {
     assert.ok(shoulderOptions.includes(movement), 'Missing shoulder movement: ' + movement);
   }
@@ -262,6 +264,32 @@ const assert = require('node:assert/strict');
       await page.locator('#motion-viewer').getAttribute('data-motion-distal-followers')
     ) >= 3,
     'Shoulder preview must include at least one hand bone follower'
+  );
+
+  await page.selectOption('#motion-movement', 'shoulder-horizontal-adduction');
+  assert.equal(await page.locator('#motion-angle').getAttribute('max'), '60');
+  assert.equal(
+    await page.locator('#motion-viewer').getAttribute('data-motion-reference-max'),
+    '120'
+  );
+  await page.locator('#motion-angle').evaluate((el) => {
+    el.value = '40';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#motion-viewer')?.dataset.motionMovement ===
+        'shoulder-horizontal-adduction' &&
+      document.querySelector('#motion-viewer')?.dataset.motionReferencePose ===
+        'abducted-90' &&
+      Math.abs(
+        Number(
+          document.querySelector('#motion-viewer')?.dataset
+            .motionShoulderBaseRotation || 0
+        )
+      ) > 1.4,
+    null,
+    { timeout: 5000 }
   );
 
   await page.selectOption('#motion-movement', 'shoulder-scaption');
