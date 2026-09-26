@@ -4690,6 +4690,25 @@ function renderMotionControls(
       ". Их степень активации в этом preview не рассчитывается.";
     roles.appendChild(row);
   }
+
+  const activeRoleUnits = new Set([
+    ...(action.synergists || []),
+    ...(action.assistants || []),
+    ...(action.stabilizers || []),
+  ]);
+  const visualContextNames = (motionPilot(action.pilotId)?.visualContextUnits || [])
+    .filter((id) => !activeRoleUnits.has(id))
+    .map((id) => motionVisualUnit(id)?.nameRu)
+    .filter(Boolean);
+  if (visualContextNames.length) {
+    const row = document.createElement("span");
+    row.innerHTML =
+      "<strong>Анатомический контекст:</strong> " +
+      visualContextNames.join(", ") +
+      ". Эти мышцы показаны для пространственной ориентации; их активация в этом preview не рассчитывается.";
+    roles.appendChild(row);
+  }
+
   if (roles.childElementCount) motionStateEl.appendChild(roles);
 
   if (missingUnitIds.length) {
