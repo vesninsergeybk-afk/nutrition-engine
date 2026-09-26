@@ -168,6 +168,11 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
     "Малая грудная мышца",
     [/pectoralis minor/i]
   ),
+  subclavius: unit(
+    "subclavius",
+    "Подключичная мышца",
+    [/\bsubclavius\b/i]
+  ),
   coracobrachialis: unit(
     "coracobrachialis",
     "Клювовидно-плечевая мышца",
@@ -333,6 +338,7 @@ export const MOTION_PILOTS = Object.freeze({
       "rhomboid-minor",
       "levator-scapulae",
       "pectoralis-minor",
+      "subclavius",
     ]),
     degreesOfFreedom: Object.freeze([
       Object.freeze({
