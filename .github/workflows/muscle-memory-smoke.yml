@@ -81,6 +81,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-motion-readiness.mjs
           node --check experiments/muscle-memory-game/check-motion-semantics.mjs
           node --check experiments/muscle-memory-game/check-motion-muscle-assets.mjs
+          python -m py_compile experiments/muscle-memory-game/probe-opensim-muscle-paths.py
           node --check experiments/muscle-memory-game/check-motion-sources.mjs
           node --check experiments/muscle-memory-game/check-motion-clip-file.mjs
           node --check experiments/muscle-memory-game/check-motion-simulation-contract.mjs

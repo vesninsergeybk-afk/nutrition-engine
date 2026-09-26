@@ -408,3 +408,16 @@ Registered candidates:
 No candidate is selected yet. The `motion-muscles-pending` target remains intentionally unresolved until direct rig inspection, upper-limb coverage, path compatibility and licensing gates are passed.
 
 The key architectural rule remains: a moving muscle mesh does not need to be the static atlas mesh. Both only need to bind to the same canonical anatomical semantic ID.
+
+
+## Dynamic muscle-path verification — 2026-09-26
+
+A dedicated OpenSim CI probe now tests whether the pinned Thoracoscapular CMC model exposes dynamic `GeometryPath.getCurrentPath(state)` data suitable for a procedural Motion Lab muscle representation.
+
+The first probe uses four representative shoulder-girdle paths:
+- `DeltoideusScapula_M`;
+- `Supraspinatus_A`;
+- `SerratusAnterior_M`;
+- `TrapeziusScapula_M`.
+
+For the start and end of the same verified ABD teaching phase, the probe resolves current path points in thorax-relative coordinates, checks finite/credible path lengths and requires actual path displacement across the movement. This does not yet select procedural envelopes as the final muscle visual asset; it only verifies that the source-derived path data needed for that fallback are accessible in the production OpenSim environment.

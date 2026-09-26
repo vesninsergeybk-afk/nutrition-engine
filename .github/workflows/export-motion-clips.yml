@@ -6,6 +6,7 @@ on:
       - feature/muscle-memory-mvp
     paths:
       - experiments/muscle-memory-game/export-opensim-motion.py
+      - experiments/muscle-memory-game/probe-opensim-muscle-paths.py
       - experiments/muscle-memory-game/motion-clip.js
       - experiments/muscle-memory-game/motion-sources.js
       - experiments/muscle-memory-game/check-motion-clip-file.mjs
@@ -63,6 +64,16 @@ jobs:
           curl -fL "$BASE/Results/CMC%20analysis/abd01/ThoracoscapularShoulderCMC_Kinematics_q.sto" -o /tmp/tsm/ABD01.sto
           curl -fL "$BASE/Results/CMC%20analysis/flx01/ThoracoscapularShoulderCMC_Kinematics_q.sto" -o /tmp/tsm/FLX01.sto
           curl -fL "$BASE/Results/CMC%20analysis/shrug01/ThoracoscapularShoulderCMC_Kinematics_q.sto" -o /tmp/tsm/SHRUG01.sto
+
+      - name: Verify dynamic OpenSim muscle paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/muscle-memory-game/probe-opensim-muscle-paths.py \
+            --model /tmp/tsm/model.osim \
+            --motion /tmp/tsm/ABD01.sto \
+            --phase-coordinate shoulder_elv \
+            --muscles "DeltoideusScapula_M,Supraspinatus_A,SerratusAnterior_M,TrapeziusScapula_M"
 
       - name: Export verified OpenSim rigid-body transforms
         shell: bash
