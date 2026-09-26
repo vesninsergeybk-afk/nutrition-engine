@@ -442,7 +442,9 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
         /multifidus|(?:lumbar|thoracic) rotator|rotatores|interspinal|intertransversar|levator(?:es)?(?:\s+(?:breves|longi))?\s+costar|levator(?:es)?\s+costarum\s+(?:breves|longi)|поднимающ.*р[её]бр/iu,
       ],
       excludePatterns: [/cervic|colli|шеи|шея/iu],
-      contextPatterns: [/erector|iliocostalis|longissimus thoracis|spinalis|latissimus dorsi/i],
+      contextPatterns: [
+        /\berector\b|\biliocostalis\b|\blongissimus thoracis\b|\bspinalis thoracis\b|\blatissimus dorsi\b/i,
+      ],
       supportBonePatterns: [/rib|vertebra|sacrum|ilium/i],
       depthProfile: "back",
       minDepthQuestionTargets: 4,
