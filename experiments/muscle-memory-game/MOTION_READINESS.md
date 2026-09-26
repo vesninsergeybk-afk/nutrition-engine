@@ -359,3 +359,8 @@ Clip interpolation now uses shortest-path quaternion SLERP rather than normalize
 Continuity QA is time-aware: it checks frame cadence plus translational and angular speeds instead of relying only on a large per-frame angular threshold. These are technical discontinuity guards, not anatomical ROM limits.
 
 Important scope limitation: these source trials demonstrate a subrange of the recorded movements; they are not full 0-180° normative ROM clips. They must be presented as source-derived teaching excursions until additional validated source trajectories cover larger ranges.
+
+
+### CMC storage timestamp audit
+
+The pinned ABD/FLX/SHRUG CMC kinematics files each contain one duplicated terminal row: the final timestamp is repeated once with numerically identical coordinate values. The exporter now removes only exact duplicate-time / identical-state rows. A duplicate timestamp with any different state value is treated as an error rather than silently choosing one state.

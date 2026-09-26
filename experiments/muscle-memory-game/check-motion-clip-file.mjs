@@ -140,6 +140,8 @@ for (const file of files) {
       (clip.coordinateSpace || "unspecified") +
       ", reference=" +
       (clip.referenceBody || "ground") +
+      ", dedup=" +
+      clip.sourceDuplicateRowsRemoved +
       ", maxRawQErr=" +
       maxRawQuaternionError.toExponential(2) +
       ", maxStep=" +

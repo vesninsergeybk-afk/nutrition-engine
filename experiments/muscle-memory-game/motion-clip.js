@@ -53,6 +53,7 @@ export function createMotionClip({
   referenceBody = null,
   sourcePhase = null,
   targetSampleHz = null,
+  sourceDuplicateRowsRemoved = 0,
   frames,
 } = {}) {
   if (schema !== "motion-clip-v1") {
@@ -110,6 +111,10 @@ export function createMotionClip({
     sourcePhase: sourcePhase ? Object.freeze({ ...sourcePhase }) : null,
     targetSampleHz:
       targetSampleHz == null ? null : finiteNumber(targetSampleHz, "targetSampleHz"),
+    sourceDuplicateRowsRemoved: finiteNumber(
+      sourceDuplicateRowsRemoved,
+      "sourceDuplicateRowsRemoved"
+    ),
     duration:
       normalizedFrames[normalizedFrames.length - 1].time -
       normalizedFrames[0].time,

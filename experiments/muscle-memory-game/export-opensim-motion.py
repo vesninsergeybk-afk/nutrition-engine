@@ -13,7 +13,9 @@ from typing import Dict, List, Tuple
 import pyopensim as osim
 
 
-def parse_storage(path: pathlib.Path) -> Tuple[bool, List[str], List[List[float]]]:
+def parse_storage(
+    path: pathlib.Path,
+) -> Tuple[bool, List[str], List[List[float]], int]:
     lines = path.read_text(encoding="utf-8").splitlines()
     in_degrees = any(
         re.match(r"\s*inDegrees\s*=\s*yes\s*$", line, re.I) for line in lines
@@ -39,10 +41,31 @@ def parse_storage(path: pathlib.Path) -> Tuple[bool, List[str], List[List[float]
 
     if not rows or labels[0] != "time":
         raise ValueError(f"{path}: invalid OpenSim storage table")
-    for index in range(1, len(rows)):
-        if not rows[index][0] > rows[index - 1][0]:
-            raise ValueError(f"{path}: timestamps must be strictly increasing")
-    return in_degrees, labels, rows
+
+    deduplicated: List[List[float]] = []
+    duplicate_rows_removed = 0
+    for row in rows:
+        if not deduplicated:
+            deduplicated.append(row)
+            continue
+
+        dt = row[0] - deduplicated[-1][0]
+        if dt < 0:
+            raise ValueError(f"{path}: timestamps must not decrease")
+        if abs(dt) <= 1e-12:
+            max_delta = max(
+                abs(row[index] - deduplicated[-1][index])
+                for index in range(len(row))
+            )
+            if max_delta > 1e-12:
+                raise ValueError(
+                    f"{path}: duplicate timestamp contains different states"
+                )
+            duplicate_rows_removed += 1
+            continue
+        deduplicated.append(row)
+
+    return in_degrees, labels, deduplicated, duplicate_rows_removed
 
 
 def simtk_values(value, count: int) -> List[float]:
@@ -368,7 +391,9 @@ def main() -> None:
     parser.add_argument("--sample-hz", type=float, default=60.0)
     args = parser.parse_args()
 
-    in_degrees, labels, rows = parse_storage(pathlib.Path(args.motion))
+    in_degrees, labels, rows, duplicate_rows_removed = parse_storage(
+        pathlib.Path(args.motion)
+    )
     model = osim.Model(str(pathlib.Path(args.model)))
     state = model.initSystem()
 
@@ -468,6 +493,7 @@ def main() -> None:
         "referenceBody": args.reference_body,
         "sourcePhase": source_phase,
         "targetSampleHz": args.sample_hz,
+        "sourceDuplicateRowsRemoved": duplicate_rows_removed,
         "frames": frames,
     }
     output = pathlib.Path(args.output)
@@ -488,7 +514,8 @@ def main() -> None:
         )
     print(
         f"exported {len(frames)} frames at target {args.sample_hz:.1f} Hz "
-        + f"from {len(phase_rows)} selected rows ({len(rows)} source rows) -> {output}"
+        + f"from {len(phase_rows)} selected rows ({len(rows)} source rows, "
+        + f"{duplicate_rows_removed} identical duplicate rows removed) -> {output}"
     )
 
 
