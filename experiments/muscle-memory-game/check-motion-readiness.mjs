@@ -69,7 +69,9 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
   for (const unitId of pilot.muscleUnits) {
     const unit = motionVisualUnit(unitId);
     assert(unit, pilot.id + ": unknown visual muscle unit " + unitId);
-    assert(unit.myoActuators.length > 0, pilot.id + ": missing MyoSim actuator for " + unitId);
+    if (pilot.requiresMyoActuators !== false) {
+      assert(unit.myoActuators.length > 0, pilot.id + ": missing MyoSim actuator for " + unitId);
+    }
 
     const zMatches = sourceNamesForMotionUnit(zMuscles, unitId);
     const bpMatches = sourceNamesForMotionUnit(bpMuscles, unitId);
@@ -192,3 +194,30 @@ assert(
   "Motion scene does not render pilot visual-only context units"
 );
 console.log("Motion visual-only context: rendered without fake activation");
+
+const scapulaPilot = MOTION_PILOTS.scapula;
+assert(scapulaPilot, "Scapular kinematic pilot missing");
+assert(
+  scapulaPilot.requiresMyoActuators === false,
+  "Scapular pilot must stay explicitly preview-only until a muscle-driven scapular model is connected"
+);
+for (const unitId of [
+  "trapezius",
+  "serratus-anterior",
+  "rhomboid-major",
+  "rhomboid-minor",
+  "levator-scapulae",
+  "pectoralis-minor",
+]) {
+  const unit = motionVisualUnit(unitId);
+  assert(unit, "Missing scapular visual unit: " + unitId);
+  assert(
+    sourceNamesForMotionUnit(zMuscles, unitId).length > 0,
+    "Z-Anatomy missing scapular visual unit: " + unitId
+  );
+  assert(
+    sourceNamesForMotionUnit(bpMuscles, unitId).length > 0,
+    "BodyParts3D missing scapular visual unit: " + unitId
+  );
+}
+console.log("Motion readiness: scapular visual pilot available in both anatomy sources");
