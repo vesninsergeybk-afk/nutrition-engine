@@ -439,3 +439,18 @@ The ordinary Motion Lab remains unchanged and continues to use `atlas-derived-fa
 The first source-native checkpoint exposed a process problem rather than a geometry problem: the large historical Motion browser smoke failed earlier on an unrelated shoulder-action expectation and never reached the new native-bone assertion. Source-native geometry now has a dedicated short browser checkpoint, triggered with `[native-bone-smoke]`. It exercises only the user path needed for this layer: select a shoulder muscle -> enter Motion -> load four TSM-native bones -> confirm no atlas-derived muscle or kinematic controls are present.
 
 This intentionally prevents unrelated legacy Motion assertions from blocking or obscuring validation of the new independent geometry layer.
+
+
+## Mobile Motion-first layout — 2026-09-26
+
+On viewports <=760 px, Motion Lab is now the primary workspace rather than the lower half of a vertical two-view comparison.
+
+- the moving scene fills almost the entire available viewport;
+- the static atlas becomes a small picture-in-picture context preview;
+- tapping the preview label "Анатомия" returns directly to Atlas mode;
+- the ordinary training/atlas side panel is hidden while Motion is active;
+- atlas-only viewer controls are hidden in Motion on mobile;
+- the movement selector, angle slider and play/reset controls are placed before long role and kinematic explanations;
+- the control block stays sticky at the top of the compact Motion sheet while explanatory content can scroll inside the sheet.
+
+This changes presentation only. Biomechanical sources, motion rigs and source-native geometry are unchanged.

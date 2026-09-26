@@ -197,6 +197,7 @@ const viewPreset = document.querySelector("#view-preset");
 const modeQuizButton = document.querySelector("#mode-quiz");
 const modeExploreButton = document.querySelector("#mode-explore");
 const modeMotionButton = document.querySelector("#mode-motion");
+const motionAtlasReturnButton = document.querySelector("#motion-atlas-return");
 const quizActions = document.querySelector("#quiz-actions");
 const exploreControls = document.querySelector("#explore-controls");
 const searchInput = document.querySelector("#structure-search");
@@ -5859,7 +5860,13 @@ function renderMotionControls(
   buttons.append(play, reset);
 
   controls.append(angleRow, slider, rangeNote, buttons);
-  motionStateEl.append(controls);
+
+  // Keep the primary interaction immediately below the selected muscle/name.
+  // Long role/kinematic explanations remain available below the controls.
+  motionStateEl.insertBefore(
+    controls,
+    motionStateEl.children[2] || null
+  );
 }
 
 function buildMotionPreview(muscleIds, preferredMovementId = null) {
@@ -8113,6 +8120,7 @@ viewPreset.addEventListener("change", () => setViewPreset(viewPreset.value));
 modeQuizButton.addEventListener("click", () => setMode("quiz"));
 modeExploreButton.addEventListener("click", () => setMode("explore"));
 modeMotionButton.addEventListener("click", () => setMode("motion"));
+motionAtlasReturnButton?.addEventListener("click", () => setMode("explore"));
 nextButton.addEventListener("click", nextSessionStep);
 answerButton.addEventListener("click", revealAnswer);
 revealDeeperButton.addEventListener("click", revealDeeperAfterMistake);

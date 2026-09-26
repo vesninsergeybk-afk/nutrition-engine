@@ -1361,3 +1361,186 @@ body:not(.motion-mode) .comparison-pane-static {
 .motion-role-summary strong {
   color: var(--ink);
 }
+
+
+/* Mobile Motion Lab: movement is the primary workspace.
+   The static atlas becomes a compact context preview instead of a second
+   full-height viewport. */
+.motion-atlas-return {
+  font: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  body.motion-mode {
+    overflow-x: hidden;
+  }
+
+  body.motion-mode .app-shell {
+    min-height: 100dvh;
+    grid-template-columns: 1fr;
+  }
+
+  body.motion-mode .panel {
+    display: none;
+  }
+
+  body.motion-mode .stage {
+    min-height: 100dvh;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  body.motion-mode .topbar > div:first-child {
+    display: none;
+  }
+
+  body.motion-mode .topbar,
+  body.motion-mode .topbar-tools {
+    width: 100%;
+  }
+
+  body.motion-mode .topbar-tools {
+    justify-content: stretch;
+  }
+
+  body.motion-mode .mode-switch {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.motion-mode .mode-switch button {
+    min-width: 0;
+    min-height: 40px;
+  }
+
+  body.motion-mode .viewer-wrap {
+    display: block;
+    flex: none;
+    width: 100%;
+    height: calc(100dvh - 64px);
+    min-height: 620px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #dedbd4;
+  }
+
+  body.motion-mode .comparison-pane-motion {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  body.motion-mode .comparison-pane-static {
+    position: absolute;
+    inset: 12px auto auto 12px;
+    width: min(32vw, 138px);
+    height: min(23dvh, 180px);
+    z-index: 7;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(27,27,29,.14);
+    background: #dedbd4;
+    box-shadow: 0 8px 26px rgba(27,27,29,.18);
+  }
+
+  body.motion-mode .comparison-pane-static #viewer {
+    pointer-events: none;
+  }
+
+  body.motion-mode .motion-atlas-return {
+    display: block;
+    top: auto;
+    right: 7px;
+    bottom: 7px;
+    min-height: 32px;
+    padding: 5px 9px;
+    border: 1px solid rgba(27,27,29,.12);
+    background: rgba(255,255,255,.94);
+    color: rgba(27,27,29,.82);
+    pointer-events: auto;
+    font-size: 11px;
+    font-weight: 720;
+  }
+
+  body.motion-mode .comparison-pane-motion > .comparison-pane-label {
+    top: 10px;
+    right: 10px;
+  }
+
+  body.motion-mode .viewer-tools,
+  body.motion-mode .viewer-hint {
+    display: none;
+  }
+
+  body.motion-mode .motion-state {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    max-height: min(40dvh, 360px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    gap: 5px;
+    padding: 10px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(27,27,29,.18);
+    scrollbar-width: thin;
+  }
+
+  body.motion-mode .motion-state > strong {
+    padding-right: 74px;
+    font-size: 13px;
+  }
+
+  body.motion-mode .motion-state > span:first-of-type {
+    padding-right: 74px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  body.motion-mode .motion-controls {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin-top: 2px;
+    padding: 8px 0 9px;
+    border-top: 0;
+    border-bottom: 1px solid rgba(27,27,29,.10);
+    background: rgba(255,255,255,.97);
+  }
+
+  body.motion-mode #motion-angle {
+    min-height: 28px;
+    touch-action: pan-x;
+  }
+
+  body.motion-mode .motion-control-buttons button {
+    min-height: 40px;
+  }
+
+  body.motion-mode .motion-role-summary,
+  body.motion-mode .motion-kinematic-summary,
+  body.motion-mode .motion-source-gap {
+    padding-top: 3px;
+  }
+}
+
+@media (max-width: 430px) {
+  body.motion-mode .viewer-wrap {
+    height: calc(100dvh - 62px);
+    min-height: 560px;
+  }
+
+  body.motion-mode .comparison-pane-static {
+    width: min(34vw, 124px);
+    height: min(20dvh, 154px);
+  }
+
+  body.motion-mode .motion-state {
+    max-height: min(42dvh, 340px);
+  }
+}
