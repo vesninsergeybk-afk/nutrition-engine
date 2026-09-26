@@ -74,6 +74,7 @@ import {
 import {
   matchMotionBoneUnit,
   matchMotionMuscleUnit,
+  motionPilot,
   motionVisualUnit,
 } from "./motion-readiness.js";
 import {
@@ -4825,12 +4826,15 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   const firstSid = selectedIds[0];
   const selectedTarget = learningTargetBySid.get(firstSid) || null;
   const selectedSide = targetSideForSid(selectedTarget, firstSid);
+  const pilot = action ? motionPilot(action.pilotId) : null;
+  const visualContextUnitIds = pilot?.visualContextUnits || [];
   const relatedUnitIds = action
     ? [
         ...new Set([
           ...(action.synergists || []),
           ...(action.assistants || []),
           ...(action.stabilizers || []),
+          ...visualContextUnitIds,
         ]),
       ]
     : [];
@@ -4933,6 +4937,10 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   motionCanvas.dataset.motionMovers = (action?.synergists || []).join(",");
   motionCanvas.dataset.motionAssistants = (action?.assistants || []).join(",");
   motionCanvas.dataset.motionStabilizers = (action?.stabilizers || []).join(",");
+  motionCanvas.dataset.motionVisualContext = visualContextUnitIds.join(",");
+  motionCanvas.dataset.motionMissingContext = visualContextUnitIds
+    .filter((unitId) => !renderedUnits.has(unitId))
+    .join(",");
   motionCanvas.dataset.motionState = "rest-pose";
   motionCanvas.dataset.motionPlaying = "false";
   motionCanvas.dataset.motionMovement = action?.movementId || "";

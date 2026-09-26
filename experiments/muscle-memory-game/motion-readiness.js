@@ -148,6 +148,26 @@ export const MOTION_VISUAL_UNITS = Object.freeze({
     "Передняя зубчатая мышца",
     [/serratus anterior/i]
   ),
+  "rhomboid-major": unit(
+    "rhomboid-major",
+    "Большая ромбовидная мышца",
+    [/rhomboid major/i]
+  ),
+  "rhomboid-minor": unit(
+    "rhomboid-minor",
+    "Малая ромбовидная мышца",
+    [/rhomboid minor/i]
+  ),
+  "levator-scapulae": unit(
+    "levator-scapulae",
+    "Мышца, поднимающая лопатку",
+    [/levator scapulae/i]
+  ),
+  "pectoralis-minor": unit(
+    "pectoralis-minor",
+    "Малая грудная мышца",
+    [/pectoralis minor/i]
+  ),
   coracobrachialis: unit(
     "coracobrachialis",
     "Клювовидно-плечевая мышца",
@@ -305,6 +325,14 @@ export const MOTION_PILOTS = Object.freeze({
       "latissimus-dorsi",
       "coracobrachialis",
       "teres-major",
+    ]),
+    visualContextUnits: Object.freeze([
+      "trapezius",
+      "serratus-anterior",
+      "rhomboid-major",
+      "rhomboid-minor",
+      "levator-scapulae",
+      "pectoralis-minor",
     ]),
     degreesOfFreedom: Object.freeze([
       Object.freeze({

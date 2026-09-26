@@ -113,15 +113,26 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
   }
 }
 
-// Scapular movers are visual context for elevation until SC/AC registration
-// is calibrated; they still must exist in both anatomy sources.
-for (const unitId of ["trapezius", "serratus-anterior"]) {
+// Scapular/pectoral context is visible in Motion Lab but must not pretend to
+// be a numerically activated MyoArm actuator until that mapping is validated.
+const shoulderContextUnits = MOTION_PILOTS.shoulder.visualContextUnits || [];
+assert(
+  shoulderContextUnits.length >= 6,
+  "Shoulder visual context is incomplete"
+);
+for (const unitId of shoulderContextUnits) {
+  const unit = motionVisualUnit(unitId);
+  assert(unit, "Missing visual scapular/pectoral context unit: " + unitId);
+  assert(
+    unit.myoActuators.length === 0,
+    "Visual-only context must not expose unvalidated MyoArm actuators: " + unitId
+  );
   const unit = motionVisualUnit(unitId);
   assert(unit, "Missing visual scapular context unit: " + unitId);
   const zMatches = sourceNamesForMotionUnit(zMuscles, unitId);
   const bpMatches = sourceNamesForMotionUnit(bpMuscles, unitId);
   console.log(
-    "Motion scapular context:",
+    "Motion visual-only context:",
     unitId,
     "Z=" + zMatches.length,
     "BodyParts=" + bpMatches.length
@@ -171,3 +182,15 @@ assert(
 console.log("Motion readiness: elbow, wrist, and shoulder visual units available in both anatomy sources");
 console.log("Motion readiness: MyoSim actuator mapping present");
 console.log("Motion readiness: merged-atlas geometry can be split into standalone motion units");
+
+const appSource = await (await import("node:fs/promises")).readFile(
+  new URL("app.js", import.meta.url),
+  "utf8"
+);
+assert(
+  appSource.includes("visualContextUnitIds") &&
+    appSource.includes("motionVisualContext") &&
+    appSource.includes("motionMissingContext"),
+  "Motion scene does not render pilot visual-only context units"
+);
+console.log("Motion visual-only context: rendered without fake activation");
