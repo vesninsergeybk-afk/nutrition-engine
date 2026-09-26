@@ -47,6 +47,7 @@ jobs:
           node --check experiments/muscle-memory-game/motion-readiness.js
           node --check experiments/muscle-memory-game/motion-sources.js
           node --check experiments/muscle-memory-game/motion-visual-assets.js
+          node --check experiments/muscle-memory-game/motion-muscle-assets.js
           node --check experiments/muscle-memory-game/motion-clip.js
           node --check experiments/muscle-memory-game/motion-registration.js
           node --check experiments/muscle-memory-game/motion-contract.js
@@ -79,6 +80,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-regional-performance.mjs
           node --check experiments/muscle-memory-game/check-motion-readiness.mjs
           node --check experiments/muscle-memory-game/check-motion-semantics.mjs
+          node --check experiments/muscle-memory-game/check-motion-muscle-assets.mjs
           node --check experiments/muscle-memory-game/check-motion-sources.mjs
           node --check experiments/muscle-memory-game/check-motion-clip-file.mjs
           node --check experiments/muscle-memory-game/check-motion-simulation-contract.mjs
@@ -158,6 +160,7 @@ jobs:
           node experiments/muscle-memory-game/check-regional-performance.mjs
           node experiments/muscle-memory-game/check-motion-readiness.mjs
           node experiments/muscle-memory-game/check-motion-semantics.mjs
+          node experiments/muscle-memory-game/check-motion-muscle-assets.mjs
           node experiments/muscle-memory-game/check-motion-sources.mjs
           node experiments/muscle-memory-game/check-motion-simulation-contract.mjs
           node experiments/muscle-memory-game/check-motion-three.mjs

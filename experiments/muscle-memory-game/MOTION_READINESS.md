@@ -393,3 +393,18 @@ Target volumetric muscle geometry is intentionally unresolved and represented as
 
 The Atlas ↔ Motion Lab bridge is semantic, not geometric:
 `static atlas structure -> canonical semantic ID -> Motion Lab structure`.
+
+
+## Motion-specific muscle asset candidates — 2026-09-26
+
+Volumetric moving muscles are now treated as a separate asset-selection problem from the static atlas.
+
+Registered candidates:
+- `z-biomechanics-rig`: promising existing Z-Anatomy biomechanics archive, but its binary contents and actual muscle rigging still require direct inspection. It must not be used as biomechanics authority; shoulder/radius mechanics would still be driven by TSM/MyoArm if the visual rig proves useful.
+- `z-anatomy-muscle-geometry`: large volumetric muscle geometry donor under CC BY-SA 4.0. No assumption is made that the FBX already has production-quality skin weights.
+- `source-path-muscle-envelope`: procedural Motion Lab geometry derived from the biomechanics model's muscle paths. This is the most robust technical fallback because the visual course can follow origin/insertion/via/wrapping data from the same source that moves the bones, but the generated belly is an educational envelope rather than exact morphology.
+- `anatomy-reengineering-framework`: useful WIP research/authoring tool, not currently treated as a ready production asset.
+
+No candidate is selected yet. The `motion-muscles-pending` target remains intentionally unresolved until direct rig inspection, upper-limb coverage, path compatibility and licensing gates are passed.
+
+The key architectural rule remains: a moving muscle mesh does not need to be the static atlas mesh. Both only need to bind to the same canonical anatomical semantic ID.
