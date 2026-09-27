@@ -60,11 +60,26 @@ assert(
   "Atlas card is not wired to source-backed reference data"
 );
 
+const supraspinatus = muscleReferenceFor("Right supraspinatus");
+assert(
+  supraspinatus.illustrations.some(
+    (item) =>
+      item.src === "./assets/reference/gray412-shoulder.png" &&
+      item.rightsStatus === "public-domain"
+  ),
+  "Verified Gray shoulder plate is not wired as a local public-domain illustration"
+);
+assert(
+  app.includes('image.loading = "lazy"') &&
+    app.includes('figure.className = "structure-reference-figure"'),
+  "Local reference illustrations are not rendered lazily"
+);
 assert(
   !html.includes("goldfinger") &&
     !html.includes("samusev") &&
-    !html.includes("1O2V_frFY36-2gqnVF1DB2rOl6wPx1xRK"),
-  "Reference-only source identifiers leaked into public markup"
+    !html.includes("1O2V_frFY36-2gqnVF1DB2rOl6wPx1xRK") &&
+    !html.includes("upload.wikimedia.org"),
+  "Reference-only or remote source identifiers leaked into public markup"
 );
 
 console.log("Muscle reference: shoulder seed data + provenance + rights gates ok");
