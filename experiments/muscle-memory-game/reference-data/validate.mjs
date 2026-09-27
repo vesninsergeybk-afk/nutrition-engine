@@ -19,6 +19,43 @@ function normalizeAlias(value) {
   return String(value || "").trim().toLocaleLowerCase("en-US").replace(/\s+/g, " ");
 }
 
+const LEARNER_FORBIDDEN_PATTERNS = Object.freeze([
+  /\bBodyParts3D\b/i,
+  /\bmesh\b/i,
+  /\bMCP\b/,
+  /\bMTP\b/,
+  /\bPIP\b/,
+  /\bDIP\b/,
+  /\bCMC\b/,
+  /\bFDL\b/,
+  /\bTFL\b/,
+]);
+
+function learnerFacingStrings(structure) {
+  return [
+    ...(structure.anatomy?.originRu || []),
+    ...(structure.anatomy?.insertionRu || []),
+    ...(structure.anatomy?.actionsRu || []),
+    structure.anatomy?.fiberDirectionRu,
+    structure.anatomy?.innervationRu,
+    ...(structure.surfaceMap?.landmarksRu || []),
+    ...(structure.surfaceMap?.relationsRu || []),
+    structure.movementCueRu,
+  ].filter(Boolean);
+}
+
+function validateLearnerLanguage(structure) {
+  for (const value of learnerFacingStrings(structure)) {
+    for (const pattern of LEARNER_FORBIDDEN_PATTERNS) {
+      requireValue(
+        !pattern.test(value),
+        `${structure.id}: learner-facing text contains technical shorthand ${pattern}: ${value}`
+      );
+      pattern.lastIndex = 0;
+    }
+  }
+}
+
 function validateIllustrations(ownerId, illustrations = []) {
   for (const illustration of illustrations) {
     requireValue(
@@ -73,6 +110,7 @@ for (const region of REFERENCE_REGIONS) {
     }
 
     validateIllustrations(structure.id, structure.illustrations);
+    validateLearnerLanguage(structure);
     if (structure.parentStructureId) {
       requireValue(
         Boolean(structure.parentStructureId),
