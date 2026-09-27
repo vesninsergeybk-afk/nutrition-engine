@@ -62,6 +62,11 @@ const PROFILES = Object.freeze({
     rules: Object.freeze([
       rule("latissimus-dorsi", "superficial", /^latissimus dorsi$/i),
       rule(
+        "external-oblique-context",
+        "superficial",
+        /^external (?:abdominal )?oblique$/i
+      ),
+      rule(
         "serratus-posterior",
         "intermediate",
         /^serratus posterior (?:superior|inferior)$/i
@@ -78,7 +83,10 @@ const PROFILES = Object.freeze({
       ),
     ]),
     covers: Object.freeze({
-      "latissimus-dorsi": Object.freeze(["erector-spinae"]),
+      "latissimus-dorsi": Object.freeze([
+        "serratus-posterior",
+        "erector-spinae",
+      ]),
       "serratus-posterior": Object.freeze(["erector-spinae"]),
       "erector-spinae": Object.freeze(["transversospinal-deep"]),
     }),
