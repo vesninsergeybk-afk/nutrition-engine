@@ -253,6 +253,8 @@ const structureReferenceFunctionalDetails = document.querySelector("#structure-r
 const structureReferenceFunctional = document.querySelector("#structure-reference-functional");
 const structureReferenceStudyCue = document.querySelector("#structure-reference-study-cue");
 const structureReferenceStudyCueText = document.querySelector("#structure-reference-study-cue-text");
+const structureReferenceNotesDetails = document.querySelector("#structure-reference-notes-details");
+const structureReferenceNotes = document.querySelector("#structure-reference-notes");
 const structureReferenceOrientationRow = document.querySelector("#structure-reference-orientation-row");
 const structureReferenceOrientation = document.querySelector("#structure-reference-orientation");
 const structureReferenceLandmarksRow = document.querySelector("#structure-reference-landmarks-row");
@@ -731,6 +733,8 @@ function renderStructureReference(sid) {
     structureReferenceEmpty.hidden = true;
     if (structureReferenceFunctional) structureReferenceFunctional.replaceChildren();
     if (structureReferenceFunctionalDetails) structureReferenceFunctionalDetails.hidden = true;
+    if (structureReferenceNotes) structureReferenceNotes.replaceChildren();
+    if (structureReferenceNotesDetails) structureReferenceNotesDetails.hidden = true;
     structureReferenceBadges.replaceChildren();
     const badge = document.createElement("span");
     badge.textContent = "нужно уточнение";
@@ -765,6 +769,9 @@ function renderStructureReference(sid) {
     structureReferenceStudyCue.hidden = !cue;
     structureReferenceStudyCueText.textContent = cue;
 
+    renderReferenceList(structureReferenceNotes, reference.sourceNotesRu);
+    structureReferenceNotesDetails.hidden = !reference.sourceNotesRu?.length;
+
     const orientation = reference.orientationRu || "";
     structureReferenceOrientationRow.hidden = !orientation;
     structureReferenceOrientation.textContent = orientation;
@@ -793,6 +800,8 @@ function renderStructureReference(sid) {
     structureReferenceEmpty.hidden = false;
     if (structureReferenceFunctional) structureReferenceFunctional.replaceChildren();
     if (structureReferenceFunctionalDetails) structureReferenceFunctionalDetails.hidden = true;
+    if (structureReferenceNotes) structureReferenceNotes.replaceChildren();
+    if (structureReferenceNotesDetails) structureReferenceNotesDetails.hidden = true;
     structureReferenceBadges.replaceChildren();
     structureReferenceBadges.hidden = true;
     structureReferenceSources.replaceChildren();
