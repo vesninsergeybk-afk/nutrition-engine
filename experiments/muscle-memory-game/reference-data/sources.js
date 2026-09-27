@@ -88,6 +88,97 @@ export const REFERENCE_SOURCES = Object.freeze({
 
 
 
+
+  "ncbi-foot-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Foot Muscles",
+    role: "Основная современная сверка наружных и собственных мышц стопы, компартментов и четырёх подошвенных слоёв",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK539705/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-calf": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Calf",
+    role: "Сверка поверхностного и глубокого задних компартментов голени, triceps surae и вариабельности plantaris",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK459362/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-posterior-leg": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Leg Posterior Compartment",
+    role: "Сверка заднего компартмента голени и пяточного сухожилия",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK537340/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-gastrocnemius": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Gastrocnemius Muscle",
+    role: "Сверка икроножной мышцы и её двухсуставной функции",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK532946/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-tibialis-anterior": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Tibialis Anterior Muscles",
+    role: "Сверка переднего компартмента и передней большеберцовой мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK513304/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-extensor-hallucis-longus": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Extensor Hallucis Longus Muscle",
+    role: "Сверка длинного разгибателя большого пальца и переднего компартмента",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK539875/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-tibialis-posterior": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Tibialis Posterior Muscle",
+    role: "Сверка задней большеберцовой мышцы и поддержки медиального свода",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK539913/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-flexor-hallucis-longus": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Calf Flexor Hallucis Longus Muscle",
+    role: "Сверка длинного сгибателя большого пальца стопы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK539776/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-popliteus": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Popliteus Muscle",
+    role: "Сверка подколенной мышцы и зависимости её действия от открытой или закрытой кинематической цепи",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK526084/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-foot-nerves": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Foot Nerves",
+    role: "Сверка моторной иннервации компартментов голени и собственных мышц стопы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK537292/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "gray-anterior-leg-foot-public-domain": Object.freeze({
+    title: "Gray anatomy — anterior leg compartment and foot dorsum",
+    role: "Проверенный кандидат для иллюстрации переднего и латерального компартментов голени и тыла стопы",
+    sourcePage: "https://www.ncbi.nlm.nih.gov/books/NBK526033/figure/article-20295.image.f2/",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Страница NCBI атрибутирует рисунок Henry Vandyke Carter как Public Domain via Wikimedia Commons."
+    }),
+  }),
+
+  "gray-plantar-foot-layer2-public-domain": Object.freeze({
+    title: "Gray anatomy — plantar foot, second layer",
+    role: "Проверенный кандидат для иллюстрации quadratus plantae и lumbricals",
+    sourcePage: "https://www.ncbi.nlm.nih.gov/books/NBK539705/figure/article-32230.image.f6/",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Страница NCBI атрибутирует рисунок Henry Vandyke Carter как Public Domain via Wikimedia Commons."
+    }),
+  }),
+
   "ncbi-thigh-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles",
     role: "Общая сверка переднего, медиального и заднего отделов бедра",
