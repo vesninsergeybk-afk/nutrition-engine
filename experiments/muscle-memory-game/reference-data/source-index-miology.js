@@ -1,7 +1,11 @@
 // Generated from the connected source "МИОЛОГИЯ.docx" (ИГМА, 2018).
-// This file is an inventory only. Names are preserved close to the source and may
-// contain spacing, spelling or terminology that must be normalized before UI use.
-// No attachment, action or clinical claim is admitted into the trainer from this file.
+// This file is a partial automatic inventory, not a complete list of muscles in the book.
+// It currently captures rows with decimal numbering (for example 1.2, 2.4). Some tables
+// use integer numbering or irregular DOCX formatting and therefore require a second pass.
+// Names are preserved close to the source and may contain spacing, spelling or terminology
+// that must be normalized before UI use. Never use this count as the denominator for
+// reference coverage. No attachment, action or clinical claim is admitted into the trainer
+// from this file.
 
 export const MIOLOGY_SOURCE_INDEX = Object.freeze(
 [
@@ -885,3 +889,14 @@ export const MIOLOGY_SOURCE_INDEX = Object.freeze(
 );
 
 export const MIOLOGY_SOURCE_INDEX_COUNT = MIOLOGY_SOURCE_INDEX.length;
+
+export const MIOLOGY_SOURCE_INDEX_META = Object.freeze({
+  complete: false,
+  extractionPass: "decimal-numbered-table-rows",
+  knownFormattingMisses: Object.freeze([
+    "Прямая мышца живота",
+    "Собственно жевательная мышца",
+    "Часть мимических мышц головы с целочисленной нумерацией",
+  ]),
+  noteRu: "Индекс нужен для организации проверки источника. Полнота определяется отдельным аудитом, а не числом автоматически извлечённых строк.",
+});
