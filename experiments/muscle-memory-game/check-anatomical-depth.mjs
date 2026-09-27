@@ -16,6 +16,15 @@ assert(regionHasDepthProfile("back"), "Back depth profile is missing");
 assert(regionHasDepthProfile("abdomen"), "Abdominal depth profile is missing");
 assert(!regionHasDepthProfile("forearm-hand"), "Unverified forearm depth profile must not be invented");
 
+assert(
+  muscleDepthInfo("back", "external abdominal oblique")?.rank === 1,
+  "External oblique lower-back context must remain in the superficial display layer"
+);
+assert(
+  isKnownDeeperRelation("back", "latissimus-dorsi", "serratus-posterior"),
+  "Latissimus dorsi must cover serratus posterior in the verified back profile"
+);
+
 for (const concept of [
   "multifidus thoracis",
   "thoracic rotator",
