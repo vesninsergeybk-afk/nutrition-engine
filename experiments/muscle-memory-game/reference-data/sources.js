@@ -83,6 +83,105 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "ncbi-trapezius": Object.freeze({
+    title: "StatPearls: Anatomy, Back, Trapezius",
+    role: "Сверка прикреплений, частей, функции и иннервации трапециевидной мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK518994/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-rhomboids": Object.freeze({
+    title: "StatPearls: Anatomy, Back, Rhomboid Muscles",
+    role: "Сверка ромбовидных мышц, их функции и иннервации",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK534856/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-levator-scapulae": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Levator Scapulae Muscles",
+    role: "Сверка прикреплений и функции мышцы, поднимающей лопатку",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK553120/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-shoulder-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Muscles",
+    role: "Сверка дельтовидной мышцы и мышц плечевого сустава",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK482410/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-rotator-cuff": Object.freeze({
+    title: "StatPearls: Anatomy, Rotator Cuff",
+    role: "Сверка состава вращательной манжеты и её роли в динамической стабилизации плечевого сустава",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK441844/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-infraspinatus": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Infraspinatus Muscle",
+    role: "Сверка прикреплений и функции подостной мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK513255/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-subscapularis": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Subscapularis Muscle",
+    role: "Сверка прикреплений и функции подлопаточной мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK513344/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-teres-minor": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Teres Minor Muscle",
+    role: "Сверка прикреплений и функции малой круглой мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK513324/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-teres-major": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Teres Major Muscle",
+    role: "Сверка прикреплений и функции большой круглой мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK580487/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-back-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Back, Muscles",
+    role: "Сверка слоёв собственных мышц спины, erector spinae и transversospinalis",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK537074/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-quadratus-lumborum": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis, Quadratus Lumborum",
+    role: "Сверка прикреплений и функциональных оговорок квадратной мышцы поясницы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK535407/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "pubmed-serratus-posterior-function": Object.freeze({
+    title: "Vilensky et al. Serratus posterior muscles: anatomy, clinical relevance, and function",
+    year: 2001,
+    role: "Проверка спорной традиционной трактовки задних зубчатых мышц как дыхательных",
+    url: "https://pubmed.ncbi.nlm.nih.gov/11424195/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-splenius-capitis": Object.freeze({
+    title: "Kenhub: Splenius capitis muscle",
+    role: "Сверка прикреплений и действий ременной мышцы головы",
+    url: "https://www.kenhub.com/en/library/anatomy/splenius-capitis-muscle",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-splenius-cervicis": Object.freeze({
+    title: "Kenhub: Splenius cervicis muscle",
+    role: "Сверка прикреплений и действий ременной мышцы шеи",
+    url: "https://www.kenhub.com/en/library/anatomy/splenius-cervicis-muscle",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-latissimus-dorsi": Object.freeze({
     title: "StatPearls: Anatomy, Back, Latissimus Dorsi",
     role: "Современная сверка прикреплений и функций",
