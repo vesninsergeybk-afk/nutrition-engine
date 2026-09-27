@@ -76,6 +76,12 @@ assert(
     app.includes('canvas.dataset.selectedReferenceSpecific = String(term.specific)'),
   "Selected safety-landmark state is not exposed consistently"
 );
+assert(
+  app.includes("function renderSimpleAtlasReference") &&
+    app.includes('"Ориентир безопасности"') &&
+    app.includes('"Костный ориентир"'),
+  "Bone and safety selections must surface their context in the Atlas information panel"
+);
 
 console.log(
   "Z-Anatomy safety landmarks: Russian labels + click + search + focus contract ok"
