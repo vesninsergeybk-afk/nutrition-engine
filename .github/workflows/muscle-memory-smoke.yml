@@ -21,8 +21,8 @@ permissions:
 # checkpoints. Full-smoke runs share one group: a newer checkpoint supersedes
 # an older checkpoint, but ordinary pushes cannot cancel it.
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[bodyparts-smoke]') && 'muscle-memory-bodyparts-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || contains(github.event.head_commit.message, '[elbow-smoke]') && 'muscle-memory-elbow-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
-  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[bodyparts-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') || contains(github.event.head_commit.message, '[elbow-smoke]') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[reference-audit]') && 'muscle-memory-reference-audit' || contains(github.event.head_commit.message, '[bodyparts-smoke]') && 'muscle-memory-bodyparts-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || contains(github.event.head_commit.message, '[elbow-smoke]') && 'muscle-memory-elbow-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[reference-audit]') || contains(github.event.head_commit.message, '[bodyparts-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') || contains(github.event.head_commit.message, '[elbow-smoke]') }}
 
 jobs:
   fast:
@@ -253,6 +253,32 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+
+
+  browser-reference-audit:
+    if: ${{ contains(github.event.head_commit.message, '[reference-audit]') }}
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Audit Z-Anatomy reference-layer names
+        run: |
+          node experiments/muscle-memory-game/audit-reference-layer-names.mjs > /tmp/reference-layer-names.json
+          cat /tmp/reference-layer-names.json
+
+      - name: Upload reference-layer audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: z-anatomy-reference-layer-names
+          path: /tmp/reference-layer-names.json
+          retention-days: 7
 
 
   browser-bodyparts:
