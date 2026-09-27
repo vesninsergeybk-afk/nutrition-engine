@@ -86,9 +86,9 @@ console.log("Quiz UI contract: course scopes + active-block choices + adaptive s
 
 assert(
   app.includes("applyRegionBoneVisibility()") &&
-    app.includes('boneDisplayMode = "xray"') &&
+    app.includes('boneDisplayMode = "off"') &&
     app.includes('canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full"'),
-  "Regional bone support is not filtered and visible by default"
+  "Regional bone support must stay filtered but be opt-in by default"
 );
 assert(
   app.includes("studyStructureMatchesActiveRegion") &&
@@ -97,10 +97,12 @@ assert(
 );
 
 assert(
-  html.includes(">Слои модели<") &&
+  html.includes(">Анатомический контекст<") &&
     html.includes(">Глубина мышц<") &&
+    html.includes("Контур кожи") &&
+    html.includes("Дополнительные ткани") &&
     !html.includes(">Послойное изучение<"),
-  "Display panel must separate tissue visibility from anatomical muscle depth"
+  "Display panel must separate muscle depth from optional anatomical context"
 );
 assert(
   html.includes('id="show-all"') &&
