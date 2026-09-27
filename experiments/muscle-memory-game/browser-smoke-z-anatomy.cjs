@@ -73,8 +73,40 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#display-panel').isHidden(), false);
   assert.match(await page.locator('#display-panel').innerText(), /Скелет и костные ориентиры/);
   assert.match(await page.locator('#display-panel').innerText(), /Ориентиры безопасности/);
+  const nervousToggle = page.locator('[data-reference-layer="nervous"]');
+  assert.equal(await nervousToggle.isDisabled(), false);
+  await nervousToggle.check();
+  await page.waitForFunction(
+    () => (document.querySelector('#viewer')?.dataset.referenceLayers || '')
+      .split(',')
+      .includes('nervous'),
+    null,
+    { timeout: 150000 }
+  );
   await page.click('#display-panel-close');
   assert.equal(await page.locator('#display-panel').isHidden(), true);
+
+  await page.fill('#structure-search', 'подмышечный нерв');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  const nerveResult = page.locator('.search-result').filter({ hasText: /Подмышечный нерв/i }).first();
+  assert.equal(await nerveResult.count(), 1, 'Russian safety-landmark search must find axillary nerve');
+  assert.doesNotMatch(await nerveResult.innerText(), /axillary nerve/i);
+  await nerveResult.click();
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-reference-layer'),
+    'nervous'
+  );
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-reference-specific'),
+    'true'
+  );
+  assert.match(await page.locator('#question-label').innerText(), /Нервная система/i);
+  assert.match(await page.locator('#question').innerText(), /Подмышечный нерв/i);
+  assert.equal(await page.locator('#focus-selected').isDisabled(), false);
 
   const visibleInitialText = await page.locator('body').innerText();
   assert.doesNotMatch(visibleInitialText, /Учебный каталог|треугольник|mesh|FMA\d+/i);
@@ -174,7 +206,7 @@ const assert = require('node:assert/strict');
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-bone-mode'),
-    'xray'
+    'anatomical'
   );
   assert.ok(
     Number(
