@@ -476,6 +476,47 @@ function hideStructureReference() {
   clearStructureReferencePrimaryArt();
 }
 
+function renderSimpleAtlasReference(typeRu, depthRu, emptyText) {
+  if (!structureReferenceEl) return;
+
+  closeStructureReferenceDetails();
+  clearStructureReferencePrimaryArt();
+
+  const activeRegion =
+    selectedLearningRegion && selectedLearningRegion !== "all"
+      ? (LEARNING_SCOPES.find((item) => item.id === selectedLearningRegion)?.nameRu || "Выбранная область")
+      : "Всё тело";
+
+  structureReferenceLatin.textContent = "";
+  structureReferenceRegion.textContent = activeRegion;
+  structureReferenceType.textContent = typeRu;
+  structureReferenceDepth.textContent = depthRu;
+
+  if (structureReferenceContext) {
+    structureReferenceContext.textContent = "";
+    structureReferenceContext.hidden = true;
+  }
+  if (structureReferenceAmbiguity) structureReferenceAmbiguity.hidden = true;
+  if (structureReferenceFacts) structureReferenceFacts.hidden = true;
+  if (structureReferenceBadges) {
+    structureReferenceBadges.replaceChildren();
+    structureReferenceBadges.hidden = true;
+  }
+  if (structureReferenceSources) {
+    structureReferenceSources.replaceChildren();
+    structureReferenceSources.hidden = true;
+  }
+  if (structureReferenceIllustrations) {
+    structureReferenceIllustrations.replaceChildren();
+    structureReferenceIllustrations.hidden = true;
+  }
+  if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = true;
+
+  structureReferenceEmpty.textContent = emptyText;
+  structureReferenceEmpty.hidden = false;
+  structureReferenceEl.hidden = false;
+}
+
 function renderReferenceList(container, items) {
   if (!container) return;
   container.replaceChildren();
@@ -4572,6 +4613,12 @@ function selectReferenceStructure(layerKey, partId) {
   const term = referenceStructureTerm(sourceName, layerKey);
   selectedReference = { layerKey, partId };
 
+  renderSimpleAtlasReference(
+    referenceLayerNameRu(layerKey),
+    "Ориентир безопасности",
+    "Структура показана как топографический ориентир. Можно сопоставлять её положение с мышцами и костями; подробная справочная карточка будет добавляться только после проверки данных."
+  );
+
   questionLabelEl.textContent = referenceLayerNameRu(layerKey);
   questionEl.textContent = term.nameRu;
   feedbackEl.className = "feedback";
@@ -4621,6 +4668,11 @@ function selectBoneStructure(boneId) {
   isolated = false;
 
   const term = boneTermRu(boneNames[boneId]);
+  renderSimpleAtlasReference(
+    "Кость",
+    "Костный ориентир",
+    "Кость показана как опорный ориентир для изучения положения мышц, их начала, прикрепления и действия."
+  );
   questionLabelEl.textContent = "Кость";
   questionEl.textContent = term.nameRu;
   feedbackEl.className = "feedback";
