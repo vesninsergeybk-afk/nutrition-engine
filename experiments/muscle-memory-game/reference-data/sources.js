@@ -40,6 +40,16 @@ export const REFERENCE_SOURCES = Object.freeze({
   }),
 
 
+  "goldfinger-human-anatomy-artists-1991": Object.freeze({
+    title: "Goldfinger, E. Human Anatomy for Artists: The Elements of Form",
+    year: 1991,
+    role: "Источник индивидуальных рисованных анатомических иллюстраций мышц для учебных карточек",
+    rights: Object.freeze({
+      illustrations: "user-provided-reference",
+      note: "Книга предоставлена пользователем в учебной библиотеке. Иллюстрации используются как внутренний учебный материал; право на отдельную открытую публикацию не предполагается автоматически.",
+    }),
+  }),
+
   "course-method-back-lesson8": Object.freeze({
     title: "Урок 8. Методическое пособие «Мышцы спины»",
     role: "Источник индивидуальных учебных анатомических иллюстраций мышц спины и задней поверхности шеи",
