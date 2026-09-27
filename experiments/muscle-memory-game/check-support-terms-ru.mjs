@@ -29,9 +29,12 @@ const skin = atlas.parts.filter(
   (part) => part.system === "integumentary" && !connectiveIds.has(part.id)
 );
 
+const hasUnexpectedLatin = (value) =>
+  /[A-Za-z]/.test(String(value || "").replace(/\b[IVX]+\b/g, ""));
+
 const missingBones = bones.filter((part) => {
   const term = boneTermRu(part.name);
-  return !term.specific || !/[А-Яа-яЁё]/.test(term.nameRu) || /[A-Za-z]/.test(term.nameRu);
+  return !term.specific || !/[А-Яа-яЁё]/.test(term.nameRu) || hasUnexpectedLatin(term.nameRu);
 });
 assert(
   missingBones.length === 0,
@@ -57,7 +60,7 @@ const supportParts = [
 
 const missingSupport = supportParts.filter((part) => {
   const term = studyStructureTerm(part.name, part.layerKey);
-  return !term.specific || !/[А-Яа-яЁё]/.test(term.nameRu) || /[A-Za-z]/.test(term.nameRu);
+  return !term.specific || !/[А-Яа-яЁё]/.test(term.nameRu) || hasUnexpectedLatin(term.nameRu);
 });
 assert(
   missingSupport.length === 0,
