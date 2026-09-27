@@ -96,28 +96,20 @@ const assert = require('node:assert/strict');
   );
   assert.ok(regionalBoneCount > 0);
 
-  // BodyParts3D is intentionally incomplete for the abdominal muscle
-  // wall. It must not present one external-oblique target as a full
-  // anatomical depth stack.
+  // The extended BodyParts3D muscle layer restores the missing abdominal
+  // wall geometry from registered BodyParts3D 3.0 sources. The region must
+  // now expose the complete verified 5-target depth profile.
   await page.selectOption('#learning-region', 'abdomen');
   assert.equal(
     await page.locator('#viewer').getAttribute('data-learning-target-count'),
-    '1'
+    '5'
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-depth-source-capability'),
-    'source-incomplete'
+    'ok'
   );
-  assert.equal(await page.locator('#source-coverage-note').isVisible(), true);
-  assert.match(
-    await page.locator('#source-coverage-note').innerText(),
-    /неполон.*1 из 5.*Z-Anatomy/i
-  );
-  assert.equal(await page.locator('#peel-surface-layer').isDisabled(), true);
-  assert.match(
-    await page.locator('#layer-depth-status').innerText(),
-    /неполон.*1 из 5|достоверн.*послойност/i
-  );
+  assert.equal(await page.locator('#source-coverage-note').isHidden(), true);
+  assert.equal(await page.locator('#peel-surface-layer').isDisabled(), false);
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip'),
     'logical-box'
@@ -127,7 +119,7 @@ const assert = require('node:assert/strict');
     '0.31:0.62'
   );
   await page.screenshot({
-    path: '/tmp/muscle-memory-bodyparts-abdomen-incomplete.png',
+    path: '/tmp/muscle-memory-bodyparts-abdomen-restored.png',
     fullPage: true,
   });
   await page.selectOption('#learning-region', 'shoulder');
@@ -293,6 +285,11 @@ const assert = require('node:assert/strict');
     ['supraspinatus', /Надостная/i],
     ['biceps brachii', /двуглав/i],
     ['sternocleidomastoid', /Грудино-ключично-сосцевидная/i],
+    ['latissimus dorsi', /Широчайшая мышца спины/i],
+    ['internal oblique', /Внутренняя косая мышца живота/i],
+    ['transversus abdominis', /Поперечная мышца живота/i],
+    ['superficial part of masseter', /Поверхностная часть жевательной мышцы/i],
+    ['extensor digitorum brevis', /Короткий разгибатель пальцев стопы/i],
   ];
   for (const [query, expected] of translationCases) {
     await page.fill('#structure-search', query);
