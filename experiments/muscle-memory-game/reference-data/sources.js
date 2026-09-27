@@ -692,6 +692,29 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+  "pubmed-inferior-constrictor-innervation": Object.freeze({
+    title: "Interrelationships between the innervations from the laryngeal nerves and the pharyngeal plexus to the inferior pharyngeal constrictor",
+    year: 2013,
+    role: "Первичная анатомическая сверка неоднородной иннервации нижнего констриктора глотки",
+    url: "https://pubmed.ncbi.nlm.nih.gov/23515953/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "pmc-deep-transverse-perineal-2025": Object.freeze({
+    title: "Presence of smooth muscle continuous with the rectal and vaginal walls in the deep perineal space prompts reconsideration of the deep transverse perineal muscle",
+    year: 2025,
+    role: "Современная морфологическая проверка спорного тканевого состава и самостоятельности глубокой поперечной мышцы промежности",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC12229694/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "pmc-female-perineal-membrane": Object.freeze({
+    title: "Structure of the Perineal Membrane in Females: Gross and Microscopic Anatomy",
+    role: "Сверка женской анатомии промежностной мембраны и отсутствия постоянной классической глубокой поперечной мышцы",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC2775042/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-deep-perineum": Object.freeze({
     title: "StatPearls: Anatomy, Abdomen and Pelvis: Deep Perineal Space",
     role: "Сверка глубокого пространства промежности и наружного сфинктерного комплекса уретры",
