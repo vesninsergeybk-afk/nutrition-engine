@@ -12,6 +12,19 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+if (staticAtlasRelease) {
+  assert(
+    /id="mode-motion"[^>]*hidden[^>]*disabled/.test(html),
+    "Static atlas release must keep Motion hidden and disabled"
+  );
+  assert(
+    app.includes('mode === "motion" && !MOTION_UI_ENABLED'),
+    "Static atlas release must guard the disabled Motion workspace"
+  );
+  console.log("Motion layout checks skipped: Motion is intentionally outside the static atlas release");
+  process.exit(0);
+}
+
 assert(
   html.includes('id="mode-motion"') &&
     html.includes('id="motion-pane"') &&
