@@ -1892,3 +1892,52 @@ body:not(.motion-mode) .comparison-pane-static {
     border-radius: 0 16px 16px 0;
   }
 }
+
+.structure-reference-facts {
+  display: grid;
+  gap: 8px;
+}
+
+.structure-reference-facts > div {
+  display: grid;
+  gap: 3px;
+}
+
+.structure-reference-facts strong {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.structure-reference-facts span,
+.structure-reference-facts li {
+  font-size: 11px;
+  line-height: 1.42;
+}
+
+.structure-reference-facts ul {
+  margin: 0;
+  padding-left: 17px;
+}
+
+.structure-reference-source-list {
+  display: grid;
+  gap: 3px;
+}
+
+.structure-reference-source-item {
+  display: grid;
+  gap: 1px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.structure-reference-source-item strong {
+  font-size: 10px;
+}
+
+.structure-reference-source-item span {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
