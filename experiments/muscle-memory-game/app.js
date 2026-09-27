@@ -454,6 +454,7 @@ function clearStructureReferencePrimaryArt() {
     structureReferencePrimaryArtImage.style.backgroundImage = "";
     structureReferencePrimaryArtImage.style.backgroundPosition = "";
     structureReferencePrimaryArtImage.style.backgroundSize = "";
+    structureReferencePrimaryArtImage.style.aspectRatio = "";
     structureReferencePrimaryArtImage.removeAttribute("aria-label");
   }
   if (structureReferencePrimaryArtTitle) {
@@ -577,6 +578,8 @@ function renderStructureReferencePrimaryArt(reference) {
     columns * 100 + "% 100%";
   structureReferencePrimaryArtImage.style.backgroundPosition =
     positionX + "% 50%";
+  structureReferencePrimaryArtImage.style.aspectRatio =
+    illustration.aspectRatio || "1 / 1";
   structureReferencePrimaryArtImage.setAttribute(
     "aria-label",
     "Учебная анатомическая иллюстрация: " +
@@ -601,7 +604,7 @@ function renderStructureReferencePrimaryArt(reference) {
           ". "
         : "";
     structureReferencePrimaryArtCaption.textContent =
-      relation + "Учебная иллюстрация · " + details.join(" · ");
+      relation + "Рисованная анатомическая иллюстрация · " + details.join(" · ");
   }
 
   structureReferencePrimaryArt.hidden = false;
