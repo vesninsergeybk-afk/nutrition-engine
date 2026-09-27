@@ -518,6 +518,89 @@ export const REFERENCE_SOURCES = Object.freeze({
 
 
 
+  "commons-extraocular-cc0": Object.freeze({
+    title: "Wikimedia Commons: Extraocular Eye Muscles",
+    role: "Открытая обзорная иллюстрация наружных мышц глаза",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Extraocular_Eye_Muscles.png",
+    rights: Object.freeze({
+      illustrations: "cc0",
+      note: "Файл опубликован автором под CC0 1.0."
+    }),
+  }),
+
+  "gray-1918-plate-406-perineum": Object.freeze({
+    title: "Gray's Anatomy, plate 406 — muscles of the male perineum",
+    year: 1918,
+    role: "Обзорная иллюстрация поверхностных мышц промежности и анального сфинктера",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Muscles_of_the_male_perineum-Gray406.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons отмечает конкретный скан как Public Domain / PD-scan."
+    }),
+  }),
+
+  "gray-1918-plate-960-larynx": Object.freeze({
+    title: "Gray's Anatomy, plate 960 — intrinsic muscles of the larynx",
+    year: 1918,
+    role: "Обзорная иллюстрация внутренних мышц гортани",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray960.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons отмечает пластину Gray's Anatomy как Public Domain."
+    }),
+  }),
+
+  "gray-1918-plate-1019-tongue": Object.freeze({
+    title: "Gray's Anatomy, plate 1019 — extrinsic muscles of the tongue",
+    year: 1918,
+    role: "Обзорная иллюстрация наружных мышц языка",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray1019.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Пластина Gray's Anatomy; Wikimedia Commons указывает Public Domain."
+    }),
+  }),
+
+  "gray-1918-suprahyoid": Object.freeze({
+    title: "Gray anatomy — suprahyoid muscles",
+    role: "Обзорная иллюстрация надподъязычной группы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Suprahyoid_muscles.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Производное от public-domain пластины Gray; на Commons отмечено как Gray's Anatomy / PD-old."
+    }),
+  }),
+
+  "gray-1918-infrahyoid": Object.freeze({
+    title: "Gray anatomy — infrahyoid muscles",
+    role: "Обзорная иллюстрация подподъязычной группы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Infrahyoid_muscles.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Производное от public-domain пластины Gray; на Commons отмечено как Gray's Anatomy / PD-old."
+    }),
+  }),
+
+  "gray-1918-forearm-anterior": Object.freeze({
+    title: "Gray anatomy — superficial anterior forearm muscles",
+    role: "Обзорная иллюстрация поверхностной передней группы предплечья",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Forearm_muscles_front_superficial.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Gray's Anatomy 1918; Wikimedia Commons отмечает Public Domain / PD-scan."
+    }),
+  }),
+
+  "gray-1918-thigh-posterior": Object.freeze({
+    title: "Gray anatomy — posterior thigh muscles",
+    role: "Обзорная иллюстрация задней группы бедра",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Thigh_muscles_back.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Gray's Anatomy 1918; Wikimedia Commons отмечает Public Domain."
+    }),
+  }),
+
   "ncbi-pharynx": Object.freeze({
     title: "StatPearls: Anatomy, Head and Neck, Pharynx",
     role: "Сверка констрикторов и продольных мышц глотки",
