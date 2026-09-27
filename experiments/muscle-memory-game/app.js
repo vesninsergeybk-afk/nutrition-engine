@@ -824,6 +824,12 @@ function renderStructureReference(sid) {
     structureReferenceSources.hidden = true;
     structureReferenceIllustrations.hidden = true;
     if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = true;
+    structureReferenceEl.dataset.referenceId = "";
+    structureReferenceEl.dataset.referenceHasPrimaryArt = String(Boolean(hasPrimaryIllustration));
+    structureReferenceEl.dataset.referenceAtlasIllustrationCount = "0";
+    structureReferenceEl.dataset.referenceSourceCount = "0";
+    canvas.dataset.selectedReferenceCard = "";
+    canvas.dataset.selectedReferenceIllustration = hasPrimaryIllustration ? "primary" : "none";
     structureReferenceEl.hidden = false;
     return;
   }
