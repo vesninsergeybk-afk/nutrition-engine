@@ -896,6 +896,11 @@ export const DEEP_HEAD_NECK_REGION = deepFreeze({
           "sourceId": "ncbi-pharynx",
           "locator": "Muscles of the pharynx",
           "role": "verification"
+        },
+        {
+          "sourceId": "pubmed-inferior-constrictor-innervation",
+          "locator": "Abstract — innervation patterns",
+          "role": "evidence-check"
         }
       ],
       "verification": {
