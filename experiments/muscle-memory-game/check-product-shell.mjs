@@ -13,7 +13,8 @@ const app = await readFile(new URL("app.js", import.meta.url), "utf8");
 
 assert(
   html.includes("<title>Анатомический тренажёр Сергея Веснина</title>") &&
-    html.includes("<h1>Анатомический тренажёр Сергея Веснина</h1>"),
+    html.includes("<h1>Анатомический тренажёр</h1>") &&
+    html.includes('<span class="brand-author">Сергей Веснин</span>'),
   "Product title/heading mismatch"
 );
 assert(
@@ -26,7 +27,7 @@ const motionButton = html.indexOf('id="mode-motion"');
 const quizButton = html.indexOf('id="mode-quiz"');
 assert(
   exploreButton >= 0 && exploreButton < motionButton && motionButton < quizButton,
-  "Primary mode order must be Atlas -> Motion -> Training"
+  "Static shell keeps hidden Motion compatibility between Atlas and Training"
 );
 assert(
   /id="mode-explore"[^>]*class="active"[^>]*aria-pressed="true"/.test(html),
