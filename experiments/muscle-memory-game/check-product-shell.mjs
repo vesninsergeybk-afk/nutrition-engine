@@ -43,7 +43,8 @@ assert(
   "Runtime must start in Atlas mode"
 );
 assert(
-  app.includes('if (params.get("mode") === "quiz") setMode("quiz");'),
+  app.includes('const requestedMode = params.get("mode");') &&
+    app.includes('if (requestedMode === "quiz") setMode("quiz");'),
   "Explicit quiz deep link must still work"
 );
 assert(
