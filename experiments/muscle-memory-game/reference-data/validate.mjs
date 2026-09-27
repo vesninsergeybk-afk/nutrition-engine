@@ -72,6 +72,11 @@ for (const region of REFERENCE_REGIONS) {
 
     validateIllustrations(structure.id, structure.illustrations);
 
+    for (const memberId of structure.members || []) {
+      // Member references are checked after the first pass, once every canonical id is known.
+      // Keep the value here; the second pass below resolves it globally.
+    }
+
     for (const rawAlias of structure.names?.modelAliases || []) {
       const alias = normalizeAlias(rawAlias);
       if (!alias) continue;
@@ -86,6 +91,15 @@ for (const region of REFERENCE_REGIONS) {
 
 // Second pass: now every canonical structure id is known, validate cross-region relationships and groups.
 for (const region of REFERENCE_REGIONS) {
+  for (const structure of region.structures || []) {
+    for (const memberId of structure.members || []) {
+      requireValue(
+        structuresById.has(memberId),
+        `${structure.id}: Canonical structure member does not exist: ${memberId}`
+      );
+    }
+  }
+
   for (const relatedId of region.relatedStructureIds || []) {
     requireValue(
       structuresById.has(relatedId),
