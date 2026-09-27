@@ -2274,3 +2274,54 @@ body:not(.motion-mode) .comparison-pane-static {
 .selected-structure-actions-primary .layer-actions {
   margin-top: 2px;
 }
+
+.support-layer-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: #1b1b1d;
+  cursor: pointer;
+}
+
+.support-layer-toggle > input {
+  margin: 2px 0 0;
+  flex: 0 0 auto;
+}
+
+.support-layer-toggle > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.support-layer-toggle strong {
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.support-layer-toggle small,
+.layer-control-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.secondary-display-action {
+  width: 100%;
+  min-height: 36px;
+  background: #fff;
+  border-color: var(--line);
+  font-size: 11px;
+}
+
+.connective-layer-options {
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255,255,255,.62);
+}
