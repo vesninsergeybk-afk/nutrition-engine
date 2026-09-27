@@ -141,6 +141,7 @@ function candidateCard(candidate, mapping = null) {
     relationsRu: card.sections.relations,
     innervationRu: card.sections.innervation,
     studyCueRu: card.sections.studyCue,
+    sourceNotesRu: Object.freeze(candidate.structure.sourceNotesRu || []),
     functionalRelations: functionalRelationsForStructure(candidate.structure.id),
     sources: card.sections.sources,
     illustrations: Object.freeze(illustrations),
