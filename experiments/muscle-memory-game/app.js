@@ -2946,7 +2946,9 @@ function applyLearningRegion() {
   canvas.dataset.learningScope = selectedLearningRegion;
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
-  regionIsolationField.hidden = selectedLearningRegion === "all";
+  // Region isolation is now driven by the area selector and camera actions.
+  // The legacy checkbox remains as internal state but is not a user-facing step.
+  regionIsolationField.hidden = true;
   focusShoulderButton.textContent = appMode === "quiz" ? "К блоку" : "К области";
   focusShoulderButton.hidden = selectedLearningRegion === "all";
 
@@ -7756,7 +7758,9 @@ function applyInitialQueryState() {
   if (requestedArea && learningAreaOptionExists(requestedArea)) {
     selectedLearningRegion = requestedArea;
     learningRegion.value = requestedArea;
+    regionIsolation.checked = requestedArea !== "all";
     applyLearningRegion();
+    if (requestedArea !== "all") focusLearningRegion();
   }
 
   const requestedSize = params.get("size");
@@ -9027,10 +9031,11 @@ regionIsolation.addEventListener("change", () => {
 
 learningRegion.addEventListener("change", () => {
   selectedLearningRegion = learningRegion.value;
+  regionIsolation.checked = selectedLearningRegion !== "all";
   applyLearningRegion();
   syncLearningAreaQuery();
 
-  if (regionIsolationActive()) {
+  if (selectedLearningRegion !== "all") {
     focusLearningRegion();
   } else {
     setFullBodyView();
@@ -9059,13 +9064,20 @@ exitLearningSessionButton.addEventListener("click", () => {
   focusLearningRegion();
 });
 
-focusShoulderButton.addEventListener("click", focusLearningRegion);
+focusShoulderButton.addEventListener("click", () => {
+  if (selectedLearningRegion === "all") {
+    setFullBodyView();
+    return;
+  }
+  regionIsolation.checked = true;
+  applyRegionScene({ resetLayers: false, focus: true });
+});
 focusFullButton.addEventListener("click", () => {
   regionIsolation.checked = false;
   applyRegionScene();
   setFullBodyView();
 });
-focusSelectedButton.addEventListener("click", focusSelectedStructures);
+focusSelectedButton.addEventListener("click", () => focusSelectedStructures());
 viewPreset.addEventListener("change", () => setViewPreset(viewPreset.value));
 modeQuizButton.addEventListener("click", () => setMode("quiz"));
 modeExploreButton.addEventListener("click", () => setMode("explore"));
