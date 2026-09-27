@@ -65,11 +65,14 @@ function aliasLookup(sourceName) {
     .toLocaleLowerCase("en-US")
     .replace(/\s+/g, " ");
 
+  const withoutSide = raw
+    .replace(/\bright\b|\bleft\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
   return (
     bodyPartsReferenceAlias(raw) ||
-    bodyPartsReferenceAlias(
-      raw.replace(/^right\s+|^left\s+/, "")
-    ) ||
+    bodyPartsReferenceAlias(withoutSide) ||
     null
   );
 }
