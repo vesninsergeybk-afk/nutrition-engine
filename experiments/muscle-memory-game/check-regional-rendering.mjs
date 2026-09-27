@@ -59,9 +59,9 @@ assert(
   "Camera-visible peeling must not return as the anatomical layer engine"
 );
 assert(
-  app.includes("data-bone-training-hidden") ||
-    app.includes("boneTrainingHidden"),
-  "Quiz does not explicitly track hidden bone support"
+  app.includes('canvas.dataset.boneTrainingHidden = "false"') &&
+    /function applyTrainingDisplayOverride[\s\S]*?applyBoneDisplayMode\(\)/.test(app),
+  "Training must preserve the selected skeletal context instead of hiding it"
 );
 
 console.log("Regional renderer: isolated muscles + independent support layers");
