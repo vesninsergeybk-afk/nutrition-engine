@@ -1886,7 +1886,9 @@ function applyStudyLayerPreset(preset = "muscles") {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  setConnectiveLayerSelection([]);
+  // Keep the useful connective layers preselected while hidden. Turning the
+  // connective layer on should immediately reveal fasciae, tendons and ligaments.
+  setConnectiveLayerSelection(["fascia", "tendon", "ligament", "joint", "cartilage"]);
   boneDisplayMode =
     preset === "muscles"
       ? (regionIsolationActive() ? "xray" : "anatomical")
@@ -1911,7 +1913,13 @@ function applyStudyLayerPreset(preset = "muscles") {
   } else if (preset === "attachments") {
     muscleDisplayMode = "ghost";
     connectiveDisplayMode = "anatomical";
-    setConnectiveLayerSelection(["tendon", "ligament", "joint", "cartilage"]);
+    setConnectiveLayerSelection([
+      "fascia",
+      "tendon",
+      "ligament",
+      "joint",
+      "cartilage",
+    ]);
   } else if (preset === "all-tissues") {
     muscleDisplayMode = "anatomical";
     skinDisplayMode = "ghost";
@@ -2618,7 +2626,8 @@ function renderDeeperStructures(ids, { pointSpecific = true } = {}) {
 
 function updateLayerButtons() {
   isolateButton.textContent = isolated ? "Вернуть окружение" : "Показать отдельно";
-  hideSelectedButton.textContent = "Скрыть";
+  hideSelectedButton.textContent =
+    selectedStudyId != null ? "Скрыть структуру" : "Скрыть мышцу";
   showAllButton.textContent = regionIsolationActive()
     ? "Вернуть структуры области"
     : "Вернуть все структуры";
@@ -4396,9 +4405,9 @@ function selectExploreStructure(sid, hitStack = null) {
   isolated = keepIsolation;
 
   const coveringIds = keepIsolation ? [] : verifiedCoveringStructureIds(sid);
-  if (!coveringIds.length) {
-    highlightStructures([sid], "selected");
-  }
+  // Always color the selected muscle. The muscle material keeps depthTest/depthWrite
+  // enabled, so superficial anatomy still occludes covered portions naturally.
+  highlightStructures([sid], "selected");
   canvas.dataset.selectedCovered = coveringIds.length ? "true" : "false";
   canvas.dataset.selectedCoverCount = String(coveringIds.length);
 
@@ -9789,6 +9798,18 @@ boneMode.addEventListener("change", () => {
 
 connectiveMode.addEventListener("change", () => {
   connectiveDisplayMode = connectiveMode.value;
+  if (
+    connectiveDisplayMode !== "off" &&
+    selectedConnectiveLayers().size === 0
+  ) {
+    setConnectiveLayerSelection([
+      "fascia",
+      "tendon",
+      "ligament",
+      "joint",
+      "cartilage",
+    ]);
+  }
   applyConnectiveDisplayMode();
 });
 
