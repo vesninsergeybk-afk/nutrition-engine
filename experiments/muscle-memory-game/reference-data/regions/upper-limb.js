@@ -1818,6 +1818,7 @@ export const UPPER_LIMB_REGION = deepFreeze({
           "abductor digiti minimi"
         ]
       },
+      "modelAliasContext": "hand",
       "subregions": [
         "hypothenar"
       ],
