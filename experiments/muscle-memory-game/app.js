@@ -1764,6 +1764,20 @@ function targetDepthInfo(target) {
   return null;
 }
 
+function sidDepthInfo(target, sid) {
+  const depthRegionId = activeDepthProfileId(target);
+  if (!target || sid == null || !depthRegionId) return null;
+
+  const sourceName = structureNames[sid] || "";
+  for (const depthName of learningDepthSourceNames(sourceName)) {
+    const info = muscleDepthInfo(depthRegionId, depthName);
+    if (info) return { ...info, conceptKey: depthName, sid };
+  }
+
+  const fallback = targetDepthInfo(target);
+  return fallback ? { ...fallback, sid } : null;
+}
+
 function targetHasVisibleStructure(target) {
   return Boolean(
     target?.sids?.some((sid) => structureVisibility[sid] !== false)
@@ -1806,10 +1820,15 @@ function nextRegionalAnatomicalLayer() {
     };
   }
 
-  const entries = visibleTargets.map((target) => ({
-    target,
-    info: targetDepthInfo(target),
-  }));
+  const entries = visibleTargets.flatMap((target) =>
+    (target.sids || [])
+      .filter((sid) => structureVisibility[sid] !== false)
+      .map((sid) => ({
+        target,
+        sid,
+        info: sidDepthInfo(target, sid),
+      }))
+  );
   const missing = entries.filter((entry) => !entry.info);
 
   if (missing.length) {
@@ -1829,15 +1848,7 @@ function nextRegionalAnatomicalLayer() {
 
   const rank = nextDepthRank(entries.map((entry) => entry.info));
   const layerEntries = entries.filter((entry) => entry.info.rank === rank);
-  const ids = [
-    ...new Set(
-      layerEntries.flatMap((entry) =>
-        (entry.target.sids || []).filter(
-          (sid) => structureVisibility[sid] !== false
-        )
-      )
-    ),
-  ];
+  const ids = [...new Set(layerEntries.map((entry) => entry.sid))];
 
   const nameRu = layerEntries[0]?.info?.nameRu || "Анатомический";
 
@@ -1878,7 +1889,11 @@ function peelAnatomicalMuscleLayer() {
   selectedStudyId = null;
   focusedStructureIds = [];
 
-  const muscles = layer.entries.map((entry) => entry.target.nameRu);
+  const muscles = [
+    ...new Set(
+      layer.entries.map((entry) => displayStructureName(entry.sid))
+    ),
+  ];
   questionLabelEl.textContent = "Послойное изучение";
   questionEl.textContent = `Скрыт ${layer.nameRu.toLocaleLowerCase("ru-RU")} слой`;
   feedbackEl.className = "feedback";
