@@ -473,6 +473,28 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+
+  "ncbi-thoracic-vertebrae": Object.freeze({
+    title: "StatPearls: Anatomy, Back, Thoracic Vertebrae",
+    role: "Сверка глубоких сегментарных мышц грудного отдела",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK459153/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-lumbar-vertebrae": Object.freeze({
+    title: "StatPearls: Anatomy, Back, Lumbar Vertebrae",
+    role: "Сверка interspinales, intertransversarii и глубоких стабилизаторов поясничного отдела",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK459278/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-deep-back": Object.freeze({
+    title: "Kenhub: Deep back muscles",
+    role: "Дополнительная сверка самого глубокого слоя: levatores costarum, interspinales и intertransversarii",
+    url: "https://www.kenhub.com/en/library/anatomy/intrinsic-back-muscles",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-thorax-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Thorax, Muscles",
     role: "Сверка грудных мышц, межрёберных мышц и диафрагмы",
