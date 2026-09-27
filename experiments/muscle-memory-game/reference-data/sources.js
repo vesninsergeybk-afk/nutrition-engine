@@ -84,6 +84,91 @@ export const REFERENCE_SOURCES = Object.freeze({
   }),
 
 
+
+  "ncbi-sternocleidomastoid": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck: Sternocleidomastoid Muscle",
+    role: "Сверка прикреплений, функции и топографической роли грудино-ключично-сосцевидной мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK532881/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-scalenes": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Scalenus Muscle",
+    role: "Сверка лестничных мышц, их дыхательной и шейной функции и отношений с сосудисто-нервными структурами",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK519058/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-suprahyoid": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck: Suprahyoid Muscle",
+    role: "Сверка надподъязычной группы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK546710/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-mylohyoid": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Mylohyoid Muscle",
+    role: "Сверка мышц дна полости рта и надподъязычной группы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK545293/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-infrahyoid": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck: Anterior Cervical Region",
+    role: "Сверка подподъязычных мышц, их прикреплений и иннервации",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK557475/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-sternohyoid": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Sternohyoid Muscle",
+    role: "Сверка подподъязычной группы и ansa cervicalis",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK547693/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-prevertebral": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Prevertebral Muscles",
+    role: "Сверка длинной мышцы шеи, длинной мышцы головы и передних прямых мышц головы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK560569/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-suboccipital": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Suboccipital Muscles",
+    role: "Сверка состава, функций, иннервации и сосудистых отношений подзатылочной группы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK567762/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-mastication": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Mastication Muscles",
+    role: "Сверка жевательной, височной и крыловидных мышц",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK541027/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-facial-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck: Facial Muscles",
+    role: "Сверка мимических мышц и их общей иннервации лицевым нервом",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK493209/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-platysma": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Platysma",
+    role: "Сверка подкожной мышцы шеи, её слоя, прикреплений и иннервации",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK545294/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-neck-movements": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Neck Movements",
+    role: "Сверка совместной функции мышц шеи и границ упрощения «одна мышца — одно движение»",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK557555/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-thorax-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Thorax, Muscles",
     role: "Сверка грудных мышц, межрёберных мышц и диафрагмы",
