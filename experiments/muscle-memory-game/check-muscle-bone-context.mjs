@@ -18,10 +18,13 @@ assert(
   /preset === "muscles"[\s\S]*?regionIsolationActive\(\) \? "xray" : "anatomical"/.test(app),
   "Muscle preset hides bones inside an isolated region"
 );
+const selectedBoneContextStart = app.indexOf("function showSelectedMuscleBoneContext");
+const selectedBoneContextEnd = app.indexOf("function applyBoneDisplayMode", selectedBoneContextStart);
+const selectedBoneContextBlock = app.slice(selectedBoneContextStart, selectedBoneContextEnd);
 assert(
   app.includes("function applySelectedMuscleBoneVisibility") &&
-    app.includes("function showSelectedMuscleBoneContext") &&
-    /function showSelectedMuscleBoneContext[sS]*?boneDisplayMode = "anatomical"[sS]*?applySelectedMuscleBoneVisibility(ids)/.test(app),
+    selectedBoneContextBlock.includes('boneDisplayMode = "anatomical"') &&
+    selectedBoneContextBlock.includes("applySelectedMuscleBoneVisibility(ids)"),
   "Single-muscle isolation must keep a local solid-bone anatomical context"
 );
 assert(
