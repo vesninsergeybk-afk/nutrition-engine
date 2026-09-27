@@ -49,21 +49,21 @@ export const REFERENCE_SOURCES = Object.freeze({
   "ncbi-serratus-anterior": Object.freeze({
     title: "StatPearls: Anatomy, Thorax, Serratus Anterior Muscles",
     role: "Современная сверка прикреплений и функций",
-    url: "https://www.ncbi.nlm.nih.gov/books/",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK531457/",
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
   "ncbi-anterolateral-abdominal-wall": Object.freeze({
     title: "StatPearls: Anatomy, Abdomen and Pelvis: Anterolateral Abdominal Wall Fascia",
     role: "Современная сверка наружной косой мышцы живота",
-    url: "https://www.ncbi.nlm.nih.gov/books/",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK459392/",
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
   "ncbi-masseter": Object.freeze({
     title: "StatPearls: Anatomy, Head and Neck, Masseter Muscle",
     role: "Современная сверка жевательной мышцы",
-    url: "https://www.ncbi.nlm.nih.gov/books/",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK539869/",
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 });
