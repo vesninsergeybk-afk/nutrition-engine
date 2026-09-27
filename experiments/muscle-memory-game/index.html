@@ -90,9 +90,12 @@
           </section>
 
           <section class="display-section">
-            <h3>Тканевые слои</h3>
+            <div class="display-section-head">
+              <h3>Слои модели</h3>
+              <span>Что показывать на 3D-модели</span>
+            </div>
             <label id="layer-preset-field" class="viewer-setting-field">
-              <span>Быстрый режим</span>
+              <span>Ткани</span>
               <select id="layer-preset" aria-label="Тканевый слой">
                 <option value="muscles" selected>Мышцы</option>
                 <option value="bones">Кости и мышечные ориентиры</option>
@@ -150,16 +153,22 @@
           </section>
 
           <section class="display-section">
-            <h3>Мышечная послойность</h3>
-            <p id="layer-depth-status" class="viewer-setting-note">Выберите анатомический блок.</p>
-            <div class="display-layer-actions">
-              <button id="peel-surface-layer" type="button">Снять внешний мышечный слой</button>
-              <button id="undo-hide" type="button" disabled>Вернуть слой</button>
+            <div class="display-section-head">
+              <h3>Глубина мышц</h3>
+              <span>Последовательно открывает более глубокие мышцы выбранной области</span>
+            </div>
+            <p id="layer-depth-status" class="viewer-setting-note">Выберите анатомическую область.</p>
+            <div id="display-layer-actions" class="display-layer-actions" hidden>
+              <button id="peel-surface-layer" type="button">Скрыть поверхностный слой</button>
+              <button id="undo-hide" type="button" disabled>Вернуть предыдущий слой</button>
             </div>
           </section>
 
           <section class="display-section">
-            <h3>Ориентиры безопасности</h3>
+            <div class="display-section-head">
+              <h3>Ориентиры безопасности</h3>
+              <span>Дополнительные структуры для топографической ориентации</span>
+            </div>
             <fieldset id="reference-layers-field" class="connective-layer-options" hidden>
               <legend class="sr-only">Ориентиры безопасности</legend>
               <label><input type="checkbox" data-reference-layer="nervous" /> Нервные структуры</label>
@@ -183,14 +192,14 @@
       <section class="question-card">
         <div id="scope-controls" class="scope-controls">
           <label class="learning-field scope-field">
-            <span>Учебный блок</span>
+            <span id="scope-label">Анатомическая область</span>
             <select id="learning-region" aria-label="Учебный блок или анатомическая область" disabled>
               <option value="all">Всё тело</option>
             </select>
           </label>
           <label id="region-isolation-field" class="scope-isolation">
             <input id="region-isolation" type="checkbox" checked />
-            <span>Изолировать выбранный блок</span>
+            <span id="region-isolation-label">Показывать только выбранную область</span>
           </label>
         </div>
 
@@ -306,15 +315,20 @@
 
         <div id="explore-controls" class="explore-controls">
           <label class="search-field">
-            <span>Поиск по названию</span>
+            <span>Найти структуру</span>
             <input id="structure-search" type="search" autocomplete="off" placeholder="Например: дельтовидная, трапециевидная, бицепс" />
           </label>
           <div id="search-results" class="search-results" aria-live="polite"></div>
-          <div class="layer-actions">
-            <button id="isolate-selected" type="button" disabled>Изолировать</button>
-            <button id="hide-selected" type="button" disabled>Скрыть выбранную</button>
-            <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
-            <button id="show-all" type="button">Показать весь блок</button>
+          <div id="selected-structure-actions" class="selected-structure-actions" hidden>
+            <span class="control-group-label">Выбранная структура</span>
+            <div class="layer-actions">
+              <button id="isolate-selected" type="button" disabled>Показать отдельно</button>
+              <button id="hide-selected" type="button" disabled>Скрыть</button>
+              <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
+            </div>
+          </div>
+          <div id="restore-view-actions" class="restore-view-actions" hidden>
+            <button id="show-all" type="button">Вернуть структуры области</button>
           </div>
         </div>
       </section>
