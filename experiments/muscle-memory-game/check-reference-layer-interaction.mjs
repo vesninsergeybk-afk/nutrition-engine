@@ -15,6 +15,10 @@ for (const [source, layer, expected] of [
   ["Left femoral artery", "vascular", "Бедренная артерия (слева)"],
   ["Right great saphenous vein", "vascular", "Большая подкожная вена (справа)"],
   ["Thoracic duct", "lymphatic", "Грудной проток"],
+  ["Left suprascapular nerve", "nervous", "Надлопаточный нерв (слева)"],
+  ["Right vertebral artery", "vascular", "Позвоночная артерия (справа)"],
+  ["Left supraclavicular nodes", "lymphatic", "Надключичные лимфатические узлы (слева)"],
+  ["Facial nerve (VII).r", "nervous", "Лицевой нерв (справа)"],
 ]) {
   const term = referenceStructureTerm(source, layer);
   assert(term.specific, source + ": expected a specific Russian term");
@@ -44,6 +48,7 @@ for (const required of [
   "let selectedReference = null",
   "function referencePartIdFromHit",
   "function referencePartIsVisible",
+  "function referencePartIsInteractive",
   "function selectReferenceStructure",
   "mesh.userData.referenceNames = sourceNames",
   "...[...referenceMeshes.values()].filter((mesh) => mesh.visible)",
@@ -57,8 +62,13 @@ for (const required of [
 
 assert(
   app.includes("hit.object?.userData?.referenceLayer") &&
+    app.includes("referencePartIsInteractive(hit.object, partId)") &&
     app.includes("selectReferenceStructure(hit.object.userData.referenceLayer, partId)"),
-  "Visible safety landmarks are not connected to Atlas picking"
+  "Mapped safety landmarks are not connected to Atlas picking"
+);
+assert(
+  app.includes("if (!referencePartIsInteractive(mesh, partId)) continue;"),
+  "Unmapped source objects must stay out of the user-facing Atlas search"
 );
 
 assert(
