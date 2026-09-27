@@ -349,6 +349,8 @@ let baseColors = [];
 let highlightedIds = new Set();
 let bodySize = new THREE.Vector3(1, 1, 1);
 
+const MOTION_UI_ENABLED = false;
+
 let appMode = "explore";
 let learningCatalog = [];
 let learningTargetBySid = new Map();
@@ -6875,6 +6877,9 @@ function prepareMotionComparison(sid) {
 
 function setMode(mode) {
   if (!["quiz", "explore", "motion"].includes(mode)) return;
+  if (mode === "motion" && !MOTION_UI_ENABLED) {
+    mode = "explore";
+  }
 
   // Primary modes are top-level navigation. An open display submenu must not
   // remain floating over the newly selected workspace.
@@ -7585,7 +7590,9 @@ function applyInitialQueryState() {
 
   if (params.get("mode") === "quiz") setMode("quiz");
   if (params.get("mode") === "explore") setMode("explore");
-  if (params.get("mode") === "motion") setMode("motion");
+  if (params.get("mode") === "motion" && MOTION_UI_ENABLED) {
+    setMode("motion");
+  }
 
   if (requestedArea && requestedArea !== "all") {
     focusLearningRegion();
