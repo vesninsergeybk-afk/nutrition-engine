@@ -11,6 +11,7 @@ export const MUSCLE_REFERENCE_SOURCES = Object.freeze({
     year: 1918,
     use: "Кандидаты на публично доступные атласные иллюстрации",
     rightsStatus: "Public domain для проверенных сканов/производных, отмеченных как Public Domain",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray412.png",
   }),
   "z-anatomy": Object.freeze({
     title: "Z-Anatomy",
@@ -53,8 +54,11 @@ const REFERENCES = Object.freeze([
       }),
       Object.freeze({
         sourceId: "gray-1918",
-        locator: "Плечевой пояс / дельтовидная область — подобрать локальный Public Domain файл после визуальной сверки",
-        rightsStatus: "public-domain-candidate",
+        locator: "Gray's Anatomy, plate 412 — задняя поверхность лопатки и плечевого пояса",
+        rightsStatus: "public-domain",
+        src: "./assets/reference/gray412-shoulder.png",
+        altRu: "Задняя поверхность лопатки и плечевого пояса по Gray's Anatomy",
+        captionRu: "Gray's Anatomy, plate 412. Public domain.",
       }),
     ]),
   }),
@@ -73,8 +77,11 @@ const REFERENCES = Object.freeze([
     illustrations: Object.freeze([
       Object.freeze({
         sourceId: "gray-1918",
-        locator: "Ротаторная манжета / задняя поверхность лопатки — подобрать Public Domain файл после визуальной сверки",
-        rightsStatus: "public-domain-candidate",
+        locator: "Gray's Anatomy, plate 412 — надостная, подостная и малая круглая мышцы",
+        rightsStatus: "public-domain",
+        src: "./assets/reference/gray412-shoulder.png",
+        altRu: "Задняя поверхность лопатки с мышцами ротаторной манжеты",
+        captionRu: "Gray's Anatomy, plate 412. Public domain.",
       }),
     ]),
   }),
@@ -93,8 +100,11 @@ const REFERENCES = Object.freeze([
     illustrations: Object.freeze([
       Object.freeze({
         sourceId: "gray-1918",
-        locator: "Задняя поверхность лопатки — подобрать Public Domain файл после визуальной сверки",
-        rightsStatus: "public-domain-candidate",
+        locator: "Gray's Anatomy, plate 412 — задняя поверхность лопатки",
+        rightsStatus: "public-domain",
+        src: "./assets/reference/gray412-shoulder.png",
+        altRu: "Задняя поверхность лопатки с подостной мышцей",
+        captionRu: "Gray's Anatomy, plate 412. Public domain.",
       }),
     ]),
   }),
@@ -114,8 +124,11 @@ const REFERENCES = Object.freeze([
     illustrations: Object.freeze([
       Object.freeze({
         sourceId: "gray-1918",
-        locator: "Задняя поверхность плечевого пояса — подобрать Public Domain файл после визуальной сверки",
-        rightsStatus: "public-domain-candidate",
+        locator: "Gray's Anatomy, plate 412 — задняя поверхность плечевого пояса",
+        rightsStatus: "public-domain",
+        src: "./assets/reference/gray412-shoulder.png",
+        altRu: "Задняя поверхность плечевого пояса с малой круглой мышцей",
+        captionRu: "Gray's Anatomy, plate 412. Public domain.",
       }),
     ]),
   }),
