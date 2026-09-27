@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Мышцы в движении</title>
+  <title>Анатомический тренажёр Сергея Веснина</title>
   <link rel="stylesheet" href="./styles.css" />
   <script type="importmap">
     {
@@ -19,15 +19,14 @@
     <section class="stage">
       <div class="topbar">
         <div>
-          <p class="eyebrow">Анатомический тренажёр</p>
-          <h1>Мышцы в движении</h1>
+          <h1>Анатомический тренажёр Сергея Веснина</h1>
         </div>
 
         <div class="topbar-tools">
           <div class="mode-switch" role="group" aria-label="Режим работы">
-            <button id="mode-quiz" type="button" class="active" aria-pressed="true">Тренировка</button>
-            <button id="mode-explore" type="button" aria-pressed="false">Атлас</button>
+            <button id="mode-explore" type="button" class="active" aria-pressed="true">Атлас</button>
             <button id="mode-motion" type="button" aria-pressed="false">Движение</button>
+            <button id="mode-quiz" type="button" aria-pressed="false">Тренировка</button>
           </div>
 
           <div id="score" class="score" aria-live="polite" hidden>
@@ -165,7 +164,7 @@
           </label>
         </div>
 
-        <div id="learning-controls" class="learning-controls">
+        <div id="learning-controls" class="learning-controls" hidden>
           <div class="learning-mode-field">
             <span>Как тренируемся</span>
             <div class="learning-mode-buttons" role="group" aria-label="Режим учебной сессии">
@@ -204,7 +203,7 @@
           </label>
           <button id="start-learning-session" class="learning-start" type="button" disabled>Начать</button>
         </div>
-        <p id="learning-summary" class="learning-summary">После загрузки выберите учебный блок и режим тренировки.</p>
+        <p id="learning-summary" class="learning-summary" hidden>После загрузки выберите учебный блок и режим тренировки.</p>
         <p id="source-coverage-note" class="source-coverage-note" hidden aria-live="polite"></p>
         <button id="today-learning-session" class="today-start" type="button" hidden disabled>
           Повторить сегодня
@@ -216,9 +215,9 @@
         <div id="session-progress" class="session-progress" hidden></div>
         <button id="exit-learning-session" class="session-exit" type="button" hidden>Сменить тренировку</button>
 
-        <p id="question-label" class="question-label">Задание</p>
-        <h2 id="question">Выберите блок и режим</h2>
-        <p id="feedback" class="feedback">Настройте короткую тренировку и нажмите «Начать».</p>
+        <p id="question-label" class="question-label">Атлас</p>
+        <h2 id="question">Выберите структуру</h2>
+        <p id="feedback" class="feedback">Коснитесь мышцы или другой анатомической структуры на модели либо найдите её по названию.</p>
         <section id="deeper-structures" class="deeper-structures" hidden aria-live="polite">
           <div class="deeper-structures-head">
             <strong>Глубже здесь</strong>
@@ -228,13 +227,13 @@
         </section>
         <div id="name-choices" class="name-choices" hidden></div>
 
-        <div id="quiz-actions" class="actions">
+        <div id="quiz-actions" class="actions" hidden>
           <button id="show-answer" type="button" disabled>Показать ответ</button>
           <button id="reveal-deeper" type="button" disabled hidden>Открыть глубже</button>
           <button id="next-question" type="button" class="primary" disabled>Следующая</button>
         </div>
 
-        <div id="explore-controls" class="explore-controls" hidden>
+        <div id="explore-controls" class="explore-controls">
           <label class="search-field">
             <span>Поиск по названию</span>
             <input id="structure-search" type="search" autocomplete="off" placeholder="Например: дельтовидная, трапециевидная, бицепс" />

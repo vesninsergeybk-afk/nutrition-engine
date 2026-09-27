@@ -49,7 +49,7 @@ export const MOTION_MUSCLE_ASSET_CANDIDATES = Object.freeze({
   "source-path-muscle-envelope": candidate({
     id: "source-path-muscle-envelope",
     class: "source-derived-procedural-geometry",
-    status: "architecturally-viable-prototype",
+    status: "selected-standard-motion-representation",
     repository: null,
     path: null,
     license: "inherits-and-must-document-biomechanics-source",
@@ -103,3 +103,7 @@ export const MOTION_MUSCLE_ASSET_REQUIREMENTS = Object.freeze([
 export function motionMuscleAssetCandidate(id) {
   return MOTION_MUSCLE_ASSET_CANDIDATES[id] || null;
 }
+
+
+export const STANDARD_MOTION_MUSCLE_ASSET_ID =
+  "source-path-muscle-envelope";

@@ -85,6 +85,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-motion-readiness.mjs
           node --check experiments/muscle-memory-game/check-motion-semantics.mjs
           node --check experiments/muscle-memory-game/check-motion-muscle-assets.mjs
+          node --check experiments/muscle-memory-game/check-product-shell.mjs
           node --check experiments/muscle-memory-game/check-motion-native-bones.mjs
           python -m py_compile experiments/muscle-memory-game/probe-opensim-muscle-paths.py
           python -m py_compile experiments/muscle-memory-game/export-opensim-muscle-path.py
@@ -172,6 +173,7 @@ jobs:
           node experiments/muscle-memory-game/check-motion-readiness.mjs
           node experiments/muscle-memory-game/check-motion-semantics.mjs
           node experiments/muscle-memory-game/check-motion-muscle-assets.mjs
+          node experiments/muscle-memory-game/check-product-shell.mjs
           node experiments/muscle-memory-game/check-motion-native-bones.mjs
           node experiments/muscle-memory-game/check-motion-sources.mjs
           node experiments/muscle-memory-game/check-motion-simulation-contract.mjs

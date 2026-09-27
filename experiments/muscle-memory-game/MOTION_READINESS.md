@@ -555,3 +555,14 @@ The user-facing architecture is reset to the intended simple flow:
 On desktop, Motion now uses one full central viewport; the static atlas comparison pane is hidden, and Motion status/controls are docked into the existing right information panel instead of covering the 3D scene. On mobile, the static comparison pane is also removed.
 
 Until a standalone verified moving asset is connected for a selected muscle, the interface explicitly reports that the source-native Motion asset is pending rather than displaying an inaccurate fallback.
+
+
+## Product shell and standard Motion representation — 2026-09-27
+
+The trainer now starts in Atlas mode. Primary navigation is ordered as Atlas -> Motion -> Training, matching the intended learning flow: inspect anatomy freely first, open a separate movement representation when useful, and start a training session deliberately.
+
+The user-facing title is now "Анатомический тренажёр Сергея Веснина"; the former "Мышцы в движении" heading was removed.
+
+The standard Motion muscle representation is `source-path-muscle-envelope`: movement geometry follows the same verified biomechanics source as its bones and is independent of static-atlas topology. This is a representation policy, not a claim that every muscle already has a production path.
+
+The user-facing Motion hard reset remains in force for historical atlas-derived rigs. Only source-native branches with pinned local assets and validated runtime data are production-eligible. The verified MyoArm biceps/elbow runtime and TSM movements present in `motion-native-clips.js` no longer require the legacy diagnostic flag. Unsupported muscles continue to show a clear pending state rather than falling back to hand-built atlas deformation.

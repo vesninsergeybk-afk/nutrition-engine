@@ -86,6 +86,7 @@ import {
   loadTsmNativeMotionClip,
   sampleTsmNativeMotion,
   tsmNativeMotionSourceRange,
+  tsmNativeMotionSpec,
 } from "./motion-native-clips.js";
 import {
   loadMyoArmElbowRuntime,
@@ -252,21 +253,21 @@ const motionExperimentalLegacy =
   motionQuery.get("motionExperimental") === "1";
 
 function shouldUseMyoArmElbowMotion(action, selectedUnits) {
-  if (!motionExperimentalLegacy) return false;
   if (action?.pilotId !== "elbow" || action?.movementId !== "elbow-flexion") return false;
   const selected = new Set(selectedUnits || []);
   return selected.has("biceps-long") || selected.has("biceps-short");
 }
 
 function shouldUseTsmNativeMotion(action) {
-  if (!action || !motionExperimentalLegacy) return false;
+  if (!action) return false;
+  const productionSupported =
+    action.pilotId === "shoulder" &&
+    Boolean(tsmNativeMotionSpec(action.movementId));
   const diagnosticSupported =
+    motionExperimentalLegacy &&
     motionNativeBoneProbe &&
     (action.pilotId === "shoulder" || action.pilotId === "scapula");
-  const legacyAdduction =
-    action.pilotId === "shoulder" &&
-    action.movementId === "shoulder-adduction";
-  return diagnosticSupported || legacyAdduction;
+  return productionSupported || diagnosticSupported;
 }
 
 camera.position.set(0, 0, 4);
@@ -343,7 +344,7 @@ let baseColors = [];
 let highlightedIds = new Set();
 let bodySize = new THREE.Vector3(1, 1, 1);
 
-let appMode = "quiz";
+let appMode = "explore";
 let learningCatalog = [];
 let learningTargetBySid = new Map();
 let selectedLearningRegion = "all";
@@ -6429,16 +6430,6 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   }
 
   const actions = motionActionsForUnits([...selectedUnits]);
-
-  if (!motionExperimentalLegacy) {
-    const firstSid = selectedIds[0];
-    renderSourceOnlyMotionState(
-      displayStructureName(firstSid),
-      [...selectedUnits]
-    );
-    return;
-  }
-
   const resolvedPreferredMovementId =
     preferredMovementId || (motionNativeBoneProbe ? motionNativeMovementProbe : null);
   const action =
@@ -6468,6 +6459,15 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
     );
     return;
   }
+
+  if (!motionExperimentalLegacy) {
+    renderSourceOnlyMotionState(
+      displayStructureName(firstSid),
+      [...selectedUnits]
+    );
+    return;
+  }
+
   const visualContextUnitIds = pilot?.visualContextUnits || [];
   const relatedUnitIds = action
     ? [
@@ -7428,6 +7428,7 @@ function applyInitialQueryState() {
     setLearningMode(requestedPractice);
   }
 
+  if (params.get("mode") === "quiz") setMode("quiz");
   if (params.get("mode") === "explore") setMode("explore");
   if (params.get("mode") === "motion") setMode("motion");
 
