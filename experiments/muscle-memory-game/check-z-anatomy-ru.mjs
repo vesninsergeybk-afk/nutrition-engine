@@ -1,4 +1,5 @@
 import { structureTerm } from "./anatomy-terms-ru.js";
+import { muscleReferenceFor } from "./muscle-reference-data.js";
 import { buildMuscleCatalog, regionCounts } from "./learning-engine.js";
 
 const MUSCLE_MODEL_URL =
@@ -68,6 +69,34 @@ if (latinUserFacing.length) {
   process.exitCode = 1;
 }
 
+
+const missingReferenceCards = [];
+const ambiguousReferenceCards = [];
+for (const name of names) {
+  const reference = muscleReferenceFor(name);
+  if (!reference) {
+    missingReferenceCards.push(name);
+  } else if (reference.ambiguous) {
+    ambiguousReferenceCards.push(name);
+  }
+}
+
+console.log(
+  "Z-Anatomy canonical reference cards:",
+  (names.length - missingReferenceCards.length - ambiguousReferenceCards.length) +
+    "/" +
+    names.length
+);
+if (missingReferenceCards.length) {
+  console.error("Z-Anatomy meshes without a canonical muscle card:");
+  for (const name of missingReferenceCards) console.error(name);
+  process.exitCode = 1;
+}
+if (ambiguousReferenceCards.length) {
+  console.error("Z-Anatomy meshes with ambiguous muscle cards:");
+  for (const name of ambiguousReferenceCards) console.error(name);
+  process.exitCode = 1;
+}
 
 const learningCatalog = buildMuscleCatalog(names);
 const represented = learningCatalog.reduce((sum, item) => sum + item.sids.length, 0);
