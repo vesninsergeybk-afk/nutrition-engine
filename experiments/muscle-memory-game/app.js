@@ -424,6 +424,24 @@ function renderReferenceItems(container, items, kind) {
     detail.textContent = (item.locator || "") + rights;
 
     row.append(title, detail);
+
+    if (kind === "illustration" && item.src) {
+      const figure = document.createElement("figure");
+      figure.className = "structure-reference-figure";
+
+      const image = document.createElement("img");
+      image.src = item.src;
+      image.alt = item.altRu || "";
+      image.loading = "lazy";
+      image.decoding = "async";
+
+      const caption = document.createElement("figcaption");
+      caption.textContent = item.captionRu || source?.title || "";
+
+      figure.append(image, caption);
+      row.append(figure);
+    }
+
     container.append(row);
   }
 }
