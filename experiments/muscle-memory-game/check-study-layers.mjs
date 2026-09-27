@@ -81,9 +81,9 @@ assert(
 assert(
   app.includes('highlightStructures([sid], "selected");') &&
     app.includes('highlightStructures(parentContextIds, "parentContext");') &&
-    app.includes('parentContext: 0x86c7e8') &&
-    app.includes('canvas.dataset.selectedMuscleCoverage = selectedReference?.modelCoverage === "part"') &&
-    app.includes("The selected functional part remains dark blue"),
+    app.includes('parentContext: 0x8fc9e8') &&
+    app.includes('canvas.dataset.selectedMuscleCoverage = selectedReference?.modelCoverage || "exact"') &&
+    app.includes("functional part stays dark blue"),
   "Selected muscle parts must stay dark blue while the rest of the parent muscle is shown in light-blue context"
 );
 
