@@ -1139,12 +1139,25 @@ button:disabled {
   height: 100%;
 }
 
+.comparison-pane-motion {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
 #motion-viewer {
+  grid-row: 1;
   width: 100%;
   height: 100%;
+  min-height: 0;
   display: block;
-  pointer-events: none;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
   outline: none;
+}
+
+#motion-viewer:active {
+  cursor: grabbing;
 }
 
 .motion-only-label {
@@ -1168,19 +1181,25 @@ button:disabled {
 }
 
 .motion-state {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
+  position: relative;
+  grid-row: 2;
+  left: auto;
+  right: auto;
+  bottom: auto;
   z-index: 4;
   display: grid;
   gap: 3px;
+  max-height: min(32vh, 260px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 10px 11px;
-  border-radius: 12px;
-  background: rgba(255,255,255,.90);
-  border: 1px solid rgba(27,27,29,.10);
-  backdrop-filter: blur(12px);
-  pointer-events: none;
+  border-radius: 0;
+  background: rgba(255,255,255,.98);
+  border: 0;
+  border-top: 1px solid rgba(27,27,29,.12);
+  backdrop-filter: none;
+  pointer-events: auto;
+  scrollbar-width: thin;
 }
 
 .motion-state strong {
@@ -1478,16 +1497,17 @@ body:not(.motion-mode) .comparison-pane-static {
   }
 
   body.motion-mode .motion-state {
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
     max-height: min(28dvh, 220px);
     overflow-y: auto;
     overscroll-behavior: contain;
     gap: 4px;
     padding: 8px 10px;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(27,27,29,.16);
+    border-radius: 0;
+    box-shadow: none;
     scrollbar-width: thin;
   }
 

@@ -236,6 +236,7 @@ motionScene.add(motionModelGroup);
 const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 5000);
 const motionCamera = new THREE.PerspectiveCamera(38, 1, 0.01, 5000);
 let motionRenderer = null;
+let motionControls = null;
 let motionRig = null;
 let motionPlayback = null;
 let motionNativeLoadGeneration = 0;
@@ -3759,6 +3760,19 @@ function ensureMotionRenderer() {
   });
   motionRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   motionRenderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  motionControls = new OrbitControls(motionCamera, motionRenderer.domElement);
+  motionControls.enableDamping = true;
+  motionControls.dampingFactor = 0.075;
+  motionControls.enablePan = true;
+  motionControls.screenSpacePanning = true;
+  motionControls.zoomToCursor = true;
+  motionControls.zoomSpeed = 0.72;
+  motionControls.panSpeed = 0.72;
+  motionControls.rotateSpeed = 0.78;
+  motionControls.maxPolarAngle = Math.PI * 0.98;
+  motionControls.enabled = false;
+
   return motionRenderer;
 }
 
@@ -3776,6 +3790,7 @@ function clearMotionPreview() {
   motionElbowPlayback = null;
   motionNativeLoadGeneration += 1;
   motionCameraIndependent = false;
+  if (motionControls) motionControls.enabled = false;
 
   for (const child of [...motionModelGroup.children]) {
     motionModelGroup.remove(child);
@@ -4074,6 +4089,12 @@ function fitIndependentMotionCamera(box) {  if (!box || box.isEmpty()) return;
   motionCamera.far = distance + radius * 5;
   motionCamera.lookAt(center);
   motionCamera.updateProjectionMatrix();
+
+  if (motionControls) {
+    motionControls.target.copy(center);
+    motionControls.enabled = true;
+    motionControls.update();
+  }
 }
 
 function applyTsmNativeFrame(meshes, frame) {
@@ -4365,7 +4386,17 @@ function motionBoneMaterial() {
 }
 
 function syncMotionCamera() {
-  if (!motionCanvas || motionPane?.hidden || motionCameraIndependent) return;
+  if (!motionCanvas || motionPane?.hidden) return;
+
+  if (motionCameraIndependent) {
+    if (motionControls) {
+      motionControls.enabled = true;
+      motionControls.update();
+    }
+    return;
+  }
+
+  if (motionControls) motionControls.enabled = false;
 
   motionCamera.position.copy(camera.position);
   motionCamera.quaternion.copy(camera.quaternion);
@@ -6106,6 +6137,14 @@ function updateMotionPlayback(now) {
       now
     );
   }
+}
+
+for (const eventName of ["pointerdown", "pointermove", "pointerup", "wheel"]) {
+  motionStateEl?.addEventListener(
+    eventName,
+    (event) => event.stopPropagation(),
+    { passive: eventName === "wheel" }
+  );
 }
 
 function renderMotionControls(
