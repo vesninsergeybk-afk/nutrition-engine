@@ -217,7 +217,6 @@ const structureReferenceEl = document.querySelector("#structure-reference");
 const structureReferenceLatin = document.querySelector("#structure-reference-latin");
 const structureReferenceRegion = document.querySelector("#structure-reference-region");
 const structureReferenceDepth = document.querySelector("#structure-reference-depth");
-const structureReferenceSource = document.querySelector("#structure-reference-source");
 const structureReferenceFacts = document.querySelector("#structure-reference-facts");
 const structureReferenceOrigin = document.querySelector("#structure-reference-origin");
 const structureReferenceInsertion = document.querySelector("#structure-reference-insertion");
@@ -472,8 +471,6 @@ function renderStructureReference(sid) {
   structureReferenceDepth.textContent = depth?.nameRu
     ? depth.nameRu + " мышечный слой"
     : "Для этой области карта глубины ещё не подтверждена";
-  structureReferenceSource.textContent =
-    currentModelSource === "bodyparts4" ? "BodyParts3D" : "Z-Anatomy";
 
   if (reference) {
     structureReferenceFacts.hidden = false;
@@ -7659,8 +7656,8 @@ function showSelectedMuscleBoneContext(ids) {
     boneDisplayModeBeforeMuscleIsolation = boneDisplayMode;
   }
 
-  boneDisplayMode = "xray";
-  boneMode.value = "xray";
+  boneDisplayMode = "anatomical";
+  boneMode.value = "anatomical";
   applyBoneDisplayMode();
   applySelectedMuscleBoneVisibility(ids);
 }
