@@ -684,6 +684,10 @@ function renderFunctionalRelations(reference) {
 
     appendGroup("Синергисты", relation.synergists);
     appendGroup("Антагонисты в этом движении", relation.antagonists);
+    appendGroup(
+      "Роль зависит от части мышцы или положения",
+      relation.contextDependent
+    );
     structureReferenceFunctional.append(row);
   }
 }
