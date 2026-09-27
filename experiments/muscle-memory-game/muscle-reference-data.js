@@ -13,6 +13,7 @@ import {
   referenceIllustrationsForStructure,
 } from "./reference-data/illustrations.js";
 import { courseArtPrimaryForStructure } from "./reference-data/course-art.js";
+import { bookArtPrimaryForStructure } from "./reference-data/book-art.js";
 import { functionalRelationsForStructure } from "./reference-data/functional-relations.js";
 import { structureTerm } from "./anatomy-terms-ru.js";
 
@@ -188,13 +189,16 @@ function candidateCard(candidate, mapping = null) {
 
   const card = referenceCardView(candidate.region, candidate.structure);
   const modelCoverage = mapping?.coverage || "exact";
-  const exactCourseArt =
+  const exactPrimaryArt =
     modelCoverage === "exact"
-      ? courseArtPrimaryForStructure(candidate.structure.id)
+      ? (
+          bookArtPrimaryForStructure(candidate.structure.id) ||
+          courseArtPrimaryForStructure(candidate.structure.id)
+        )
       : null;
-  const primaryIllustration = exactCourseArt
+  const primaryIllustration = exactPrimaryArt
     ? Object.freeze({
-        ...exactCourseArt,
+        ...exactPrimaryArt,
         displayMatch: "exact-muscle",
         selectedPartLabelRu: null,
       })
