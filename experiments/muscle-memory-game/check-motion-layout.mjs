@@ -12,6 +12,8 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+const staticAtlasRelease = app.includes("const MOTION_UI_ENABLED = false");
+
 if (staticAtlasRelease) {
   assert(
     /id="mode-motion"[^>]*hidden[^>]*disabled/.test(html),
@@ -97,7 +99,6 @@ assert(
 const motionButtonIndex = html.indexOf('id="mode-motion"');
 const modeSwitchStart = html.indexOf('<div class="mode-switch"');
 const modeSwitchEnd = html.indexOf('</div>', modeSwitchStart);
-const staticAtlasRelease = app.includes("const MOTION_UI_ENABLED = false");
 
 if (staticAtlasRelease) {
   assert(
