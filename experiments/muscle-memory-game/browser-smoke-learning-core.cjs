@@ -71,8 +71,8 @@ const assert = require('node:assert/strict');
     Number(await page.locator('#viewer').getAttribute('data-region-visible-muscles')) >=
     Number(await page.locator('#viewer').getAttribute('data-learning-target-count'))
   );
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'true');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
   assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
   assert.ok(
     Number(await page.locator('#viewer').getAttribute('data-region-visible-bones')) > 0
