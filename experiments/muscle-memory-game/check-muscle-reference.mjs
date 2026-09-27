@@ -1,0 +1,70 @@
+import { readFile } from "node:fs/promises";
+import {
+  muscleReferenceFor,
+  muscleReferenceSource,
+} from "./muscle-reference-data.js";
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+const root = new URL("./", import.meta.url);
+const [html, app] = await Promise.all([
+  readFile(new URL("index.html", root), "utf8"),
+  readFile(new URL("app.js", root), "utf8"),
+]);
+
+for (const [sourceName, expectedId] of [
+  ["Right supraspinatus", "supraspinatus"],
+  ["Left infraspinatus", "infraspinatus"],
+  ["Right subscapularis", "subscapularis"],
+  ["Right teres minor", "teres-minor"],
+  ["Acromial part of right deltoid", "deltoid"],
+  ["Right biceps brachii", "biceps-brachii"],
+]) {
+  const reference = muscleReferenceFor(sourceName);
+  assert(reference?.id === expectedId, sourceName + " did not resolve to " + expectedId);
+  assert(reference.originRu && reference.insertionRu, expectedId + " lacks attachments");
+  assert(reference.actionsRu?.length, expectedId + " lacks actions");
+  assert(reference.sources?.length, expectedId + " lacks provenance");
+}
+
+const miology = muscleReferenceSource("miology-igma-2018");
+assert(miology?.year === 2018, "MIOL source metadata is incomplete");
+assert(
+  /требуют отдельной проверки прав/i.test(miology?.rightsStatus || ""),
+  "MIOL illustration reuse must remain rights-gated"
+);
+
+const goldfinger = muscleReferenceSource("goldfinger-1991");
+assert(
+  /не включать.*без отдельного разрешения/i.test(goldfinger?.rightsStatus || ""),
+  "Copyrighted atlas images must remain reference-only by default"
+);
+
+for (const id of [
+  "structure-reference-facts",
+  "structure-reference-origin",
+  "structure-reference-insertion",
+  "structure-reference-actions",
+  "structure-reference-sources",
+  "structure-reference-illustrations",
+]) {
+  assert(html.includes(`id="${id}"`), "Reference UI missing: " + id);
+}
+
+assert(
+  app.includes('from "./muscle-reference-data.js"') &&
+    app.includes("muscleReferenceFor(sourceName)") &&
+    app.includes("renderReferenceItems("),
+  "Atlas card is not wired to source-backed reference data"
+);
+
+assert(
+  !html.includes("goldfinger") &&
+    !html.includes("samusev") &&
+    !html.includes("1O2V_frFY36-2gqnVF1DB2rOl6wPx1xRK"),
+  "Reference-only source identifiers leaked into public markup"
+);
+
+console.log("Muscle reference: shoulder seed data + provenance + rights gates ok");
