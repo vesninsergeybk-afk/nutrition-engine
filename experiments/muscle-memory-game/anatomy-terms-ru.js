@@ -1,5 +1,8 @@
 import { bodyPartsMuscleNameRu } from "./bodyparts4-muscles-ru.js";
 
+const sideNom = (side) => (side === "right" ? "Правая" : "Левая");
+const sideGen = (side) => (side === "right" ? "правой" : "левой");
+
 const TERMS = [
   { re: /clavicular part of (right|left) deltoid/i, ru: (m) => `Ключичная часть ${m[1] === "right" ? "правой" : "левой"} дельтовидной мышцы`, latin: "pars clavicularis m. deltoidei", aliases: ["дельтовидная", "дельта", "deltoid"] },
   { re: /acromial part of (right|left) deltoid/i, ru: (m) => `Акромиальная часть ${m[1] === "right" ? "правой" : "левой"} дельтовидной мышцы`, latin: "pars acromialis m. deltoidei", aliases: ["дельтовидная", "дельта", "deltoid"] },
@@ -31,6 +34,40 @@ const TERMS = [
   { re: /(right|left) levator scapulae/i, ru: (m) => `Мышца, поднимающая ${m[1] === "right" ? "правую" : "левую"} лопатку`, latin: "m. levator scapulae", aliases: ["поднимающая лопатку", "levator scapulae"] },
   { re: /(right|left) coracobrachialis/i, ru: (m) => `${m[1] === "right" ? "Правая" : "Левая"} клювовидно-плечевая мышца`, latin: "m. coracobrachialis", aliases: ["клювовидно-плечевая", "coracobrachialis"] },
   { re: /(right|left) latissimus dorsi/i, ru: (m) => `${m[1] === "right" ? "Правая" : "Левая"} широчайшая мышца спины`, latin: "m. latissimus dorsi", aliases: ["широчайшая", "latissimus dorsi"] },
+
+  { re: /(right|left) rectus abdominis/i, ru: (m) => `${sideNom(m[1])} прямая мышца живота`, latin: "m. rectus abdominis", aliases: ["прямая мышца живота", "rectus abdominis"] },
+  { re: /(right|left) internal (?:abdominal )?oblique/i, ru: (m) => `${sideNom(m[1])} внутренняя косая мышца живота`, latin: "m. obliquus internus abdominis", aliases: ["внутренняя косая", "internal oblique"] },
+  { re: /(right|left) transversus abdominis/i, ru: (m) => `${sideNom(m[1])} поперечная мышца живота`, latin: "m. transversus abdominis", aliases: ["поперечная мышца живота", "transversus abdominis"] },
+  { re: /(right|left) pyramidalis/i, ru: (m) => `${sideNom(m[1])} пирамидальная мышца`, latin: "m. pyramidalis", aliases: ["пирамидальная мышца", "pyramidalis"] },
+  { re: /(right|left) quadratus lumborum/i, ru: (m) => `${sideNom(m[1])} квадратная мышца поясницы`, latin: "m. quadratus lumborum", aliases: ["квадратная мышца поясницы", "quadratus lumborum"] },
+  { re: /(right|left) multifidus/i, ru: (m) => `${sideNom(m[1])} многораздельная мышца`, latin: "m. multifidus", aliases: ["многораздельная мышца", "multifidus"] },
+  { re: /(right|left) extensor digitorum brevis/i, ru: (m) => `${sideNom(m[1])} короткий разгибатель пальцев стопы`, latin: "m. extensor digitorum brevis", aliases: ["короткий разгибатель пальцев", "extensor digitorum brevis"] },
+
+  { re: /orbital part of (right|left) orbicularis oculi/i, ru: (m) => `Глазничная часть ${sideGen(m[1])} круговой мышцы глаза`, latin: "pars orbitalis m. orbicularis oculi", aliases: ["круговая мышца глаза", "orbicularis oculi"] },
+  { re: /palpebral part of (right|left) orbicularis oculi/i, ru: (m) => `Вековая часть ${sideGen(m[1])} круговой мышцы глаза`, latin: "pars palpebralis m. orbicularis oculi", aliases: ["круговая мышца глаза", "orbicularis oculi"] },
+  { re: /(right|left) frontalis/i, ru: (m) => `${sideNom(m[1])} лобная мышца`, latin: "m. frontalis", aliases: ["лобная мышца", "frontalis"] },
+  { re: /(right|left) occipitalis/i, ru: (m) => `${sideNom(m[1])} затылочная мышца`, latin: "m. occipitalis", aliases: ["затылочная мышца", "occipitalis"] },
+  { re: /(right|left) corrugator supercilii/i, ru: (m) => `${sideNom(m[1])} мышца, сморщивающая бровь`, latin: "m. corrugator supercilii", aliases: ["мышца, сморщивающая бровь", "corrugator supercilii"] },
+  { re: /(right|left) levator labii superioris alaeque nasi/i, ru: (m) => `${sideNom(m[1])} мышца, поднимающая верхнюю губу и крыло носа`, latin: "m. levator labii superioris alaeque nasi", aliases: ["поднимающая верхнюю губу и крыло носа"] },
+  { re: /(right|left) levator labii superioris/i, ru: (m) => `${sideNom(m[1])} мышца, поднимающая верхнюю губу`, latin: "m. levator labii superioris", aliases: ["поднимающая верхнюю губу"] },
+  { re: /(right|left) zygomaticus major/i, ru: (m) => `${sideNom(m[1])} большая скуловая мышца`, latin: "m. zygomaticus major", aliases: ["большая скуловая", "zygomaticus major"] },
+  { re: /(right|left) zygomaticus minor/i, ru: (m) => `${sideNom(m[1])} малая скуловая мышца`, latin: "m. zygomaticus minor", aliases: ["малая скуловая", "zygomaticus minor"] },
+  { re: /(right|left) depressor labii inferioris/i, ru: (m) => `${sideNom(m[1])} мышца, опускающая нижнюю губу`, latin: "m. depressor labii inferioris", aliases: ["опускающая нижнюю губу"] },
+  { re: /(right|left) levator anguli oris/i, ru: (m) => `${sideNom(m[1])} мышца, поднимающая угол рта`, latin: "m. levator anguli oris", aliases: ["поднимающая угол рта"] },
+  { re: /(right|left) mentalis/i, ru: (m) => `${sideNom(m[1])} подбородочная мышца`, latin: "m. mentalis", aliases: ["подбородочная мышца", "mentalis"] },
+  { re: /(right|left) depressor anguli oris/i, ru: (m) => `${sideNom(m[1])} мышца, опускающая угол рта`, latin: "m. depressor anguli oris", aliases: ["опускающая угол рта"] },
+  { re: /(right|left) buccinator/i, ru: (m) => `${sideNom(m[1])} щёчная мышца`, latin: "m. buccinator", aliases: ["щёчная мышца", "buccinator"] },
+  { re: /(right|left) risorius/i, ru: (m) => `${sideNom(m[1])} мышца смеха`, latin: "m. risorius", aliases: ["мышца смеха", "risorius"] },
+  { re: /superficial part of (right|left) masseter/i, ru: (m) => `Поверхностная часть ${sideGen(m[1])} жевательной мышцы`, latin: "pars superficialis m. masseteris", aliases: ["жевательная мышца", "masseter"] },
+  { re: /deep part of (right|left) masseter/i, ru: (m) => `Глубокая часть ${sideGen(m[1])} жевательной мышцы`, latin: "pars profunda m. masseteris", aliases: ["жевательная мышца", "masseter"] },
+  { re: /(right|left) temporalis/i, ru: (m) => `${sideNom(m[1])} височная мышца`, latin: "m. temporalis", aliases: ["височная мышца", "temporalis"] },
+  { re: /(right|left) medial pterygoid/i, ru: (m) => `${sideNom(m[1])} медиальная крыловидная мышца`, latin: "m. pterygoideus medialis", aliases: ["медиальная крыловидная", "medial pterygoid"] },
+  { re: /lower head of (right|left) lateral pterygoid/i, ru: (m) => `Нижняя головка ${sideGen(m[1])} латеральной крыловидной мышцы`, latin: "caput inferius m. pterygoidei lateralis", aliases: ["латеральная крыловидная", "lateral pterygoid"] },
+  { re: /upper head of (right|left) lateral pterygoid/i, ru: (m) => `Верхняя головка ${sideGen(m[1])} латеральной крыловидной мышцы`, latin: "caput superius m. pterygoidei lateralis", aliases: ["латеральная крыловидная", "lateral pterygoid"] },
+  { re: /(right|left) nasalis/i, ru: (m) => `${sideNom(m[1])} носовая мышца`, latin: "m. nasalis", aliases: ["носовая мышца", "nasalis"] },
+  { re: /(right|left) procerus/i, ru: (m) => `${sideNom(m[1])} мышца гордецов`, latin: "m. procerus", aliases: ["мышца гордецов", "procerus"] },
+  { re: /(right|left) depressor septi nasi/i, ru: (m) => `${sideNom(m[1])} мышца, опускающая перегородку носа`, latin: "m. depressor septi nasi", aliases: ["опускающая перегородку носа"] },
+  { re: /^orbicularis oris$/i, ru: () => "Круговая мышца рта", latin: "m. orbicularis oris", aliases: ["круговая мышца рта", "orbicularis oris"] },
 
   { re: /(right|left) clavicle/i, ru: (m) => `${m[1] === "right" ? "Правая" : "Левая"} ключица`, latin: "clavicula", aliases: ["ключица", "clavicle"] },
   { re: /(right|left) scapula/i, ru: (m) => `${m[1] === "right" ? "Правая" : "Левая"} лопатка`, latin: "scapula", aliases: ["лопатка", "scapula"] },
