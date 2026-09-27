@@ -518,6 +518,27 @@ export const REFERENCE_SOURCES = Object.freeze({
 
 
 
+  "ncbi-pharynx": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Pharynx",
+    role: "Сверка констрикторов и продольных мышц глотки",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK544271/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-levator-ani": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis: Levator Ani Muscle",
+    role: "Сверка puborectalis, pubococcygeus и iliococcygeus с оговорками о нечётких границах",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK556078/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-pelvis-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis, Pelvis",
+    role: "Сверка coccygeus и компонентов levator ani",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK482258/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-extraocular-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Head and Neck, Eye Extraocular Muscles",
     role: "Основная сверка семи наружных мышц глаза, их действий и иннервации",
