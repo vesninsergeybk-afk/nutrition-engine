@@ -84,6 +84,30 @@ assert(
   "Russian bone names are not connected to Atlas search"
 );
 
+const studyStart = app.indexOf("function selectStudyStructure");
+const studyEnd = app.indexOf("function referencePartIdFromHit", studyStart);
+const studyBlock = app.slice(studyStart, studyEnd);
+assert(
+  studyStart >= 0 &&
+    studyBlock.includes("studyStructureTerm(entry.sourceName, entry.layerKey)") &&
+    studyBlock.includes("questionEl.textContent = term.nameRu") &&
+    app.includes('matches.push({ kind: "study", id: entry.id })') &&
+    app.includes("ensureStudyLayerShown(entry)"),
+  "Russian fascia/ligament/tendon labels are not connected to Atlas selection and search"
+);
+
+const referenceStart = app.indexOf("function selectReferenceStructure");
+const referenceEnd = app.indexOf("function boneIdFromHit", referenceStart);
+const referenceBlock = app.slice(referenceStart, referenceEnd);
+assert(
+  referenceStart >= 0 &&
+    referenceBlock.includes("referenceStructureTerm(sourceName, layerKey)") &&
+    referenceBlock.includes("questionEl.textContent = term.nameRu") &&
+    app.includes('matches.push({ kind: "reference", layerKey, partId })') &&
+    app.includes("referencePartIsInteractive(mesh, partId)"),
+  "Russian safety-landmark labels are not connected to Atlas selection and search"
+);
+
 console.log(
   "Russian support terms: " +
     bones.length +
