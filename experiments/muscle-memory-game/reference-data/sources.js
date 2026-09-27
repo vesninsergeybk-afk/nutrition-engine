@@ -86,6 +86,80 @@ export const REFERENCE_SOURCES = Object.freeze({
 
 
 
+
+  "ncbi-iliopsoas": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Iliopsoas Muscle",
+    role: "Сверка подвздошной, большой и малой поясничных мышц и комплекса iliopsoas",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK531508/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-gluteus-maximus": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Gluteus Maximus Muscle",
+    role: "Сверка большой ягодичной мышцы и топографии ягодичной области",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK538193/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-gluteus-medius": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Gluteus Medius Muscle",
+    role: "Сверка средней ягодичной мышцы и стабилизации таза",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK557509/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-gluteus-minimus": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Gluteus Minimus Muscle",
+    role: "Сверка малой ягодичной мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK556144/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-tensor-fasciae-latae": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Tensor Fasciae Latae Muscle",
+    role: "Сверка напрягателя широкой фасции и подвздошно-большеберцового тракта",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK499870/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-piriformis": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Piriformis Muscle",
+    role: "Сверка грушевидной мышцы и её отношений с седалищным нервом",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK519497/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-obturator-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis, Obturator Muscles",
+    role: "Сверка внутренней и наружной запирательных мышц",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK589636/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-gemelli": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Gemelli Muscles",
+    role: "Сверка верхней и нижней близнецовых мышц и их вариабельной иннервации",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK557420/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-hip": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Hip",
+    role: "Сверка групп мышц тазобедренного сустава и коротких наружных ротаторов",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK526019/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "gray-hip-thigh-public-domain": Object.freeze({
+    title: "Gray anatomy — muscles of the hip and thigh",
+    role: "Проверенный кандидат для иллюстрации ягодичных мышц, коротких ротаторов и части мышц бедра",
+    sourcePage: "https://www.ncbi.nlm.nih.gov/books/NBK538193/figure/article-22325.image.f1/",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "На странице NCBI изображение атрибутировано Henry Vandyke Carter, Public Domain, via Wikimedia Commons."
+    }),
+  }),
+
   "ncbi-upper-limb-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Shoulder and Upper Limb, Muscles",
     role: "Общая сверка мышц плеча, предплечья и кисти",
