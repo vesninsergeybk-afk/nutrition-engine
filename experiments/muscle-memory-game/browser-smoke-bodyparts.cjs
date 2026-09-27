@@ -352,9 +352,35 @@ const assert = require('node:assert/strict');
     await page.locator('#question').innerText(),
     /Подвздошно-р[её]берная мышца поясницы/i
   );
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-covered'),
+    'true',
+    'Deep iliocostalis must remain occluded while the restored latissimus is visible'
+  );
+  assert.ok(
+    Number(await page.locator('#viewer').getAttribute('data-selected-cover-count')) >= 1,
+    'Covered deep-muscle selection must identify at least one verified superficial cover'
+  );
+  assert.equal(await page.locator('#reveal-selected').isVisible(), true);
+  assert.match(await page.locator('#feedback').innerText(), /глубже видимых покрывающих структур/i);
+
   await page.waitForTimeout(400);
   await page.screenshot({
-    path: '/tmp/muscle-memory-bodyparts-back-iliocostalis-selected.png',
+    path: '/tmp/muscle-memory-bodyparts-back-iliocostalis-covered.png',
+    fullPage: true,
+  });
+
+  await page.click('#reveal-selected');
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-covered'),
+    'false'
+  );
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-cover-count'),
+    '0'
+  );
+  await page.screenshot({
+    path: '/tmp/muscle-memory-bodyparts-back-iliocostalis-revealed.png',
     fullPage: true,
   });
 
