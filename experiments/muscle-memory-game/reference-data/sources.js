@@ -83,6 +83,56 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+
+  "ncbi-thorax-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Thorax, Muscles",
+    role: "Сверка грудных мышц, межрёберных мышц и диафрагмы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK538321/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-pectoralis-major": Object.freeze({
+    title: "StatPearls: Anatomy, Thorax, Pectoralis Major",
+    role: "Сверка большой грудной мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK525991/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-pectoral-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Pectoral Muscles",
+    role: "Сверка грудных мышц и подключичной мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK545241/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-intercostal-wall": Object.freeze({
+    title: "StatPearls: Anatomy, Thoracotomy and the Collateral Intercostal Neurovascular Bundle",
+    role: "Сверка слоёв и функций межрёберных мышц",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK544368/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-diaphragm": Object.freeze({
+    title: "StatPearls: Anatomy, Thorax: Diaphragm",
+    role: "Сверка частей и прикреплений диафрагмы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK519558/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-abdominal-wall": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis: Abdominal Wall",
+    role: "Сверка мышц переднебоковой брюшной стенки",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK551649/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-anterolateral-abdominal-wall-nerves": Object.freeze({
+    title: "StatPearls: Anatomy, Anterolateral Abdominal Wall Nerves",
+    role: "Сверка состава и вариабельности мышц брюшной стенки",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK556034/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-trapezius": Object.freeze({
     title: "StatPearls: Anatomy, Back, Trapezius",
     role: "Сверка прикреплений, частей, функции и иннервации трапециевидной мышцы",
