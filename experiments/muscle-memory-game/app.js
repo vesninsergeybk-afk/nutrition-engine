@@ -7134,7 +7134,6 @@ function setMode(mode) {
 
     if (preservedSid != null && structureNames[preservedSid]) {
       selectExploreStructure(preservedSid);
-      focusSelectedStructures();
     }
     searchInput.focus({ preventScroll: true });
   } else {
@@ -7245,7 +7244,6 @@ function renderSearchResults(query) {
           }
         }
         selectExploreStructure(sid);
-        focusSelectedStructures();
         searchResults.replaceChildren();
         searchInput.value = displayStructureName(sid);
       });
@@ -7258,7 +7256,6 @@ function renderSearchResults(query) {
         ensureStudyLayerShown(entry);
         setStudyStructureVisible(match.id, true);
         selectStudyStructure(match.id);
-        focusSelectedStructures();
         searchResults.replaceChildren();
         searchInput.value = studyDisplayName(match.id);
       });
@@ -7735,7 +7732,11 @@ function syncLearningAreaQuery() {
   if (!initialQueryApplied || typeof history?.replaceState !== "function") return;
 
   const url = new URL(window.location.href);
-  if (selectedLearningRegion && selectedLearningRegion !== "all") {
+
+  // Atlas navigation is transient UI state. Do not make a reload reopen the
+  // last anatomical area. Training may keep a scope in the URL for a
+  // reproducible learning setup.
+  if (appMode === "quiz" && selectedLearningRegion && selectedLearningRegion !== "all") {
     url.searchParams.set("scope", selectedLearningRegion);
   } else {
     url.searchParams.delete("scope");
@@ -7751,13 +7752,23 @@ function applyInitialQueryState() {
 
   if (debugPanel) debugPanel.hidden = params.get("debug") !== "1";
 
+  const requestedMode = params.get("mode");
   const requestedArea = params.get("scope") || params.get("region");
-  if (requestedArea && learningAreaOptionExists(requestedArea)) {
+  const restoreTrainingArea =
+    requestedMode === "quiz" &&
+    requestedArea &&
+    learningAreaOptionExists(requestedArea);
+
+  if (restoreTrainingArea) {
     selectedLearningRegion = requestedArea;
     learningRegion.value = requestedArea;
     regionIsolation.checked = requestedArea !== "all";
     applyLearningRegion();
-    if (requestedArea !== "all") focusLearningRegion();
+  } else {
+    selectedLearningRegion = "all";
+    learningRegion.value = "all";
+    regionIsolation.checked = false;
+    applyLearningRegion();
   }
 
   const requestedSize = params.get("size");
@@ -7773,16 +7784,16 @@ function applyInitialQueryState() {
     setLearningMode(requestedPractice);
   }
 
-  if (params.get("mode") === "quiz") setMode("quiz");
-  if (params.get("mode") === "explore") setMode("explore");
+  if (requestedMode === "quiz") setMode("quiz");
+  if (requestedMode === "explore") setMode("explore");
   if (params.get("mode") === "motion" && MOTION_UI_ENABLED) {
     setMode("motion");
   }
 
-  if (requestedArea && requestedArea !== "all") {
+  if (restoreTrainingArea && requestedArea !== "all") {
     focusLearningRegion();
-  } else if (params.get("region") === "shoulder") {
-    setShoulderView();
+  } else if (requestedMode !== "quiz") {
+    setFullBodyView();
   }
 
   if (params.get("embed") === "1") {
@@ -9061,13 +9072,44 @@ exitLearningSessionButton.addEventListener("click", () => {
   focusLearningRegion();
 });
 
-focusShoulderButton.addEventListener("click", () => {
-  if (selectedLearningRegion === "all") {
+function selectedMuscleRegionForNavigation() {
+  if (selectedExploreSid == null) return null;
+  const target = learningTargetBySid.get(selectedExploreSid) || null;
+  const region = target?.region || null;
+  if (!region || region === "all" || region === "other") return null;
+  return learningAreaOptionExists(region) ? region : null;
+}
+
+function activateRegionForNavigation(regionId) {
+  if (!regionId || regionId === "all" || !learningAreaOptionExists(regionId)) {
+    selectedLearningRegion = "all";
+    learningRegion.value = "all";
+    regionIsolation.checked = false;
+    applyLearningRegion();
     setFullBodyView();
     return;
   }
+
+  selectedLearningRegion = regionId;
+  learningRegion.value = regionId;
   regionIsolation.checked = true;
-  applyRegionScene({ resetLayers: false, focus: true });
+  applyLearningRegion();
+  syncLearningAreaQuery();
+  focusLearningRegion();
+}
+
+focusShoulderButton.addEventListener("click", () => {
+  const selectedRegion = selectedMuscleRegionForNavigation();
+  const regionId =
+    selectedRegion ||
+    (selectedLearningRegion !== "all" ? selectedLearningRegion : null);
+
+  if (!regionId) {
+    setFullBodyView();
+    return;
+  }
+
+  activateRegionForNavigation(regionId);
 });
 focusFullButton.addEventListener("click", () => {
   regionIsolation.checked = false;
