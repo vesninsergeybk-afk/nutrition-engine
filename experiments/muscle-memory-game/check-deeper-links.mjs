@@ -123,9 +123,11 @@ assert(
 const disabledBlock =
   app.match(/peelSurfaceLayerButton\.disabled\s*=([\s\S]*?);/)?.[1] || "";
 assert(
-  app.includes('"Почему послойность недоступна?"') &&
-    !disabledBlock.includes("layerUnavailable"),
-  "Unavailable depth maps are still silently disabled instead of explained"
+  app.includes('layerDepthStatus.textContent = nextLayer.reason') &&
+    app.includes('"Для этого блока карта глубины ещё не подтверждена."') &&
+    disabledBlock.includes("layerUnavailable") &&
+    !app.includes('"Почему послойность недоступна?"'),
+  "Unavailable depth maps must be explained in the layer panel without a misleading action button"
 );
 assert(
   css.includes("border-left-width: 3px") &&
