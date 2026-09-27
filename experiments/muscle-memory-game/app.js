@@ -284,6 +284,7 @@ const selectedStructureActions = document.querySelector("#selected-structure-act
 const restoreViewActions = document.querySelector("#restore-view-actions");
 const searchInput = document.querySelector("#structure-search");
 const searchResults = document.querySelector("#search-results");
+const revealSelectedButton = document.querySelector("#reveal-selected");
 const isolateButton = document.querySelector("#isolate-selected");
 const hideSelectedButton = document.querySelector("#hide-selected");
 const showNearestMuscleButton = document.querySelector("#show-nearest-muscle");
@@ -1597,6 +1598,80 @@ function verifiedFindCover(selectedSid, target) {
   );
 }
 
+function verifiedCoveringStructureIds(selectedSid) {
+  const target = learningTargetBySid.get(selectedSid) || null;
+  const deeper = sidDepthInfo(target, selectedSid);
+  const depthRegionId = activeDepthProfileId(target);
+  if (!target || !deeper || !depthRegionId) return [];
+
+  const selectedSide = targetSideForSid(target, selectedSid);
+  const covering = [];
+
+  for (const candidate of learningCatalog) {
+    if (!candidate || candidate === target) continue;
+    const upper = targetDepthInfo(candidate);
+    if (
+      !upper ||
+      activeDepthProfileId(candidate) !== depthRegionId ||
+      upper.rank >= deeper.rank ||
+      !isKnownDeeperRelation(depthRegionId, upper.ruleId, deeper.ruleId)
+    ) {
+      continue;
+    }
+
+    for (const sid of candidate.sids || []) {
+      if (
+        structureVisibility[sid] !== false &&
+        sidesCanShareDepthPath(
+          selectedSide,
+          targetSideForSid(candidate, sid)
+        )
+      ) {
+        covering.push(sid);
+      }
+    }
+  }
+
+  return [...new Set(covering)];
+}
+
+function revealSelectedMuscle() {
+  if (selectedExploreSid == null || isolated) return;
+
+  const sid = selectedExploreSid;
+  const coveringIds = verifiedCoveringStructureIds(sid);
+  if (!coveringIds.length) {
+    restoreHighlights();
+    highlightStructures([sid], "selected");
+    updateLayerButtons();
+    return;
+  }
+
+  restoreHighlights();
+  for (const coverSid of coveringIds) {
+    setStructureVisible(coverSid, false);
+  }
+
+  exploreHiddenActions.push({
+    kind: "verified-cover",
+    ids: [...coveringIds],
+    selectedSid: sid,
+  });
+
+  highlightStructures([sid], "selected");
+  const names = coveringIds.map((coverSid) => displayStructureName(coverSid));
+
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent =
+    "Скрыты только подтверждённые покрывающие мышцы: " +
+    names.join(", ") +
+    ". Выбранная мышца теперь открыта в анатомическом контексте.";
+
+  canvas.dataset.selectedCovered = "false";
+  canvas.dataset.selectedCoverCount = "0";
+  updateLayerButtons();
+}
+
 function focusSelectedStructures(padding = 1.65, direction = null) {
   if (appMode === "explore" && selectedStudyId != null) {
     const box = boxForStudyStructure(selectedStudyId);
@@ -2538,6 +2613,8 @@ function updateLayerButtons() {
   }
 
   if (selectedStudyId != null) {
+    revealSelectedButton.hidden = true;
+    revealSelectedButton.disabled = true;
     hideSelectedButton.disabled =
       isolated || !studyStructureIsVisible(selectedStudyId);
     isolateButton.disabled = false;
@@ -2548,6 +2625,15 @@ function updateLayerButtons() {
 
   showNearestMuscleButton.hidden = true;
   showNearestMuscleButton.disabled = true;
+
+  const coveringIds =
+    selectedExploreSid != null && !isolated
+      ? verifiedCoveringStructureIds(selectedExploreSid)
+      : [];
+  revealSelectedButton.hidden =
+    selectedExploreSid == null || isolated || coveringIds.length === 0;
+  revealSelectedButton.disabled = revealSelectedButton.hidden;
+
   hideSelectedButton.disabled =
     selectedExploreSid == null ||
     isolated ||
@@ -2687,6 +2773,21 @@ function hideSelectedStructure() {
 
 function undoLastHide() {
   const action = exploreHiddenActions.pop();
+
+  if (action?.kind === "verified-cover") {
+    for (const sid of action.ids || []) setStructureVisible(sid, true);
+    const selectedSid =
+      action.selectedSid != null ? action.selectedSid : selectedExploreSid;
+    restoreHighlights();
+    if (selectedSid != null && structureNames[selectedSid]) {
+      selectedExploreSid = selectedSid;
+      focusedStructureIds = [selectedSid];
+      selectExploreStructure(selectedSid);
+    } else {
+      updateLayerButtons();
+    }
+    return;
+  }
 
   if (
     action?.kind === "anatomical-layer" ||
@@ -4222,7 +4323,13 @@ function selectExploreStructure(sid, hitStack = null) {
   selectedExploreSid = sid;
   focusedStructureIds = [sid];
   isolated = keepIsolation;
-  highlightStructures([sid], "selected");
+
+  const coveringIds = keepIsolation ? [] : verifiedCoveringStructureIds(sid);
+  if (!coveringIds.length) {
+    highlightStructures([sid], "selected");
+  }
+  canvas.dataset.selectedCovered = coveringIds.length ? "true" : "false";
+  canvas.dataset.selectedCoverCount = String(coveringIds.length);
 
   if (appMode === "motion") {
     prepareMotionComparison(sid);
@@ -4241,11 +4348,13 @@ function selectExploreStructure(sid, hitStack = null) {
     : verifiedDeeperMuscleIds(sid);
   const pointSpecific = pointDeeperIds.length > 0;
 
-  feedbackEl.textContent = relatedDeeperIds.length
-    ? pointSpecific
-      ? "Ниже показаны только подтверждённые мышцы, которые модель пересекает глубже в выбранной точке."
-      : "Для этой мышцы есть проверенные более глубокие отношения. Конкретное перекрытие зависит от выбранной точки."
-    : "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
+  feedbackEl.textContent = coveringIds.length
+    ? "Мышца находится глубже видимых покрывающих структур. Она не подсвечивается сквозь них. Нажмите «Открыть мышцу» или «Показать отдельно»."
+    : relatedDeeperIds.length
+      ? pointSpecific
+        ? "Ниже показаны только подтверждённые мышцы, которые модель пересекает глубже в выбранной точке."
+        : "Для этой мышцы есть проверенные более глубокие отношения. Конкретное перекрытие зависит от выбранной точки."
+      : "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
   renderDeeperStructures(relatedDeeperIds, { pointSpecific });
 
   focusSelectedButton.disabled = false;
@@ -9787,6 +9896,7 @@ isolateButton.addEventListener("click", () => {
   }
 });
 
+revealSelectedButton.addEventListener("click", revealSelectedMuscle);
 hideSelectedButton.addEventListener("click", hideSelectedStructure);
 peelSurfaceLayerButton.addEventListener("click", peelAnatomicalMuscleLayer);
 showNearestMuscleButton.addEventListener("click", () => {
