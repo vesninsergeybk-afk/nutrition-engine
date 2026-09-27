@@ -315,17 +315,24 @@
           </figure>
 
           <div id="structure-reference-facts" class="structure-reference-facts" hidden>
-            <section class="structure-reference-primary" aria-labelledby="structure-reference-actions-label">
-              <strong id="structure-reference-actions-label">Основные действия</strong>
-              <ul id="structure-reference-actions"></ul>
-            </section>
+            <details class="structure-reference-details">
+              <summary>Функция</summary>
+              <div class="structure-reference-details-body">
+                <div class="structure-reference-fact">
+                  <ul id="structure-reference-actions"></ul>
+                </div>
+              </div>
+            </details>
 
-            <div id="structure-reference-study-cue" class="structure-reference-study-cue" hidden>
-              <strong>Ориентир для изучения</strong>
-              <span id="structure-reference-study-cue-text"></span>
-            </div>
+            <details id="structure-reference-functional-details" class="structure-reference-details" hidden>
+              <summary>Синергисты и антагонисты</summary>
+              <div id="structure-reference-functional" class="structure-reference-functional"></div>
+              <p class="structure-reference-functional-note">
+                Связи относятся к конкретному движению. Одна и та же мышца может выступать синергистом или антагонистом в разных двигательных задачах.
+              </p>
+            </details>
 
-            <details class="structure-reference-details" open>
+            <details class="structure-reference-details">
               <summary>Начало, прикрепление и направление волокон</summary>
               <div class="structure-reference-details-body">
                 <div class="structure-reference-fact">
@@ -344,14 +351,14 @@
             </details>
 
             <details class="structure-reference-details">
-              <summary>Ориентиры и соседние структуры</summary>
+              <summary>Топография и ориентиры</summary>
               <div class="structure-reference-details-body">
                 <div id="structure-reference-landmarks-row" class="structure-reference-fact">
-                  <strong>Ориентиры</strong>
+                  <strong>Костные и поверхностные ориентиры</strong>
                   <ul id="structure-reference-landmarks"></ul>
                 </div>
                 <div id="structure-reference-relations-row" class="structure-reference-fact">
-                  <strong>Что находится рядом</strong>
+                  <strong>Соседние структуры и слой</strong>
                   <ul id="structure-reference-relations"></ul>
                 </div>
               </div>
@@ -362,6 +369,15 @@
               <div class="structure-reference-details-body">
                 <div class="structure-reference-fact">
                   <span id="structure-reference-innervation"></span>
+                </div>
+              </div>
+            </details>
+
+            <details id="structure-reference-study-cue" class="structure-reference-details" hidden>
+              <summary>Ориентир для изучения</summary>
+              <div class="structure-reference-details-body">
+                <div class="structure-reference-fact">
+                  <span id="structure-reference-study-cue-text"></span>
                 </div>
               </div>
             </details>
