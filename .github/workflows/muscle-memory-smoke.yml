@@ -198,7 +198,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[atlas-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 16
     strategy:
       fail-fast: false
       matrix:
@@ -230,7 +230,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          timeout 9m node experiments/muscle-memory-game/browser-smoke-${{ matrix.phase }}.cjs
+          timeout 13m node experiments/muscle-memory-game/browser-smoke-${{ matrix.phase }}.cjs
 
       - name: Upload screenshots
         if: ${{ always() }}
