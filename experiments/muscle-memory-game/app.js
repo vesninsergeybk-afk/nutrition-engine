@@ -728,7 +728,7 @@ function renderStructureReferencePreview(sid, reference) {
 }
 
 function setStructureReferenceMediaMode(mode) {
-  if (!currentReferenceMediaSid) return;
+  if (currentReferenceMediaSid == null) return;
 
   const desired =
     mode === "art" && currentReferenceHasArt ? "art" : "3d";
