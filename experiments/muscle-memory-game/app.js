@@ -642,6 +642,13 @@ function renderReferenceAmbiguity(reference) {
   }
 }
 
+function closeStructureReferenceDetails() {
+  if (!structureReferenceEl) return;
+  for (const details of structureReferenceEl.querySelectorAll("details[open]")) {
+    details.removeAttribute("open");
+  }
+}
+
 function renderFunctionalRelations(reference) {
   if (!structureReferenceFunctional || !structureReferenceFunctionalDetails) return;
 
@@ -684,6 +691,8 @@ function renderStructureReference(sid) {
     hideStructureReference();
     return;
   }
+
+  closeStructureReferenceDetails();
 
   const sourceName = structureNames[sid];
   const term = structureTerm(sourceName);
