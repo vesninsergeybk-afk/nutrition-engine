@@ -8877,6 +8877,12 @@ modeQuizButton.addEventListener("click", () => setMode("quiz"));
 modeExploreButton.addEventListener("click", () => setMode("explore"));
 modeMotionButton.addEventListener("click", () => setMode("motion"));
 motionAtlasReturnButton?.addEventListener("click", () => setMode("explore"));
+viewerSettings?.addEventListener("toggle", () => {
+  document.body.classList.toggle(
+    "display-drawer-open",
+    Boolean(viewerSettings.open)
+  );
+});
 nextButton.addEventListener("click", nextSessionStep);
 answerButton.addEventListener("click", revealAnswer);
 revealDeeperButton.addEventListener("click", revealDeeperAfterMistake);

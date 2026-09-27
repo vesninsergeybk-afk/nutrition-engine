@@ -1652,3 +1652,59 @@ body:not(.motion-mode) .comparison-pane-static {
     height: 100%;
   }
 }
+
+
+/* Display controls behave as a side drawer instead of a floating menu.
+   The 3D canvas remains visible and resizes beside the drawer. */
+.viewer-wrap {
+  --display-drawer-width: min(320px, 34%);
+}
+
+.viewer-settings[open] {
+  position: static;
+}
+
+.viewer-settings[open] .viewer-settings-menu {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: auto;
+  width: var(--display-drawer-width);
+  max-height: calc(100% - 60px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 0 16px 16px 0;
+  border-left: 0;
+  box-shadow: 10px 0 24px rgba(27,27,29,.08);
+  backdrop-filter: none;
+  background: rgba(250,249,247,.985);
+}
+
+@media (min-width: 861px) {
+  body.display-drawer-open:not(.motion-mode) .comparison-pane-static {
+    left: var(--display-drawer-width);
+    transition: left .18s ease;
+  }
+
+  body:not(.display-drawer-open):not(.motion-mode) .comparison-pane-static {
+    left: 0;
+    transition: left .18s ease;
+  }
+
+  body.display-drawer-open .viewer-hint {
+    left: calc(var(--display-drawer-width) + 12px);
+  }
+}
+
+@media (max-width: 860px) {
+  .viewer-wrap {
+    --display-drawer-width: min(360px, calc(100% - 24px));
+  }
+
+  .viewer-settings[open] .viewer-settings-menu {
+    top: 50px;
+    left: 0;
+    max-height: min(72dvh, 560px);
+    border-radius: 0 16px 16px 0;
+  }
+}
