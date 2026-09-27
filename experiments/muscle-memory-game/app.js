@@ -589,8 +589,15 @@ function renderStructureReferencePrimaryArt(reference) {
       source?.title || "Методический материал курса",
       illustration.locator || "",
     ].filter(Boolean);
+    const relation =
+      illustration.displayMatch === "parent-muscle" &&
+      illustration.selectedPartLabelRu
+        ? "Показана вся мышца; выбрана её часть: " +
+          illustration.selectedPartLabelRu +
+          ". "
+        : "";
     structureReferencePrimaryArtCaption.textContent =
-      "Учебная иллюстрация · " + details.join(" · ");
+      relation + "Учебная иллюстрация · " + details.join(" · ");
   }
 
   structureReferencePrimaryArt.hidden = false;
