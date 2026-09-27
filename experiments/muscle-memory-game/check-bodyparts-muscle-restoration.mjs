@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { bodyPartsAnatomyKind } from "./bodyparts4-classification.js";
+import { bodyPartsMuscleNameRu } from "./bodyparts4-muscles-ru.js";
 
 const root = new URL("./", import.meta.url);
 const coverage = JSON.parse(await readFile(new URL("bodyparts-muscle-coverage.json", root), "utf8"));
@@ -41,6 +42,20 @@ assert(
 assert(
   !supplements.includes("BODYPARTS_UNVALIDATED_REGIONAL_SUPPLEMENTS"),
   "Validated foot supplements are still marked as unvalidated"
+);
+
+const untranslatedRestored = coverage.restored.filter(
+  (item) => !bodyPartsMuscleNameRu(item.name)
+);
+assert(
+  untranslatedRestored.length === 0,
+  "Restored BodyParts3D muscles missing Russian names: " +
+    untranslatedRestored.map((item) => item.name).join(", ")
+);
+assert(
+  bodyPartsMuscleNameRu("Right tensor fasciae latae") &&
+    bodyPartsMuscleNameRu("Left tensor fasciae latae"),
+  "Tensor fasciae latae is rendered as muscle but has no Russian user-facing name"
 );
 
 assert(
