@@ -118,6 +118,13 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+  "ncbi-fibula": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Fibula",
+    role: "Сверка прикреплений мышц к малоберцовой кости и вариабельности fibularis tertius",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK470591/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-foot-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Foot Muscles",
     role: "Основная современная сверка наружных и собственных мышц стопы, компартментов и четырёх подошвенных слоёв",
