@@ -168,18 +168,39 @@ for (const [alias, uses] of aliases.entries()) {
 // Technical 3D aliases may point to an exact card or to a pedagogical group,
  // but every target must exist in the canonical regional database.
  for (const [sourceName, mapping] of Object.entries(BODYPARTS3D_REFERENCE_ALIASES)) {
-   requireValue(Boolean(sourceName.trim()), "Empty BodyParts3D alias");
-   requireValue(Boolean(mapping?.referenceId), `3D alias has no referenceId: ${sourceName}`);
-   requireValue(
-     structuresById.has(mapping?.referenceId),
-     `3D alias points to unknown referenceId: ${sourceName} -> ${mapping?.referenceId}`
-   );
-   requireValue(
-     mapping?.coverage === "exact" || mapping?.coverage === "group" || mapping?.coverage === "part",
-     `3D alias has invalid coverage type: ${sourceName}`
-   );
-   requireValue(Boolean(mapping?.labelRu), `3D alias has no Russian display label: ${sourceName}`);
- }
+  requireValue(Boolean(sourceName.trim()), "Empty BodyParts3D alias");
+  requireValue(Boolean(mapping?.labelRu), `3D alias has no Russian display label: ${sourceName}`);
+
+  const allowedCoverage = ["exact", "group", "part", "ambiguous"];
+  requireValue(
+    allowedCoverage.includes(mapping?.coverage),
+    `3D alias has invalid coverage type: ${sourceName}`
+  );
+
+  if (mapping?.coverage === "ambiguous") {
+    requireValue(
+      Array.isArray(mapping.candidateReferenceIds) && mapping.candidateReferenceIds.length > 1,
+      `Ambiguous 3D alias must list multiple candidates: ${sourceName}`
+    );
+    requireValue(
+      !mapping.referenceId,
+      `Ambiguous 3D alias must not pretend to have one exact referenceId: ${sourceName}`
+    );
+    for (const candidateId of mapping.candidateReferenceIds || []) {
+      requireValue(
+        structuresById.has(candidateId),
+        `Ambiguous 3D alias points to unknown candidate: ${sourceName} -> ${candidateId}`
+      );
+    }
+    requireValue(Boolean(mapping.noteRu), `Ambiguous 3D alias needs an explanatory note: ${sourceName}`);
+  } else {
+    requireValue(Boolean(mapping?.referenceId), `3D alias has no referenceId: ${sourceName}`);
+    requireValue(
+      structuresById.has(mapping?.referenceId),
+      `3D alias points to unknown referenceId: ${sourceName} -> ${mapping?.referenceId}`
+    );
+  }
+}
 
 // Illustration registry: sources, regions and structure targets must all be canonical.
 const regionIds = new Set(REFERENCE_REGIONS.map((region) => region.id));
