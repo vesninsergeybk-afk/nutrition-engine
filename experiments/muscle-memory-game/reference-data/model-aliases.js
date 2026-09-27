@@ -271,9 +271,14 @@ export const BODYPARTS3D_REFERENCE_ALIASES = Object.freeze(
     "coverage": "part"
   },
   "superficial perineal muscle": {
-    "referenceId": "superficial-transverse-perineal",
-    "labelRu": "Поверхностная поперечная мышца промежности",
-    "coverage": "exact"
+    "labelRu": "Поверхностная мышца промежности — имя модели неоднозначно",
+    "coverage": "ambiguous",
+    "candidateReferenceIds": [
+      "superficial-transverse-perineal",
+      "bulbospongiosus",
+      "ischiocavernosus"
+    ],
+    "noteRu": "Техническое имя BodyParts3D не позволяет однозначно определить, какая из трёх парных мышц поверхностного промежностного пространства имеется в виду."
   }
 }
 );
