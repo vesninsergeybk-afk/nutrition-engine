@@ -3,6 +3,7 @@ import {
   muscleReferenceFor,
   muscleReferenceSource,
 } from "./muscle-reference-data.js";
+import { COURSE_ART_PRIMARY } from "./reference-data/course-art.js";
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -46,11 +47,58 @@ assert(
   "Copyrighted atlas images must remain reference-only by default"
 );
 
+
+for (const sourceId of [
+  "course-method-back-lesson8",
+  "course-method-posterior-leg-lesson9",
+  "course-method-anterior-leg-lesson15",
+]) {
+  const source = muscleReferenceSource(sourceId);
+  assert(
+    source?.rightsStatus === "review" &&
+      /право на открытую публикацию.*требуют отдельной проверки/i.test(
+        source?.rights?.note || ""
+      ),
+    sourceId + " must remain rights-gated for public release"
+  );
+}
+
+assert(COURSE_ART_PRIMARY.length === 18, "Course-art exact set must contain 18 illustrations");
+assert(
+  new Set(COURSE_ART_PRIMARY.map((item) => item.structureId)).size === 18 &&
+    COURSE_ART_PRIMARY.every(
+      (item) =>
+        item.match === "exact" &&
+        item.spritePath &&
+        item.spriteColumns === 6 &&
+        Number.isInteger(item.column)
+    ),
+  "Course-art registry contains duplicate or non-exact entries"
+);
+
+const trapeziusArt = muscleReferenceFor("Right trapezius");
+assert(
+  trapeziusArt?.primaryIllustration?.structureId === "trapezius" &&
+    trapeziusArt.primaryIllustration.locator === "стр. 1",
+  "Exact trapezius course illustration is not wired to the reference card"
+);
+
+const trapeziusPart = muscleReferenceFor("Ascending part of trapezius");
+assert(
+  trapeziusPart?.modelCoverage === "part" &&
+    trapeziusPart.primaryIllustration == null,
+  "A whole-muscle illustration must not be presented as an exact image of a muscle part"
+);
+
 for (const id of [
   "structure-reference-facts",
   "structure-reference-origin",
   "structure-reference-insertion",
   "structure-reference-actions",
+  "structure-reference-primary-art",
+  "structure-reference-primary-art-image",
+  "structure-reference-primary-art-title",
+  "structure-reference-primary-art-caption",
   "structure-reference-sources",
   "structure-reference-illustrations",
 ]) {
@@ -60,8 +108,11 @@ for (const id of [
 assert(
   app.includes('from "./muscle-reference-data.js"') &&
     app.includes("muscleReferenceFor(sourceName)") &&
-    app.includes("renderReferenceItems("),
-  "Atlas card is not wired to source-backed reference data"
+    app.includes("renderReferenceItems(") &&
+    app.includes("renderStructureReferencePrimaryArt(reference)") &&
+    !app.includes("renderMuscleReferencePreview") &&
+    !html.includes("structure-reference-preview-canvas"),
+  "Atlas card is not wired to exact 2D primary illustration data"
 );
 
 const supraspinatus = muscleReferenceFor("Right supraspinatus");
@@ -86,4 +137,4 @@ assert(
   "Reference-only or remote source identifiers leaked into public markup"
 );
 
-console.log("Muscle reference: shoulder seed data + provenance + rights gates ok");
+console.log("Muscle reference: provenance + rights gates + exact course art ok");
