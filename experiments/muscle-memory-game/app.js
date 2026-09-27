@@ -228,11 +228,27 @@ const displayLayerActions = document.querySelector("#display-layer-actions");
 const structureReferenceEl = document.querySelector("#structure-reference");
 const structureReferenceLatin = document.querySelector("#structure-reference-latin");
 const structureReferenceRegion = document.querySelector("#structure-reference-region");
+const structureReferenceType = document.querySelector("#structure-reference-type");
 const structureReferenceDepth = document.querySelector("#structure-reference-depth");
+const structureReferenceBadges = document.querySelector("#structure-reference-badges");
+const structureReferenceAmbiguity = document.querySelector("#structure-reference-ambiguity");
+const structureReferenceAmbiguityLabel = document.querySelector("#structure-reference-ambiguity-label");
+const structureReferenceAmbiguityNote = document.querySelector("#structure-reference-ambiguity-note");
+const structureReferenceAmbiguityCandidates = document.querySelector("#structure-reference-ambiguity-candidates");
 const structureReferenceFacts = document.querySelector("#structure-reference-facts");
 const structureReferenceOrigin = document.querySelector("#structure-reference-origin");
 const structureReferenceInsertion = document.querySelector("#structure-reference-insertion");
 const structureReferenceActions = document.querySelector("#structure-reference-actions");
+const structureReferenceStudyCue = document.querySelector("#structure-reference-study-cue");
+const structureReferenceStudyCueText = document.querySelector("#structure-reference-study-cue-text");
+const structureReferenceOrientationRow = document.querySelector("#structure-reference-orientation-row");
+const structureReferenceOrientation = document.querySelector("#structure-reference-orientation");
+const structureReferenceLandmarksRow = document.querySelector("#structure-reference-landmarks-row");
+const structureReferenceLandmarks = document.querySelector("#structure-reference-landmarks");
+const structureReferenceRelationsRow = document.querySelector("#structure-reference-relations-row");
+const structureReferenceRelations = document.querySelector("#structure-reference-relations");
+const structureReferenceInnervationDetails = document.querySelector("#structure-reference-innervation-details");
+const structureReferenceInnervation = document.querySelector("#structure-reference-innervation");
 const structureReferenceSources = document.querySelector("#structure-reference-sources");
 const structureReferenceIllustrations = document.querySelector("#structure-reference-illustrations");
 const structureReferenceEmpty = document.querySelector("#structure-reference-empty");
@@ -418,28 +434,61 @@ function hideStructureReference() {
   if (structureReferenceEl) structureReferenceEl.hidden = true;
 }
 
-function renderReferenceItems(container, items, kind) {
+function renderReferenceList(container, items) {
   if (!container) return;
   container.replaceChildren();
-  container.hidden = !items?.length;
   for (const item of items || []) {
+    const li = document.createElement("li");
+    li.textContent = item;
+    container.append(li);
+  }
+}
+
+function renderReferenceItems(container, items, kind) {
+  if (!container) return;
+  const visibleItems =
+    kind === "illustration"
+      ? (items || []).filter((item) => Boolean(item.src))
+      : (items || []);
+
+  container.replaceChildren();
+  container.hidden = visibleItems.length === 0;
+
+  for (const item of visibleItems) {
     const source = muscleReferenceSource(item.sourceId);
     const row = document.createElement("div");
     row.className = "structure-reference-source-item";
 
-    const title = document.createElement("strong");
-    title.textContent =
+    const titleText =
       (kind === "illustration" ? "Иллюстрация · " : "") +
       (source?.title || item.sourceId || "Источник");
 
-    const detail = document.createElement("span");
-    const rights =
-      kind === "illustration" && source?.rightsStatus
-        ? " · " + source.rightsStatus
-        : "";
-    detail.textContent = (item.locator || "") + rights;
+    if (source?.href) {
+      const title = document.createElement("a");
+      title.className = "structure-reference-source-link";
+      title.href = source.href;
+      title.target = "_blank";
+      title.rel = "noreferrer";
+      title.textContent = titleText;
+      row.append(title);
+    } else {
+      const title = document.createElement("strong");
+      title.textContent = titleText;
+      row.append(title);
+    }
 
-    row.append(title, detail);
+    const details = [
+      item.locator || "",
+      kind === "illustration"
+        ? (item.rightsStatus || source?.rightsStatus || "")
+        : "",
+    ].filter(Boolean);
+
+    if (details.length) {
+      const detail = document.createElement("span");
+      detail.textContent = details.join(" · ");
+      row.append(detail);
+    }
 
     if (kind === "illustration" && item.src) {
       const figure = document.createElement("figure");
@@ -462,6 +511,43 @@ function renderReferenceItems(container, items, kind) {
   }
 }
 
+function renderReferenceBadges(reference) {
+  if (!structureReferenceBadges) return;
+  structureReferenceBadges.replaceChildren();
+
+  const labels = [...(reference?.badgesRu || [])];
+  if (reference?.modelCoverage === "group") labels.push("справка по группе");
+  if (reference?.modelCoverage === "part") labels.push("часть мышцы");
+
+  const unique = [...new Set(labels.filter(Boolean))];
+  for (const label of unique) {
+    const badge = document.createElement("span");
+    badge.textContent = label;
+    structureReferenceBadges.append(badge);
+  }
+  structureReferenceBadges.hidden = unique.length === 0;
+}
+
+function renderReferenceAmbiguity(reference) {
+  if (!structureReferenceAmbiguity) return;
+
+  const ambiguous = Boolean(reference?.ambiguous);
+  structureReferenceAmbiguity.hidden = !ambiguous;
+  structureReferenceAmbiguityCandidates?.replaceChildren();
+
+  if (!ambiguous) return;
+
+  structureReferenceAmbiguityLabel.textContent =
+    reference.labelRu || "Нужно уточнить структуру";
+  structureReferenceAmbiguityNote.textContent = reference.noteRu || "";
+
+  for (const candidate of reference.candidates || []) {
+    const li = document.createElement("li");
+    li.textContent = candidate.titleRu;
+    structureReferenceAmbiguityCandidates.append(li);
+  }
+}
+
 function renderStructureReference(sid) {
   if (!structureReferenceEl || sid == null || !structureNames[sid]) {
     hideStructureReference();
@@ -473,28 +559,70 @@ function renderStructureReference(sid) {
   const target = learningTargetBySid.get(sid) || null;
   const depth = targetDepthInfo(target);
   const reference = muscleReferenceFor(sourceName);
-
-  structureReferenceLatin.textContent = term.latin || "";
-  structureReferenceRegion.textContent = target?.region
+  const fallbackRegion = target?.region
     ? regionNameRu(target.region)
     : selectedLearningRegion && selectedLearningRegion !== "all"
       ? (LEARNING_SCOPES.find((item) => item.id === selectedLearningRegion)?.nameRu || "—")
       : "—";
-  structureReferenceDepth.textContent = depth?.nameRu
+  const fallbackDepth = depth?.nameRu
     ? depth.nameRu + " мышечный слой"
-    : "Для этой области карта глубины ещё не подтверждена";
+    : "Слой не подтверждён";
+
+  renderReferenceAmbiguity(reference);
+
+  if (reference?.ambiguous) {
+    structureReferenceLatin.textContent = term.latin || "";
+    structureReferenceRegion.textContent = fallbackRegion;
+    structureReferenceType.textContent = "неоднозначное сопоставление";
+    structureReferenceDepth.textContent = fallbackDepth;
+    structureReferenceFacts.hidden = true;
+    structureReferenceEmpty.hidden = true;
+    structureReferenceBadges.replaceChildren();
+    const badge = document.createElement("span");
+    badge.textContent = "нужно уточнение";
+    structureReferenceBadges.append(badge);
+    structureReferenceBadges.hidden = false;
+    structureReferenceSources.replaceChildren();
+    structureReferenceIllustrations.replaceChildren();
+    structureReferenceSources.hidden = true;
+    structureReferenceIllustrations.hidden = true;
+    structureReferenceEl.hidden = false;
+    return;
+  }
+
+  structureReferenceLatin.textContent = reference?.latin || term.latin || "";
+  structureReferenceRegion.textContent = reference?.regionRu || fallbackRegion;
+  structureReferenceType.textContent = reference?.typeRu || "мышца";
+  structureReferenceDepth.textContent = reference?.depthRu || fallbackDepth;
 
   if (reference) {
     structureReferenceFacts.hidden = false;
     structureReferenceEmpty.hidden = true;
+    renderReferenceBadges(reference);
+
     structureReferenceOrigin.textContent = reference.originRu || "—";
     structureReferenceInsertion.textContent = reference.insertionRu || "—";
-    structureReferenceActions.replaceChildren();
-    for (const action of reference.actionsRu || []) {
-      const li = document.createElement("li");
-      li.textContent = action;
-      structureReferenceActions.append(li);
-    }
+
+    renderReferenceList(structureReferenceActions, reference.actionsRu);
+
+    const cue = reference.studyCueRu || "";
+    structureReferenceStudyCue.hidden = !cue;
+    structureReferenceStudyCueText.textContent = cue;
+
+    const orientation = reference.orientationRu || "";
+    structureReferenceOrientationRow.hidden = !orientation;
+    structureReferenceOrientation.textContent = orientation;
+
+    renderReferenceList(structureReferenceLandmarks, reference.landmarksRu);
+    structureReferenceLandmarksRow.hidden = !reference.landmarksRu?.length;
+
+    renderReferenceList(structureReferenceRelations, reference.relationsRu);
+    structureReferenceRelationsRow.hidden = !reference.relationsRu?.length;
+
+    const innervation = reference.innervationRu || "";
+    structureReferenceInnervationDetails.hidden = !innervation;
+    structureReferenceInnervation.textContent = innervation;
+
     renderReferenceItems(structureReferenceSources, reference.sources, "source");
     renderReferenceItems(
       structureReferenceIllustrations,
@@ -504,6 +632,8 @@ function renderStructureReference(sid) {
   } else {
     structureReferenceFacts.hidden = true;
     structureReferenceEmpty.hidden = false;
+    structureReferenceBadges.replaceChildren();
+    structureReferenceBadges.hidden = true;
     structureReferenceSources.replaceChildren();
     structureReferenceIllustrations.replaceChildren();
     structureReferenceSources.hidden = true;
