@@ -127,6 +127,12 @@ assert(
     app.includes("referenceAtlasIllustrationCount"),
   "Reference-card illustration state is not exposed for browser verification"
 );
+assert(
+  app.includes('structureReferenceEl.dataset.referenceId = ""') &&
+    app.includes('structureReferenceEl.dataset.referenceAtlasIllustrationCount = "0"') &&
+    app.includes("clearStructureReferencePrimaryArt()"),
+  "Switching structures must clear stale reference-card identity and illustration state"
+);
 
 const trapezius = muscleReferenceFor("trapezius");
 assert(
@@ -144,6 +150,38 @@ assert(
       item.rightsStatus === "public-domain"
   ),
   "Local public-domain Gray 412 shoulder plate is not wired to the infraspinatus card"
+);
+
+const latissimus = muscleReferenceFor("Right latissimus dorsi");
+assert(
+  latissimus?.id === "latissimus-dorsi" &&
+    latissimus.primaryIllustration?.kind === "course-art-exact" &&
+    latissimus.primaryIllustration?.structureId === "latissimus-dorsi",
+  "Latissimus dorsi must keep its exact drawn course illustration"
+);
+
+const externalOblique = muscleReferenceFor("Right external oblique");
+assert(
+  externalOblique?.id === "external-oblique" &&
+    externalOblique.illustrations?.some(
+      (item) =>
+        item.sourceId === "gray-1918-plate-392" &&
+        item.src === "./assets/reference/gray392-external-oblique.png" &&
+        item.rightsStatus === "public-domain"
+    ),
+  "Local public-domain Gray 392 plate is not wired to the external oblique card"
+);
+
+const gray392Bytes = await readFile(
+  new URL("assets/reference/gray392-external-oblique.png", root)
+);
+assert(
+  gray392Bytes.length > 10000 &&
+    gray392Bytes[0] === 0x89 &&
+    gray392Bytes[1] === 0x50 &&
+    gray392Bytes[2] === 0x4e &&
+    gray392Bytes[3] === 0x47,
+  "Gray 392 local asset is missing or not a valid PNG"
 );
 assert(
   app.includes("renderStructureReferencePrimaryArt(reference)") &&
