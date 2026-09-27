@@ -3,6 +3,7 @@ import { MUSCLE_REFERENCE_PILOT, PILOT_STRUCTURE_IDS } from "./muscles-pilot.js"
 import { REFERENCE_REGIONS, REGION_ROADMAP } from "./regions/index.js";
 import { BODYPARTS3D_REFERENCE_ALIASES } from "./model-aliases.js";
 import { REFERENCE_ILLUSTRATIONS } from "./illustrations.js";
+import { REFERENCE_SOURCE_ART } from "./source-art.js";
 
 const errors = [];
 const warnings = [];
@@ -299,6 +300,105 @@ for (const illustration of REFERENCE_ILLUSTRATIONS) {
   }
 }
 
+// Source-art registry: an individual artwork must never silently stand in for another muscle.
+const sourceArtIds = new Set();
+const publishableArtRights = new Set([
+  "public-domain",
+  "cc0",
+  "cc-by",
+  "cc-by-sa",
+  "licensed",
+  "owned",
+]);
+
+for (const art of REFERENCE_SOURCE_ART) {
+  requireValue(Boolean(art.id), "Source art without id");
+  requireValue(
+    !sourceArtIds.has(art.id),
+    `Duplicate source-art id: ${art.id}`
+  );
+  sourceArtIds.add(art.id);
+
+  requireValue(
+    Boolean(REFERENCE_SOURCES[art.sourceId]),
+    `${art.id}: unknown source-art source ${art.sourceId}`
+  );
+  requireValue(
+    Number.isInteger(art.page) && art.page > 0,
+    `${art.id}: invalid source page ${art.page}`
+  );
+
+  const crop = art.cropNormalized || {};
+  for (const key of ["x", "y", "width", "height"]) {
+    requireValue(
+      Number.isFinite(crop[key]),
+      `${art.id}: cropNormalized.${key} must be numeric`
+    );
+  }
+  requireValue(
+    crop.x >= 0 &&
+      crop.y >= 0 &&
+      crop.width > 0 &&
+      crop.height > 0 &&
+      crop.x + crop.width <= 1.000001 &&
+      crop.y + crop.height <= 1.000001,
+    `${art.id}: cropNormalized must stay inside the source page`
+  );
+
+  if (art.artScope === "group-supplement") {
+    requireValue(
+      Array.isArray(art.structureIds) && art.structureIds.length > 1,
+      `${art.id}: group supplement must list multiple structureIds`
+    );
+    requireValue(
+      !art.structureId,
+      `${art.id}: group supplement must not pretend to be exact for one structure`
+    );
+    for (const structureId of art.structureIds || []) {
+      requireValue(
+        structuresById.has(structureId),
+        `${art.id}: unknown group structure ${structureId}`
+      );
+    }
+  } else {
+    requireValue(
+      ["exact-card", "exact-card-part"].includes(art.artScope),
+      `${art.id}: unsupported artScope ${art.artScope}`
+    );
+    requireValue(
+      Boolean(art.structureId) && structuresById.has(art.structureId),
+      `${art.id}: exact artwork must point to one canonical structure`
+    );
+    requireValue(
+      !art.structureIds,
+      `${art.id}: exact artwork must not list multiple structureIds`
+    );
+  }
+
+  if (art.assetPath) {
+    requireValue(
+      art.status === "asset-ready",
+      `${art.id}: assetPath requires status=asset-ready`
+    );
+    requireValue(
+      publishableArtRights.has(art.rightsStatus),
+      `${art.id}: public asset requires confirmed publication rights, got ${art.rightsStatus}`
+    );
+  } else {
+    requireValue(
+      art.status === "mapped-source-only",
+      `${art.id}: art without assetPath must remain mapped-source-only`
+    );
+  }
+
+  if (art.rightsStatus === "permission-unverified") {
+    requireValue(
+      !art.assetPath,
+      `${art.id}: permission-unverified art must not expose a public assetPath`
+    );
+  }
+}
+
 // The old pilot is a compatibility view only; it must point at the exact canonical objects.
 requireValue(
   MUSCLE_REFERENCE_PILOT.length === PILOT_STRUCTURE_IDS.length,
@@ -351,6 +451,6 @@ if (errors.length) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Reference data OK: ${REFERENCE_REGIONS.length} regions, ${regionStructureIds.size} canonical structures, ${functionalGroupIds.size} functional groups, ${Object.keys(BODYPARTS3D_REFERENCE_ALIASES).length} BodyParts3D aliases, ${REFERENCE_ILLUSTRATIONS.length} illustration plates, ${Object.keys(REFERENCE_SOURCES).length} sources.`
+    `Reference data OK: ${REFERENCE_REGIONS.length} regions, ${regionStructureIds.size} canonical structures, ${functionalGroupIds.size} functional groups, ${Object.keys(BODYPARTS3D_REFERENCE_ALIASES).length} BodyParts3D aliases, ${REFERENCE_ILLUSTRATIONS.length} illustration plates, ${REFERENCE_SOURCE_ART.length} source-art mappings, ${Object.keys(REFERENCE_SOURCES).length} sources.`
   );
 }
