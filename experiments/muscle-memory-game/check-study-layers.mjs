@@ -54,6 +54,30 @@ assert(
   app.includes("iliotibial tract"),
   "Known connective-source recovery rule is missing"
 );
+assert(
+  app.includes('setConnectiveLayerSelection(["fascia", "tendon", "ligament", "other"])') &&
+    app.includes('preset === "attachments"'),
+  "One-click connective preset must expose fasciae, tendons, ligaments and other connective structures"
+);
+assert(
+  app.includes('part.system === "connective" ||') &&
+    app.includes("CONNECTIVE_DISPLAY_NAME_RE.test(part.name)"),
+  "Known connective structures with incorrect BodyParts system tags are still excluded"
+);
+assert(
+  html.indexOf('id="selected-structure-actions"') <
+    html.indexOf('id="structure-reference"'),
+  "Selected-structure actions must remain visible above the long reference card"
+);
+assert(
+  html.includes('id="hide-selected" type="button" disabled>Скрыть мышцу</button>'),
+  "Atlas must expose an explicit hide-selected-muscle action"
+);
+assert(
+  app.includes('highlightStructures([sid], "selected");') &&
+    app.includes("The muscle material keeps depthTest/depthWrite"),
+  "Selected muscles are not guaranteed to receive normal depth-tested highlighting"
+);
 
 console.log("Massage study layers: static contract ok");
 console.log("Skin: opt-in");
