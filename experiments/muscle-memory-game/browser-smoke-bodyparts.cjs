@@ -283,9 +283,8 @@ const assert = require('node:assert/strict');
     true,
     'Whole-body scope must not show a meaningless isolation control'
   );
-  if (await page.locator('#region-isolation').isChecked()) {
-    await page.locator('#region-isolation').uncheck();
-  }
+  // Whole-body scope disables regional isolation semantically. The checkbox
+  // stays hidden with its prior preference preserved for the next regional scope.
   assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'false');
 
   // Whole-atlas search after explicit exit from regional isolation.
