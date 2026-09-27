@@ -154,6 +154,22 @@ const assert = require('node:assert/strict');
     path: '/tmp/muscle-memory-bodyparts-shoulder-bones.png',
     fullPage: true,
   });
+
+  await page.fill('#structure-search', 'лопатка');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  const boneResult = page.locator('.search-result').filter({ hasText: /Лопатка/i }).first();
+  assert.equal(await boneResult.count(), 1, 'Russian bone search must find scapula');
+  assert.doesNotMatch(await boneResult.innerText(), /scapula/i);
+  await boneResult.click();
+  assert.equal(await page.locator('#question-label').innerText(), 'Кость');
+  assert.match(await page.locator('#question').innerText(), /Лопатка/i);
+  assert.equal(await page.locator('#focus-selected').isDisabled(), false);
+  assert.match(await page.locator('#structure-search').inputValue(), /Лопатка/i);
+
   await page.selectOption('#bone-mode', 'off');
 
   await page.check('#skin-overlay-toggle');
