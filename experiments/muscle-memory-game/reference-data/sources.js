@@ -517,6 +517,113 @@ export const REFERENCE_SOURCES = Object.freeze({
   }),
 
 
+
+  "ncbi-extraocular-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Eye Extraocular Muscles",
+    role: "Основная сверка семи наружных мышц глаза, их действий и иннервации",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK519565/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-extraocular-actions": Object.freeze({
+    title: "StatPearls: Extraocular muscle actions and innervation table",
+    role: "Контроль первичных, вторичных и третичных действий наружных мышц глаза",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK573075/table/article-133080.table0/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-tongue": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Tongue",
+    role: "Основная сверка четырёх собственных и четырёх наружных мышц языка",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK507782/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-styloglossus": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Styloglossus",
+    role: "Дополнительная сверка наружных мышц языка",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK574498/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-palate": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Palate",
+    role: "Сверка пяти мышц мягкого нёба и их иннервации",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK557817/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-tensor-veli-palatini": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Tensor Veli Palatini Muscle",
+    role: "Сверка мышцы, напрягающей нёбную занавеску, и её исключительной иннервации V3",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK544302/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-stylopharyngeus": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Stylopharyngeus Muscles",
+    role: "Сверка продольной мышцы глотки и её иннервации IX нервом",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK547719/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-swallowing": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Swallowing",
+    role: "Сверка функциональных групп глотки и координации глотания",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK554405/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-laryngeal-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck: Laryngeal Muscles",
+    role: "Основная сверка внутренних мышц гортани и управления голосовыми складками",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK545265/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-larynx-rln": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Larynx Recurrent Laryngeal Nerve",
+    role: "Сверка прикреплений и иннервации внутренних мышц гортани",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK470179/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-pelvic-floor": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis: Pelvic Floor",
+    role: "Основная сверка levator ani, coccygeus и послойной организации тазового дна",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK482200/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-superficial-perineum": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis: Superficial Perineal Space",
+    role: "Сверка ischiocavernosus, bulbospongiosus и поверхностной поперечной мышцы промежности",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK542289/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "pmc-incisivus-labii": Object.freeze({
+    title: "Anatomical features of the incisivus labii superioris muscle",
+    year: 2018,
+    role: "Сверка резцовых мышц губ и их отношений с orbicularis oris и modiolus",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6110756/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-adductor-magnus-minimus": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Thigh Adductor Magnus Muscle",
+    role: "Проверка adductor minimus как верхнего сегмента приводящей части adductor magnus",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK534842/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-opponens-digiti-minimi-foot": Object.freeze({
+    title: "Kenhub: Opponens digiti minimi muscle of foot",
+    role: "Сверка вариабельной глубокой части латеральной группы подошвы",
+    url: "https://www.kenhub.com/en/library/anatomy/opponens-digiti-minimi-muscle-of-foot",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-thoracic-vertebrae": Object.freeze({
     title: "StatPearls: Anatomy, Back, Thoracic Vertebrae",
     role: "Сверка глубоких сегментарных мышц грудного отдела",
