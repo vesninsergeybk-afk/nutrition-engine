@@ -1,6 +1,7 @@
 import {
   MOTION_MUSCLE_ASSET_CANDIDATES,
   MOTION_MUSCLE_ASSET_REQUIREMENTS,
+  STANDARD_MOTION_MUSCLE_ASSET_ID,
 } from "./motion-muscle-assets.js";
 import { MOTION_VISUAL_ASSETS } from "./motion-visual-assets.js";
 
@@ -38,9 +39,10 @@ assert(
 const sourcePath =
   MOTION_MUSCLE_ASSET_CANDIDATES["source-path-muscle-envelope"];
 assert(
-  sourcePath.status === "architecturally-viable-prototype" &&
+  STANDARD_MOTION_MUSCLE_ASSET_ID === "source-path-muscle-envelope" &&
+    sourcePath.status === "selected-standard-motion-representation" &&
     sourcePath.staticAtlasDependency === false,
-  "Source-path muscle geometry must remain independent of static atlas meshes"
+  "Source-derived path must be the selected atlas-independent Motion standard"
 );
 
 for (const item of Object.values(MOTION_MUSCLE_ASSET_CANDIDATES)) {
@@ -62,7 +64,7 @@ assert(
 );
 
 console.log(
-  "Motion muscle assets: candidates registered without prematurely selecting a rig"
+  "Motion muscle assets: source-derived path selected as the standard representation"
 );
 console.log(
   "Motion muscle assets: static atlas topology is not a selection requirement"

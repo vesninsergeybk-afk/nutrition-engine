@@ -51,6 +51,7 @@ jobs:
           node --check experiments/muscle-memory-game/motion-vtp.js
           node --check experiments/muscle-memory-game/motion-native-bones.js
           node --check experiments/muscle-memory-game/motion-native-clips.js
+          node --check experiments/muscle-memory-game/motion-tsm-muscle-path.js
           node --check experiments/muscle-memory-game/motion-myoarm-elbow.js
           node --check experiments/muscle-memory-game/motion-clip.js
           node --check experiments/muscle-memory-game/motion-registration.js
@@ -86,6 +87,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-motion-semantics.mjs
           node --check experiments/muscle-memory-game/check-motion-muscle-assets.mjs
           node --check experiments/muscle-memory-game/check-product-shell.mjs
+          node --check experiments/muscle-memory-game/check-standard-motion-asset.mjs
           node --check experiments/muscle-memory-game/check-motion-native-bones.mjs
           python -m py_compile experiments/muscle-memory-game/probe-opensim-muscle-paths.py
           python -m py_compile experiments/muscle-memory-game/export-opensim-muscle-path.py
@@ -174,6 +176,7 @@ jobs:
           node experiments/muscle-memory-game/check-motion-semantics.mjs
           node experiments/muscle-memory-game/check-motion-muscle-assets.mjs
           node experiments/muscle-memory-game/check-product-shell.mjs
+          node experiments/muscle-memory-game/check-standard-motion-asset.mjs
           node experiments/muscle-memory-game/check-motion-native-bones.mjs
           node experiments/muscle-memory-game/check-motion-sources.mjs
           node experiments/muscle-memory-game/check-motion-simulation-contract.mjs
