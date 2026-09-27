@@ -242,6 +242,25 @@ const structureReferencePreview = document.querySelector("#structure-reference-p
 const structureReferencePreviewCanvas = document.querySelector("#structure-reference-preview-canvas");
 const structureReferencePreviewTitle = document.querySelector("#structure-reference-preview-title");
 const structureReferencePreviewCaption = document.querySelector("#structure-reference-preview-caption");
+const structureReferenceGallery = document.querySelector("#structure-reference-gallery");
+const structureReferenceMediaTabs = document.querySelector("#structure-reference-media-tabs");
+const structureReferenceArtTab = document.querySelector("#structure-reference-art-tab");
+const structureReference3dTab = document.querySelector("#structure-reference-3d-tab");
+const structureReferenceArt = document.querySelector("#structure-reference-art");
+const structureReferenceArtImage = document.querySelector("#structure-reference-art-image");
+const structureReferenceArtTitle = document.querySelector("#structure-reference-art-title");
+const structureReferenceArtCaption = document.querySelector("#structure-reference-art-caption");
+const structureReferenceArtSource = document.querySelector("#structure-reference-art-source");
+const structureReferenceArtNavigation = document.querySelector("#structure-reference-art-navigation");
+const structureReferenceArtPrev = document.querySelector("#structure-reference-art-prev");
+const structureReferenceArtNext = document.querySelector("#structure-reference-art-next");
+const structureReferenceArtCounter = document.querySelector("#structure-reference-art-counter");
+
+let activeReferenceMediaMode = "3d";
+let currentReferenceArtworks = [];
+let currentReferenceArtIndex = 0;
+let currentReferenceMediaSid = null;
+let currentReferenceMediaReference = null;
 const structureReferenceAmbiguity = document.querySelector("#structure-reference-ambiguity");
 const structureReferenceAmbiguityLabel = document.querySelector("#structure-reference-ambiguity-label");
 const structureReferenceAmbiguityNote = document.querySelector("#structure-reference-ambiguity-note");
@@ -446,7 +465,15 @@ function setDisplayPanelOpen(open) {
 
 function hideStructureReference() {
   if (structureReferenceEl) structureReferenceEl.hidden = true;
+  if (structureReferenceGallery) structureReferenceGallery.hidden = true;
+  if (structureReferenceArt) structureReferenceArt.hidden = true;
   if (structureReferencePreview) structureReferencePreview.hidden = true;
+  if (structureReferenceArtImage) structureReferenceArtImage.removeAttribute("src");
+  currentReferenceArtworks = [];
+  currentReferenceArtIndex = 0;
+  currentReferenceMediaSid = null;
+  currentReferenceMediaReference = null;
+  activeReferenceMediaMode = "3d";
   clearMuscleReferencePreview(structureReferencePreviewCanvas);
 }
 
@@ -575,7 +602,7 @@ function renderStructureReferencePreview(sid, reference) {
   ) {
     if (structureReferencePreview) structureReferencePreview.hidden = true;
     clearMuscleReferencePreview(structureReferencePreviewCanvas);
-    return;
+    return false;
   }
 
   const muscleIds = [sid];
@@ -601,7 +628,7 @@ function renderStructureReferencePreview(sid, reference) {
 
   if (!result.rendered) {
     structureReferencePreview.hidden = true;
-    return;
+    return false;
   }
 
   const selectedName = displayStructureName(sid);
@@ -638,7 +665,136 @@ function renderStructureReferencePreview(sid, reference) {
   }
 
   structureReferencePreview.hidden = false;
+  return true;
 }
+
+function referenceArtSourceLabel(art) {
+  const source = art?.source || null;
+  const parts = [
+    source?.title || null,
+    art?.page ? "страница " + art.page : null,
+  ].filter(Boolean);
+  return parts.join(" · ");
+}
+
+function renderReferenceArtAt(index) {
+  if (!structureReferenceArt || !structureReferenceArtImage) return false;
+  const count = currentReferenceArtworks.length;
+  if (!count) {
+    structureReferenceArt.hidden = true;
+    return false;
+  }
+
+  currentReferenceArtIndex = ((index % count) + count) % count;
+  const art = currentReferenceArtworks[currentReferenceArtIndex];
+
+  structureReferenceArtImage.src = art.assetPath;
+  structureReferenceArtImage.alt =
+    art.captionRu || currentReferenceMediaReference?.titleRu || "Анатомическая иллюстрация мышцы";
+  structureReferenceArtTitle.textContent =
+    art.captionRu || currentReferenceMediaReference?.titleRu || "";
+  structureReferenceArtCaption.textContent =
+    art.artScope === "exact-card-part"
+      ? "Художественная иллюстрация части выбранной мышцы."
+      : "Художественная анатомическая иллюстрация выбранной мышцы.";
+  structureReferenceArtSource.textContent = referenceArtSourceLabel(art);
+
+  const multiple = count > 1;
+  structureReferenceArtNavigation.hidden = !multiple;
+  structureReferenceArtCounter.textContent =
+    multiple ? (currentReferenceArtIndex + 1) + " / " + count : "";
+
+  structureReferenceArt.hidden = false;
+  return true;
+}
+
+function setReferenceMediaMode(mode) {
+  const hasArt = currentReferenceArtworks.length > 0;
+  const desired = mode === "art" && hasArt ? "art" : "3d";
+  activeReferenceMediaMode = desired;
+
+  if (structureReferenceArtTab) {
+    structureReferenceArtTab.hidden = !hasArt;
+    structureReferenceArtTab.setAttribute(
+      "aria-selected",
+      String(desired === "art")
+    );
+  }
+  if (structureReference3dTab) {
+    structureReference3dTab.setAttribute(
+      "aria-selected",
+      String(desired === "3d")
+    );
+  }
+  if (structureReferenceMediaTabs) {
+    structureReferenceMediaTabs.hidden = !hasArt;
+  }
+
+  if (desired === "art") {
+    if (structureReferencePreview) structureReferencePreview.hidden = true;
+    renderReferenceArtAt(currentReferenceArtIndex);
+    return;
+  }
+
+  if (structureReferenceArt) structureReferenceArt.hidden = true;
+
+  const samePreview =
+    structureReferencePreviewCanvas?.dataset.referencePreviewSid ===
+      String(currentReferenceMediaSid) &&
+    structureReferencePreviewCanvas?.dataset.referencePreviewModel ===
+      currentModelSource;
+
+  if (!samePreview) {
+    clearMuscleReferencePreview(structureReferencePreviewCanvas);
+    renderStructureReferencePreview(
+      currentReferenceMediaSid,
+      currentReferenceMediaReference
+    );
+  } else if (structureReferencePreview) {
+    structureReferencePreview.hidden = false;
+  }
+}
+
+function renderStructureReferenceMedia(sid, reference) {
+  currentReferenceMediaSid = sid;
+  currentReferenceMediaReference = reference;
+  currentReferenceArtworks = Array.isArray(reference?.exactArt)
+    ? [...reference.exactArt]
+    : [];
+  currentReferenceArtIndex = 0;
+
+  const hasArt = currentReferenceArtworks.length > 0;
+  if (structureReferenceGallery) structureReferenceGallery.hidden = false;
+
+  if (hasArt) {
+    setReferenceMediaMode("art");
+  } else {
+    setReferenceMediaMode("3d");
+  }
+
+  if (
+    !hasArt &&
+    (!structureReferencePreview || structureReferencePreview.hidden)
+  ) {
+    if (structureReferenceGallery) structureReferenceGallery.hidden = true;
+  }
+}
+
+structureReferenceArtTab?.addEventListener("click", () => {
+  setReferenceMediaMode("art");
+});
+
+structureReference3dTab?.addEventListener("click", () => {
+  setReferenceMediaMode("3d");
+});
+
+structureReferenceArtPrev?.addEventListener("click", () => {
+  renderReferenceArtAt(currentReferenceArtIndex - 1);
+});
+
+structureReferenceArtNext?.addEventListener("click", () => {
+  renderReferenceArtAt(currentReferenceArtIndex + 1);
+});
 
 function renderReferenceBadges(reference) {
   if (!structureReferenceBadges) return;
@@ -698,7 +854,7 @@ function renderStructureReference(sid) {
     : "Слой не подтверждён";
 
   renderReferenceAmbiguity(reference);
-  renderStructureReferencePreview(sid, reference);
+  renderStructureReferenceMedia(sid, reference);
 
   if (structureReferenceContext) {
     const contextText =
