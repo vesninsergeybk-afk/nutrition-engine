@@ -29,6 +29,21 @@ export const BODYPARTS_TRUNK_PACK = Object.freeze({
     "BodyParts3D 3.0 supplemental meshes registered to the BodyParts3D 4.0 frame",
 });
 
+
+export const BODYPARTS_FACE_PACK = Object.freeze({
+  manifestUrl:
+    "https://raw.githubusercontent.com/choxos/OMFAtlas/c835665a9ade09ee0b993cee6eee1b25b7f7311b/public/models/facial/atlas.json",
+  bufferUrl:
+    "https://raw.githubusercontent.com/choxos/OMFAtlas/c835665a9ade09ee0b993cee6eee1b25b7f7311b/public/models/facial/facial.bin",
+  sourceVersion: "BodyParts3D 3.0",
+  registration:
+    "Similarity registration to BodyParts3D 4.0 using mandible, frontal bone and right maxilla; left maxilla held out for validation",
+  heldOutSurfaceRmsMm: 0.2583466353828061,
+  license: "CC BY-SA 2.1 Japan",
+  attribution:
+    "BodyParts3D, Copyright© The Database Center for Life Science licensed by CC Attribution-Share Alike 2.1 Japan",
+});
+
 const V3_OBJ_ROOT =
   "https://raw.githubusercontent.com/zlatnaspirala/matrix-engine-starter/0a3d121ece6b265bddf0173c3d0dd65aca22f3c8/projects/web-anatomy/res/3d-objects/human2/muscular-decimate/";
 
