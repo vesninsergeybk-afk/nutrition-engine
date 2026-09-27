@@ -619,6 +619,195 @@ function renderStructureReferencePrimaryArt(reference) {
   return true;
 }
 
+function previewBoneIdsForSelectedMuscle(ids, limit = 14) {
+  if (!skeletonMesh || !ids?.length || !boneNames.length) return [];
+
+  const context = selectedMuscleBoneContextBox(ids);
+  if (!context || context.isEmpty()) return [];
+
+  const center = context.getCenter(new THREE.Vector3());
+  const candidates = [];
+
+  for (let boneId = 0; boneId < boneNames.length; boneId += 1) {
+    const box = boneWorldBox(boneId);
+    if (!box || box.isEmpty()) continue;
+
+    const boxCenter = box.getCenter(new THREE.Vector3());
+    const intersects = context.intersectsBox(box);
+    candidates.push({
+      boneId,
+      intersects,
+      distance: boxCenter.distanceToSquared(center),
+    });
+  }
+
+  candidates.sort(
+    (a, b) =>
+      Number(b.intersects) - Number(a.intersects) ||
+      a.distance - b.distance
+  );
+
+  const intersecting = candidates.filter((item) => item.intersects);
+  const chosen = intersecting.length
+    ? intersecting.slice(0, limit)
+    : candidates.slice(0, Math.min(3, limit));
+
+  return chosen.map((item) => item.boneId);
+}
+
+function renderStructureReferencePreview(sid, reference) {
+  if (
+    !structureReferencePreview ||
+    !structureReferencePreviewCanvas ||
+    sid == null ||
+    !anatomyMesh ||
+    !structureNames[sid]
+  ) {
+    if (structureReferencePreview) structureReferencePreview.hidden = true;
+    clearMuscleReferencePreview(structureReferencePreviewCanvas);
+    return false;
+  }
+
+  const muscleIds = [sid];
+  const box = unclippedBoxForStructures(muscleIds);
+  const viewChoice = bestViewDirectionForBox(box);
+  const viewDirection =
+    viewChoice?.direction?.clone?.() ||
+    viewChoice?.clone?.() ||
+    currentViewDirection();
+  const boneIds = previewBoneIdsForSelectedMuscle(muscleIds);
+
+  const result = renderMuscleReferencePreview({
+    outputCanvas: structureReferencePreviewCanvas,
+    renderer,
+    anatomyMesh,
+    skeletonMesh,
+    muscleIds,
+    boneIds,
+    viewDirection,
+    width: 640,
+    height: 440,
+  });
+
+  if (!result.rendered) {
+    structureReferencePreview.hidden = true;
+    return false;
+  }
+
+  const selectedName = displayStructureName(sid);
+  const modelName =
+    currentModelSource === "bodyparts4" ? "BodyParts3D" : "Z-Anatomy";
+
+  structureReferencePreviewTitle.textContent = selectedName;
+  structureReferencePreviewCanvas.setAttribute(
+    "aria-label",
+    "3D-изображение: " + selectedName
+  );
+  structureReferencePreviewCanvas.dataset.referencePreview = "exact-structure";
+  structureReferencePreviewCanvas.dataset.referencePreviewSid = String(sid);
+  structureReferencePreviewCanvas.dataset.referencePreviewModel =
+    currentModelSource;
+
+  if (reference?.ambiguous) {
+    structureReferencePreviewCaption.textContent =
+      "Показан выбранный 3D-объект " + modelName +
+      "; точное анатомическое соответствие этого имени требует уточнения.";
+  } else if (reference?.modelCoverage === "part") {
+    structureReferencePreviewCaption.textContent =
+      "3D выбранной части мышцы; светлым оставлены ближайшие костные ориентиры.";
+  } else if (reference?.modelCoverage === "group") {
+    structureReferencePreviewCaption.textContent =
+      "3D выбранного элемента мышечной группы; светлым оставлены ближайшие костные ориентиры.";
+  } else {
+    structureReferencePreviewCaption.textContent =
+      "3D выбранной мышцы; светлым оставлены ближайшие костные ориентиры.";
+  }
+
+  structureReferencePreview.hidden = false;
+  return true;
+}
+
+function setStructureReferenceMediaMode(mode) {
+  if (!currentReferenceMediaSid) return;
+
+  const desired =
+    mode === "art" && currentReferenceHasArt ? "art" : "3d";
+  currentReferenceMediaMode = desired;
+
+  if (structureReferenceArtTab) {
+    structureReferenceArtTab.hidden = !currentReferenceHasArt;
+    structureReferenceArtTab.setAttribute(
+      "aria-selected",
+      String(desired === "art")
+    );
+  }
+
+  if (structureReference3dTab) {
+    structureReference3dTab.setAttribute(
+      "aria-selected",
+      String(desired === "3d")
+    );
+  }
+
+  if (structureReferenceGalleryTabs) {
+    structureReferenceGalleryTabs.hidden = !currentReferenceHasArt;
+  }
+
+  if (desired === "art") {
+    if (structureReferencePrimaryArt) structureReferencePrimaryArt.hidden = false;
+    if (structureReferencePreview) structureReferencePreview.hidden = true;
+    return;
+  }
+
+  if (structureReferencePrimaryArt) structureReferencePrimaryArt.hidden = true;
+
+  const samePreview =
+    structureReferencePreviewCanvas?.dataset.referencePreviewSid ===
+      String(currentReferenceMediaSid) &&
+    structureReferencePreviewCanvas?.dataset.referencePreviewModel ===
+      currentModelSource;
+
+  if (samePreview) {
+    if (structureReferencePreview) structureReferencePreview.hidden = false;
+    return;
+  }
+
+  clearMuscleReferencePreview(structureReferencePreviewCanvas);
+  renderStructureReferencePreview(
+    currentReferenceMediaSid,
+    currentReferenceMediaReference
+  );
+}
+
+function renderStructureReferenceMedia(sid, reference) {
+  currentReferenceMediaSid = sid;
+  currentReferenceMediaReference = reference;
+
+  currentReferenceHasArt = renderStructureReferencePrimaryArt(reference);
+  if (structureReferenceGallery) structureReferenceGallery.hidden = false;
+
+  if (currentReferenceHasArt) {
+    setStructureReferenceMediaMode("art");
+  } else {
+    setStructureReferenceMediaMode("3d");
+  }
+
+  if (
+    !currentReferenceHasArt &&
+    (!structureReferencePreview || structureReferencePreview.hidden)
+  ) {
+    if (structureReferenceGallery) structureReferenceGallery.hidden = true;
+  }
+}
+
+structureReferenceArtTab?.addEventListener("click", () => {
+  setStructureReferenceMediaMode("art");
+});
+
+structureReference3dTab?.addEventListener("click", () => {
+  setStructureReferenceMediaMode("3d");
+});
+
 function renderReferenceBadges(reference) {
   if (!structureReferenceBadges) return;
   structureReferenceBadges.replaceChildren();
@@ -677,7 +866,7 @@ function renderStructureReference(sid) {
     : "Слой не подтверждён";
 
   renderReferenceAmbiguity(reference);
-  renderStructureReferencePrimaryArt(reference);
+  renderStructureReferenceMedia(sid, reference);
 
   if (structureReferenceContext) {
     const contextText =
