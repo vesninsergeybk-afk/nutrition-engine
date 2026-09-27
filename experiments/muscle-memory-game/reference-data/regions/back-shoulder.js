@@ -454,7 +454,7 @@ export const BACK_SHOULDER_REGION = Object.freeze({
       names: Object.freeze({
         ru: "Мышца, выпрямляющая позвоночник",
         latin: "musculus erector spinae",
-        modelAliases: Object.freeze(["erector spinae", "iliocostalis", "longissimus", "spinalis"]),
+        modelAliases: Object.freeze(["erector spinae"]),
       }),
       members: Object.freeze(["iliocostalis", "longissimus", "spinalis"]),
       subregions: Object.freeze(["thoracic-back", "lumbar-back", "posterior-neck"]),
@@ -495,7 +495,7 @@ export const BACK_SHOULDER_REGION = Object.freeze({
       names: Object.freeze({
         ru: "Поперечно-остистая группа",
         latin: "musculi transversospinales",
-        modelAliases: Object.freeze(["semispinalis", "multifidus", "rotatores", "transversospinalis"]),
+        modelAliases: Object.freeze(["transversospinalis", "transversospinalis group"]),
       }),
       members: Object.freeze(["semispinalis", "multifidus", "rotatores"]),
       subregions: Object.freeze(["deep-back", "posterior-neck"]),
@@ -691,6 +691,205 @@ export const BACK_SHOULDER_REGION = Object.freeze({
         Object.freeze({ sourceId: "ncbi-quadratus-lumborum", locator: "Introduction; Structure and Function", role: "verification" }),
       ]),
       verification: Object.freeze({ status: "cross-checked-with-functional-caution" }),
+    }),
+
+
+    Object.freeze({
+      id: "iliocostalis",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Подвздошно-рёберная мышца",
+        latin: "musculus iliocostalis",
+        modelAliases: Object.freeze(["iliocostalis", "iliocostalis lumborum", "iliocostalis thoracis", "iliocostalis cervicis"]),
+      }),
+      members: Object.freeze(["iliocostalis-lumborum", "iliocostalis-thoracis", "iliocostalis-cervicis"]),
+      subregions: Object.freeze(["lumbar-back", "thoracic-back", "lower-cervical-back"]),
+      layer: "erector-spinae-lateral-column",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Нижние пучки входят в общее сухожильное начало erector spinae от крестца, подвздошного гребня и пояснично-крестцовой области."]),
+        insertionRu: Object.freeze(["Последовательно прикрепляется к углам рёбер и поперечным отросткам нижних шейных позвонков; конкретные уровни различаются у lumborum, thoracis и cervicis."]),
+        fiberDirectionRu: "Самая латеральная продольная колонна erector spinae; пучки идут вверх вдоль углов рёбер.",
+        actionsRu: Object.freeze([
+          "Двусторонне участвует в разгибании позвоночника.",
+          "Односторонне участвует в ипсилатеральном боковом сгибании.",
+          "Региональные пучки также участвуют в контроле положения рёбер и позвоночника.",
+        ]),
+        innervationRu: "Задние ветви соответствующих спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Подвздошный гребень", "углы рёбер", "поперечные отростки нижних шейных позвонков"]),
+        relationsRu: Object.freeze(["Латеральная из трёх продольных колонн erector spinae; медиальнее располагается longissimus."]),
+      }),
+      movementCueRu: "Показывать как латеральную колонну разгибателей, а региональные части — при выборе соответствующего 3D-объекта.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.3 «Мышца, выпрямляющая позвоночник» — подвздошно-рёберная часть", role: "teaching-source" }),
+        Object.freeze({ sourceId: "ncbi-back-muscles", locator: "Erector spinae — Iliocostalis", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-group" }),
+    }),
+
+    Object.freeze({
+      id: "longissimus",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Длиннейшая мышца",
+        latin: "musculus longissimus",
+        modelAliases: Object.freeze(["longissimus", "longissimus thoracis", "longissimus cervicis", "longissimus capitis"]),
+      }),
+      members: Object.freeze(["longissimus-thoracis", "longissimus-cervicis", "longissimus-capitis"]),
+      subregions: Object.freeze(["thoracic-back", "posterior-neck"]),
+      layer: "erector-spinae-intermediate-column",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Грудная часть связана с общим сухожильным началом erector spinae; шейная и головная части начинаются от поперечных отростков нижележащих грудных и шейных позвонков."]),
+        insertionRu: Object.freeze(["Прикрепляется к рёбрам и поперечным отросткам вышележащих позвонков; longissimus capitis заканчивается на сосцевидном отростке."]),
+        fiberDirectionRu: "Промежуточная продольная колонна erector spinae между iliocostalis и spinalis.",
+        actionsRu: Object.freeze([
+          "Двусторонне участвует в разгибании позвоночника и головы.",
+          "Односторонне участвует в ипсилатеральном боковом сгибании; головная часть также участвует в повороте головы в свою сторону.",
+        ]),
+        innervationRu: "Задние ветви соответствующих спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Поперечные отростки", "рёбра", "сосцевидный отросток"]),
+        relationsRu: Object.freeze(["Средняя колонна erector spinae: латеральнее spinalis и медиальнее iliocostalis."]),
+      }),
+      movementCueRu: "Для 3D-карточек различать thoracis, cervicis и capitis, но сохранять общую связь с erector spinae.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.3 — длиннейшая мышца", role: "teaching-source" }),
+        Object.freeze({ sourceId: "ncbi-back-muscles", locator: "Erector spinae — Longissimus", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-group" }),
+    }),
+
+    Object.freeze({
+      id: "spinalis",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Остистая мышца",
+        latin: "musculus spinalis",
+        modelAliases: Object.freeze(["spinalis", "spinalis thoracis", "spinalis cervicis", "spinalis capitis"]),
+      }),
+      members: Object.freeze(["spinalis-thoracis", "spinalis-cervicis", "spinalis-capitis"]),
+      subregions: Object.freeze(["thoracic-back", "posterior-neck"]),
+      layer: "erector-spinae-medial-column",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Преимущественно остистые отростки нижних грудных и верхних поясничных позвонков; шейные пучки имеют отдельные региональные начала."]),
+        insertionRu: Object.freeze(["Остистые отростки вышележащих грудных и шейных позвонков; spinalis capitis обычно слабо обособлена и может сливаться с semispinalis capitis."]),
+        fiberDirectionRu: "Самая медиальная продольная колонна erector spinae рядом с остистыми отростками.",
+        actionsRu: Object.freeze([
+          "Участвует в разгибании позвоночника.",
+          "Региональные части невелики и работают совместно с остальными собственными мышцами спины.",
+        ]),
+        innervationRu: "Задние ветви соответствующих спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Остистые отростки грудных и шейных позвонков"]),
+        relationsRu: Object.freeze(["Медиальная колонна erector spinae; шейная и головная части могут быть слабо развиты или отсутствовать как чётко отдельные мышцы."]),
+      }),
+      movementCueRu: "Не изображать spinalis как одинаково мощную непрерывную колонну во всех отделах: региональная выраженность различается.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.3 — остистая мышца", role: "teaching-source" }),
+        Object.freeze({ sourceId: "ncbi-back-muscles", locator: "Erector spinae — Spinalis", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-with-variation" }),
+    }),
+
+    Object.freeze({
+      id: "semispinalis",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Полуостистая мышца",
+        latin: "musculus semispinalis",
+        modelAliases: Object.freeze(["semispinalis", "semispinalis thoracis", "semispinalis cervicis", "semispinalis capitis"]),
+      }),
+      members: Object.freeze(["semispinalis-thoracis", "semispinalis-cervicis", "semispinalis-capitis"]),
+      subregions: Object.freeze(["thoracic-back", "posterior-neck", "occipital-region"]),
+      layer: "transversospinalis-superficial",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Поперечные отростки грудных и нижних шейных позвонков."]),
+        insertionRu: Object.freeze(["Остистые отростки на 4–6 сегментов выше; semispinalis capitis прикрепляется к затылочной кости."]),
+        fiberDirectionRu: "Пучки идут вверх и медиально, пересекая больше сегментов, чем multifidus и rotatores.",
+        actionsRu: Object.freeze([
+          "Двусторонне разгибает позвоночник и голову.",
+          "Односторонне участвует в повороте соответствующего отдела в противоположную сторону.",
+        ]),
+        innervationRu: "Задние ветви соответствующих спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Поперечные и остистые отростки", "затылочная кость"]),
+        relationsRu: Object.freeze(["Самая поверхностная и длинная часть transversospinalis; глубже лежат multifidus и rotatores."]),
+      }),
+      movementCueRu: "Показывать как часть глубокой системы разгибания и контралатеральной ротации, а не как изолированный поверхностный двигатель.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.4 — полуостистая мышца", role: "teaching-source" }),
+        Object.freeze({ sourceId: "ncbi-back-muscles", locator: "Transversospinalis — Semispinalis", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-group" }),
+    }),
+
+    Object.freeze({
+      id: "multifidus",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Многораздельные мышцы",
+        latin: "musculi multifidi",
+        modelAliases: Object.freeze(["multifidus", "multifidi", "multifidus lumborum", "multifidus thoracis", "multifidus cervicis"]),
+      }),
+      subregions: Object.freeze(["lumbar-back", "thoracic-back", "cervical-back"]),
+      layer: "transversospinalis-intermediate",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Крестец и задняя часть таза, поперечные отростки поясничных и грудных позвонков, суставные отростки нижних шейных позвонков."]),
+        insertionRu: Object.freeze(["Остистые отростки примерно на 2–4 сегмента выше начала соответствующих пучков."]),
+        fiberDirectionRu: "Короткие косые пучки идут вверх и медиально и особенно хорошо развиты в поясничном отделе.",
+        actionsRu: Object.freeze([
+          "Участвуют в разгибании и контралатеральной ротации позвоночника.",
+          "Играют существенную роль в сегментарной стабилизации и контроле межпозвонковых движений.",
+        ]),
+        innervationRu: "Медиальные ветви задних ветвей соответствующих спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Крестец", "поперечные/суставные отростки", "остистые отростки"]),
+        relationsRu: Object.freeze(["Лежат глубже semispinalis и поверхностнее rotatores; в поясничной области формируют значительную часть глубокой паравертебральной массы."]),
+      }),
+      movementCueRu: "Для обучения важнее сегментарный контроль и глубина, чем попытка приписать наружный рельеф конкретному пучку multifidus.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.4 — многораздельные мышцы", role: "teaching-source" }),
+        Object.freeze({ sourceId: "ncbi-back-muscles", locator: "Transversospinalis — Multifidus", role: "verification" }),
+        Object.freeze({ sourceId: "ncbi-lumbar-vertebrae", locator: "Muscles", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-group" }),
+    }),
+
+    Object.freeze({
+      id: "rotatores",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Мышцы-вращатели",
+        latin: "musculi rotatores",
+        modelAliases: Object.freeze(["rotatores", "rotatores breves", "rotatores longi", "rotator brevis", "rotator longus"]),
+      }),
+      subregions: Object.freeze(["deep-thoracic-back", "deep-cervical-back", "deep-lumbar-back"]),
+      layer: "transversospinalis-deepest",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Поперечные отростки позвонков."]),
+        insertionRu: Object.freeze(["Короткие rotatores идут к дуге/основанию остистого отростка соседнего вышележащего позвонка; длинные — через один сегмент."]),
+        fiberDirectionRu: "Самые короткие пучки transversospinalis идут вверх и медиально и наиболее выражены в грудном отделе.",
+        actionsRu: Object.freeze([
+          "Могут помогать разгибанию и контралатеральной ротации.",
+          "Из-за малого рычага и богатой проприоцептивной иннервации особенно важны для сегментарного контроля и восприятия положения позвоночника.",
+        ]),
+        innervationRu: "Задние ветви соответствующих спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Поперечные отростки", "дуги и остистые отростки соседних позвонков"]),
+        relationsRu: Object.freeze(["Самая глубокая и короткая часть transversospinalis; отдельные пары могут отсутствовать, особенно на краях грудной серии."]),
+      }),
+      movementCueRu: "В 3D их полезно показывать как короткие межсегментарные пучки; наружная пальпаторная изоляция не является реалистичной задачей.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.4 — мышцы-вращатели", role: "teaching-source" }),
+        Object.freeze({ sourceId: "ncbi-back-muscles", locator: "Transversospinalis — Rotatores", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-with-variation" }),
     }),
 
     Object.freeze({
