@@ -35,6 +35,7 @@ import {
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
 import {
+  BODYPARTS_FACE_PACK,
   BODYPARTS_TRUNK_OBJ_SUPPLEMENTS,
   BODYPARTS_TRUNK_PACK,
   registeredBodyPartsV3ObjGeometry,
@@ -8640,6 +8641,52 @@ async function loadBodyPartsTrunkSupplements(
   return { added, triangles, failures };
 }
 
+
+async function loadBodyPartsFaceSupplements(
+  muscleChunks,
+  vertexCounts,
+  muscleAnatomyParts
+) {
+  const existingConceptIds = new Set(
+    muscleAnatomyParts.map((part) => part.conceptId).filter(Boolean)
+  );
+
+  try {
+    const response = await fetch(BODYPARTS_FACE_PACK.manifestUrl);
+    if (!response.ok) throw new Error("manifest");
+    const manifest = await response.json();
+    const selected = (manifest.parts || []).filter(
+      (part) => !existingConceptIds.has(part.conceptId)
+    );
+    if (!selected.length) return { added: 0, triangles: 0, failures: [] };
+
+    const buffer = await fetchBodyPartsBuffer({
+      url: BODYPARTS_FACE_PACK.bufferUrl,
+      bytes: manifest.bytes,
+    });
+
+    let triangles = 0;
+    for (const part of selected) {
+      const sid = structureNames.length;
+      const color = baseColorFor(part.name);
+      const geometry = bodyPartsGeometry(part, buffer, sid, color);
+
+      structureNames.push(part.name);
+      baseColors.push(color);
+      vertexCounts.push(part.vertexCount);
+      muscleChunks.push(geometry);
+      muscleAnatomyParts.push(part);
+      existingConceptIds.add(part.conceptId);
+      triangles += Math.floor(part.indexCount / 3);
+    }
+
+    return { added: selected.length, triangles, failures: [] };
+  } catch (error) {
+    console.warn("BodyParts3D facial supplement was not loaded.", error);
+    return { added: 0, triangles: 0, failures: ["facial-pack"] };
+  }
+}
+
 async function loadSkeletonLayer(loader) {
   try {
     const gltf = await loader.loadAsync(SKELETON_MODEL_URL);
@@ -8947,6 +8994,14 @@ async function loadBodyParts4Model() {
   );
   triangleCount += trunkSupplement.triangles;
 
+  loadingEl.textContent = "Добавляю мышцы лица BodyParts3D…";
+  const faceSupplement = await loadBodyPartsFaceSupplements(
+    muscleChunks,
+    vertexCounts,
+    muscleAnatomyParts
+  );
+  triangleCount += faceSupplement.triangles;
+
   const mergedMuscles = mergeGeometries(muscleChunks, false);
   for (const geometry of muscleChunks) geometry.dispose();
   if (!mergedMuscles) throw new Error("Не удалось собрать полнотелую мышечную модель BodyParts3D.");
@@ -9019,9 +9074,9 @@ async function loadBodyParts4Model() {
   canvas.dataset.skinCount = String(skinParts.length);
   updateDiagnostics(
     "BodyParts3D 4.0 + проверенные мышцы 3.0: всё тело, " +
-    (classification.muscles + trunkSupplement.added) +
+    (classification.muscles + trunkSupplement.added + faceSupplement.added) +
     " мышечных (" +
-    trunkSupplement.added +
+    (trunkSupplement.added + faceSupplement.added) +
     " восстановлено из 3.0), " +
     classification.bones +
     " костных, " +
@@ -9052,9 +9107,9 @@ async function loadBodyParts4Model() {
     " структур, ошибочно помеченных atlas как skeletal. " +
     (triangleCount + connectiveTriangleCount + skinTriangleCount).toLocaleString("ru-RU") +
     " треугольников загруженных слоёв." +
-    (trunkSupplement.failures.length
+    ([...trunkSupplement.failures, ...faceSupplement.failures].length
       ? " Не удалось загрузить дополнения: " +
-        trunkSupplement.failures.join(", ") +
+        [...trunkSupplement.failures, ...faceSupplement.failures].join(", ") +
         "."
       : "")
   );
