@@ -110,6 +110,9 @@ assert(
 );
 
 assert(
-  app.includes('regionIsolationField.hidden = selectedLearningRegion === "all"'),
-  "Irrelevant region-isolation control remains visible for the whole-body scope"
+  app.includes("regionIsolationField.hidden = true") &&
+    app.includes('regionIsolation.checked = selectedLearningRegion !== "all"') &&
+    app.includes('focusShoulderButton.addEventListener("click", () => {') &&
+    app.includes('focusSelectedButton.addEventListener("click", () => focusSelectedStructures())'),
+  "Area selection must control isolation directly and camera buttons must not receive MouseEvent as navigation arguments"
 );
