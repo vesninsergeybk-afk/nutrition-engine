@@ -70,7 +70,8 @@ export const LEG_FOOT_REGION = deepFreeze({
       "members": [
         "flexor-hallucis-brevis",
         "adductor-hallucis",
-        "flexor-digiti-minimi-brevis-foot"
+        "flexor-digiti-minimi-brevis-foot",
+        "opponens-digiti-minimi-foot"
       ]
     },
     {
@@ -1599,6 +1600,65 @@ export const LEG_FOOT_REGION = deepFreeze({
       ],
       "verification": {
         "status": "cross-checked-group"
+      }
+    },
+    {
+      "id": "opponens-digiti-minimi-foot",
+      "kind": "variable-muscle",
+      "names": {
+        "ru": "Мышца, противопоставляющая мизинец стопы",
+        "latin": "musculus opponens digiti minimi pedis",
+        "modelAliases": [
+          "opponens digiti minimi of foot",
+          "opponens digiti minimi pedis"
+        ]
+      },
+      "layer": "plantar-layer-3-lateral",
+      "subregions": [
+        "lateral-sole",
+        "little-toe"
+      ],
+      "anatomy": {
+        "originRu": [
+          "Длинная подошвенная связка.",
+          "Основание V плюсневой кости.",
+          "Влагалище сухожилия длинной малоберцовой мышцы."
+        ],
+        "insertionRu": [
+          "Латеральный край V плюсневой кости."
+        ],
+        "fiberDirectionRu": "Короткие глубокие пучки идут вдоль V плюсневой кости.",
+        "actionsRu": [
+          "Помогает сгибанию и небольшому отведению V пальца.",
+          "Участвует в стабилизации латерального края стопы."
+        ],
+        "innervationRu": "Поверхностная ветвь латерального подошвенного нерва, преимущественно S2–S3."
+      },
+      "surfaceMap": {
+        "landmarksRu": [
+          "V плюсневая кость",
+          "латеральный край подошвы"
+        ],
+        "relationsRu": [
+          "Рассматривается как глубокое продолжение flexor digiti minimi brevis.",
+          "Может быть выражена не у всех людей; в части современных описаний выделяется не как постоянная самостоятельная мышца."
+        ]
+      },
+      "movementCueRu": "Для тренажёра карточка нужна из-за отдельного 3D-объекта; в базовом обучении относится к глубокой латеральной группе подошвы.",
+      "sources": [
+        {
+          "sourceId": "ncbi-foot-ankle",
+          "locator": "Muscles of the little toe — opponens digiti minimi when present",
+          "role": "verification"
+        },
+        {
+          "sourceId": "kenhub-opponens-foot",
+          "locator": "Origin and insertion; Functions",
+          "role": "verification"
+        }
+      ],
+      "verification": {
+        "status": "cross-checked-variable"
       }
     }
   ]
