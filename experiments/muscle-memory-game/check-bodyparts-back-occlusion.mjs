@@ -62,4 +62,10 @@ assert(
   "Covered-layer reveal cannot be safely undone"
 );
 
+assert(
+  app.includes("restoreExploreContext();\n    if (sid != null) {\n      selectExploreStructure(sid);") &&
+    app.includes("const sid = selectedExploreSid;\n    restoreHighlights();\n    selectExploreStructure(sid);"),
+  "Restoring context must re-run verified occlusion selection instead of painting a deep muscle directly"
+);
+
 console.log("BodyParts back occlusion: verified surface/deep conflicts guarded");
