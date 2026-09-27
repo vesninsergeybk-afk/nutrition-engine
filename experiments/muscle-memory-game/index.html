@@ -18,8 +18,9 @@
   <main class="app-shell">
     <section class="stage">
       <div class="topbar">
-        <div>
-          <h1>Анатомический тренажёр Сергея Веснина</h1>
+        <div class="brand">
+          <h1>Анатомический тренажёр</h1>
+          <span class="brand-author">Сергей Веснин</span>
         </div>
 
         <div class="topbar-tools">
@@ -63,84 +64,113 @@
           <button id="focus-selected" type="button" disabled>К выбранной</button>
           <button id="focus-full" type="button">Всё тело</button>
 
-          <details class="viewer-settings">
-            <summary>Отображение</summary>
-            <div class="viewer-settings-menu">
-              <label id="model-source-field" class="viewer-setting-field">
-                <span>Анатомическая модель</span>
-                <select id="model-source" aria-label="Источник 3D-модели">
-                  <option value="z-anatomy" selected>Z-Anatomy</option>
-                  <option value="bodyparts4">BodyParts3D</option>
-                </select>
-              </label>
-              <label id="layer-preset-field" class="viewer-setting-field" hidden>
-                <span>Тканевые слои</span>
-                <select id="layer-preset" aria-label="Тканевый слой">
-                  <option value="muscles" selected>Мышцы</option>
-                  <option value="bones">Кости и мышечные ориентиры</option>
-                  <option value="skin">Кожа и наружные покровы</option>
-                  <option value="subcutaneous">Подкожная клетчатка</option>
-                  <option value="fascia">Фасции</option>
-                  <option value="attachments">Сухожилия и связки</option>
-                  <option value="all-tissues">Мышцы + соединительные ткани</option>
-                </select>
-              </label>
-              <p id="layer-preset-note" class="viewer-setting-note" hidden>
-                Тканевые слои доступны в BodyParts3D и применяются только внутри выбранного блока. Мышечная глубина управляется отдельно в атласе.
-              </p>
-              <label class="viewer-setting-field">
-                <span>Кости</span>
-                <select id="bone-mode" aria-label="Режим костного слоя" disabled>
-                  <option value="anatomical" selected>Обычный вид</option>
-                  <option value="xray">Просвечивание</option>
-                  <option value="off">Скрыть</option>
-                </select>
-              </label>
-              <label id="skin-field" class="viewer-setting-field" hidden>
-                <span>Кожа и наружные покровы</span>
-                <select id="skin-mode" aria-label="Режим слоя кожи" disabled>
-                  <option value="off" selected>Скрыть</option>
-                  <option value="ghost">Полупрозрачно</option>
-                  <option value="anatomical">Показать поверхность</option>
-                </select>
-              </label>
-              <label id="connective-field" class="viewer-setting-field" hidden>
-                <span>Соединительная ткань</span>
-                <select id="connective-mode" aria-label="Режим соединительнотканного слоя" disabled>
-                  <option value="anatomical" selected>Показать</option>
-                  <option value="ghost">Полупрозрачно</option>
-                  <option value="off">Скрыть</option>
-                </select>
-              </label>
-              <fieldset id="connective-layers-field" class="connective-layer-options" hidden>
-                <legend>Соединительнотканные подслои</legend>
-                <label><input type="checkbox" data-connective-layer="subcutaneous" checked /> Подкожная клетчатка</label>
-                <label><input type="checkbox" data-connective-layer="fascia" checked /> Фасции и удерживатели</label>
-                <label><input type="checkbox" data-connective-layer="tendon" checked /> Сухожилия и апоневрозы</label>
-                <label><input type="checkbox" data-connective-layer="ligament" checked /> Связки</label>
-                <label><input type="checkbox" data-connective-layer="joint" checked /> Суставные капсулы и сумки</label>
-                <label><input type="checkbox" data-connective-layer="cartilage" checked /> Хрящевые структуры</label>
-                <label><input type="checkbox" data-connective-layer="other" checked /> Другие соединительные структуры</label>
-              </fieldset>
-              <p id="layer-training-note" class="viewer-setting-note" hidden>
-                Во время тренировки кожа и соединительные слои временно скрываются, чтобы не перекрывать целевую мышцу. Набор структур зависит от полноты выбранной анатомической базы.
-              </p>
-              <fieldset id="reference-layers-field" class="connective-layer-options" hidden>
-                <legend>Ориентиры безопасности</legend>
-                <label><input type="checkbox" data-reference-layer="nervous" /> Нервные структуры</label>
-                <label><input type="checkbox" data-reference-layer="vascular" /> Кровеносные сосуды</label>
-                <label><input type="checkbox" data-reference-layer="lymphatic" /> Лимфатические структуры</label>
-              </fieldset>
-              <p id="reference-layer-note" class="viewer-setting-note" hidden>
-                Эти слои Z-Anatomy загружаются только по запросу и служат дополнительными топографическими ориентирами; они не обозначены как исчерпывающий клинический атлас.
-              </p>
-              <label id="bone-opacity-field" class="viewer-setting-field" hidden>
-                <span>Прозрачность костей</span>
-                <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.17" disabled />
-              </label>
-            </div>
-          </details>
+          <button id="display-panel-toggle" class="display-panel-toggle" type="button" aria-expanded="false" aria-controls="display-panel">
+            Отображение
+          </button>
         </div>
+
+        <aside id="display-panel" class="display-panel viewer-settings" hidden aria-label="Настройки отображения">
+          <div class="display-panel-head">
+            <div>
+              <strong>Отображение</strong>
+              <span>Настройки применяются сразу к модели.</span>
+            </div>
+            <button id="display-panel-close" class="display-panel-close" type="button" aria-label="Закрыть настройки">×</button>
+          </div>
+
+          <section class="display-section">
+            <h3>Анатомическая модель</h3>
+            <label id="model-source-field" class="viewer-setting-field">
+              <span>Источник 3D-анатомии</span>
+              <select id="model-source" aria-label="Источник 3D-модели">
+                <option value="z-anatomy" selected>Z-Anatomy</option>
+                <option value="bodyparts4">BodyParts3D</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="display-section">
+            <h3>Тканевые слои</h3>
+            <label id="layer-preset-field" class="viewer-setting-field">
+              <span>Быстрый режим</span>
+              <select id="layer-preset" aria-label="Тканевый слой">
+                <option value="muscles" selected>Мышцы</option>
+                <option value="bones">Кости и мышечные ориентиры</option>
+                <option value="skin">Кожа и наружные покровы</option>
+                <option value="subcutaneous">Подкожная клетчатка</option>
+                <option value="fascia">Фасции</option>
+                <option value="attachments">Сухожилия, связки и суставные структуры</option>
+                <option value="all-tissues">Мышцы + соединительные ткани</option>
+              </select>
+            </label>
+            <p id="layer-preset-note" class="viewer-setting-note"></p>
+
+            <label class="viewer-setting-field">
+              <span>Кости</span>
+              <select id="bone-mode" aria-label="Режим костного слоя" disabled>
+                <option value="anatomical" selected>Обычный вид</option>
+                <option value="xray">Просвечивание</option>
+                <option value="off">Скрыть</option>
+              </select>
+            </label>
+            <label id="bone-opacity-field" class="viewer-setting-field" hidden>
+              <span>Прозрачность костей</span>
+              <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.17" disabled />
+            </label>
+
+            <label id="skin-field" class="viewer-setting-field" hidden>
+              <span>Кожа и наружные покровы</span>
+              <select id="skin-mode" aria-label="Режим слоя кожи" disabled>
+                <option value="off" selected>Скрыть</option>
+                <option value="ghost">Полупрозрачно</option>
+                <option value="anatomical">Показать поверхность</option>
+              </select>
+            </label>
+            <label id="connective-field" class="viewer-setting-field" hidden>
+              <span>Соединительная ткань</span>
+              <select id="connective-mode" aria-label="Режим соединительнотканного слоя" disabled>
+                <option value="anatomical" selected>Показать</option>
+                <option value="ghost">Полупрозрачно</option>
+                <option value="off">Скрыть</option>
+              </select>
+            </label>
+            <fieldset id="connective-layers-field" class="connective-layer-options" hidden>
+              <legend>Соединительнотканные подслои</legend>
+              <label><input type="checkbox" data-connective-layer="subcutaneous" checked /> Подкожная клетчатка</label>
+              <label><input type="checkbox" data-connective-layer="fascia" checked /> Фасции и удерживатели</label>
+              <label><input type="checkbox" data-connective-layer="tendon" checked /> Сухожилия и апоневрозы</label>
+              <label><input type="checkbox" data-connective-layer="ligament" checked /> Связки</label>
+              <label><input type="checkbox" data-connective-layer="joint" checked /> Суставные капсулы и сумки</label>
+              <label><input type="checkbox" data-connective-layer="cartilage" checked /> Хрящевые структуры</label>
+              <label><input type="checkbox" data-connective-layer="other" checked /> Другие соединительные структуры</label>
+            </fieldset>
+            <p id="layer-training-note" class="viewer-setting-note" hidden>
+              Во время тренировки покровные и соединительнотканные слои временно скрываются, если они мешают видеть цель.
+            </p>
+          </section>
+
+          <section class="display-section">
+            <h3>Мышечная послойность</h3>
+            <p id="layer-depth-status" class="viewer-setting-note">Выберите анатомический блок.</p>
+            <div class="display-layer-actions">
+              <button id="peel-surface-layer" type="button">Снять внешний мышечный слой</button>
+              <button id="undo-hide" type="button" disabled>Вернуть слой</button>
+            </div>
+          </section>
+
+          <section class="display-section">
+            <h3>Ориентиры безопасности</h3>
+            <fieldset id="reference-layers-field" class="connective-layer-options" hidden>
+              <legend class="sr-only">Ориентиры безопасности</legend>
+              <label><input type="checkbox" data-reference-layer="nervous" /> Нервные структуры</label>
+              <label><input type="checkbox" data-reference-layer="vascular" /> Кровеносные сосуды</label>
+              <label><input type="checkbox" data-reference-layer="lymphatic" /> Лимфатические структуры</label>
+            </fieldset>
+            <p id="reference-layer-note" class="viewer-setting-note">
+              Нервные, сосудистые и лимфатические ориентиры доступны в Z-Anatomy и загружаются по выбору.
+            </p>
+          </section>
+        </aside>
 
         <div class="viewer-hint">
           <span class="hint-touch">1 палец — вращать · 2 пальца — приблизить и сдвинуть</span>
@@ -218,6 +248,31 @@
         <p id="question-label" class="question-label">Атлас</p>
         <h2 id="question">Выберите структуру</h2>
         <p id="feedback" class="feedback">Коснитесь мышцы или другой анатомической структуры на модели либо найдите её по названию.</p>
+        <section id="structure-reference" class="structure-reference" hidden aria-live="polite">
+          <div class="structure-reference-head">
+            <strong>Справка</strong>
+            <span id="structure-reference-latin"></span>
+          </div>
+          <dl class="structure-reference-grid">
+            <div>
+              <dt>Область</dt>
+              <dd id="structure-reference-region">—</dd>
+            </div>
+            <div>
+              <dt>Слой</dt>
+              <dd id="structure-reference-depth">—</dd>
+            </div>
+            <div>
+              <dt>3D-источник</dt>
+              <dd id="structure-reference-source">—</dd>
+            </div>
+          </dl>
+          <div class="structure-reference-media">
+            <strong>Атласные иллюстрации и подробная анатомия</strong>
+            <span>Для каждой мышцы сюда добавляются прикрепления, функция, иннервация, топография и отобранные изображения с указанием источника и условий использования.</span>
+          </div>
+        </section>
+
         <section id="deeper-structures" class="deeper-structures" hidden aria-live="polite">
           <div class="deeper-structures-head">
             <strong>Глубже здесь</strong>
@@ -242,9 +297,7 @@
           <div class="layer-actions">
             <button id="isolate-selected" type="button" disabled>Изолировать</button>
             <button id="hide-selected" type="button" disabled>Скрыть выбранную</button>
-            <button id="peel-surface-layer" type="button">Снять анатомический слой</button>
             <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
-            <button id="undo-hide" type="button" disabled>Вернуть последнюю</button>
             <button id="show-all" type="button">Показать весь блок</button>
           </div>
         </div>
