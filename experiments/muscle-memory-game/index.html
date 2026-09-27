@@ -63,6 +63,7 @@
           <button id="focus-shoulder" type="button">К области</button>
           <button id="focus-selected" type="button" disabled>К выбранной</button>
           <button id="focus-full" type="button">Всё тело</button>
+          <button id="toggle-skeleton" class="viewer-quick-toggle" type="button" aria-pressed="true" disabled>Скелет</button>
 
           <button id="display-panel-toggle" class="display-panel-toggle" type="button" aria-expanded="false" aria-controls="display-panel">
             Отображение
@@ -106,10 +107,10 @@
             <p id="layer-preset-note" class="viewer-setting-note" hidden></p>
 
             <label class="viewer-setting-field">
-              <span>Костные ориентиры</span>
-              <select id="bone-mode" aria-label="Костные ориентиры" disabled>
-                <option value="off" selected>Скрыть</option>
-                <option value="anatomical">Показать</option>
+              <span>Скелет и костные ориентиры</span>
+              <select id="bone-mode" aria-label="Скелет и костные ориентиры" disabled>
+                <option value="off">Скрыть</option>
+                <option value="anatomical" selected>Показать</option>
                 <option value="xray">Просвечивание</option>
               </select>
             </label>
@@ -182,7 +183,7 @@
               <label><input type="checkbox" data-reference-layer="lymphatic" /> Лимфатические структуры</label>
             </fieldset>
             <p id="reference-layer-note" class="viewer-setting-note">
-              Нервные, сосудистые и лимфатические ориентиры доступны в Z-Anatomy и загружаются по выбору.
+              Нервные, сосудистые и лимфатические ориентиры доступны в Z-Anatomy и загружаются по выбору. Структуры с проверенным русским названием можно выбирать на модели и находить через поиск; остальные остаются фоновым анатомическим контекстом.
             </p>
           </section>
         </aside>
