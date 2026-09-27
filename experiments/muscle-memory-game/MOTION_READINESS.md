@@ -566,3 +566,17 @@ The user-facing title is now "Анатомический тренажёр Сер
 The standard Motion muscle representation is `source-path-muscle-envelope`: movement geometry follows the same verified biomechanics source as its bones and is independent of static-atlas topology. This is a representation policy, not a claim that every muscle already has a production path.
 
 The user-facing Motion hard reset remains in force for historical atlas-derived rigs. Only source-native branches with pinned local assets and validated runtime data are production-eligible. The verified MyoArm biceps/elbow runtime and TSM movements present in `motion-native-clips.js` no longer require the legacy diagnostic flag. Unsupported muscles continue to show a clear pending state rather than falling back to hand-built atlas deformation.
+
+
+## Embedded standard Motion asset — 2026-09-27
+
+The standard user-facing Motion representation is now source-derived rather than atlas-derived. The first fully wired pair is `deltoid-acromial -> shoulder-abduction`.
+
+When the acromial/middle deltoid is selected in the Atlas and Motion is opened, the separate Motion scene uses:
+- project-local TSM thorax, clavicle, scapula and humerus geometry;
+- the verified forward TSM CMC abduction clip;
+- the project-local `DeltoideusScapula_M` OpenSim GeometryPath exported over the same source phase.
+
+The muscle is displayed as a red path/envelope with its current musculotendon-path length. This is deliberately simpler than a speculative volumetric deformation and must be described as an educational representation of muscle course, not exact changing muscle morphology.
+
+This standard is architectural, not a claim of complete coverage. Additional muscle/movement pairs remain unavailable until a matching validated source-derived path exists. The static Atlas remains unchanged and the historical hand-built atlas Motion rig stays behind `motionExperimental=1`.

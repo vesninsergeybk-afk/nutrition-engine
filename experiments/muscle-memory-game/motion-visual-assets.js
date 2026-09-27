@@ -95,6 +95,16 @@ export const MOTION_VISUAL_ASSETS = Object.freeze({
       "Distal-chain bone meshes belong to the MyoArm visual model. Upstream model licensing/provenance remains a production gate.",
   }),
 
+  "source-path-muscle-envelope": profile({
+    id: "source-path-muscle-envelope",
+    geometryIdentity: "source-derived-path",
+    status: "selected-standard-motion-representation",
+    semanticBinding: "canonical-id",
+    requiresStaticAtlasGeometry: false,
+    note:
+      "Standard Motion muscle representation. The visible path/envelope follows the same biomechanics source as the moving bones and is not presented as exact volumetric morphology.",
+  }),
+
   "motion-muscles-pending": profile({
     id: "motion-muscles-pending",
     geometryIdentity: "motion-specific",
@@ -114,7 +124,7 @@ export const MOTION_VISUAL_POLICY = Object.freeze({
     }),
     target: Object.freeze({
       bones: "tsm-native-bones",
-      muscles: "motion-muscles-pending",
+      muscles: "source-path-muscle-envelope",
     }),
   }),
   scapula: Object.freeze({
@@ -124,7 +134,7 @@ export const MOTION_VISUAL_POLICY = Object.freeze({
     }),
     target: Object.freeze({
       bones: "tsm-native-bones",
-      muscles: "motion-muscles-pending",
+      muscles: "source-path-muscle-envelope",
     }),
   }),
   elbow: Object.freeze({
@@ -134,7 +144,7 @@ export const MOTION_VISUAL_POLICY = Object.freeze({
     }),
     target: Object.freeze({
       bones: "myoarm-native-bones",
-      muscles: "motion-muscles-pending",
+      muscles: "source-path-muscle-envelope",
     }),
   }),
   wrist: Object.freeze({
@@ -144,7 +154,7 @@ export const MOTION_VISUAL_POLICY = Object.freeze({
     }),
     target: Object.freeze({
       bones: "myoarm-native-bones",
-      muscles: "motion-muscles-pending",
+      muscles: "source-path-muscle-envelope",
     }),
   }),
 });

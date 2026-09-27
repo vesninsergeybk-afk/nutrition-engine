@@ -72,10 +72,10 @@ for (const pilot of Object.values(MOTION_PILOTS)) {
     pilot.id + ": target bone geometry must be independent of the static atlas"
   );
   assert(
-    targetMuscles?.id === "motion-muscles-pending" &&
+    targetMuscles?.id === "source-path-muscle-envelope" &&
       targetMuscles.requiresStaticAtlasGeometry === false,
     pilot.id +
-      ": target volumetric muscle geometry must remain a separate Motion Lab asset decision"
+      ": standard Motion muscle representation must be source-derived and independent of the static atlas"
   );
 }
 
@@ -121,5 +121,5 @@ console.log(
   "Motion visual policy: static atlas is explicit fallback; source-native bones are the target"
 );
 console.log(
-  "Motion muscles: target volumetric geometry remains an independent asset-selection step"
+  "Motion muscles: source-derived path/envelope is the standard representation"
 );
