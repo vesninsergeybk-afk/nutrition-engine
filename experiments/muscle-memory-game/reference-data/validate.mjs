@@ -2,6 +2,7 @@ import { REFERENCE_SOURCES } from "./sources.js";
 import { MUSCLE_REFERENCE_PILOT, PILOT_STRUCTURE_IDS } from "./muscles-pilot.js";
 import { REFERENCE_REGIONS, REGION_ROADMAP } from "./regions/index.js";
 import { BODYPARTS3D_REFERENCE_ALIASES } from "./model-aliases.js";
+import { REFERENCE_ILLUSTRATIONS } from "./illustrations.js";
 
 const errors = [];
 const warnings = [];
@@ -180,6 +181,65 @@ for (const [alias, uses] of aliases.entries()) {
    requireValue(Boolean(mapping?.labelRu), `3D alias has no Russian display label: ${sourceName}`);
  }
 
+// Illustration registry: sources, regions and structure targets must all be canonical.
+const regionIds = new Set(REFERENCE_REGIONS.map((region) => region.id));
+const illustrationIds = new Set();
+
+for (const illustration of REFERENCE_ILLUSTRATIONS) {
+  requireValue(Boolean(illustration.id), "Illustration without id");
+  requireValue(
+    !illustrationIds.has(illustration.id),
+    `Duplicate illustration id: ${illustration.id}`
+  );
+  illustrationIds.add(illustration.id);
+
+  requireValue(
+    Boolean(REFERENCE_SOURCES[illustration.sourceId]),
+    `${illustration.id}: unknown illustration source ${illustration.sourceId}`
+  );
+
+  requireValue(
+    Boolean(illustration.regionIds?.length),
+    `${illustration.id}: illustration has no regionIds`
+  );
+  for (const regionId of illustration.regionIds || []) {
+    requireValue(
+      regionIds.has(regionId),
+      `${illustration.id}: unknown regionId ${regionId}`
+    );
+  }
+
+  requireValue(
+    Boolean(illustration.focusStructureIds?.length),
+    `${illustration.id}: illustration has no focusStructureIds`
+  );
+  for (const structureId of illustration.focusStructureIds || []) {
+    requireValue(
+      structuresById.has(structureId),
+      `${illustration.id}: unknown focusStructureId ${structureId}`
+    );
+  }
+
+  requireValue(
+    ["public-domain", "cc0", "open-license", "cc-by", "cc-by-sa"].includes(
+      illustration.rightsStatus
+    ),
+    `${illustration.id}: unsupported rightsStatus ${illustration.rightsStatus}`
+  );
+
+  if (illustration.assetPath) {
+    requireValue(
+      illustration.status === "asset-ready",
+      `${illustration.id}: assetPath requires status=asset-ready`
+    );
+  } else {
+    requireValue(
+      illustration.status === "source-verified-asset-pending",
+      `${illustration.id}: missing assetPath must remain source-verified-asset-pending`
+    );
+  }
+}
+
 // The old pilot is a compatibility view only; it must point at the exact canonical objects.
 requireValue(
   MUSCLE_REFERENCE_PILOT.length === PILOT_STRUCTURE_IDS.length,
@@ -232,6 +292,6 @@ if (errors.length) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Reference data OK: ${REFERENCE_REGIONS.length} regions, ${regionStructureIds.size} canonical structures, ${functionalGroupIds.size} functional groups, ${Object.keys(BODYPARTS3D_REFERENCE_ALIASES).length} BodyParts3D aliases, ${Object.keys(REFERENCE_SOURCES).length} sources.`
+    `Reference data OK: ${REFERENCE_REGIONS.length} regions, ${regionStructureIds.size} canonical structures, ${functionalGroupIds.size} functional groups, ${Object.keys(BODYPARTS3D_REFERENCE_ALIASES).length} BodyParts3D aliases, ${REFERENCE_ILLUSTRATIONS.length} illustration plates, ${Object.keys(REFERENCE_SOURCES).length} sources.`
   );
 }
