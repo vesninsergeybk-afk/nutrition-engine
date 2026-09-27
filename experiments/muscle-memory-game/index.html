@@ -299,15 +299,42 @@
             <ul id="structure-reference-ambiguity-candidates"></ul>
           </div>
 
-          <figure id="structure-reference-preview" class="structure-reference-preview" hidden>
-            <div class="structure-reference-preview-frame">
-              <canvas id="structure-reference-preview-canvas" aria-label="Локальная анатомическая иллюстрация выбранной мышцы"></canvas>
+          <section id="structure-reference-gallery" class="structure-reference-gallery" hidden aria-label="Иллюстрации выбранной мышцы">
+            <div id="structure-reference-media-tabs" class="structure-reference-media-tabs" role="tablist" aria-label="Вид иллюстрации">
+              <button id="structure-reference-art-tab" type="button" role="tab" aria-controls="structure-reference-art" aria-selected="false">
+                Иллюстрация
+              </button>
+              <button id="structure-reference-3d-tab" type="button" role="tab" aria-controls="structure-reference-preview" aria-selected="false">
+                3D
+              </button>
             </div>
-            <figcaption>
-              <strong id="structure-reference-preview-title"></strong>
-              <span id="structure-reference-preview-caption"></span>
-            </figcaption>
-          </figure>
+
+            <figure id="structure-reference-art" class="structure-reference-art" hidden role="tabpanel" aria-labelledby="structure-reference-art-tab">
+              <div class="structure-reference-art-frame">
+                <img id="structure-reference-art-image" alt="" loading="lazy" decoding="async" />
+              </div>
+              <figcaption>
+                <strong id="structure-reference-art-title"></strong>
+                <span id="structure-reference-art-caption"></span>
+                <span id="structure-reference-art-source" class="structure-reference-art-source"></span>
+              </figcaption>
+              <div id="structure-reference-art-navigation" class="structure-reference-art-navigation" hidden>
+                <button id="structure-reference-art-prev" type="button" aria-label="Предыдущая иллюстрация">‹</button>
+                <span id="structure-reference-art-counter" aria-live="polite"></span>
+                <button id="structure-reference-art-next" type="button" aria-label="Следующая иллюстрация">›</button>
+              </div>
+            </figure>
+
+            <figure id="structure-reference-preview" class="structure-reference-preview" hidden role="tabpanel" aria-labelledby="structure-reference-3d-tab">
+              <div class="structure-reference-preview-frame">
+                <canvas id="structure-reference-preview-canvas" aria-label="3D-изображение выбранной мышцы"></canvas>
+              </div>
+              <figcaption>
+                <strong id="structure-reference-preview-title"></strong>
+                <span id="structure-reference-preview-caption"></span>
+              </figcaption>
+            </figure>
+          </section>
 
           <div id="structure-reference-facts" class="structure-reference-facts" hidden>
             <section class="structure-reference-primary" aria-labelledby="structure-reference-actions-label">
