@@ -8,6 +8,10 @@ import {
   muscleReferenceSource,
 } from "./muscle-reference-data.js";
 import {
+  clearMuscleReferencePreview,
+  renderMuscleReferencePreview,
+} from "./muscle-reference-preview.js";
+import {
   studyLayerNameRu,
   studyStructureSearchText,
   studyStructureTerm,
@@ -240,6 +244,19 @@ const structureReferencePrimaryArt = document.querySelector("#structure-referenc
 const structureReferencePrimaryArtImage = document.querySelector("#structure-reference-primary-art-image");
 const structureReferencePrimaryArtTitle = document.querySelector("#structure-reference-primary-art-title");
 const structureReferencePrimaryArtCaption = document.querySelector("#structure-reference-primary-art-caption");
+const structureReferenceGallery = document.querySelector("#structure-reference-gallery");
+const structureReferenceGalleryTabs = document.querySelector("#structure-reference-gallery-tabs");
+const structureReferenceArtTab = document.querySelector("#structure-reference-art-tab");
+const structureReference3dTab = document.querySelector("#structure-reference-3d-tab");
+const structureReferencePreview = document.querySelector("#structure-reference-preview");
+const structureReferencePreviewCanvas = document.querySelector("#structure-reference-preview-canvas");
+const structureReferencePreviewTitle = document.querySelector("#structure-reference-preview-title");
+const structureReferencePreviewCaption = document.querySelector("#structure-reference-preview-caption");
+
+let currentReferenceMediaSid = null;
+let currentReferenceMediaReference = null;
+let currentReferenceHasArt = false;
+let currentReferenceMediaMode = "3d";
 const structureReferenceAmbiguity = document.querySelector("#structure-reference-ambiguity");
 const structureReferenceAmbiguityLabel = document.querySelector("#structure-reference-ambiguity-label");
 const structureReferenceAmbiguityNote = document.querySelector("#structure-reference-ambiguity-note");
@@ -460,7 +477,14 @@ function clearStructureReferencePrimaryArt() {
 
 function hideStructureReference() {
   if (structureReferenceEl) structureReferenceEl.hidden = true;
+  if (structureReferenceGallery) structureReferenceGallery.hidden = true;
+  if (structureReferencePreview) structureReferencePreview.hidden = true;
   clearStructureReferencePrimaryArt();
+  clearMuscleReferencePreview(structureReferencePreviewCanvas);
+  currentReferenceMediaSid = null;
+  currentReferenceMediaReference = null;
+  currentReferenceHasArt = false;
+  currentReferenceMediaMode = "3d";
 }
 
 function renderReferenceList(container, items) {
@@ -553,7 +577,7 @@ function renderStructureReferencePrimaryArt(reference) {
     !structureReferencePrimaryArtImage
   ) {
     clearStructureReferencePrimaryArt();
-    return;
+    return false;
   }
 
   const columns = Math.max(1, Number(illustration.spriteColumns) || 1);
@@ -592,6 +616,7 @@ function renderStructureReferencePrimaryArt(reference) {
   }
 
   structureReferencePrimaryArt.hidden = false;
+  return true;
 }
 
 function renderReferenceBadges(reference) {
