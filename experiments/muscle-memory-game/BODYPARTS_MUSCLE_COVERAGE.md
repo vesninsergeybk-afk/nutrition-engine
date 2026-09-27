@@ -1,33 +1,26 @@
-# BodyParts3D muscle coverage audit
+# BodyParts3D muscle coverage
 
-This comparison is one reproducible coverage index for supplemental BodyParts3D muscle geometry. It is supplemented by independently verified regional packs because a single historical GitHub mirror does not enumerate every usable 3.0 muscle mesh.
+This audit separates three different situations that previously looked identical in the UI:
 
-- BodyParts3D 3.0 muscle meshes indexed: **292**
-- Same FMA muscle IDs represented in the pinned BodyParts3D 4.0 atlas: **243**
-- Real BodyParts3D 3.0 muscle meshes missing from that 4.0 atlas: **49**
+1. a muscle is present in BodyParts3D 4.0 and correctly classified;
+2. a muscle is present in 4.0 but mislabeled as another system (for example `skeletal` or `connective`);
+3. the 4.0 atlas truly lacks that FMA mesh and a registered BodyParts3D 3.0 supplement is required.
 
-A missing 4.0 mesh is not treated as anatomically absent. Supplemental geometry keeps its source version, registration method and license metadata.
+## Current verified coverage
 
-## Priority gaps
+- Historical BodyParts3D 3.0 muscle tree checked: **293** FMA muscle meshes.
+- Those FMA IDs genuinely absent from the pinned 4.0 atlas across **all** atlas systems: **49**.
+- Independent registered facial pack adds additional confirmed 3.0 muscles that are also absent from 4.0.
+- Confirmed missing union: **65 distinct muscle FMA IDs**.
+- Registered in the trainer: **65 / 65**.
+- Confirmed unresolved gaps in the audited sets: **0**.
 
-- FMA46836 — left buccinator
-- FMA13893 — left internal oblique
-- FMA13359 — left latissimus dorsi
-- FMA13378 — left rectus abdominis
-- FMA46840 — left risorius
-- FMA49008 — left temporalis
-- FMA22345 — left transversus abdominis
-- FMA46813 — left zygomaticus major
-- FMA46815 — left zygomaticus minor
-- FMA46841 — orbicularis oris
-- FMA46835 — right buccinator
-- FMA13892 — right internal oblique
-- FMA13358 — right latissimus dorsi
-- FMA13377 — right rectus abdominis
-- FMA46839 — right risorius
-- FMA49007 — right temporalis
-- FMA22344 — right transversus abdominis
-- FMA46812 — right zygomaticus major
-- FMA46814 — right zygomaticus minor
+The complete machine-readable inventory is `bodyparts-muscle-coverage.json`.
 
-The machine-readable mirror comparison is in `bodyparts-muscle-coverage.json`. Independently verified facial and trunk packs expand the confirmed missing set beyond the mirror-only count. Current confirmed union: **65 distinct BodyParts3D 3.0 muscle FMA IDs absent from the pinned 4.0 atlas**. Two extensor digitorum brevis meshes remain intentionally disabled until foot-specific registration is checked.
+## Registration used for supplements
+
+- Trunk: BodyParts3D 3.0 -> 4.0 registration checked against shared trunk structures.
+- Face: similarity registration using mandible, frontal bone and maxilla; independent held-out maxilla surface error is about 0.26 mm.
+- Foot: separate right/left similarity registration fitted to talus, calcaneus and five metatarsals. Fitted bone-center RMS is about 0.91-0.95 mm; held-out neighboring muscle-center checks are approximately 0.93-4.52 mm.
+
+No missing muscle is added merely because its name is absent from the `muscular` system. FMA identity is checked across the entire 4.0 atlas first, which prevents duplicates of muscles that BodyParts3D mislabeled as `skeletal` or `connective`.
