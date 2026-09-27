@@ -126,6 +126,8 @@ jobs:
             [{ system: 'skeletal', conceptId: 'FMA22552' }, 'muscle', 'right fibularis longus'],
             [{ system: 'skeletal', conceptId: 'FMA58776' }, null, 'right iliotibial tract'],
             [{ system: 'muscular', conceptId: 'FMA34682' }, 'muscle', 'deltoid part'],
+            [{ system: 'connective', conceptId: 'FMA22425' }, 'muscle', 'right tensor fasciae latae'],
+            [{ system: 'connective', conceptId: 'FMA22426' }, 'muscle', 'left tensor fasciae latae'],
           ];
           for (const [part, expected, label] of cases) {
             const actual = bodyPartsAnatomyKind(part);
@@ -152,8 +154,8 @@ jobs:
               latinUserFacing.map(part => part.name + ' -> ' + bodyPartsMuscleNameRu(part.name)).join(' | ')
             );
           }
-          if (muscles.length !== 416) {
-            throw new Error('Unexpected BodyParts3D muscle count: ' + muscles.length);
+          if (muscles.length !== 418) {
+            throw new Error('Unexpected BodyParts3D base muscle count after classification fixes: ' + muscles.length);
           }
           console.log('Russian muscle names:', muscles.length + '/' + muscles.length);
           NODE
