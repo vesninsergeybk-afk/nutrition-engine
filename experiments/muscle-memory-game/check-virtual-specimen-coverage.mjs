@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import {
   buildMuscleCatalog,
   learningConceptSourceName,
+  learningDepthSourceNames,
 } from "./learning-engine.js";
 import { muscleDepthInfo } from "./regional-depth-map.js";
 import { bodyPartsAnatomyKind } from "./bodyparts4-classification.js";
@@ -242,9 +243,8 @@ for (const specimen of VIRTUAL_SPECIMENS) {
 
       const missingDepth = sceneTargets.filter((target) =>
         !(target.sourceNames || []).some((sourceName) =>
-          muscleDepthInfo(
-            profileId,
-            learningConceptSourceName(sourceName)
+          learningDepthSourceNames(sourceName).some((depthName) =>
+            muscleDepthInfo(profileId, depthName)
           )
         )
       );
@@ -391,11 +391,10 @@ for (const specimen of VIRTUAL_SPECIMENS) {
 
 function depthRuleIdForTarget(target, profileId) {
   for (const sourceName of target?.sourceNames || []) {
-    const info = muscleDepthInfo(
-      profileId,
-      learningConceptSourceName(sourceName)
-    );
-    if (info) return info.ruleId;
+    for (const depthName of learningDepthSourceNames(sourceName)) {
+      const info = muscleDepthInfo(profileId, depthName);
+      if (info) return info.ruleId;
+    }
   }
   return null;
 }
