@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { bodyPartsAnatomyKind } from "./bodyparts4-classification.js";
 
 const root = new URL("./", import.meta.url);
 const coverage = JSON.parse(await readFile(new URL("bodyparts-muscle-coverage.json", root), "utf8"));
@@ -42,5 +43,20 @@ assert(
   "Validated foot supplements are still marked as unvalidated"
 );
 
-console.log("BodyParts3D muscle restoration: 65/65 confirmed gaps covered");
+assert(
+  bodyPartsAnatomyKind({
+    conceptId: "FMA22425",
+    system: "connective",
+    name: "Right tensor fasciae latae",
+  }) === "muscle" &&
+  bodyPartsAnatomyKind({
+    conceptId: "FMA22426",
+    system: "connective",
+    name: "Left tensor fasciae latae",
+  }) === "muscle",
+  "Tensor fasciae latae is present in v4 but still excluded from the rendered muscle layer"
+);
+
+console.log("BodyParts3D muscle restoration: 65/65 confirmed geometry gaps covered");
+console.log("BodyParts3D v4 mis-tagged tensor fasciae latae restored to the muscle layer");
 console.log("Corrected v3 mirror gap: 49 FMA IDs missing from v4 across all systems");
