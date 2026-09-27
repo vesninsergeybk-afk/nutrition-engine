@@ -71,6 +71,12 @@ export const MUSCLE_REFERENCE_PILOT = Object.freeze([
         rightsStatus: "review",
         purpose: "reference-only",
       }),
+      Object.freeze({
+        sourceId: "gray-1918-plate-409",
+        locator: "Gray 1918, plate 409; выделение широчайшей мышцы",
+        rightsStatus: "public-domain",
+        purpose: "candidate-for-local-copy",
+      }),
     ]),
     verification: Object.freeze({
       status: "needs-atlas-check",
@@ -142,6 +148,12 @@ export const MUSCLE_REFERENCE_PILOT = Object.freeze([
         locator: "Раздел II, рис. 2 «Мышцы груди»",
         rightsStatus: "review",
         purpose: "reference-only",
+      }),
+      Object.freeze({
+        sourceId: "gray-1918-plate-411",
+        locator: "Gray 1918, plate 411; передняя зубчатая и соседние мышцы",
+        rightsStatus: "public-domain",
+        purpose: "candidate-for-local-copy",
       }),
     ]),
     verification: Object.freeze({
@@ -217,6 +229,12 @@ export const MUSCLE_REFERENCE_PILOT = Object.freeze([
         rightsStatus: "review",
         purpose: "reference-only",
       }),
+      Object.freeze({
+        sourceId: "gray-1918-plate-392",
+        locator: "Gray 1918, plate 392; наружная косая мышца живота",
+        rightsStatus: "public-domain",
+        purpose: "candidate-for-local-copy",
+      }),
     ]),
     verification: Object.freeze({
       status: "cross-checked",
@@ -283,6 +301,12 @@ export const MUSCLE_REFERENCE_PILOT = Object.freeze([
         locator: "Раздел IV, рис. 3 «Жевательные мышцы»",
         rightsStatus: "review",
         purpose: "reference-only",
+      }),
+      Object.freeze({
+        sourceId: "gray-1918-plate-378-masseter",
+        locator: "Gray 1918, plate 378; жевательная мышца выделена на боковой проекции",
+        rightsStatus: "public-domain",
+        purpose: "candidate-for-local-copy",
       }),
     ]),
     verification: Object.freeze({
