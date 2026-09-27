@@ -115,7 +115,6 @@ const EXPECTED_EXACT_BOTH = Object.freeze({
   quadriceps: 4,
   "calf-complex": 3,
   suboccipital: 4,
-  "hip-flexors": 4,
 });
 
 const REQUIRED_SHARED_MUSCLES = Object.freeze({
@@ -297,6 +296,19 @@ for (const specimen of VIRTUAL_SPECIMENS) {
 
   assertRequiredMuscles(specimen.id, zQuestion, "Z-Anatomy");
   assertRequiredMuscles(specimen.id, bpQuestion, "BodyParts3D");
+
+  if (specimen.id === "hip-flexors") {
+    assert(
+      zQuestion.length === 4 && bpQuestion.length === 5,
+      "hip-flexors: extended BodyParts3D must add tensor fasciae latae to the four-source core"
+    );
+    assert(
+      bpQuestion.some((target) =>
+        (target.sourceNames || []).some((name) => /tensor fasciae latae/i.test(name))
+      ),
+      "hip-flexors: restored BodyParts3D tensor fasciae latae is missing"
+    );
+  }
 
   const expectedExact = EXPECTED_EXACT_BOTH[specimen.id];
   if (expectedExact != null) {
