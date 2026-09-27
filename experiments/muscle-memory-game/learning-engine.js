@@ -261,7 +261,7 @@ export function inferMuscleRegion(sourceName, nameRu = "") {
   if (
     has(
       text,
-      /gluteus|piriformis|gemellus|obturator|quadratus femoris|ягодич|грушевид|близнецов|запирательн|квадратная мышца бедра/u
+      /gluteus|tensor fasciae latae|piriformis|gemellus|obturator|quadratus femoris|ягодич|напрягающ.*широк.*фасц|грушевид|близнецов|запирательн|квадратная мышца бедра/u
     )
   ) return "gluteal";
 
