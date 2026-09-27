@@ -2,6 +2,7 @@ const COURSE_ART_ROWS = Object.freeze({
   1: "./reference-data/assets/course-art/row-1.webp",
   2: "./reference-data/assets/course-art/row-2.webp",
   3: "./reference-data/assets/course-art/row-3.webp",
+  4: "./reference-data/assets/course-art/row-4.webp",
 });
 
 export const COURSE_ART_PRIMARY = Object.freeze([
@@ -10,6 +11,7 @@ export const COURSE_ART_PRIMARY = Object.freeze([
   { structureId: "levator-scapulae", sourceId: "course-method-back-lesson8", page: 3, row: 1, column: 2 },
   { structureId: "splenius-capitis", sourceId: "course-method-back-lesson8", page: 4, row: 1, column: 3 },
   { structureId: "splenius-cervicis", sourceId: "course-method-back-lesson8", page: 4, row: 1, column: 4 },
+  { structureId: "erector-spinae", sourceId: "course-method-back-lesson8", page: 3, row: 4, column: 0, spriteColumns: 2 },
   { structureId: "gluteus-maximus", sourceId: "course-method-posterior-leg-lesson9", page: 1, row: 1, column: 5 },
   { structureId: "biceps-femoris", sourceId: "course-method-posterior-leg-lesson9", page: 2, row: 2, column: 0 },
   { structureId: "gastrocnemius", sourceId: "course-method-posterior-leg-lesson9", page: 3, row: 2, column: 1 },
@@ -28,7 +30,7 @@ export const COURSE_ART_PRIMARY = Object.freeze([
   kind: "course-art-exact",
   match: "exact",
   spritePath: COURSE_ART_ROWS[item.row],
-  spriteColumns: 6,
+  spriteColumns: item.spriteColumns || 6,
   locator: `стр. ${item.page}`,
 })));
 
