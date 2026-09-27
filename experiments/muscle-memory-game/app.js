@@ -2268,6 +2268,7 @@ function highlightStructures(ids, kind = "answer") {
     wrong: 0x751d28,
     navigation: 0x9a6b18,
     selected: 0x245da8,
+    parentContext: 0x8fc9e8,
   };
   const color = new THREE.Color(colors[kind] || colors.answer);
 
@@ -4506,6 +4507,37 @@ function nextSessionStep() {
   }
 }
 
+function parentMuscleContextIds(sid, reference = null) {
+  if (sid == null || reference?.modelCoverage !== "part") return [];
+
+  const parentId = reference.id || reference.parentStructureId || null;
+  if (!parentId) return [];
+
+  const selectedSide = structureSide(structureNames[sid]);
+  const ids = [];
+
+  for (let candidateSid = 0; candidateSid < structureNames.length; candidateSid += 1) {
+    if (candidateSid === sid || structureVisibility[candidateSid] === false) continue;
+
+    const candidateReference = muscleReferenceFor(structureNames[candidateSid]);
+    if (!candidateReference || candidateReference.ambiguous) continue;
+    if (candidateReference.id !== parentId) continue;
+
+    const candidateSide = structureSide(structureNames[candidateSid]);
+    if (
+      selectedSide &&
+      candidateSide &&
+      selectedSide !== "unknown" &&
+      candidateSide !== "unknown" &&
+      selectedSide !== candidateSide
+    ) continue;
+
+    ids.push(candidateSid);
+  }
+
+  return [...new Set(ids)];
+}
+
 function selectExploreStructure(sid, hitStack = null) {
   if (sid == null || !structureNames[sid]) return;
 
@@ -4529,9 +4561,18 @@ function selectExploreStructure(sid, hitStack = null) {
   isolated = keepIsolation;
 
   const coveringIds = keepIsolation ? [] : verifiedCoveringStructureIds(sid);
-  // Always color the selected muscle. The muscle material keeps depthTest/depthWrite
-  // enabled, so superficial anatomy still occludes covered portions naturally.
+  const selectedReference = muscleReferenceFor(structureNames[sid]);
+  const parentContextIds = keepIsolation
+    ? []
+    : parentMuscleContextIds(sid, selectedReference);
+
+  // A named functional part stays dark blue. Other visible parts of the same
+  // parent muscle are shown in a lighter blue so the learner sees the whole
+  // muscle and does not mistake one selectable part for the complete muscle.
+  if (parentContextIds.length) highlightStructures(parentContextIds, "parentContext");
   highlightStructures([sid], "selected");
+  canvas.dataset.selectedMuscleCoverage = selectedReference?.modelCoverage || "exact";
+  canvas.dataset.selectedParentContextCount = String(parentContextIds.length);
   canvas.dataset.selectedCovered = coveringIds.length ? "true" : "false";
   canvas.dataset.selectedCoverCount = String(coveringIds.length);
 
@@ -4540,7 +4581,8 @@ function selectExploreStructure(sid, hitStack = null) {
     return;
   }
 
-  questionLabelEl.textContent = "Мышца";
+  questionLabelEl.textContent =
+    selectedReference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
   questionEl.textContent = displayStructureName(sid);
   renderStructureReference(sid);
   feedbackEl.className = "feedback";
@@ -4552,7 +4594,11 @@ function selectExploreStructure(sid, hitStack = null) {
     : verifiedDeeperMuscleIds(sid);
   const pointSpecific = pointDeeperIds.length > 0;
 
-  feedbackEl.textContent = coveringIds.length
+  feedbackEl.textContent = selectedReference?.modelCoverage === "part"
+    ? parentContextIds.length
+      ? "Выбрана отдельная часть мышцы: она выделена синим, остальные видимые части этой же мышцы — светло-голубым."
+      : "Выбрана отдельная часть мышцы. Справочная карточка относится к мышце целиком и отдельно указывает выбранную часть."
+    : coveringIds.length
     ? "Мышца находится глубже видимых покрывающих структур. Она не подсвечивается сквозь них. Нажмите «Открыть мышцу» или «Показать отдельно»."
     : relatedDeeperIds.length
       ? pointSpecific
