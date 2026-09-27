@@ -87,6 +87,42 @@ export const REFERENCE_SOURCES = Object.freeze({
 
 
 
+
+  "ncbi-thigh-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles",
+    role: "Общая сверка переднего, медиального и заднего отделов бедра",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK482445/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-hamstrings": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Hamstring Muscle",
+    role: "Сверка двуглавой, полусухожильной и полуперепончатой мышц",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK546688/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-medial-thigh": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Medial Thigh Muscles",
+    role: "Сверка приводящих мышц, тонкой, гребенчатой и портняжной",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK534775/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-femoral-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Femoral Muscles",
+    role: "Сверка прикреплений и иннервации мышц бедра",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK500008/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-adductor-magnus": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Thigh Adductor Magnus Muscle",
+    role: "Сверка двух функционально и нейроанатомически различающихся частей большой приводящей мышцы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK534842/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-iliopsoas": Object.freeze({
     title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Iliopsoas Muscle",
     role: "Сверка подвздошной, большой и малой поясничных мышц и комплекса iliopsoas",
