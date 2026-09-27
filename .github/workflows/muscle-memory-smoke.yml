@@ -21,8 +21,8 @@ permissions:
 # checkpoints. Full-smoke runs share one group: a newer checkpoint supersedes
 # an older checkpoint, but ordinary pushes cannot cancel it.
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[reference-audit]') && 'muscle-memory-reference-audit' || contains(github.event.head_commit.message, '[bodyparts-smoke]') && 'muscle-memory-bodyparts-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || contains(github.event.head_commit.message, '[elbow-smoke]') && 'muscle-memory-elbow-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
-  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[reference-audit]') || contains(github.event.head_commit.message, '[bodyparts-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') || contains(github.event.head_commit.message, '[elbow-smoke]') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[atlas-context-smoke]') && 'muscle-memory-atlas-context-smoke' || contains(github.event.head_commit.message, '[reference-audit]') && 'muscle-memory-reference-audit' || contains(github.event.head_commit.message, '[bodyparts-smoke]') && 'muscle-memory-bodyparts-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || contains(github.event.head_commit.message, '[elbow-smoke]') && 'muscle-memory-elbow-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[atlas-context-smoke]') || contains(github.event.head_commit.message, '[reference-audit]') || contains(github.event.head_commit.message, '[bodyparts-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') || contains(github.event.head_commit.message, '[elbow-smoke]') }}
 
 jobs:
   fast:
@@ -256,6 +256,51 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+
+
+  browser-atlas-context:
+    if: ${{ contains(github.event.head_commit.message, '[atlas-context-smoke]') }}
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        phase:
+          - z-anatomy
+          - bodyparts
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run Atlas context checkpoint
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          timeout 7m node experiments/muscle-memory-game/browser-smoke-${{ matrix.phase }}.cjs
+
+      - name: Upload Atlas context screenshots
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: muscle-memory-atlas-context-${{ matrix.phase }}
+          path: /tmp/muscle-memory-*.png
+          if-no-files-found: ignore
+          retention-days: 7
 
 
   browser-reference-audit:
