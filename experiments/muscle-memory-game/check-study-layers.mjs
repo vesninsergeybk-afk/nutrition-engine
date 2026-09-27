@@ -15,7 +15,11 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-assert(html.includes('id="skin-mode"'), "Skin layer control is missing");
+assert(
+  html.includes('id="skin-overlay-toggle"') &&
+    html.includes('id="skin-mode" hidden'),
+  "Skin must be exposed as a lightweight context overlay, not a full-scene preset"
+);
 assert(
   html.includes('data-connective-layer="subcutaneous"') &&
   html.includes('data-connective-layer="fascia"') &&
@@ -55,9 +59,10 @@ assert(
   "Known connective-source recovery rule is missing"
 );
 assert(
-  app.includes('setConnectiveLayerSelection(["fascia", "tendon", "ligament", "other"])') &&
-    app.includes('preset === "attachments"'),
-  "One-click connective preset must expose fasciae, tendons, ligaments and other connective structures"
+  html.includes('id="clear-support-layers"') &&
+    app.includes('selectedConnectiveLayers().size > 0 ? "anatomical" : "off"') &&
+    app.includes("clearSupportLayersButton?.addEventListener"),
+  "Connective tissues must be explicit additive layers with a one-click reset"
 );
 assert(
   app.includes('part.system === "connective" ||') &&
@@ -171,22 +176,26 @@ console.log("Study-layer deduplication and navigation state: ok");
 
 
 assert(
-  html.includes('id="layer-preset"') &&
-    html.includes('value="bones"') &&
-    html.includes('value="skin"') &&
-    html.includes('value="subcutaneous"') &&
-    html.includes('value="fascia"') &&
-    html.includes('value="attachments"'),
-  "Layered study presets are incomplete"
+  html.includes('id="layer-preset-field" hidden') &&
+    html.includes('id="layer-preset"') &&
+    !html.includes('value="all-tissues"'),
+  "Obsolete mutually exclusive tissue presets must not remain user-facing"
 );
 assert(
-  app.includes("function applyStudyLayerPreset") &&
-    app.includes('preset === "bones"') &&
-    app.includes('preset === "skin"') &&
-    app.includes('preset === "subcutaneous"') &&
-    app.includes('preset === "fascia"') &&
-    app.includes('preset === "attachments"'),
-  "Layered study presets are not wired to the renderer"
+  html.includes(">Костные ориентиры<") &&
+    html.includes("Контур кожи") &&
+    html.includes("Дополнительные ткани"),
+  "Display drawer must present bones, skin and connective tissues by their actual learning roles"
+);
+assert(
+  app.includes('boneDisplayMode = "off"') &&
+    app.includes('skinOverlayToggle.checked ? "ghost" : "off"') &&
+    app.includes('skinMesh && skinDisplayMode === "anatomical"'),
+  "Support layers must not force translucent muscles or let the ghost skin intercept muscle picking"
+);
+assert(
+  !app.includes('muscleDisplayMode = "ghost";'),
+  "Support-layer controls must never make the working muscle model translucent"
 );
 assert(
   app.includes("applyRegionStudyVisibility();") &&
