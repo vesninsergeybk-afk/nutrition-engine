@@ -39,6 +39,50 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ text: "internal-project" }),
   }),
 
+  "gray-1918-plate-392": Object.freeze({
+    title: "Gray's Anatomy, plate 392 — external oblique / anterolateral trunk",
+    year: 1918,
+    role: "Проверенный кандидат для иллюстрации наружной косой мышцы и соседних поверхностных структур",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray392.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain / PD-scan для конкретного файла.",
+    }),
+  }),
+
+  "gray-1918-plate-409": Object.freeze({
+    title: "Gray's Anatomy, plate 409 — posterior trunk / latissimus dorsi",
+    year: 1918,
+    role: "Проверенный кандидат для иллюстрации широчайшей мышцы спины",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Latissimus_dorsi_.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Производное от Gray 1918; на странице Wikimedia Commons файл отмечен как Public Domain.",
+    }),
+  }),
+
+  "gray-1918-plate-411": Object.freeze({
+    title: "Gray's Anatomy, plate 411 — axillary and thoracic muscles",
+    year: 1918,
+    role: "Проверенный кандидат для иллюстрации передней зубчатой мышцы и соседних структур",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray411.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain / PD-scan для конкретного файла.",
+    }),
+  }),
+
+  "gray-1918-plate-378-masseter": Object.freeze({
+    title: "Gray's Anatomy, plate 378 — masseter highlighted",
+    year: 1918,
+    role: "Проверенный кандидат для иллюстрации жевательной мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray_%E2%80%94_musculus_masseter.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "На странице Wikimedia Commons конкретный файл отмечен как Public Domain.",
+    }),
+  }),
+
   "ncbi-latissimus-dorsi": Object.freeze({
     title: "StatPearls: Anatomy, Back, Latissimus Dorsi",
     role: "Современная сверка прикреплений и функций",
