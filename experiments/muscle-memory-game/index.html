@@ -94,29 +94,23 @@
 
           <section class="display-section">
             <div class="display-section-head">
-              <h3>Слои модели</h3>
-              <span>Что показывать на 3D-модели</span>
+              <h3>Анатомический контекст</h3>
+              <span>Мышцы остаются основной непрозрачной и кликабельной моделью.</span>
             </div>
-            <label id="layer-preset-field" class="viewer-setting-field">
-              <span>Ткани</span>
-              <select id="layer-preset" aria-label="Тканевый слой">
+
+            <div id="layer-preset-field" hidden aria-hidden="true">
+              <select id="layer-preset" tabindex="-1">
                 <option value="muscles" selected>Мышцы</option>
-                <option value="bones">Кости и мышечные ориентиры</option>
-                <option value="skin">Кожа и наружные покровы</option>
-                <option value="subcutaneous">Подкожная клетчатка</option>
-                <option value="fascia">Фасции</option>
-                <option value="attachments">Сухожилия, связки и суставные структуры</option>
-                <option value="all-tissues">Мышцы + соединительные ткани</option>
               </select>
-            </label>
-            <p id="layer-preset-note" class="viewer-setting-note"></p>
+            </div>
+            <p id="layer-preset-note" class="viewer-setting-note" hidden></p>
 
             <label class="viewer-setting-field">
-              <span>Кости</span>
-              <select id="bone-mode" aria-label="Режим костного слоя" disabled>
-                <option value="anatomical" selected>Обычный вид</option>
+              <span>Костные ориентиры</span>
+              <select id="bone-mode" aria-label="Костные ориентиры" disabled>
+                <option value="off" selected>Скрыть</option>
+                <option value="anatomical">Показать</option>
                 <option value="xray">Просвечивание</option>
-                <option value="off">Скрыть</option>
               </select>
             </label>
             <label id="bone-opacity-field" class="viewer-setting-field" hidden>
@@ -124,34 +118,43 @@
               <input id="bone-opacity" type="range" min="0.03" max="0.35" step="0.02" value="0.17" disabled />
             </label>
 
-            <label id="skin-field" class="viewer-setting-field" hidden>
-              <span>Кожа и наружные покровы</span>
-              <select id="skin-mode" aria-label="Режим слоя кожи" disabled>
+            <label id="skin-field" class="support-layer-toggle" hidden>
+              <input id="skin-overlay-toggle" type="checkbox" disabled />
+              <span>
+                <strong>Контур кожи</strong>
+                <small>Полупрозрачная поверхность для внешних ориентиров; клики проходят к мышцам.</small>
+              </span>
+            </label>
+            <select id="skin-mode" hidden aria-hidden="true" tabindex="-1" disabled>
+              <option value="off" selected>Скрыть</option>
+              <option value="ghost">Полупрозрачно</option>
+            </select>
+
+            <div id="connective-field" hidden aria-hidden="true">
+              <select id="connective-mode" tabindex="-1" disabled>
                 <option value="off" selected>Скрыть</option>
-                <option value="ghost">Полупрозрачно</option>
-                <option value="anatomical">Показать поверхность</option>
+                <option value="anatomical">Показать</option>
               </select>
-            </label>
-            <label id="connective-field" class="viewer-setting-field" hidden>
-              <span>Соединительная ткань</span>
-              <select id="connective-mode" aria-label="Режим соединительнотканного слоя" disabled>
-                <option value="anatomical" selected>Показать</option>
-                <option value="ghost">Полупрозрачно</option>
-                <option value="off">Скрыть</option>
-              </select>
-            </label>
+            </div>
+
             <fieldset id="connective-layers-field" class="connective-layer-options" hidden>
-              <legend>Соединительнотканные подслои</legend>
-              <label><input type="checkbox" data-connective-layer="subcutaneous" checked /> Подкожная клетчатка</label>
-              <label><input type="checkbox" data-connective-layer="fascia" checked /> Фасции и удерживатели</label>
-              <label><input type="checkbox" data-connective-layer="tendon" checked /> Сухожилия и апоневрозы</label>
-              <label><input type="checkbox" data-connective-layer="ligament" checked /> Связки</label>
-              <label><input type="checkbox" data-connective-layer="joint" checked /> Суставные капсулы и сумки</label>
-              <label><input type="checkbox" data-connective-layer="cartilage" checked /> Хрящевые структуры</label>
-              <label><input type="checkbox" data-connective-layer="other" checked /> Другие соединительные структуры</label>
+              <legend>Дополнительные ткани</legend>
+              <p class="layer-control-note">Включайте только нужные структуры. Они показываются поверх мышц и остаются выбираемыми.</p>
+              <label><input type="checkbox" data-connective-layer="subcutaneous" /> Подкожная клетчатка</label>
+              <label><input type="checkbox" data-connective-layer="fascia" /> Фасции и удерживатели</label>
+              <label><input type="checkbox" data-connective-layer="tendon" /> Сухожилия и апоневрозы</label>
+              <label><input type="checkbox" data-connective-layer="ligament" /> Связки</label>
+              <label><input type="checkbox" data-connective-layer="joint" /> Суставные капсулы и сумки</label>
+              <label><input type="checkbox" data-connective-layer="cartilage" /> Хрящевые структуры</label>
+              <label><input type="checkbox" data-connective-layer="other" /> Другие соединительнотканные структуры</label>
             </fieldset>
+
+            <button id="clear-support-layers" class="secondary-display-action" type="button" hidden disabled>
+              Скрыть дополнительные слои
+            </button>
+
             <p id="layer-training-note" class="viewer-setting-note" hidden>
-              Во время тренировки покровные и соединительнотканные слои временно скрываются, если они мешают видеть цель.
+              Во время тренировки дополнительные ткани временно скрываются, чтобы не перекрывать мышечную цель.
             </p>
           </section>
 
