@@ -205,6 +205,15 @@ const referenceLayerInputs = [
 ];
 const debugPanel = document.querySelector("#debug-panel");
 const viewerSettings = document.querySelector(".viewer-settings");
+const displayPanel = document.querySelector("#display-panel");
+const displayPanelToggle = document.querySelector("#display-panel-toggle");
+const displayPanelClose = document.querySelector("#display-panel-close");
+const layerDepthStatus = document.querySelector("#layer-depth-status");
+const structureReferenceEl = document.querySelector("#structure-reference");
+const structureReferenceLatin = document.querySelector("#structure-reference-latin");
+const structureReferenceRegion = document.querySelector("#structure-reference-region");
+const structureReferenceDepth = document.querySelector("#structure-reference-depth");
+const structureReferenceSource = document.querySelector("#structure-reference-source");
 const modelSource = document.querySelector("#model-source");
 const layerPresetField = document.querySelector("#layer-preset-field");
 const layerPreset = document.querySelector("#layer-preset");
@@ -369,6 +378,44 @@ let currentTarget = null;
 let selectedExploreSid = null;
 
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
+
+function setDisplayPanelOpen(open) {
+  const next = Boolean(open);
+  if (!displayPanel || !displayPanelToggle) return;
+  displayPanel.hidden = !next;
+  viewerWrap.classList.toggle("display-panel-open", next);
+  displayPanelToggle.setAttribute("aria-expanded", String(next));
+  requestAnimationFrame(() => resize());
+}
+
+function hideStructureReference() {
+  if (structureReferenceEl) structureReferenceEl.hidden = true;
+}
+
+function renderStructureReference(sid) {
+  if (!structureReferenceEl || sid == null || !structureNames[sid]) {
+    hideStructureReference();
+    return;
+  }
+
+  const sourceName = structureNames[sid];
+  const term = structureTerm(sourceName);
+  const target = learningTargetBySid.get(sid) || null;
+  const depth = targetDepthInfo(target);
+
+  structureReferenceLatin.textContent = term.latin || "";
+  structureReferenceRegion.textContent = target?.region
+    ? regionNameRu(target.region)
+    : selectedLearningRegion && selectedLearningRegion !== "all"
+      ? (LEARNING_SCOPES.find((item) => item.id === selectedLearningRegion)?.nameRu || "—")
+      : "—";
+  structureReferenceDepth.textContent = depth?.nameRu
+    ? depth.nameRu + " мышечный слой"
+    : "Для этой области карта глубины ещё не подтверждена";
+  structureReferenceSource.textContent =
+    currentModelSource === "bodyparts4" ? "BodyParts3D" : "Z-Anatomy";
+  structureReferenceEl.hidden = false;
+}
 
 function syncMotionStatePlacement() {
   if (!motionStateEl || !motionPane || !panelEl) return;
@@ -1377,8 +1424,8 @@ function syncLayerPresetAvailability() {
   layerPresetNote.hidden = false;
   layerPreset.disabled = !available;
   layerPresetNote.textContent = available
-    ? "Послойные режимы применяются внутри выбранного учебного блока."
-    : "Послойные тканевые режимы доступны в BodyParts3D; мышечный блок остаётся доступен в текущей модели.";
+    ? "Кожа, подкожная клетчатка, фасции, сухожилия, связки, суставные структуры и хрящи доступны в этой модели."
+    : "Для кожи, фасций, сухожилий, связок и других соединительнотканных слоёв переключитесь на BodyParts3D. В Z-Anatomy доступны мышцы, кости и ориентиры безопасности.";
 
   if (!available) {
     currentLayerPreset = "muscles";
@@ -1974,6 +2021,7 @@ function isolateDeeperMuscle(sid) {
 
   questionLabelEl.textContent = "Глубже здесь";
   questionEl.textContent = targetDisplayNameForSid(target, sid);
+  renderStructureReference(sid);
   feedbackEl.className = "feedback deeper-focus-feedback";
   feedbackEl.textContent =
     "Мышца показана отдельно. Нажмите «Показать окружение», чтобы вернуться к препарату.";
@@ -2050,20 +2098,30 @@ function updateLayerButtons() {
     appMode !== "explore" ||
     !anatomyMesh ||
     !regionIsolationActive() ||
-    !structureVisibility.some(Boolean);
+    !structureVisibility.some(Boolean) ||
+    layerUnavailable;
 
   peelSurfaceLayerButton.textContent =
-    layerUnavailable
-      ? "Почему послойность недоступна?"
-      : nextLayer?.supported && nextLayer?.ids?.length
-        ? "Снять: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
-        : "Снять анатомический слой";
-  peelSurfaceLayerButton.title =
-    layerUnavailable ? nextLayer.reason || "Послойность пока недоступна." : "";
-  peelSurfaceLayerButton.setAttribute(
-    "aria-description",
-    layerUnavailable ? nextLayer.reason || "Послойность пока недоступна." : ""
-  );
+    nextLayer?.supported && nextLayer?.ids?.length
+      ? "Снять: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
+      : "Снять внешний мышечный слой";
+  peelSurfaceLayerButton.title = "";
+  peelSurfaceLayerButton.removeAttribute("aria-description");
+
+  if (layerDepthStatus) {
+    if (appMode !== "explore" || !anatomyMesh) {
+      layerDepthStatus.textContent = "Послойность станет доступна после загрузки модели.";
+    } else if (!regionIsolationActive()) {
+      layerDepthStatus.textContent = "Выберите и изолируйте анатомический блок: слои определяются для конкретной области.";
+    } else if (layerUnavailable) {
+      layerDepthStatus.textContent = nextLayer.reason || "Для этого блока карта глубины ещё не подтверждена.";
+    } else if (nextLayer?.supported && nextLayer?.ids?.length) {
+      layerDepthStatus.textContent =
+        "Следующий уровень: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + ". Снятие слоя сохраняет уже видимые глубокие мышцы.";
+    } else {
+      layerDepthStatus.textContent = "Все подтверждённые мышечные уровни этого блока уже открыты.";
+    }
+  }
   undoHideButton.disabled =
     hiddenStack.length === 0 && exploreHiddenActions.length === 0;
 
@@ -2263,6 +2321,7 @@ function undoLastHide() {
 
   questionLabelEl.textContent = "Возвращена структура";
   questionEl.textContent = displayStructureName(sid);
+  renderStructureReference(sid);
   feedbackEl.className = "feedback";
   feedbackEl.textContent = "Последняя скрытая структура снова показана.";
   focusSelectedButton.disabled = false;
@@ -2733,6 +2792,7 @@ function applyLearningRegion() {
     searchResults.replaceChildren();
     questionLabelEl.textContent = "Атлас";
     questionEl.textContent = "Выберите структуру";
+    hideStructureReference();
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
       selectedLearningRegion === "all"
@@ -3757,6 +3817,7 @@ function selectExploreStructure(sid, hitStack = null) {
 
   questionLabelEl.textContent = "Мышца";
   questionEl.textContent = displayStructureName(sid);
+  renderStructureReference(sid);
   feedbackEl.className = "feedback";
   const pointDeeperIds = hitStack
     ? deeperMuscleIdsFromHits(hitStack, sid)
@@ -6881,9 +6942,9 @@ function setMode(mode) {
     mode = "explore";
   }
 
-  // Primary modes are top-level navigation. An open display submenu must not
-  // remain floating over the newly selected workspace.
-  if (viewerSettings) viewerSettings.open = false;
+  // Primary modes are top-level navigation. The display drawer closes when
+  // switching workspace so the next task starts from a clear model view.
+  setDisplayPanelOpen(false);
 
   const previousMode = appMode;
   const preservedSid =
@@ -8816,6 +8877,16 @@ boneOpacity.addEventListener("input", () => {
   if (!skeletonMesh || boneDisplayMode !== "xray") return;
   skeletonMesh.material.opacity = Number(boneOpacity.value);
   skeletonMesh.material.needsUpdate = true;
+});
+
+displayPanelToggle?.addEventListener("click", () => {
+  setDisplayPanelOpen(displayPanel?.hidden !== false);
+});
+displayPanelClose?.addEventListener("click", () => setDisplayPanelOpen(false));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && displayPanel?.hidden === false) {
+    setDisplayPanelOpen(false);
+  }
 });
 
 modelSource.addEventListener("change", () => {
