@@ -4,6 +4,7 @@ import { HEAD_NECK_REGION } from "./head-neck.js";
 import { UPPER_LIMB_REGION } from "./upper-limb.js";
 import { PELVIS_GLUTEAL_REGION } from "./pelvis-gluteal.js";
 import { THIGH_REGION } from "./thigh.js";
+import { LEG_FOOT_REGION } from "./leg-foot.js";
 
 export const REFERENCE_REGIONS = Object.freeze([
   BACK_SHOULDER_REGION,
@@ -12,6 +13,7 @@ export const REFERENCE_REGIONS = Object.freeze([
   UPPER_LIMB_REGION,
   PELVIS_GLUTEAL_REGION,
   THIGH_REGION,
+  LEG_FOOT_REGION,
 ]);
 
 export const REGION_ROADMAP = Object.freeze([
@@ -21,7 +23,7 @@ export const REGION_ROADMAP = Object.freeze([
   Object.freeze({ id: "upper-limb", nameRu: "Плечо, предплечье и кисть", state: "verified-v1" }),
   Object.freeze({ id: "pelvis-gluteal", nameRu: "Таз и ягодичная область", state: "verified-v1" }),
   Object.freeze({ id: "thigh", nameRu: "Бедро", state: "verified-v1" }),
-  Object.freeze({ id: "leg-foot", nameRu: "Голень и стопа", state: "next" }),
+  Object.freeze({ id: "leg-foot", nameRu: "Голень и стопа", state: "verified-v1" }),
 ]);
 
 export function referenceRegionById(id) {
