@@ -14,6 +14,11 @@ import {
   studyStructureTerm,
 } from "./study-layer-terms-ru.js";
 import {
+  referenceLayerNameRu,
+  referenceStructureSearchText,
+  referenceStructureTerm,
+} from "./reference-terms-ru.js";
+import {
   hasCoverageRules,
   isKnownDeeperRelation,
   muscleDepthInfo,
@@ -408,6 +413,7 @@ let studyStructures = [];
 let studyRanges = new Map();
 let selectedStudyId = null;
 let selectedBoneId = null;
+let selectedReference = null;
 let highlightedStudyId = null;
 const exploreHiddenActions = [];
 let structureNames = [];
@@ -1714,6 +1720,15 @@ function revealSelectedMuscle() {
 }
 
 function focusSelectedStructures(padding = 1.65, direction = null) {
+  if (appMode === "explore" && selectedReference != null) {
+    const mesh = referenceMeshes.get(selectedReference.layerKey);
+    const box = referenceWorldBox(mesh, selectedReference.partId);
+    if (!box.isEmpty()) {
+      focusBox(box, Math.max(padding, 1.9), direction || currentViewDirection());
+    }
+    return;
+  }
+
   if (appMode === "explore" && selectedBoneId != null) {
     const box = boneWorldBox(selectedBoneId);
     if (!box.isEmpty()) {
@@ -3383,6 +3398,9 @@ function applyLearningRegion() {
     restoreStudyHighlight();
     restoreHighlights();
     selectedStudyId = null;
+    selectedReference = null;
+    canvas.dataset.selectedReferenceLayer = "";
+    canvas.dataset.selectedReferenceSpecific = "";
     selectedExploreSid = null;
     focusedStructureIds = [];
     isolated = false;
@@ -4407,6 +4425,9 @@ function selectExploreStructure(sid, hitStack = null) {
   restoreHighlights();
   selectedStudyId = null;
   selectedBoneId = null;
+  selectedReference = null;
+  canvas.dataset.selectedReferenceLayer = "";
+  canvas.dataset.selectedReferenceSpecific = "";
   canvas.dataset.selectedStudyLayer = "";
   canvas.dataset.selectedStudySpecific = "";
   selectedExploreSid = sid;
@@ -4465,6 +4486,9 @@ function selectStudyStructure(studyId) {
 
   selectedExploreSid = null;
   selectedBoneId = null;
+  selectedReference = null;
+  canvas.dataset.selectedReferenceLayer = "";
+  canvas.dataset.selectedReferenceSpecific = "";
   focusedStructureIds = [];
   selectedStudyId = studyId;
   highlightedStudyId = studyId;
@@ -4489,6 +4513,69 @@ function selectStudyStructure(studyId) {
   hideSelectedButton.disabled = false;
   canvas.dataset.selectedStudyLayer = entry.layerKey;
   canvas.dataset.selectedStudySpecific = String(term.specific);
+  updateLayerButtons();
+}
+
+function referencePartIdFromHit(hit) {
+  const mesh = hit?.object;
+  if (!mesh?.userData?.referenceLayer || hit.faceIndex == null) return null;
+  const ids = mesh.geometry?.getAttribute("structureId");
+  if (!ids) return null;
+  const corner = hit.faceIndex * 3;
+  const vertexIndex = mesh.geometry.index ? mesh.geometry.index.getX(corner) : corner;
+  const partId = Math.round(ids.getX(vertexIndex));
+  return mesh.userData.referenceRanges?.[partId] ? partId : null;
+}
+
+function referencePartIsVisible(mesh, partId) {
+  const range = mesh?.userData?.referenceRanges?.[partId];
+  const attr = mesh?.geometry?.getAttribute("structureVisible");
+  return Boolean(range && attr && attr.getX(range.start) >= 0.5);
+}
+
+function referencePartSourceName(mesh, partId) {
+  return (
+    mesh?.userData?.referenceNames?.[partId] ||
+    referenceLayerNameRu(mesh?.userData?.referenceLayer)
+  );
+}
+
+function selectReferenceStructure(layerKey, partId) {
+  const mesh = referenceMeshes.get(layerKey);
+  if (
+    appMode !== "explore" ||
+    !mesh ||
+    partId == null ||
+    !referencePartIsVisible(mesh, partId)
+  ) return;
+
+  clearDeeperStructures();
+  hideStructureReference();
+  restoreStudyHighlight();
+  restoreHighlights();
+
+  selectedExploreSid = null;
+  selectedStudyId = null;
+  selectedBoneId = null;
+  focusedStructureIds = [];
+  isolated = false;
+
+  const sourceName = referencePartSourceName(mesh, partId);
+  const term = referenceStructureTerm(sourceName, layerKey);
+  selectedReference = { layerKey, partId };
+
+  questionLabelEl.textContent = referenceLayerNameRu(layerKey);
+  questionEl.textContent = term.nameRu;
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent = term.specific
+    ? "Анатомический ориентир выбран. Можно приблизить его кнопкой «К выбранной»."
+    : "Ориентир выбран. Точный русский термин для этой записи источника ещё уточняется.";
+
+  canvas.dataset.selectedReferenceLayer = layerKey;
+  canvas.dataset.selectedReferenceSpecific = String(term.specific);
+  focusSelectedButton.disabled = false;
+  isolateButton.disabled = true;
+  hideSelectedButton.disabled = true;
   updateLayerButtons();
 }
 
@@ -4518,6 +4605,9 @@ function selectBoneStructure(boneId) {
 
   selectedExploreSid = null;
   selectedStudyId = null;
+  selectedReference = null;
+  canvas.dataset.selectedReferenceLayer = "";
+  canvas.dataset.selectedReferenceSpecific = "";
   selectedBoneId = boneId;
   focusedStructureIds = [];
   isolated = false;
@@ -7618,6 +7708,9 @@ function setMode(mode) {
   restoreExploreContext();
   selectedStudyId = null;
   selectedBoneId = null;
+  selectedReference = null;
+  canvas.dataset.selectedReferenceLayer = "";
+  canvas.dataset.selectedReferenceSpecific = "";
   selectedExploreSid = null;
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
@@ -7774,6 +7867,18 @@ function renderSearchResults(query) {
     }
   }
 
+  if (appMode === "explore" && matches.length < 10) {
+    for (const [layerKey, mesh] of referenceMeshes) {
+      const names = mesh.userData.referenceNames || [];
+      for (let partId = 0; partId < names.length && matches.length < 10; partId += 1) {
+        if (!referencePartIsVisible(mesh, partId)) continue;
+        if (referenceStructureSearchText(names[partId], layerKey).includes(q)) {
+          matches.push({ kind: "reference", layerKey, partId });
+        }
+      }
+    }
+  }
+
   if (!matches.length) {
     const empty = document.createElement("p");
     empty.className = "search-empty";
@@ -7791,7 +7896,12 @@ function renderSearchResults(query) {
       const sid = match.id;
       button.textContent = displayStructureName(sid);
       button.addEventListener("click", () => {
-        if (isolated || selectedStudyId != null || selectedBoneId != null) {
+        if (
+          isolated ||
+          selectedStudyId != null ||
+          selectedBoneId != null ||
+          selectedReference != null
+        ) {
           restoreExploreContext();
         }
         if (structureVisibility[sid] === false) {
@@ -7809,7 +7919,9 @@ function renderSearchResults(query) {
       const term = boneTermRu(boneNames[boneId]);
       button.textContent = term.nameRu + " · Кость";
       button.addEventListener("click", () => {
-        if (isolated || selectedStudyId != null) restoreExploreContext();
+        if (isolated || selectedStudyId != null || selectedReference != null) {
+          restoreExploreContext();
+        }
         if (boneDisplayMode === "off") {
           boneDisplayMode = "anatomical";
           boneMode.value = "anatomical";
@@ -7819,12 +7931,35 @@ function renderSearchResults(query) {
         searchResults.replaceChildren();
         searchInput.value = term.nameRu;
       });
+    } else if (match.kind === "reference") {
+      const mesh = referenceMeshes.get(match.layerKey);
+      const sourceName = referencePartSourceName(mesh, match.partId);
+      const term = referenceStructureTerm(sourceName, match.layerKey);
+      button.textContent = term.nameRu + " · " + referenceLayerNameRu(match.layerKey);
+      button.addEventListener("click", () => {
+        if (isolated || selectedStudyId != null || selectedBoneId != null) {
+          restoreExploreContext();
+        }
+        const input = referenceLayerInputs.find(
+          (item) => item.dataset.referenceLayer === match.layerKey
+        );
+        if (input) input.checked = true;
+        if (mesh) {
+          mesh.visible = applyReferenceRegionVisibility(mesh) > 0;
+          updateReferenceLayerDataset();
+        }
+        selectReferenceStructure(match.layerKey, match.partId);
+        searchResults.replaceChildren();
+        searchInput.value = term.nameRu;
+      });
     } else {
       const entry = studyEntry(match.id);
       button.textContent =
         studyDisplayName(match.id) + " · " + studyLayerNameRu(entry?.layerKey);
       button.addEventListener("click", () => {
-        if (isolated || selectedBoneId != null) restoreExploreContext();
+        if (isolated || selectedBoneId != null || selectedReference != null) {
+          restoreExploreContext();
+        }
         ensureStudyLayerShown(entry);
         setStudyStructureVisible(match.id, true);
         selectStudyStructure(match.id);
@@ -7905,6 +8040,7 @@ function onPointerUp(event) {
     anatomyMesh,
     skeletonMesh?.visible ? skeletonMesh : null,
     ...studyMeshes().filter((mesh) => mesh.visible),
+    ...[...referenceMeshes.values()].filter((mesh) => mesh.visible),
   ].filter(Boolean);
   const hits = raycaster.intersectObjects(pickables, false);
 
@@ -7925,6 +8061,15 @@ function onPointerUp(event) {
       const boneId = boneIdFromHit(hit);
       if (boneId != null && boneVisibility[boneId] !== false) {
         selectBoneStructure(boneId);
+        return;
+      }
+      continue;
+    }
+
+    if (hit.object?.userData?.referenceLayer) {
+      const partId = referencePartIdFromHit(hit);
+      if (partId != null && referencePartIsVisible(hit.object, partId)) {
+        selectReferenceStructure(hit.object.userData.referenceLayer, partId);
         return;
       }
       continue;
@@ -8441,6 +8586,7 @@ function resetLoadedModel() {
   studyRanges = new Map();
   selectedStudyId = null;
   selectedBoneId = null;
+  selectedReference = null;
   highlightedStudyId = null;
   exploreHiddenActions.length = 0;
   structureNames = [];
@@ -8729,12 +8875,21 @@ async function loadReferenceLayer(layerKey) {
     const geometries = [];
     const vertexCounts = [];
     const localBounds = [];
+    const sourceNames = [];
 
     gltf.scene.traverse((child) => {
       if (!child.isMesh) return;
 
       // Reference layers keep their own part IDs. They never share bone state.
       const referenceId = vertexCounts.length;
+      sourceNames.push(
+        String(
+          child.name ||
+            child.userData?.name ||
+            child.parent?.name ||
+            referenceLayerNameRu(layerKey)
+        ).trim()
+      );
       const geometry = cleanSkeletonGeometry(
         child.geometry,
         child.matrixWorld,
@@ -8763,6 +8918,7 @@ async function loadReferenceLayer(layerKey) {
     mesh.userData.referenceLayer = layerKey;
     mesh.userData.referenceRanges = ranges;
     mesh.userData.referenceBounds = localBounds;
+    mesh.userData.referenceNames = sourceNames;
     modelGroup.add(mesh);
     referenceMeshes.set(layerKey, mesh);
 
