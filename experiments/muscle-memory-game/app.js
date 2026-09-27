@@ -50,6 +50,7 @@ import {
   buildMuscleCatalog,
   filterCatalogByRegion,
   learningConceptSourceName,
+  learningDepthSourceNames,
   learningScopeDescriptionRu,
   learningSummary,
   loadLearningStore,
@@ -1732,7 +1733,7 @@ function targetConceptKeys(target) {
   return [
     ...new Set(
       (target?.sourceNames || [])
-        .map((sourceName) => learningConceptSourceName(sourceName))
+        .flatMap((sourceName) => learningDepthSourceNames(sourceName))
         .filter(Boolean)
     ),
   ];
