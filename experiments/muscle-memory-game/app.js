@@ -35,6 +35,11 @@ import {
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
 import {
+  BODYPARTS_TRUNK_OBJ_SUPPLEMENTS,
+  BODYPARTS_TRUNK_PACK,
+  registeredBodyPartsV3ObjGeometry,
+} from "./bodyparts-supplements.js";
+import {
   LEARNING_REGIONS,
   LEARNING_SCOPES,
   buildMuscleCatalog,
@@ -8537,6 +8542,104 @@ function bodyPartsGeometry(part, buffer, sid = null, color = null) {
   return geometry;
 }
 
+
+async function loadBodyPartsTrunkSupplements(
+  muscleChunks,
+  vertexCounts,
+  muscleAnatomyParts
+) {
+  const existingConceptIds = new Set(
+    muscleAnatomyParts.map((part) => part.conceptId).filter(Boolean)
+  );
+  let added = 0;
+  let triangles = 0;
+  const failures = [];
+
+  try {
+    const response = await fetch(BODYPARTS_TRUNK_PACK.manifestUrl);
+    if (!response.ok) throw new Error("manifest");
+    const manifest = await response.json();
+    const selected = manifest.parts.filter(
+      (part) =>
+        BODYPARTS_TRUNK_PACK.ids.includes(part.id) &&
+        !existingConceptIds.has(part.conceptId)
+    );
+
+    if (selected.length) {
+      const chunk = manifest.chunks?.[0];
+      if (!chunk?.bytes) throw new Error("chunk");
+      const buffer = await fetchBodyPartsBuffer({
+        url: BODYPARTS_TRUNK_PACK.bufferUrl,
+        gzip: BODYPARTS_TRUNK_PACK.bufferUrl,
+        bytes: chunk.bytes,
+      });
+
+      for (const part of selected) {
+        const sid = structureNames.length;
+        const color = baseColorFor(part.name);
+        const geometry = bodyPartsGeometry(part, buffer, sid, color);
+
+        structureNames.push(part.name);
+        baseColors.push(color);
+        vertexCounts.push(part.vertexCount);
+        muscleChunks.push(geometry);
+        muscleAnatomyParts.push(part);
+        existingConceptIds.add(part.conceptId);
+        triangles += Math.floor(part.indexCount / 3);
+        added += 1;
+      }
+    }
+  } catch (error) {
+    console.warn("BodyParts3D trunk packed supplement was not loaded.", error);
+    failures.push("packed-trunk");
+  }
+
+  for (const supplement of BODYPARTS_TRUNK_OBJ_SUPPLEMENTS) {
+    if (existingConceptIds.has(supplement.id)) continue;
+
+    try {
+      const response = await fetch(supplement.url);
+      if (!response.ok) throw new Error("OBJ");
+      const text = await response.text();
+      const sid = structureNames.length;
+      const color = baseColorFor(supplement.name);
+      const geometry = registeredBodyPartsV3ObjGeometry(text, sid, color);
+      const vertexCount = geometry.getAttribute("position").count;
+      const bounds = geometry.boundingBox
+        ? [
+            geometry.boundingBox.min.toArray(),
+            geometry.boundingBox.max.toArray(),
+          ]
+        : null;
+
+      structureNames.push(supplement.name);
+      baseColors.push(color);
+      vertexCounts.push(vertexCount);
+      muscleChunks.push(geometry);
+      muscleAnatomyParts.push({
+        id: supplement.id,
+        conceptId: supplement.id,
+        name: supplement.name,
+        system: "muscular",
+        bounds,
+        sourceVersion: "BodyParts3D 3.0",
+      });
+      existingConceptIds.add(supplement.id);
+      triangles += Math.floor((geometry.index?.count || vertexCount) / 3);
+      added += 1;
+    } catch (error) {
+      console.warn(
+        "BodyParts3D trunk OBJ supplement was not loaded:",
+        supplement.id,
+        error
+      );
+      failures.push(supplement.id);
+    }
+  }
+
+  return { added, triangles, failures };
+}
+
 async function loadSkeletonLayer(loader) {
   try {
     const gltf = await loader.loadAsync(SKELETON_MODEL_URL);
@@ -8836,6 +8939,14 @@ async function loadBodyParts4Model() {
     await new Promise(requestAnimationFrame);
   }
 
+  loadingEl.textContent = "Дополняю мышечную модель BodyParts3D…";
+  const trunkSupplement = await loadBodyPartsTrunkSupplements(
+    muscleChunks,
+    vertexCounts,
+    muscleAnatomyParts
+  );
+  triangleCount += trunkSupplement.triangles;
+
   const mergedMuscles = mergeGeometries(muscleChunks, false);
   for (const geometry of muscleChunks) geometry.dispose();
   if (!mergedMuscles) throw new Error("Не удалось собрать полнотелую мышечную модель BodyParts3D.");
@@ -8907,9 +9018,11 @@ async function loadBodyParts4Model() {
   canvas.dataset.connectiveCount = String(connective.total);
   canvas.dataset.skinCount = String(skinParts.length);
   updateDiagnostics(
-    "BodyParts3D 4.0: всё тело, " +
-    classification.muscles +
-    " мышечных, " +
+    "BodyParts3D 4.0 + проверенные мышцы 3.0: всё тело, " +
+    (classification.muscles + trunkSupplement.added) +
+    " мышечных (" +
+    trunkSupplement.added +
+    " восстановлено из 3.0), " +
     classification.bones +
     " костных, " +
     connective.total +
@@ -8938,7 +9051,12 @@ async function loadBodyParts4Model() {
     classification.excludedSkeletal +
     " структур, ошибочно помеченных atlas как skeletal. " +
     (triangleCount + connectiveTriangleCount + skinTriangleCount).toLocaleString("ru-RU") +
-    " треугольников загруженных слоёв."
+    " треугольников загруженных слоёв." +
+    (trunkSupplement.failures.length
+      ? " Не удалось загрузить дополнения: " +
+        trunkSupplement.failures.join(", ") +
+        "."
+      : "")
   );
 }
 
