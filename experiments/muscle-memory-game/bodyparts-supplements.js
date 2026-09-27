@@ -37,6 +37,53 @@ export const BODYPARTS_V3_FACE_REGISTRATION = Object.freeze({
   heldOutSurfaceRmsMm: 0.2583466353828061,
 });
 
+export const BODYPARTS_V3_FOOT_REGISTRATION = Object.freeze({
+  method:
+    "Side-specific similarity registration to BodyParts3D 4.0 fitted on talus, calcaneus and five metatarsal bounding-box centers",
+  right: Object.freeze({
+    scale: 1.0072436610024298,
+    rotation: Object.freeze([
+      Object.freeze([0.970926442856524, 0.026225215936868572, -0.23793713583852452]),
+      Object.freeze([-0.02815144612239258, 0.999592617162793, -0.0047006164336051955]),
+      Object.freeze([0.2377169296520422, 0.011262227253188345, 0.9712691818410087]),
+    ]),
+    translationMeters: Object.freeze([
+      -0.008721814481116821,
+      -0.06966149056100757,
+      0.030219901503277555,
+    ]),
+    fittedBoneCenterRmsMm: 0.9102421751609061,
+    fittedBoneCenterMaxMm: 1.4727015120975697,
+    heldOutMuscleCenterErrorMm: Object.freeze({
+      extensorHallucisBrevis: 4.517574705583107,
+      abductorHallucis: 0.9344017792334579,
+      flexorDigitorumBrevis: 3.06924647297659,
+      extensorHallucisLongus: 1.4673723005442152,
+    }),
+  }),
+  left: Object.freeze({
+    scale: 1.0052367718567856,
+    rotation: Object.freeze([
+      Object.freeze([0.9707805233083933, -0.02864897403154174, 0.23825283178174914]),
+      Object.freeze([0.03065125050291894, 0.9995190768999241, -0.004702739173193669]),
+      Object.freeze([-0.23800352183883666, 0.011868074825507762, 0.9711917794093229]),
+    ]),
+    translationMeters: Object.freeze([
+      0.010503166773752542,
+      -0.06963950494293925,
+      0.02982062592842824,
+    ]),
+    fittedBoneCenterRmsMm: 0.9451331032227097,
+    fittedBoneCenterMaxMm: 1.5093749110934367,
+    heldOutMuscleCenterErrorMm: Object.freeze({
+      extensorHallucisBrevis: 4.441553506192821,
+      abductorHallucis: 0.9656588798619626,
+      flexorDigitorumBrevis: 3.0330546373391924,
+      extensorHallucisLongus: 1.1733315499304404,
+    }),
+  }),
+});
+
 export const BODYPARTS_TRUNK_PACK = Object.freeze({
   manifestUrl:
     "https://raw.githubusercontent.com/japan4415/training-logger/65da3a5a9477645842df857598bd938438a8a143/public/models/human-atlas/atlas.json",
@@ -134,17 +181,23 @@ export const BODYPARTS_FACE_OBJ_SUPPLEMENTS = Object.freeze([
   ),
 ]);
 
-export const BODYPARTS_UNVALIDATED_REGIONAL_SUPPLEMENTS = Object.freeze([
-  supplement(
-    "FMA51142",
-    "Right extensor digitorum brevis",
-    "FJ934_BP2759_FMA51142_Right_extensor_digitorum_brevis.obj"
-  ),
-  supplement(
-    "FMA51143",
-    "Left extensor digitorum brevis",
-    "FJ935_BP2760_FMA51143_Left_extensor_digitorum_brevis.obj"
-  ),
+export const BODYPARTS_FOOT_OBJ_SUPPLEMENTS = Object.freeze([
+  Object.freeze({
+    ...supplement(
+      "FMA51142",
+      "Right extensor digitorum brevis",
+      "FJ934_BP2759_FMA51142_Right_extensor_digitorum_brevis.obj"
+    ),
+    side: "right",
+  }),
+  Object.freeze({
+    ...supplement(
+      "FMA51143",
+      "Left extensor digitorum brevis",
+      "FJ935_BP2760_FMA51143_Left_extensor_digitorum_brevis.obj"
+    ),
+    side: "left",
+  }),
 ]);
 
 function sourceIndex(value, length) {
@@ -314,6 +367,44 @@ export function registeredBodyPartsV3ObjGeometry(text, sid, color) {
   );
 }
 
+function footPosition(source, side) {
+  const p = bodyPartsFrame(source);
+  const registration = BODYPARTS_V3_FOOT_REGISTRATION[side];
+  if (!registration) throw new Error("Unknown BodyParts3D foot side.");
+
+  const r = registration.rotation;
+  const scale = registration.scale;
+  const t = registration.translationMeters;
+  return [
+    scale * (r[0][0] * p[0] + r[0][1] * p[1] + r[0][2] * p[2]) + t[0],
+    scale * (r[1][0] * p[0] + r[1][1] * p[1] + r[1][2] * p[2]) + t[1],
+    scale * (r[2][0] * p[0] + r[2][1] * p[1] + r[2][2] * p[2]) + t[2],
+  ];
+}
+
+function footNormal(source, side) {
+  const p = axisConvertedNormal(source);
+  const registration = BODYPARTS_V3_FOOT_REGISTRATION[side];
+  const r = registration.rotation;
+  const n = [
+    r[0][0] * p[0] + r[0][1] * p[1] + r[0][2] * p[2],
+    r[1][0] * p[0] + r[1][1] * p[1] + r[1][2] * p[2],
+    r[2][0] * p[0] + r[2][1] * p[1] + r[2][2] * p[2],
+  ];
+  const length = Math.hypot(...n) || 1;
+  return n.map((value) => value / length);
+}
+
 export function registeredBodyPartsV3FaceObjGeometry(text, sid, color) {
   return buildObjGeometry(text, sid, color, facePosition, faceNormal);
+}
+
+export function registeredBodyPartsV3FootObjGeometry(text, sid, color, side) {
+  return buildObjGeometry(
+    text,
+    sid,
+    color,
+    (source) => footPosition(source, side),
+    (source) => footNormal(source, side)
+  );
 }
