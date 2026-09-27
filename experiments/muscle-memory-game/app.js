@@ -411,6 +411,7 @@ let structureRanges = [];
 let structureVisibility = [];
 let baseColors = [];
 let highlightedIds = new Set();
+let bodyPartsSurfaceGuardHiddenIds = new Set();
 let bodySize = new THREE.Vector3(1, 1, 1);
 
 const MOTION_UI_ENABLED = false;
@@ -1651,6 +1652,8 @@ function revealSelectedMuscle() {
   for (const coverSid of coveringIds) {
     setStructureVisible(coverSid, false);
   }
+  applyBodyPartsSurfaceConflictGuards();
+  setStructureVisible(sid, true);
 
   exploreHiddenActions.push({
     kind: "verified-cover",
@@ -1752,11 +1755,83 @@ function writeVisibleStructures(ids = null) {
   attr.needsUpdate = true;
 }
 
+const BODYPARTS_BACK_SURFACE_GUARDS = Object.freeze([
+  Object.freeze({
+    side: "right",
+    cover: /^right latissimus dorsi$/i,
+    deeper: Object.freeze([
+      /^right serratus posterior inferior$/i,
+      /^right iliocostalis lumborum$/i,
+    ]),
+  }),
+  Object.freeze({
+    side: "left",
+    cover: /^left latissimus dorsi$/i,
+    deeper: Object.freeze([
+      /^left serratus posterior inferior$/i,
+      /^left iliocostalis lumborum$/i,
+    ]),
+  }),
+]);
+
+function applyBodyPartsSurfaceConflictGuards() {
+  if (
+    currentModelSource !== "bodyparts4" ||
+    !anatomyMesh ||
+    isolated
+  ) {
+    return;
+  }
+
+  const regionAllowed = regionIsolationActive()
+    ? new Set(activeRegionStructureIds())
+    : null;
+
+  for (const guard of BODYPARTS_BACK_SURFACE_GUARDS) {
+    const coverIds = [];
+    const deeperIds = [];
+
+    for (let sid = 0; sid < structureNames.length; sid += 1) {
+      const name = structureNames[sid] || "";
+      if (guard.cover.test(name)) coverIds.push(sid);
+      if (guard.deeper.some((pattern) => pattern.test(name))) {
+        deeperIds.push(sid);
+      }
+    }
+
+    const coverVisible = coverIds.some(
+      (sid) => structureVisibility[sid] !== false
+    );
+
+    if (coverVisible) {
+      for (const sid of deeperIds) {
+        if (structureVisibility[sid] === false) continue;
+        setStructureVisible(sid, false);
+        bodyPartsSurfaceGuardHiddenIds.add(sid);
+      }
+      continue;
+    }
+
+    for (const sid of deeperIds) {
+      if (!bodyPartsSurfaceGuardHiddenIds.has(sid)) continue;
+      const allowed = !regionAllowed || regionAllowed.has(sid);
+      if (allowed) setStructureVisible(sid, true);
+      bodyPartsSurfaceGuardHiddenIds.delete(sid);
+    }
+  }
+
+  canvas.dataset.bodyPartsSurfaceGuardHidden = String(
+    bodyPartsSurfaceGuardHiddenIds.size
+  );
+}
+
 function applyRegionMuscleVisibility() {
+  bodyPartsSurfaceGuardHiddenIds.clear();
   writeVisibleStructures(
     regionIsolationActive() ? activeRegionStructureIds() : null
   );
   isolated = false;
+  applyBodyPartsSurfaceConflictGuards();
   canvas.dataset.regionIsolation = regionIsolationActive() ? "true" : "false";
   canvas.dataset.regionVisibleMuscles = String(
     structureVisibility.filter(Boolean).length
@@ -2226,6 +2301,7 @@ function peelAnatomicalMuscleLayer() {
   restoreStudyHighlight();
 
   for (const sid of layer.ids) setStructureVisible(sid, false);
+  applyBodyPartsSurfaceConflictGuards();
 
   exploreHiddenActions.push({
     kind: "anatomical-layer",
@@ -2776,6 +2852,7 @@ function undoLastHide() {
 
   if (action?.kind === "verified-cover") {
     for (const sid of action.ids || []) setStructureVisible(sid, true);
+    applyBodyPartsSurfaceConflictGuards();
     const selectedSid =
       action.selectedSid != null ? action.selectedSid : selectedExploreSid;
     restoreHighlights();
@@ -2794,6 +2871,7 @@ function undoLastHide() {
     action?.kind === "surface-layer"
   ) {
     for (const sid of action.ids || []) setStructureVisible(sid, true);
+    applyBodyPartsSurfaceConflictGuards();
     questionLabelEl.textContent = "Послойное изучение";
     questionEl.textContent = "Последний анатомический слой возвращён";
     feedbackEl.className = "feedback";
@@ -8275,6 +8353,7 @@ function resetLoadedModel() {
   structureVisibility = [];
   baseColors = [];
   highlightedIds = new Set();
+  bodyPartsSurfaceGuardHiddenIds = new Set();
   bodySize.set(1, 1, 1);
 
   learningCatalog = [];
