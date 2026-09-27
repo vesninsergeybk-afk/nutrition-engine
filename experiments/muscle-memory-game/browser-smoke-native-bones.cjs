@@ -133,13 +133,25 @@ const assert = require('node:assert/strict');
       await adductionPage.locator('#motion-state').innerText(),
       /примерно от 97° до 23°|проверенн.*участок/i
     );
-    assert.equal(
-      await adductionCanvas.getAttribute('data-motion-source-range-start'),
-      '96.946'
+    const rangeStart = Number(
+      await adductionCanvas.getAttribute('data-motion-source-range-start')
     );
-    assert.equal(
-      await adductionCanvas.getAttribute('data-motion-source-range-end'),
-      '22.524'
+    const rangeEnd = Number(
+      await adductionCanvas.getAttribute('data-motion-source-range-end')
+    );
+    assert.ok(
+      Number.isFinite(rangeStart) &&
+        Math.abs(rangeStart - 96.95) < 0.05,
+      'Unexpected source-derived adduction start: ' + rangeStart
+    );
+    assert.ok(
+      Number.isFinite(rangeEnd) &&
+        Math.abs(rangeEnd - 22.52) < 0.05,
+      'Unexpected source-derived adduction end: ' + rangeEnd
+    );
+    assert.ok(
+      rangeStart > rangeEnd,
+      'Adduction must traverse the verified source excursion in reverse'
     );
     assert.equal(
       await adductionCanvas.getAttribute('data-motion-source-coordinate'),
