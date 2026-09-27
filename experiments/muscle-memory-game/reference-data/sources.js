@@ -89,6 +89,35 @@ export const REFERENCE_SOURCES = Object.freeze({
 
 
 
+
+  "kenhub-abductor-hallucis": Object.freeze({
+    title: "Kenhub: Abductor hallucis muscle",
+    role: "Дополнительная сверка прикреплений и функции мышцы, отводящей большой палец стопы",
+    url: "https://www.kenhub.com/en/library/anatomy/abductor-hallucis-muscle",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-abductor-digiti-minimi-foot": Object.freeze({
+    title: "Kenhub: Abductor digiti minimi muscle of foot",
+    role: "Сверка спорного описания дистального прикрепления мышцы, отводящей мизинец стопы",
+    url: "https://www.kenhub.com/en/library/anatomy/abductor-digiti-minimi-muscle",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-plantar-interossei-foot": Object.freeze({
+    title: "Kenhub: Plantar interossei muscles of foot",
+    role: "Сверка начала, прикрепления и действий подошвенных межкостных мышц",
+    url: "https://www.kenhub.com/en/library/anatomy/plantar-interossei-muscles",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-adductor-hallucis": Object.freeze({
+    title: "Kenhub: Adductor hallucis muscle",
+    role: "Сверка двух головок мышцы, приводящей большой палец стопы",
+    url: "https://www.kenhub.com/en/library/anatomy/adductor-hallucis-muscle",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-foot-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Foot Muscles",
     role: "Основная современная сверка наружных и собственных мышц стопы, компартментов и четырёх подошвенных слоёв",
