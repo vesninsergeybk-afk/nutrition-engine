@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
+import { boneTermRu } from "./bone-terms-ru.js";
 import {
   muscleReferenceFor,
   muscleReferenceSource,
@@ -402,6 +403,7 @@ let referenceLoadGeneration = 0;
 let studyStructures = [];
 let studyRanges = new Map();
 let selectedStudyId = null;
+let selectedBoneId = null;
 let highlightedStudyId = null;
 const exploreHiddenActions = [];
 let structureNames = [];
@@ -1630,6 +1632,14 @@ function revealSelectedMuscle() {
 }
 
 function focusSelectedStructures(padding = 1.65, direction = null) {
+  if (appMode === "explore" && selectedBoneId != null) {
+    const box = boneWorldBox(selectedBoneId);
+    if (!box.isEmpty()) {
+      focusBox(box, Math.max(padding, 1.8), direction || currentViewDirection());
+    }
+    return;
+  }
+
   if (appMode === "explore" && selectedStudyId != null) {
     const box = boxForStudyStructure(selectedStudyId);
     if (!box.isEmpty()) {
@@ -4314,6 +4324,7 @@ function selectExploreStructure(sid, hitStack = null) {
   restoreStudyHighlight();
   restoreHighlights();
   selectedStudyId = null;
+  selectedBoneId = null;
   canvas.dataset.selectedStudyLayer = "";
   canvas.dataset.selectedStudySpecific = "";
   selectedExploreSid = sid;
@@ -4361,6 +4372,7 @@ function selectExploreStructure(sid, hitStack = null) {
 function selectStudyStructure(studyId) {
   if (appMode !== "explore") return;
   clearDeeperStructures();
+  hideStructureReference();
   const entry = studyEntry(studyId);
   if (!entry) return;
 
@@ -4370,6 +4382,7 @@ function selectStudyStructure(studyId) {
   restoreStudyHighlight();
 
   selectedExploreSid = null;
+  selectedBoneId = null;
   focusedStructureIds = [];
   selectedStudyId = studyId;
   highlightedStudyId = studyId;
@@ -4394,6 +4407,50 @@ function selectStudyStructure(studyId) {
   hideSelectedButton.disabled = false;
   canvas.dataset.selectedStudyLayer = entry.layerKey;
   canvas.dataset.selectedStudySpecific = String(term.specific);
+  updateLayerButtons();
+}
+
+function boneIdFromHit(hit) {
+  if (!hit || hit.object !== skeletonMesh || hit.faceIndex == null) return null;
+  const geometry = skeletonMesh?.geometry;
+  const ids = geometry?.getAttribute("structureId");
+  if (!geometry || !ids) return null;
+  const corner = hit.faceIndex * 3;
+  const vertexIndex = geometry.index ? geometry.index.getX(corner) : corner;
+  const boneId = Math.round(ids.getX(vertexIndex));
+  return boneNames[boneId] ? boneId : null;
+}
+
+function selectBoneStructure(boneId) {
+  if (
+    appMode !== "explore" ||
+    boneId == null ||
+    !boneNames[boneId] ||
+    boneVisibility[boneId] === false
+  ) return;
+
+  clearDeeperStructures();
+  hideStructureReference();
+  restoreStudyHighlight();
+  restoreHighlights();
+
+  selectedExploreSid = null;
+  selectedStudyId = null;
+  selectedBoneId = boneId;
+  focusedStructureIds = [];
+  isolated = false;
+
+  const term = boneTermRu(boneNames[boneId]);
+  questionLabelEl.textContent = "Кость";
+  questionEl.textContent = term.nameRu;
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent = term.specific
+    ? "Костная структура выбрана. Можно приблизить её кнопкой «К выбранной»."
+    : "Костная структура выбрана; для этой записи источника точный русский термин ещё не подтверждён.";
+
+  focusSelectedButton.disabled = false;
+  isolateButton.disabled = true;
+  hideSelectedButton.disabled = true;
   updateLayerButtons();
 }
 
@@ -7478,6 +7535,7 @@ function setMode(mode) {
   restoreHighlights();
   restoreExploreContext();
   selectedStudyId = null;
+  selectedBoneId = null;
   selectedExploreSid = null;
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
@@ -7737,6 +7795,7 @@ function onPointerUp(event) {
 
   const pickables = [
     anatomyMesh,
+    skeletonMesh?.visible ? skeletonMesh : null,
     ...studyMeshes().filter((mesh) => mesh.visible),
   ].filter(Boolean);
   const hits = raycaster.intersectObjects(pickables, false);
@@ -7749,6 +7808,15 @@ function onPointerUp(event) {
           sid,
           hits.filter((candidateHit) => candidateHit.object === anatomyMesh)
         );
+        return;
+      }
+      continue;
+    }
+
+    if (hit.object === skeletonMesh) {
+      const boneId = boneIdFromHit(hit);
+      if (boneId != null && boneVisibility[boneId] !== false) {
+        selectBoneStructure(boneId);
         return;
       }
       continue;
@@ -8264,6 +8332,7 @@ function resetLoadedModel() {
   studyStructures = [];
   studyRanges = new Map();
   selectedStudyId = null;
+  selectedBoneId = null;
   highlightedStudyId = null;
   exploreHiddenActions.length = 0;
   structureNames = [];
