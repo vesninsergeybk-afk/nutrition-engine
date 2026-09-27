@@ -8200,7 +8200,7 @@ function applyBoneDisplayMode() {
     skeletonMesh.renderOrder = 1;
     boneOpacity.disabled = true;
     boneOpacityField.hidden = true;
-  } else {
+  } else if (mode === "xray") {
     material.transparent = true;
     material.opacity = Number(boneOpacity.value);
     material.depthTest = false;
