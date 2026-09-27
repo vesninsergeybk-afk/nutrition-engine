@@ -231,6 +231,7 @@ const structureReferenceRegion = document.querySelector("#structure-reference-re
 const structureReferenceType = document.querySelector("#structure-reference-type");
 const structureReferenceDepth = document.querySelector("#structure-reference-depth");
 const structureReferenceBadges = document.querySelector("#structure-reference-badges");
+const structureReferenceContext = document.querySelector("#structure-reference-context");
 const structureReferenceAmbiguity = document.querySelector("#structure-reference-ambiguity");
 const structureReferenceAmbiguityLabel = document.querySelector("#structure-reference-ambiguity-label");
 const structureReferenceAmbiguityNote = document.querySelector("#structure-reference-ambiguity-note");
@@ -569,6 +570,17 @@ function renderStructureReference(sid) {
     : "Слой не подтверждён";
 
   renderReferenceAmbiguity(reference);
+
+  if (structureReferenceContext) {
+    const contextText =
+      reference?.modelCoverage === "group"
+        ? "Рассматривается в составе: " + reference.titleRu + "."
+        : reference?.modelCoverage === "part"
+          ? "Это часть: " + reference.titleRu + "."
+          : "";
+    structureReferenceContext.textContent = contextText;
+    structureReferenceContext.hidden = !contextText;
+  }
 
   if (reference?.ambiguous) {
     structureReferenceLatin.textContent = term.latin || "";
