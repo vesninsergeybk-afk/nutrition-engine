@@ -38,7 +38,8 @@ export const THIGH_REGION = deepFreeze({
         "adductor-brevis",
         "adductor-magnus",
         "gracilis",
-        "pectineus"
+        "pectineus",
+        "adductor-minimus"
       ]
     }
   ],
@@ -800,6 +801,63 @@ export const THIGH_REGION = deepFreeze({
       ],
       "verification": {
         "status": "cross-checked-innervation-variation"
+      }
+    },
+    {
+      "id": "adductor-minimus",
+      "kind": "variable-muscle-part",
+      "names": {
+        "ru": "Малая приводящая мышца",
+        "latin": "musculus adductor minimus",
+        "modelAliases": [
+          "adductor minimus"
+        ]
+      },
+      "layer": "medial-deep-proximal",
+      "subregions": [
+        "proximal-medial-thigh",
+        "deep-hip"
+      ],
+      "anatomy": {
+        "originRu": [
+          "Верхняя часть нижней ветви лобковой кости; часть волокон может продолжаться от прилежащей ветви седалищной кости."
+        ],
+        "insertionRu": [
+          "Медиальный край ягодичной бугристости и самая верхняя часть шероховатой линии бедренной кости."
+        ],
+        "fiberDirectionRu": "Короткие почти горизонтальные пучки идут латерально от лобковой области к проксимальной бедренной кости.",
+        "actionsRu": [
+          "Приводит бедро.",
+          "Может помогать сгибанию бедра как верхняя часть приводящего отдела большой приводящей мышцы."
+        ],
+        "innervationRu": "Задняя ветвь запирательного нерва, преимущественно L2–L4."
+      },
+      "surfaceMap": {
+        "landmarksRu": [
+          "Нижняя ветвь лобковой кости",
+          "ягодичная бугристость",
+          "проксимальная шероховатая линия"
+        ],
+        "relationsRu": [
+          "Нередко рассматривается не как самостоятельная мышца, а как верхняя горизонтальная часть приводящего отдела adductor magnus.",
+          "Лежит глубже и проксимальнее основной массы длинной и короткой приводящих мышц."
+        ]
+      },
+      "movementCueRu": "В 3D показывается отдельно, но в учебной логике должна оставаться связанной с adductor magnus и не представляться обязательной самостоятельной мышцей у каждого человека.",
+      "sources": [
+        {
+          "sourceId": "ncbi-adductor-magnus",
+          "locator": "Adductor portion — superior segment",
+          "role": "verification"
+        },
+        {
+          "sourceId": "kenhub-adductor-magnus",
+          "locator": "Superior portion / adductor minimus",
+          "role": "verification"
+        }
+      ],
+      "verification": {
+        "status": "cross-checked-variable-subdivision"
       }
     }
   ]
