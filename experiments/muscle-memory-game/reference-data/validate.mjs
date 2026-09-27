@@ -1,6 +1,7 @@
 import { REFERENCE_SOURCES } from "./sources.js";
 import { MUSCLE_REFERENCE_PILOT, PILOT_STRUCTURE_IDS } from "./muscles-pilot.js";
 import { REFERENCE_REGIONS, REGION_ROADMAP } from "./regions/index.js";
+import { BODYPARTS3D_REFERENCE_ALIASES } from "./model-aliases.js";
 
 const errors = [];
 const warnings = [];
@@ -143,6 +144,22 @@ for (const [alias, uses] of aliases.entries()) {
   );
 }
 
+// Technical 3D aliases may point to an exact card or to a pedagogical group,
+ // but every target must exist in the canonical regional database.
+ for (const [sourceName, mapping] of Object.entries(BODYPARTS3D_REFERENCE_ALIASES)) {
+   requireValue(Boolean(sourceName.trim()), "Empty BodyParts3D alias");
+   requireValue(Boolean(mapping?.referenceId), `3D alias has no referenceId: ${sourceName}`);
+   requireValue(
+     structuresById.has(mapping?.referenceId),
+     `3D alias points to unknown referenceId: ${sourceName} -> ${mapping?.referenceId}`
+   );
+   requireValue(
+     mapping?.coverage === "exact" || mapping?.coverage === "group",
+     `3D alias has invalid coverage type: ${sourceName}`
+   );
+   requireValue(Boolean(mapping?.labelRu), `3D alias has no Russian display label: ${sourceName}`);
+ }
+
 // The old pilot is a compatibility view only; it must point at the exact canonical objects.
 requireValue(
   MUSCLE_REFERENCE_PILOT.length === PILOT_STRUCTURE_IDS.length,
@@ -195,6 +212,6 @@ if (errors.length) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Reference data OK: ${REFERENCE_REGIONS.length} regions, ${regionStructureIds.size} canonical structures, ${functionalGroupIds.size} functional groups, ${Object.keys(REFERENCE_SOURCES).length} sources.`
+    `Reference data OK: ${REFERENCE_REGIONS.length} regions, ${regionStructureIds.size} canonical structures, ${functionalGroupIds.size} functional groups, ${Object.keys(BODYPARTS3D_REFERENCE_ALIASES).length} BodyParts3D aliases, ${Object.keys(REFERENCE_SOURCES).length} sources.`
   );
 }
