@@ -18,6 +18,8 @@ import { structureTerm } from "./anatomy-terms-ru.js";
 
 function normalizeModelName(value) {
   return String(value || "")
+    .trim()
+    .replace(/\.(?:l|r)\s*$/i, " ")
     .toLocaleLowerCase("en-US")
     .replace(/\bright\b|\bleft\b/g, " ")
     .replace(/\bset of\b/g, " ")
@@ -28,6 +30,62 @@ function normalizeModelName(value) {
     .replace(/[^a-z0-9]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function zAnatomyLookupTerms(sourceName) {
+  const raw = String(sourceName || "")
+    .trim()
+    .replace(/\.(?:l|r)\s*$/i, "")
+    .replace(/^\((.*)\)$/u, "$1")
+    .replace(/\bbucinator\b/gi, "buccinator")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const terms = [raw];
+  const withoutGenericMuscle = raw
+    .replace(/\bmuscles?\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (withoutGenericMuscle && withoutGenericMuscle !== raw) {
+    terms.push(withoutGenericMuscle);
+  }
+
+  // Z-Anatomy often exposes one named head, part or belly as a separate mesh.
+  // Prefer an exact canonical part card when one exists; otherwise bridge the
+  // mesh to the parent muscle card without pretending the mesh is the whole
+  // muscle.
+  for (const value of [...terms]) {
+    const partMatch = value.match(
+      /^(?:.+?\s+)?(?:part|parts|head|belly)\s+of\s+(.+)$/i
+    );
+    if (partMatch?.[1]) {
+      const parent = partMatch[1]
+        .replace(/\bmuscles?\b/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (parent) terms.push(parent);
+    }
+  }
+
+  return [...new Set(terms.filter(Boolean))];
+}
+
+function lookupCandidatesForTerms(terms) {
+  const candidates = [];
+  const seenIds = new Set();
+
+  for (const term of terms || []) {
+    for (const candidate of [
+      ...(DIRECT_INDEX.get(normalizeModelName(term)) || []),
+      ...(COMPACT_INDEX.get(compactModelName(term)) || []),
+    ]) {
+      if (seenIds.has(candidate.structure.id)) continue;
+      seenIds.add(candidate.structure.id);
+      candidates.push(candidate);
+    }
+  }
+
+  return candidates;
 }
 
 function compactModelName(value) {
@@ -209,34 +267,44 @@ export function muscleReferenceFor(sourceName) {
     );
   }
 
-  // Z-Anatomy frequently names one mesh as a head or part of a canonical
-  // muscle. Its learner-facing terminology already knows those names, so use
-  // those aliases as a final bridge into the same canonical reference cards
-  // used by BodyParts3D.
+  // Z-Anatomy uses .l/.r suffixes and often exposes heads/parts/bellies as
+  // separate meshes. Resolve those names against the same canonical cards as
+  // BodyParts3D, preferring an exact part card and then the parent muscle.
+  const zTerms = zAnatomyLookupTerms(sourceName);
+  const zCandidates = lookupCandidatesForTerms(zTerms);
+
+  if (zCandidates.length === 1) {
+    const translated = structureTerm(sourceName);
+    const source = String(sourceName || "");
+    const partLike =
+      /\b(?:part|parts|head|belly)\s+of\b|\bpars\b|\bcaput\b/i.test(source);
+    return candidateCard(zCandidates[0], {
+      coverage: partLike ? "part" : "exact",
+      labelRu: translated?.nameRu || null,
+    });
+  }
+
+  if (zCandidates.length > 1) {
+    const translated = structureTerm(sourceName);
+    return ambiguityResult(
+      translated?.nameRu || "Имя встречается у нескольких структур",
+      "Название 3D-объекта соответствует нескольким анатомическим карточкам. Нужна более точная идентификация структуры.",
+      zCandidates.map((item) => item.structure.id)
+    );
+  }
+
   const translated = structureTerm(sourceName);
   const translatedTerms = [
     translated?.latin,
     translated?.nameRu,
     ...(translated?.aliases || []),
   ].filter(Boolean);
-
-  const translatedCandidates = [];
-  const seenIds = new Set();
-  for (const term of translatedTerms) {
-    for (const candidate of [
-      ...(DIRECT_INDEX.get(normalizeModelName(term)) || []),
-      ...(COMPACT_INDEX.get(compactModelName(term)) || []),
-    ]) {
-      if (seenIds.has(candidate.structure.id)) continue;
-      seenIds.add(candidate.structure.id);
-      translatedCandidates.push(candidate);
-    }
-  }
+  const translatedCandidates = lookupCandidatesForTerms(translatedTerms);
 
   if (translatedCandidates.length === 1) {
     const source = String(sourceName || "");
     const partLike =
-      /\b(?:part|head|belly) of\b|\bpars\b|\bcaput\b/i.test(source);
+      /\b(?:part|parts|head|belly)\s+of\b|\bpars\b|\bcaput\b/i.test(source);
     return candidateCard(translatedCandidates[0], {
       coverage: partLike ? "part" : "exact",
       labelRu: translated?.nameRu || null,
