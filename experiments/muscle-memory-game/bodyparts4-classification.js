@@ -1,6 +1,6 @@
 // Generated from pinned BodyParts3D 4.0 atlas + FMA hierarchy.
 // Bone classification follows FMA "Bone organ" (FMA5018), not atlas.system === "skeletal".
-// Some true muscles are mislabeled as skeletal in the atlas and are restored explicitly.
+// Some true muscles are mislabeled as skeletal or connective in the atlas and are restored explicitly.
 
 const BONE_CONCEPT_IDS = new Set([
   "FMA10014",
@@ -203,7 +203,7 @@ const BONE_CONCEPT_IDS = new Set([
   "FMA9968",
   "FMA9991"
 ]);
-const SKELETAL_TAGGED_MUSCLE_IDS = new Set([
+const MISLABELED_MUSCLE_IDS = new Set([
   "FMA13414",
   "FMA13415",
   "FMA22544",
@@ -217,12 +217,15 @@ const SKELETAL_TAGGED_MUSCLE_IDS = new Set([
   "FMA32540",
   "FMA32541",
   "FMA65018",
-  "FMA65019"
+  "FMA65019",
+  // Tensor fasciae latae is incorrectly tagged as connective in the pinned atlas.
+  "FMA22425",
+  "FMA22426"
 ]);
 
 export function bodyPartsAnatomyKind(part) {
   if (!part) return null;
-  if (part.system === "muscular" || SKELETAL_TAGGED_MUSCLE_IDS.has(part.conceptId)) {
+  if (part.system === "muscular" || MISLABELED_MUSCLE_IDS.has(part.conceptId)) {
     return "muscle";
   }
   if (BONE_CONCEPT_IDS.has(part.conceptId)) return "bone";
