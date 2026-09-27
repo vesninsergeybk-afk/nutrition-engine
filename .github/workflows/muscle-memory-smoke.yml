@@ -91,6 +91,7 @@ jobs:
           node --check experiments/muscle-memory-game/check-display-drawer.mjs
           node --check experiments/muscle-memory-game/check-atlas-navigation.mjs
           node --check experiments/muscle-memory-game/check-muscle-reference.mjs
+          node --check experiments/muscle-memory-game/check-functional-relations.mjs
           node --check experiments/muscle-memory-game/check-bodyparts-muscle-restoration.mjs
           node --check experiments/muscle-memory-game/check-bodyparts-back-occlusion.mjs
           node --check experiments/muscle-memory-game/check-standard-motion-asset.mjs
@@ -190,6 +191,7 @@ jobs:
           node experiments/muscle-memory-game/check-display-drawer.mjs
           node experiments/muscle-memory-game/check-atlas-navigation.mjs
           node experiments/muscle-memory-game/check-muscle-reference.mjs
+          node experiments/muscle-memory-game/check-functional-relations.mjs
           node experiments/muscle-memory-game/check-bodyparts-muscle-restoration.mjs
           node experiments/muscle-memory-game/check-bodyparts-back-occlusion.mjs
           node experiments/muscle-memory-game/check-standard-motion-asset.mjs
