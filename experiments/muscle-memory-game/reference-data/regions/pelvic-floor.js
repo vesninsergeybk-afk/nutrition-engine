@@ -668,13 +668,18 @@ export const PELVIC_FLOOR_REGION = deepFreeze({
       "sources": [
         {
           "sourceId": "ncbi-deep-perineum",
-          "locator": "Deep perineal space — traditional description and regional anatomy",
+          "locator": "Deep perineal space — traditional regional anatomy",
           "role": "background"
         },
         {
-          "sourceId": "ncbi-perineal-body",
-          "locator": "Deep transverse muscle and perineal body",
-          "role": "background"
+          "sourceId": "pmc-female-perineal-membrane",
+          "locator": "Gross and microscopic anatomy — female deep perineal region",
+          "role": "evidence-check"
+        },
+        {
+          "sourceId": "pmc-deep-transverse-perineal-2025",
+          "locator": "Abstract; Introduction; Discussion",
+          "role": "evidence-check"
         }
       ],
       "verification": {
