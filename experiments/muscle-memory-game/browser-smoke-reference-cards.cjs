@@ -1,0 +1,115 @@
+const { chromium } = require('/tmp/node_modules/playwright');
+const assert = require('node:assert/strict');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const errors = [];
+
+  page.on('pageerror', error => errors.push('pageerror: ' + error.message));
+  page.on('console', msg => {
+    if (msg.type() === 'error') errors.push('console: ' + msg.text());
+  });
+
+  await page.goto('http://127.0.0.1:4173/?mode=explore', {
+    waitUntil: 'domcontentloaded',
+  });
+  await page.waitForFunction(
+    () => document.querySelector('#loading')?.classList.contains('is-hidden'),
+    null,
+    { timeout: 150000 }
+  );
+
+  async function search(query) {
+    await page.fill('#structure-search', query);
+    await page.waitForFunction(
+      () => document.querySelectorAll('.search-result').length > 0,
+      null,
+      { timeout: 15000 }
+    );
+  }
+
+  async function assertCard(id) {
+    assert.equal(await page.locator('#structure-reference').isHidden(), false);
+    assert.equal(
+      await page.locator('#structure-reference').getAttribute('data-reference-id'),
+      id
+    );
+    assert.match(
+      await page.locator('#structure-reference-heading').innerText(),
+      /Справка по мышце/i
+    );
+  }
+
+  console.log('[reference-smoke] trapezius part -> parent muscle');
+  await search('трапециевидная');
+  let trapeziusPart = page.locator('.search-result').filter({
+    hasText: /часть.*трапециевид/i,
+  }).first();
+  if (await trapeziusPart.count() === 0) {
+    trapeziusPart = page.locator('.search-result').filter({
+      hasText: /трапециевид/i,
+    }).first();
+  }
+  assert.equal(await trapeziusPart.count(), 1);
+  await trapeziusPart.click();
+  await assertCard('trapezius');
+  assert.equal(
+    await page.locator('#structure-reference').getAttribute('data-reference-has-primary-art'),
+    'true'
+  );
+  if (/часть/i.test(await page.locator('#question-label').innerText())) {
+    assert.match(await page.locator('#structure-reference-context').innerText(), /Это часть:.*трапециевид/i);
+    assert.ok(Number(await page.locator('#viewer').getAttribute('data-selected-parent-context-count')) >= 1);
+  }
+  await page.screenshot({ path: '/tmp/muscle-memory-reference-trapezius.png', fullPage: true });
+
+  console.log('[reference-smoke] infraspinatus -> Gray 412');
+  await search('подостная');
+  const infraspinatus = page.locator('.search-result').filter({ hasText: /Подостн/i }).first();
+  assert.equal(await infraspinatus.count(), 1);
+  await infraspinatus.click();
+  await assertCard('infraspinatus');
+  assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), true);
+  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
+  assert.match(
+    await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
+    /gray412-shoulder\.png$/
+  );
+  await page.screenshot({ path: '/tmp/muscle-memory-reference-infraspinatus.png', fullPage: true });
+
+  console.log('[reference-smoke] latissimus -> exact course art; no stale Gray 412');
+  await search('широчайшая');
+  const latissimus = page.locator('.search-result').filter({ hasText: /Широчайш/i }).first();
+  assert.equal(await latissimus.count(), 1);
+  await latissimus.click();
+  await assertCard('latissimus-dorsi');
+  assert.equal(
+    await page.locator('#structure-reference').getAttribute('data-reference-has-primary-art'),
+    'true'
+  );
+  assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), false);
+  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), true);
+  await page.screenshot({ path: '/tmp/muscle-memory-reference-latissimus.png', fullPage: true });
+
+  console.log('[reference-smoke] external oblique -> local Gray 392');
+  await search('external oblique');
+  const external = page.locator('.search-result').filter({ hasText: /Наружн.*кос/i }).first();
+  assert.equal(await external.count(), 1);
+  await external.click();
+  await assertCard('external-oblique');
+  assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), true);
+  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
+  assert.match(
+    await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
+    /gray392-external-oblique\.png$/
+  );
+  await page.screenshot({ path: '/tmp/muscle-memory-reference-external-oblique.png', fullPage: true });
+
+  assert.equal(errors.length, 0, errors.join(' || '));
+  console.log('[reference-smoke] four representative reference cards ok');
+  await browser.close();
+})().catch(error => {
+  console.error(error);
+  process.exit(1);
+});
