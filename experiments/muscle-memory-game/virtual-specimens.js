@@ -279,6 +279,7 @@ export const VIRTUAL_SPECIMENS = Object.freeze([
       questionPatterns: [
         /latissimus dorsi|serratus posterior inferior|iliocostalis (?:thoracis|lumborum)|longissimus thoracis|(?:\bspinalis thoracis\b|(?:^|\s)остистая мышца груди)|quadratus lumborum|multifidus (?:thoracis|lumborum)|lumbar rotator|(?:set of )?interspinales lumborum|(?:lateral|medial) lumbar intertransversarius|(?:dorsal|ventral) parts of lateral intertransversarii lumborum/iu,
       ],
+      contextPatterns: [/external (?:abdominal )?oblique|наружн.*кос.*живот/iu],
       excludePatterns: [/cervic|colli|шеи|шея/iu],
       supportBonePatterns: [/rib|thoracic vertebra|lumbar vertebra|sacrum|ilium|hip bone|os cox/i],
       depthProfile: "back",
