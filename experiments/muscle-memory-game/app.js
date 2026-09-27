@@ -212,6 +212,7 @@ const displayPanel = document.querySelector("#display-panel");
 const displayPanelToggle = document.querySelector("#display-panel-toggle");
 const displayPanelClose = document.querySelector("#display-panel-close");
 const layerDepthStatus = document.querySelector("#layer-depth-status");
+const displayLayerActions = document.querySelector("#display-layer-actions");
 const structureReferenceEl = document.querySelector("#structure-reference");
 const structureReferenceLatin = document.querySelector("#structure-reference-latin");
 const structureReferenceRegion = document.querySelector("#structure-reference-region");
@@ -238,6 +239,10 @@ const modeMotionButton = document.querySelector("#mode-motion");
 const motionAtlasReturnButton = document.querySelector("#motion-atlas-return");
 const quizActions = document.querySelector("#quiz-actions");
 const exploreControls = document.querySelector("#explore-controls");
+const scopeLabel = document.querySelector("#scope-label");
+const regionIsolationLabel = document.querySelector("#region-isolation-label");
+const selectedStructureActions = document.querySelector("#selected-structure-actions");
+const restoreViewActions = document.querySelector("#restore-view-actions");
 const searchInput = document.querySelector("#structure-search");
 const searchResults = document.querySelector("#search-results");
 const isolateButton = document.querySelector("#isolate-selected");
@@ -2163,10 +2168,11 @@ function renderDeeperStructures(ids, { pointSpecific = true } = {}) {
 
 
 function updateLayerButtons() {
-  isolateButton.textContent = isolated ? "Показать окружение" : "Изолировать";
+  isolateButton.textContent = isolated ? "Вернуть окружение" : "Показать отдельно";
+  hideSelectedButton.textContent = "Скрыть";
   showAllButton.textContent = regionIsolationActive()
-    ? "Показать весь блок"
-    : "Показать все структуры";
+    ? "Вернуть структуры области"
+    : "Вернуть все структуры";
 
   const nextLayer =
     appMode === "explore" && anatomyMesh && regionIsolationActive()
@@ -2185,27 +2191,53 @@ function updateLayerButtons() {
 
   peelSurfaceLayerButton.textContent =
     nextLayer?.supported && nextLayer?.ids?.length
-      ? "Снять: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
-      : "Снять внешний мышечный слой";
+      ? "Скрыть " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + " слой"
+      : "Скрыть поверхностный слой";
   peelSurfaceLayerButton.title = "";
   peelSurfaceLayerButton.removeAttribute("aria-description");
 
+  const canUndoLayer =
+    hiddenStack.length > 0 || exploreHiddenActions.length > 0;
+  undoHideButton.disabled = !canUndoLayer;
+  undoHideButton.textContent = "Вернуть предыдущий слой";
+
   if (layerDepthStatus) {
     if (appMode !== "explore" || !anatomyMesh) {
-      layerDepthStatus.textContent = "Послойность станет доступна после загрузки модели.";
+      layerDepthStatus.textContent = "Мышечные слои появятся после загрузки модели.";
     } else if (!regionIsolationActive()) {
-      layerDepthStatus.textContent = "Выберите и изолируйте анатомический блок: слои определяются для конкретной области.";
+      layerDepthStatus.textContent =
+        "Выберите анатомическую область справа. Глубина мышц меняется внутри одной области.";
     } else if (layerUnavailable) {
-      layerDepthStatus.textContent = nextLayer.reason || "Для этого блока карта глубины ещё не подтверждена.";
+      layerDepthStatus.textContent =
+        nextLayer.reason ||
+        "Для этой области в выбранной 3D-базе нет подтверждённой карты мышечных слоёв.";
     } else if (nextLayer?.supported && nextLayer?.ids?.length) {
       layerDepthStatus.textContent =
-        "Следующий уровень: " + nextLayer.nameRu.toLocaleLowerCase("ru-RU") + ". Снятие слоя сохраняет уже видимые глубокие мышцы.";
+        "Следующий уровень: " +
+        nextLayer.nameRu.toLocaleLowerCase("ru-RU") +
+        ". Скрытие верхнего слоя откроет расположенные глубже мышцы.";
     } else {
-      layerDepthStatus.textContent = "Все подтверждённые мышечные уровни этого блока уже открыты.";
+      layerDepthStatus.textContent =
+        "Открыты все подтверждённые мышечные уровни этой области.";
     }
   }
-  undoHideButton.disabled =
-    hiddenStack.length === 0 && exploreHiddenActions.length === 0;
+
+  if (displayLayerActions) {
+    const canPeel = !peelSurfaceLayerButton.disabled;
+    displayLayerActions.hidden = !canPeel && !canUndoLayer;
+  }
+
+  const hasSelectedStructure =
+    selectedStudyId != null || selectedExploreSid != null;
+  if (selectedStructureActions) {
+    selectedStructureActions.hidden =
+      appMode !== "explore" || !hasSelectedStructure;
+  }
+  if (restoreViewActions) {
+    restoreViewActions.hidden =
+      appMode !== "explore" ||
+      (!isolated && hiddenStack.length === 0 && exploreHiddenActions.length === 0);
+  }
 
   if (selectedStudyId != null) {
     hideSelectedButton.disabled =
@@ -7045,7 +7077,7 @@ function setMode(mode) {
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
   isolateButton.disabled = true;
-  isolateButton.textContent = "Изолировать";
+  isolateButton.textContent = "Показать отдельно";
   updateLayerButtons();
 
   modeQuizButton.classList.toggle("active", mode === "quiz");
@@ -7057,6 +7089,15 @@ function setMode(mode) {
 
   quizActions.hidden = mode !== "quiz";
   exploreControls.hidden = mode === "quiz";
+  if (scopeLabel) {
+    scopeLabel.textContent = mode === "quiz" ? "Учебный блок" : "Анатомическая область";
+  }
+  if (regionIsolationLabel) {
+    regionIsolationLabel.textContent =
+      mode === "quiz"
+        ? "Показывать только выбранный блок"
+        : "Показывать только выбранную область";
+  }
   scopeControls.hidden = false;
   learningControls.hidden = mode !== "quiz";
   learningSummaryEl.hidden = mode !== "quiz";
