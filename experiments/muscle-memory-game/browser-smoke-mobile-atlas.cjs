@@ -42,13 +42,12 @@ const assert = require('node:assert/strict');
     'Mobile atlas has horizontal page overflow: ' + JSON.stringify(overflow)
   );
 
-  const settings = page.locator('.viewer-settings');
-  if (!(await settings.evaluate(el => el.open))) {
-    await page.locator('.viewer-settings > summary').click();
-  }
-  const menuBox = await page.locator('.viewer-settings-menu').boundingBox();
-  assert.ok(menuBox && menuBox.width <= 390, 'Display popover is wider than mobile viewport');
-  await page.locator('.viewer-settings > summary').click();
+  await page.click('#display-panel-toggle');
+  const drawerBox = await page.locator('#display-panel').boundingBox();
+  assert.ok(drawerBox && drawerBox.width <= 390, 'Display drawer is wider than mobile viewport');
+  assert.equal(await page.locator('#display-panel-toggle').getAttribute('aria-expanded'), 'true');
+  await page.click('#display-panel-close');
+  assert.equal(await page.locator('#display-panel').isHidden(), true);
 
   await page.selectOption('#view-preset', 'back');
   assert.equal(await page.locator('#viewer').getAttribute('data-camera-scope'), 'regional');
