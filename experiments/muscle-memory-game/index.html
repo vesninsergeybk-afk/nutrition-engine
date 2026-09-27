@@ -260,6 +260,15 @@
         <p id="question-label" class="question-label">Атлас</p>
         <h2 id="question">Выберите структуру</h2>
         <p id="feedback" class="feedback">Коснитесь мышцы или другой анатомической структуры на модели либо найдите её по названию.</p>
+        <div id="selected-structure-actions" class="selected-structure-actions selected-structure-actions-primary" hidden>
+          <span class="control-group-label">Выбранная структура</span>
+          <div class="layer-actions">
+            <button id="reveal-selected" type="button" hidden disabled>Открыть мышцу</button>
+            <button id="isolate-selected" type="button" disabled>Показать отдельно</button>
+            <button id="hide-selected" type="button" disabled>Скрыть мышцу</button>
+            <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
+          </div>
+        </div>
         <section id="structure-reference" class="structure-reference" hidden aria-live="polite">
           <div class="structure-reference-head">
             <strong>Анатомия</strong>
@@ -390,15 +399,6 @@
             <input id="structure-search" type="search" autocomplete="off" placeholder="Например: дельтовидная, трапециевидная, бицепс" />
           </label>
           <div id="search-results" class="search-results" aria-live="polite"></div>
-          <div id="selected-structure-actions" class="selected-structure-actions" hidden>
-            <span class="control-group-label">Выбранная структура</span>
-            <div class="layer-actions">
-              <button id="reveal-selected" type="button" hidden disabled>Открыть мышцу</button>
-              <button id="isolate-selected" type="button" disabled>Показать отдельно</button>
-              <button id="hide-selected" type="button" disabled>Скрыть</button>
-              <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
-            </div>
-          </div>
           <div id="restore-view-actions" class="restore-view-actions" hidden>
             <button id="show-all" type="button">Вернуть структуры области</button>
           </div>
