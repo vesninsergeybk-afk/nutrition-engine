@@ -1,8 +1,11 @@
 import { BACK_SHOULDER_REGION } from "./back-shoulder.js";
 import { THORAX_ABDOMEN_REGION } from "./thorax-abdomen.js";
 import { HEAD_NECK_REGION } from "./head-neck.js";
+import { ORBIT_REGION } from "./orbit.js";
+import { DEEP_HEAD_NECK_REGION } from "./deep-head-neck.js";
 import { UPPER_LIMB_REGION } from "./upper-limb.js";
 import { PELVIS_GLUTEAL_REGION } from "./pelvis-gluteal.js";
+import { PELVIC_FLOOR_REGION } from "./pelvic-floor.js";
 import { THIGH_REGION } from "./thigh.js";
 import { LEG_FOOT_REGION } from "./leg-foot.js";
 
@@ -10,8 +13,11 @@ export const REFERENCE_REGIONS = Object.freeze([
   BACK_SHOULDER_REGION,
   THORAX_ABDOMEN_REGION,
   HEAD_NECK_REGION,
+  ORBIT_REGION,
+  DEEP_HEAD_NECK_REGION,
   UPPER_LIMB_REGION,
   PELVIS_GLUTEAL_REGION,
+  PELVIC_FLOOR_REGION,
   THIGH_REGION,
   LEG_FOOT_REGION,
 ]);
@@ -20,8 +26,11 @@ export const REGION_ROADMAP = Object.freeze([
   Object.freeze({ id: "back-shoulder", nameRu: "Спина и плечевой пояс", state: "verified-v1" }),
   Object.freeze({ id: "thorax-abdomen", nameRu: "Грудная клетка и живот", state: "verified-v1" }),
   Object.freeze({ id: "head-neck", nameRu: "Голова и шея", state: "verified-v1" }),
+  Object.freeze({ id: "orbit", nameRu: "Глазница и наружные мышцы глаза", state: "verified-v1" }),
+  Object.freeze({ id: "deep-head-neck", nameRu: "Внутренние мышцы головы и шеи", state: "verified-v1" }),
   Object.freeze({ id: "upper-limb", nameRu: "Плечо, предплечье и кисть", state: "verified-v1" }),
   Object.freeze({ id: "pelvis-gluteal", nameRu: "Таз и ягодичная область", state: "verified-v1" }),
+  Object.freeze({ id: "pelvic-floor", nameRu: "Тазовое дно и промежность", state: "verified-v1" }),
   Object.freeze({ id: "thigh", nameRu: "Бедро", state: "verified-v1" }),
   Object.freeze({ id: "leg-foot", nameRu: "Голень и стопа", state: "verified-v1" }),
 ]);
