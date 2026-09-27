@@ -8,6 +8,14 @@ const EXACT_RU = new Map([
 
 const BASE_RU = new Map([
   ["adductor hallucis", "Мышца, приводящая большой палец стопы"],
+  ["buccinator", "Щёчная мышца"],
+  ["internal oblique", "Внутренняя косая мышца живота"],
+  ["latissimus dorsi", "Широчайшая мышца спины"],
+  ["levator labii superioris alaeque nasi", "Мышца, поднимающая верхнюю губу и крыло носа"],
+  ["multifidus", "Многораздельная мышца"],
+  ["lower head of lateral pterygoid", "Нижняя головка латеральной крыловидной мышцы"],
+  ["upper head of lateral pterygoid", "Верхняя головка латеральной крыловидной мышцы"],
+  ["tensor fasciae latae", "Мышца, напрягающая широкую фасцию бедра"],
   ["adductor pollicis", "Мышца, приводящая большой палец кисти"],
   ["biceps brachii", "Двуглавая мышца плеча"],
   ["biceps femoris", "Двуглавая мышца бедра"],
