@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 const topologyCache = new WeakMap();
 
-function triangleMapForGeometry(geometry) {
+function triangleSpansForGeometry(geometry) {
   if (!geometry) return new Map();
   const cached = topologyCache.get(geometry);
   if (cached) return cached;
@@ -14,28 +14,38 @@ function triangleMapForGeometry(geometry) {
     return map;
   }
 
-  const addTriangle = (sid, a, b, c) => {
-    if (!map.has(sid)) map.set(sid, []);
-    map.get(sid).push(a, b, c);
+  const indexed = Boolean(geometry.index);
+  const triangleVertexCount = indexed
+    ? geometry.index.count
+    : geometry.getAttribute("position")?.count || 0;
+
+  let activeSid = null;
+  let activeStart = 0;
+
+  const closeSpan = (end) => {
+    if (activeSid == null || end <= activeStart) return;
+    if (!map.has(activeSid)) map.set(activeSid, []);
+    map.get(activeSid).push([activeStart, end]);
   };
 
-  if (geometry.index) {
-    const index = geometry.index;
-    for (let i = 0; i + 2 < index.count; i += 3) {
-      const a = index.getX(i);
-      const b = index.getX(i + 1);
-      const c = index.getX(i + 2);
-      const sid = Math.round(structureId.getX(a));
-      addTriangle(sid, a, b, c);
+  for (let i = 0; i + 2 < triangleVertexCount; i += 3) {
+    const vertexIndex = indexed ? geometry.index.getX(i) : i;
+    const sid = Math.round(structureId.getX(vertexIndex));
+
+    if (activeSid == null) {
+      activeSid = sid;
+      activeStart = i;
+      continue;
     }
-  } else {
-    const position = geometry.getAttribute("position");
-    for (let i = 0; i + 2 < position.count; i += 3) {
-      const sid = Math.round(structureId.getX(i));
-      addTriangle(sid, i, i + 1, i + 2);
+
+    if (sid !== activeSid) {
+      closeSpan(i);
+      activeSid = sid;
+      activeStart = i;
     }
   }
 
+  closeSpan(triangleVertexCount);
   topologyCache.set(geometry, map);
   return map;
 }
@@ -46,29 +56,40 @@ function extractStructureGeometry(mesh, structureIds) {
   const source = mesh.geometry;
   const position = source.getAttribute("position");
   const normal = source.getAttribute("normal");
-  const topology = triangleMapForGeometry(source);
+  const topology = triangleSpansForGeometry(source);
   if (!position || !topology.size) return null;
 
-  const indices = [];
+  const spans = [];
+  let outputVertexCount = 0;
+
   for (const sid of structureIds) {
-    const part = topology.get(sid);
-    if (part?.length) indices.push(...part);
+    for (const span of topology.get(sid) || []) {
+      spans.push(span);
+      outputVertexCount += span[1] - span[0];
+    }
   }
-  if (!indices.length) return null;
 
-  const positions = new Float32Array(indices.length * 3);
-  const normals = normal ? new Float32Array(indices.length * 3) : null;
+  if (!outputVertexCount) return null;
 
-  for (let i = 0; i < indices.length; i += 1) {
-    const sourceIndex = indices[i];
-    positions[i * 3] = position.getX(sourceIndex);
-    positions[i * 3 + 1] = position.getY(sourceIndex);
-    positions[i * 3 + 2] = position.getZ(sourceIndex);
+  const positions = new Float32Array(outputVertexCount * 3);
+  const normals = normal ? new Float32Array(outputVertexCount * 3) : null;
+  const indexed = Boolean(source.index);
+  let outputIndex = 0;
 
-    if (normals) {
-      normals[i * 3] = normal.getX(sourceIndex);
-      normals[i * 3 + 1] = normal.getY(sourceIndex);
-      normals[i * 3 + 2] = normal.getZ(sourceIndex);
+  for (const [start, end] of spans) {
+    for (let i = start; i < end; i += 1) {
+      const sourceIndex = indexed ? source.index.getX(i) : i;
+
+      positions[outputIndex * 3] = position.getX(sourceIndex);
+      positions[outputIndex * 3 + 1] = position.getY(sourceIndex);
+      positions[outputIndex * 3 + 2] = position.getZ(sourceIndex);
+
+      if (normals) {
+        normals[outputIndex * 3] = normal.getX(sourceIndex);
+        normals[outputIndex * 3 + 1] = normal.getY(sourceIndex);
+        normals[outputIndex * 3 + 2] = normal.getZ(sourceIndex);
+      }
+      outputIndex += 1;
     }
   }
 
