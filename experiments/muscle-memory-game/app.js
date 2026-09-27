@@ -237,6 +237,7 @@ const displayPanelClose = document.querySelector("#display-panel-close");
 const layerDepthStatus = document.querySelector("#layer-depth-status");
 const displayLayerActions = document.querySelector("#display-layer-actions");
 const structureReferenceEl = document.querySelector("#structure-reference");
+const structureReferenceHeading = document.querySelector("#structure-reference-heading");
 const structureReferenceLatin = document.querySelector("#structure-reference-latin");
 const structureReferenceRegion = document.querySelector("#structure-reference-region");
 const structureReferenceType = document.querySelector("#structure-reference-type");
@@ -472,7 +473,15 @@ function clearStructureReferencePrimaryArt() {
 }
 
 function hideStructureReference() {
-  if (structureReferenceEl) structureReferenceEl.hidden = true;
+  if (structureReferenceEl) {
+    structureReferenceEl.hidden = true;
+    structureReferenceEl.dataset.referenceId = "";
+    structureReferenceEl.dataset.referenceHasPrimaryArt = "false";
+    structureReferenceEl.dataset.referenceAtlasIllustrationCount = "0";
+    structureReferenceEl.dataset.referenceSourceCount = "0";
+  }
+  canvas.dataset.selectedReferenceCard = "";
+  canvas.dataset.selectedReferenceIllustration = "none";
   clearStructureReferencePrimaryArt();
 }
 
@@ -480,6 +489,7 @@ function renderSimpleAtlasReference(typeRu, depthRu, emptyText) {
   if (!structureReferenceEl) return;
 
   closeStructureReferenceDetails();
+  if (structureReferenceHeading) structureReferenceHeading.textContent = "Справка по структуре";
   clearStructureReferencePrimaryArt();
 
   const activeRegion =
@@ -514,6 +524,12 @@ function renderSimpleAtlasReference(typeRu, depthRu, emptyText) {
 
   structureReferenceEmpty.textContent = emptyText;
   structureReferenceEmpty.hidden = false;
+  structureReferenceEl.dataset.referenceId = "";
+  structureReferenceEl.dataset.referenceHasPrimaryArt = "false";
+  structureReferenceEl.dataset.referenceAtlasIllustrationCount = "0";
+  structureReferenceEl.dataset.referenceSourceCount = "0";
+  canvas.dataset.selectedReferenceCard = "";
+  canvas.dataset.selectedReferenceIllustration = "none";
   structureReferenceEl.hidden = false;
 }
 
@@ -607,7 +623,7 @@ function renderStructureReferencePrimaryArt(reference) {
     !structureReferencePrimaryArtImage
   ) {
     clearStructureReferencePrimaryArt();
-    return;
+    return false;
   }
 
   const columns = Math.max(1, Number(illustration.spriteColumns) || 1);
@@ -653,6 +669,7 @@ function renderStructureReferencePrimaryArt(reference) {
   }
 
   structureReferencePrimaryArt.hidden = false;
+  return true;
 }
 
 function renderReferenceBadges(reference) {
@@ -696,6 +713,15 @@ function closeStructureReferenceDetails() {
   if (!structureReferenceEl) return;
   for (const details of structureReferenceEl.querySelectorAll("details[open]")) {
     details.removeAttribute("open");
+  }
+}
+
+function openDefaultStructureReferenceDetails() {
+  if (!structureReferenceEl) return;
+  for (const details of structureReferenceEl.querySelectorAll(
+    "details[data-reference-default-open]"
+  )) {
+    if (!details.hidden) details.setAttribute("open", "");
   }
 }
 
@@ -747,6 +773,7 @@ function renderStructureReference(sid) {
   }
 
   closeStructureReferenceDetails();
+  if (structureReferenceHeading) structureReferenceHeading.textContent = "Справка по мышце";
 
   const sourceName = structureNames[sid];
   const term = structureTerm(sourceName);
@@ -763,7 +790,7 @@ function renderStructureReference(sid) {
     : "Слой не подтверждён";
 
   renderReferenceAmbiguity(reference);
-  renderStructureReferencePrimaryArt(reference);
+  const hasPrimaryIllustration = renderStructureReferencePrimaryArt(reference);
 
   if (structureReferenceContext) {
     const contextText =
@@ -847,6 +874,19 @@ function renderStructureReference(sid) {
     if (structureReferenceAtlasBlock) {
       structureReferenceAtlasBlock.hidden = atlasIllustrationCount === 0;
     }
+
+    structureReferenceEl.dataset.referenceId = reference.id || "";
+    structureReferenceEl.dataset.referenceHasPrimaryArt = String(Boolean(hasPrimaryIllustration));
+    structureReferenceEl.dataset.referenceAtlasIllustrationCount = String(atlasIllustrationCount);
+    structureReferenceEl.dataset.referenceSourceCount = String(reference.sources?.length || 0);
+    canvas.dataset.selectedReferenceCard = reference.id || "";
+    canvas.dataset.selectedReferenceIllustration = hasPrimaryIllustration
+      ? "primary"
+      : atlasIllustrationCount > 0
+        ? "atlas"
+        : "none";
+
+    openDefaultStructureReferenceDetails();
   } else {
     structureReferenceFacts.hidden = true;
     structureReferenceEmpty.hidden = false;
@@ -861,6 +901,12 @@ function renderStructureReference(sid) {
     structureReferenceSources.hidden = true;
     structureReferenceIllustrations.hidden = true;
     if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = true;
+    structureReferenceEl.dataset.referenceId = "";
+    structureReferenceEl.dataset.referenceHasPrimaryArt = "false";
+    structureReferenceEl.dataset.referenceAtlasIllustrationCount = "0";
+    structureReferenceEl.dataset.referenceSourceCount = "0";
+    canvas.dataset.selectedReferenceCard = "";
+    canvas.dataset.selectedReferenceIllustration = "none";
   }
 
   structureReferenceEl.hidden = false;
