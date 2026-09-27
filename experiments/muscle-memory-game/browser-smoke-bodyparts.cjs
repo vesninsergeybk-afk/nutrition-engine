@@ -87,9 +87,9 @@ const assert = require('node:assert/strict');
     'logical-box'
   );
   assert.equal(await page.locator('#bone-mode').isDisabled(), false);
-  assert.equal(await page.locator('#bone-mode').inputValue(), 'xray');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'true');
+  assert.equal(await page.locator('#bone-mode').inputValue(), 'off');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
   assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
   const regionalBoneCount = Number(
     await page.locator('#viewer').getAttribute('data-region-visible-bones')
@@ -132,59 +132,47 @@ const assert = require('node:assert/strict');
     '0.54:0.90'
   );
 
-  // Layer presets operate inside the isolated region. The field itself must
-  // exist and be enabled; a closed "Отображение" disclosure is ordinary UI
-  // state and should be reopened rather than mistaken for a missing control.
-  assert.equal(await page.locator('#layer-preset-field').getAttribute('hidden'), null);
-  assert.equal(await page.locator('#layer-preset').isDisabled(), false);
+  // Supporting anatomy is additive. Muscles remain the opaque clickable base.
+  assert.equal(await page.locator('#layer-preset-field').isHidden(), true);
   if (await page.locator('#display-panel').isHidden()) {
     await page.click('#display-panel-toggle');
   }
 
-  await page.selectOption('#layer-preset', 'bones');
-  assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'bones');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
-  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
-  assert.equal(
-    Number(await page.locator('#viewer').getAttribute('data-region-visible-bones')),
-    regionalBoneCount
-  );
-  await page.waitForTimeout(350);
-  await page.screenshot({
-    path: '/tmp/muscle-memory-bodyparts-shoulder-bones.png',
-    fullPage: true,
-  });
-
-  await page.selectOption('#layer-preset', 'muscles');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
   assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
   assert.ok(Number(await page.locator('#viewer').getAttribute('data-connective-count')) > 0);
   assert.ok(Number(await page.locator('#viewer').getAttribute('data-skin-count')) > 0);
 
-  await page.selectOption('#layer-preset', 'fascia');
-  assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'fascia');
-  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
+  await page.selectOption('#bone-mode', 'anatomical');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
+  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
+  assert.equal(
+    Number(await page.locator('#viewer').getAttribute('data-region-visible-bones')),
+    regionalBoneCount
+  );
+  await page.screenshot({
+    path: '/tmp/muscle-memory-bodyparts-shoulder-bones.png',
+    fullPage: true,
+  });
+  await page.selectOption('#bone-mode', 'off');
+
+  await page.check('#skin-overlay-toggle');
+  assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'ghost');
+  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
+
+  await page.check('[data-connective-layer="fascia"]');
   assert.equal(await page.locator('#connective-mode').inputValue(), 'anatomical');
+  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
   assert.equal(
     await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
     'fascia'
   );
-  await page.waitForTimeout(350);
   await page.screenshot({
-    path: '/tmp/muscle-memory-bodyparts-shoulder-fascia.png',
+    path: '/tmp/muscle-memory-bodyparts-shoulder-fascia-overlay.png',
     fullPage: true,
   });
 
-  await page.selectOption('#layer-preset', 'skin');
-  assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'skin');
-  assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'anatomical');
-  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
-
-  // Training temporarily strips all support layers but restores the
-  // selected regional layer when the learner leaves the session.
-  await page.selectOption('#layer-preset', 'fascia');
+  // Training temporarily hides support layers while preserving their settings.
   await page.click('#mode-quiz');
   await page.click('[data-learning-mode="find"]');
   await page.click('#start-learning-session');
@@ -194,8 +182,8 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#viewer').getAttribute('data-skin-training-hidden'), 'true');
   await page.click('#exit-learning-session');
   assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'false');
-  assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'fascia');
-  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
+  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
+  assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'ghost');
   assert.equal(
     await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
     'fascia'
@@ -209,7 +197,9 @@ const assert = require('node:assert/strict');
   if (await page.locator('#display-panel').isHidden()) {
     await page.click('#display-panel-toggle');
   }
-  await page.selectOption('#layer-preset', 'fascia');
+  if (!(await page.locator('[data-connective-layer="fascia"]').isChecked())) {
+    await page.check('[data-connective-layer="fascia"]');
+  }
   await page.fill('#structure-search', 'подвздошно-большеберцовый');
   await page.waitForFunction(
     () => document.querySelectorAll('.search-result').length > 0,
