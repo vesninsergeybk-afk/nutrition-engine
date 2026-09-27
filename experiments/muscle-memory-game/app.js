@@ -249,6 +249,8 @@ const structureReferenceFacts = document.querySelector("#structure-reference-fac
 const structureReferenceOrigin = document.querySelector("#structure-reference-origin");
 const structureReferenceInsertion = document.querySelector("#structure-reference-insertion");
 const structureReferenceActions = document.querySelector("#structure-reference-actions");
+const structureReferenceFunctionalDetails = document.querySelector("#structure-reference-functional-details");
+const structureReferenceFunctional = document.querySelector("#structure-reference-functional");
 const structureReferenceStudyCue = document.querySelector("#structure-reference-study-cue");
 const structureReferenceStudyCueText = document.querySelector("#structure-reference-study-cue-text");
 const structureReferenceOrientationRow = document.querySelector("#structure-reference-orientation-row");
@@ -640,6 +642,43 @@ function renderReferenceAmbiguity(reference) {
   }
 }
 
+function renderFunctionalRelations(reference) {
+  if (!structureReferenceFunctional || !structureReferenceFunctionalDetails) return;
+
+  structureReferenceFunctional.replaceChildren();
+  const relations = reference?.functionalRelations || [];
+  structureReferenceFunctionalDetails.hidden = relations.length === 0;
+
+  for (const relation of relations) {
+    const row = document.createElement("section");
+    row.className = "structure-reference-functional-row";
+
+    const movement = document.createElement("strong");
+    movement.textContent = relation.movementRu;
+    row.append(movement);
+
+    const appendGroup = (label, items) => {
+      if (!items?.length) return;
+      const line = document.createElement("div");
+      line.className = "structure-reference-functional-group";
+
+      const heading = document.createElement("span");
+      heading.className = "structure-reference-functional-label";
+      heading.textContent = label;
+
+      const names = document.createElement("span");
+      names.textContent = items.map((item) => item.nameRu).join(", ");
+
+      line.append(heading, names);
+      row.append(line);
+    };
+
+    appendGroup("Синергисты", relation.synergists);
+    appendGroup("Антагонисты в этом движении", relation.antagonists);
+    structureReferenceFunctional.append(row);
+  }
+}
+
 function renderStructureReference(sid) {
   if (!structureReferenceEl || sid == null || !structureNames[sid]) {
     hideStructureReference();
@@ -681,6 +720,8 @@ function renderStructureReference(sid) {
     structureReferenceDepth.textContent = fallbackDepth;
     structureReferenceFacts.hidden = true;
     structureReferenceEmpty.hidden = true;
+    if (structureReferenceFunctional) structureReferenceFunctional.replaceChildren();
+    if (structureReferenceFunctionalDetails) structureReferenceFunctionalDetails.hidden = true;
     structureReferenceBadges.replaceChildren();
     const badge = document.createElement("span");
     badge.textContent = "нужно уточнение";
@@ -709,6 +750,7 @@ function renderStructureReference(sid) {
     structureReferenceInsertion.textContent = reference.insertionRu || "—";
 
     renderReferenceList(structureReferenceActions, reference.actionsRu);
+    renderFunctionalRelations(reference);
 
     const cue = reference.studyCueRu || "";
     structureReferenceStudyCue.hidden = !cue;
@@ -740,6 +782,8 @@ function renderStructureReference(sid) {
   } else {
     structureReferenceFacts.hidden = true;
     structureReferenceEmpty.hidden = false;
+    if (structureReferenceFunctional) structureReferenceFunctional.replaceChildren();
+    if (structureReferenceFunctionalDetails) structureReferenceFunctionalDetails.hidden = true;
     structureReferenceBadges.replaceChildren();
     structureReferenceBadges.hidden = true;
     structureReferenceSources.replaceChildren();
