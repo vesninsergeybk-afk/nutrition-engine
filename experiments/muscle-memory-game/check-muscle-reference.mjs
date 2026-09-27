@@ -86,8 +86,9 @@ assert(
 const trapeziusPart = muscleReferenceFor("Ascending part of trapezius");
 assert(
   trapeziusPart?.modelCoverage === "part" &&
-    trapeziusPart.primaryIllustration == null,
-  "A whole-muscle illustration must not be presented as an exact image of a muscle part"
+    trapeziusPart.primaryIllustration?.displayMatch === "parent-muscle" &&
+    trapeziusPart.primaryIllustration?.selectedPartLabelRu,
+  "A named muscle part should reuse the parent-muscle illustration only with an explicit whole-muscle/selected-part disclosure"
 );
 
 for (const id of [
