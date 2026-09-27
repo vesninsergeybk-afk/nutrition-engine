@@ -2910,7 +2910,7 @@ function applyLearningRegion() {
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
       selectedLearningRegion === "all"
-        ? "Исследуйте модель целиком или выберите учебный блок."
+        ? "Исследуйте модель целиком или выберите анатомическую область."
         : "Исследуйте выбранный анатомический препарат: вращайте модель, выбирайте структуры и переходите к более глубоким мышцам.";
     canvas.dataset.selectedStudyLayer = "";
     canvas.dataset.selectedStudySpecific = "";
@@ -2928,7 +2928,7 @@ function applyLearningRegion() {
   const sourceCoverageIncomplete =
     activeDepthAvailability?.reason === "source-incomplete";
   const sourceCoverageMessage = sourceCoverageIncomplete
-    ? `В этой 3D-базе препарат неполон для достоверной послойности: ${activeDepthAvailability.actual} из ${activeDepthAvailability.required} обязательных мышечных целей. Послойный режим недоступен. Для полного препарата выберите Z-Anatomy.`
+    ? `В выбранной 3D-базе для этой области есть ${activeDepthAvailability.actual} из ${activeDepthAvailability.required} мышц, необходимых для подтверждённой карты слоёв. Скрытие мышечных слоёв здесь отключено. Для более полного набора выберите Z-Anatomy.`
     : "";
   const sourceCoverageNote = sourceCoverageMessage
     ? " " + sourceCoverageMessage
@@ -2947,7 +2947,7 @@ function applyLearningRegion() {
   canvas.dataset.learningTargetCount = String(availableTargets.length);
   canvas.dataset.learningCatalogCount = String(learningCatalog.length);
   regionIsolationField.hidden = selectedLearningRegion === "all";
-  focusShoulderButton.textContent = "К блоку";
+  focusShoulderButton.textContent = appMode === "quiz" ? "К блоку" : "К области";
   focusShoulderButton.hidden = selectedLearningRegion === "all";
 
   learningSessionMode.disabled = availableTargets.length === 0;
