@@ -10,13 +10,12 @@ export const COURSE_ART_PRIMARY = Object.freeze([
   { structureId: "levator-scapulae", sourceId: "course-method-back-lesson8", page: 3, row: 1, column: 2 },
   { structureId: "splenius-capitis", sourceId: "course-method-back-lesson8", page: 4, row: 1, column: 3 },
   { structureId: "splenius-cervicis", sourceId: "course-method-back-lesson8", page: 4, row: 1, column: 4 },
-  { structureId: "gluteus-maximus", sourceId: "course-method-posterior-leg-lesson9", page: 1, row: 1, column: 5 },
+  { structureId: "erector-spinae", sourceId: "course-method-back-lesson8", locator: "раздел «Мышца, выпрямляющая позвоночник»", row: 1, column: 5 },
   { structureId: "biceps-femoris", sourceId: "course-method-posterior-leg-lesson9", page: 2, row: 2, column: 0 },
   { structureId: "gastrocnemius", sourceId: "course-method-posterior-leg-lesson9", page: 3, row: 2, column: 1 },
   { structureId: "soleus", sourceId: "course-method-posterior-leg-lesson9", page: 3, row: 2, column: 2 },
   { structureId: "piriformis", sourceId: "course-method-anterior-leg-lesson15", page: 1, row: 2, column: 3 },
   { structureId: "tensor-fasciae-latae", sourceId: "course-method-anterior-leg-lesson15", page: 2, row: 2, column: 4 },
-  { structureId: "adductor-magnus", sourceId: "course-method-anterior-leg-lesson15", page: 3, row: 2, column: 5 },
   { structureId: "adductor-longus", sourceId: "course-method-anterior-leg-lesson15", page: 3, row: 3, column: 0 },
   { structureId: "gracilis", sourceId: "course-method-anterior-leg-lesson15", page: 4, row: 3, column: 1 },
   { structureId: "sartorius", sourceId: "course-method-anterior-leg-lesson15", page: 4, row: 3, column: 2 },
@@ -29,7 +28,7 @@ export const COURSE_ART_PRIMARY = Object.freeze([
   match: "exact",
   spritePath: COURSE_ART_ROWS[item.row],
   spriteColumns: 6,
-  locator: `стр. ${item.page}`,
+  locator: item.locator || (item.page ? `стр. ${item.page}` : ""),
 })));
 
 const COURSE_ART_BY_STRUCTURE = new Map(
