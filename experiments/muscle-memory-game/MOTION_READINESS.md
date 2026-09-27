@@ -541,3 +541,17 @@ failure where an interpolated atlas muscle could pass through bone.
 This is intentionally a schematic muscle-path demonstration rather than a
 volumetric muscle belly: select a biceps head in the static atlas, enter Motion,
 and see a trustworthy source-derived elbow-flexion demonstration.
+
+
+## User-facing Motion hard reset — 2026-09-27
+
+Visual audit of the live trainer showed that the mixed Motion path was no longer acceptable for teaching: selected-side context could disagree with the moving model, distal bones could appear spatially disassembled, and the in-scene control card obscured a large part of the viewport.
+
+Normal Motion mode therefore no longer instantiates the historical atlas-derived rig or the current experimental TSM/MyoArm scenes. Those implementations are retained only behind `motionExperimental=1` for engineering diagnosis and are not presented as teaching content.
+
+The user-facing architecture is reset to the intended simple flow:
+`static atlas selection -> canonical anatomical ID -> separate Motion asset`.
+
+On desktop, Motion now uses one full central viewport; the static atlas comparison pane is hidden, and Motion status/controls are docked into the existing right information panel instead of covering the 3D scene. On mobile, the static comparison pane is also removed.
+
+Until a standalone verified moving asset is connected for a selected muscle, the interface explicitly reports that the source-native Motion asset is pending rather than displaying an inaccurate fallback.

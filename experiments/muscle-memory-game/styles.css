@@ -1581,3 +1581,74 @@ body:not(.motion-mode) .comparison-pane-static {
     max-height: min(27dvh, 198px);
   }
 }
+
+
+/* User-facing Motion reset: one independent motion workspace. */
+@media (min-width: 761px) {
+  body.motion-mode .viewer-wrap {
+    display: block;
+    background: #dedbd4;
+  }
+
+  body.motion-mode .comparison-pane-static {
+    display: none !important;
+  }
+
+  body.motion-mode .comparison-pane-motion {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  body.motion-mode #motion-viewer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  body.motion-mode .viewer-tools,
+  body.motion-mode .viewer-hint,
+  body.motion-mode .motion-atlas-return {
+    display: none !important;
+  }
+
+  body.motion-mode.motion-controls-docked .motion-state {
+    position: relative;
+    inset: auto;
+    display: grid;
+    max-height: none;
+    overflow: visible;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(27,27,29,.10);
+    border-radius: 14px;
+    background: rgba(255,255,255,.92);
+    box-shadow: none;
+  }
+
+  body.motion-mode.motion-controls-docked .motion-state strong {
+    font-size: 13px;
+  }
+
+  body.motion-mode.motion-controls-docked .motion-state span,
+  body.motion-mode.motion-controls-docked .motion-state small {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 760px) {
+  body.motion-mode .comparison-pane-static {
+    display: none !important;
+  }
+
+  body.motion-mode .comparison-pane-motion {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

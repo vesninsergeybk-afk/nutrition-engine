@@ -248,22 +248,25 @@ const motionNativeBoneProbe =
   motionQuery.get("motionBones") === "tsm-native";
 const motionNativeMovementProbe =
   motionQuery.get("motionMovement") || null;
+const motionExperimentalLegacy =
+  motionQuery.get("motionExperimental") === "1";
 
 function shouldUseMyoArmElbowMotion(action, selectedUnits) {
+  if (!motionExperimentalLegacy) return false;
   if (action?.pilotId !== "elbow" || action?.movementId !== "elbow-flexion") return false;
   const selected = new Set(selectedUnits || []);
   return selected.has("biceps-long") || selected.has("biceps-short");
 }
 
 function shouldUseTsmNativeMotion(action) {
-  if (!action) return false;
-  const productionSupported =
-    action.pilotId === "shoulder" &&
-    action.movementId === "shoulder-adduction";
+  if (!action || !motionExperimentalLegacy) return false;
   const diagnosticSupported =
     motionNativeBoneProbe &&
     (action.pilotId === "shoulder" || action.pilotId === "scapula");
-  return productionSupported || diagnosticSupported;
+  const legacyAdduction =
+    action.pilotId === "shoulder" &&
+    action.movementId === "shoulder-adduction";
+  return diagnosticSupported || legacyAdduction;
 }
 
 camera.position.set(0, 0, 4);
@@ -358,6 +361,62 @@ let currentTarget = null;
 let selectedExploreSid = null;
 
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
+
+function syncMotionStatePlacement() {
+  if (!motionStateEl || !motionPane || !panelEl) return;
+
+  const dockInPanel =
+    appMode === "motion" && !mobileTaskMedia.matches;
+
+  if (dockInPanel) {
+    if (motionStateEl.parentElement !== panelEl) {
+      panelEl.appendChild(motionStateEl);
+    }
+  } else if (motionStateEl.parentElement !== motionPane) {
+    motionPane.appendChild(motionStateEl);
+  }
+
+  document.body.classList.toggle(
+    "motion-controls-docked",
+    dockInPanel
+  );
+}
+
+function renderSourceOnlyMotionState(selectedName, selectedUnits = []) {
+  motionCameraIndependent = true;
+  motionRig = null;
+  motionPlayback = null;
+  motionNativePlayback = null;
+  motionElbowPlayback = null;
+
+  if (motionCanvas) {
+    motionCanvas.dataset.motionState = "source-only-pending";
+    motionCanvas.dataset.motionAuthority = "source-native-only";
+    motionCanvas.dataset.motionGeometryRuntimeBones = "";
+    motionCanvas.dataset.motionBones = "0";
+    motionCanvas.dataset.motionMuscles = "0";
+    motionCanvas.dataset.motionPlaying = "false";
+    motionCanvas.dataset.motionSelectedUnits = selectedUnits.join(",");
+  }
+
+  if (motionStateEl) {
+    motionStateEl.replaceChildren();
+
+    const strong = document.createElement("strong");
+    strong.textContent = selectedName || "Мышца";
+
+    const span = document.createElement("span");
+    span.textContent =
+      "Движущаяся модель для этой структуры пересобирается на отдельном source-native ассете. Старый atlas-derived preview отключён, чтобы не показывать неверное движение.";
+
+    const note = document.createElement("small");
+    note.className = "motion-range-note";
+    note.textContent =
+      "Статический атлас и движущаяся модель связаны по анатомическому идентификатору, а не общей геометрии.";
+
+    motionStateEl.append(strong, span, note);
+  }
+}
 
 function syncQuestionCardPlacement() {
   const shouldDock = mobileTaskMedia.matches && appMode !== "motion";
@@ -6370,6 +6429,16 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   }
 
   const actions = motionActionsForUnits([...selectedUnits]);
+
+  if (!motionExperimentalLegacy) {
+    const firstSid = selectedIds[0];
+    renderSourceOnlyMotionState(
+      displayStructureName(firstSid),
+      [...selectedUnits]
+    );
+    return;
+  }
+
   const resolvedPreferredMovementId =
     preferredMovementId || (motionNativeBoneProbe ? motionNativeMovementProbe : null);
   const action =
@@ -6604,6 +6673,10 @@ function prepareMotionComparison(sid) {
   // with disappearing context and a Play button that could not run.
   buildMotionPreview(ids);
 
+  const currentMotionState =
+    motionCanvas?.dataset.motionState || "";
+  const sourceOnlyPending =
+    currentMotionState === "source-only-pending";
   const nativeReady = [
     "source-native-rest-pose",
     "source-native-loading",
@@ -6612,7 +6685,7 @@ function prepareMotionComparison(sid) {
     "source-native-elbow-loading",
     "source-native-elbow-ready",
     "source-native-elbow-playing",
-  ].includes(motionCanvas?.dataset.motionState || "");
+  ].includes(currentMotionState);
   const motionReady = Boolean(motionRig) || nativeReady;
 
   if (motionReady) {
@@ -6636,10 +6709,12 @@ function prepareMotionComparison(sid) {
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
   feedbackEl.textContent = motionRig
-    ? "Слева — исходная анатомия. Справа — учебное движение: выберите вариант, меняйте положение вручную или запустите анимацию."
+    ? "Экспериментальный legacy-preview включён диагностическим флагом."
     : nativeReady
-      ? "Справа загружена независимая Motion-сцена. Статический атлас сохранён как анатомический контекст."
-      : "Для выбранной мышцы движение пока не готово. Анатомический атлас оставлен без изменений.";
+      ? "Загружена независимая source-native Motion-сцена."
+      : sourceOnlyPending
+        ? "Старая движущаяся модель отключена. Для этой мышцы подключается отдельный готовый Motion-ассет."
+        : "Для выбранной мышцы готовая движущаяся модель пока не подключена.";
   updateLayerButtons();
 }
 
@@ -6688,6 +6763,7 @@ function setMode(mode) {
   document.body.classList.toggle("explore-mode", mode === "explore");
   document.body.classList.toggle("motion-mode", mode === "motion");
   if (motionPane) motionPane.hidden = mode !== "motion";
+  syncMotionStatePlacement();
 
   updateTodayAction();
   renderProgressPanel();
@@ -6726,11 +6802,11 @@ function setMode(mode) {
     questionEl.textContent = "Выберите мышцу";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Motion сравнивает статическую анатомию слева и отдельную сцену движения справа. Выберите мышцу на модели или через поиск.";
+      "Выберите мышцу. Движение открывается как отдельная модель и не использует статический атлас как движущуюся геометрию.";
 
     if (motionStateEl) {
       motionStateEl.innerHTML =
-        "<strong>Выберите мышцу</strong><span>Справа появится её исходное положение с костными ориентирами.</span>";
+        "<strong>Выберите мышцу</strong><span>Здесь откроется отдельная движущаяся модель, связанная с атласом только по анатомическому идентификатору.</span>";
     }
     if (preservedSid != null && structureNames[preservedSid]) {
       selectedExploreSid = preservedSid;
@@ -8716,8 +8792,14 @@ showAllButton.addEventListener("click", () => {
   }
 });
 
-mobileTaskMedia.addEventListener?.("change", syncQuestionCardPlacement);
-window.addEventListener("resize", syncQuestionCardPlacement);
+mobileTaskMedia.addEventListener?.("change", () => {
+  syncQuestionCardPlacement();
+  syncMotionStatePlacement();
+});
+window.addEventListener("resize", () => {
+  syncQuestionCardPlacement();
+  syncMotionStatePlacement();
+});
 
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointermove", onPointerMove);
