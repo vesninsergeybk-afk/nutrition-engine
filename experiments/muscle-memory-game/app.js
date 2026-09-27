@@ -2903,21 +2903,14 @@ function undoLastHide() {
   }
 
   setStructureVisible(sid, true);
-  selectedExploreSid = sid;
   selectedStudyId = null;
-  focusedStructureIds = [sid];
   restoreStudyHighlight();
   restoreHighlights();
-  highlightStructures([sid], "selected");
+  selectExploreStructure(sid);
 
   questionLabelEl.textContent = "Возвращена структура";
-  questionEl.textContent = displayStructureName(sid);
-  renderStructureReference(sid);
   feedbackEl.className = "feedback";
   feedbackEl.textContent = "Последняя скрытая структура снова показана.";
-  focusSelectedButton.disabled = false;
-  isolateButton.disabled = false;
-  updateLayerButtons();
 }
 
 function renderLearningRegionOptions() {
@@ -9959,9 +9952,7 @@ isolateButton.addEventListener("click", () => {
     const sid = selectedExploreSid;
     restoreExploreContext();
     if (sid != null) {
-      selectedExploreSid = sid;
-      focusedStructureIds = [sid];
-      highlightStructures([sid], "selected");
+      selectExploreStructure(sid);
     }
   } else {
     const target = learningTargetBySid.get(selectedExploreSid) || null;
@@ -10008,8 +9999,9 @@ showAllButton.addEventListener("click", () => {
     highlightedStudyId = selectedStudyId;
     paintStudyStructure(selectedStudyId, new THREE.Color(0x245da8));
   } else if (selectedExploreSid != null) {
+    const sid = selectedExploreSid;
     restoreHighlights();
-    highlightStructures([selectedExploreSid], "selected");
+    selectExploreStructure(sid);
   }
 });
 
