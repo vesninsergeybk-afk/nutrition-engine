@@ -219,6 +219,8 @@ const connectiveLayerInputs = [
 ];
 const skinMode = document.querySelector("#skin-mode");
 const skinField = document.querySelector("#skin-field");
+const skinOverlayToggle = document.querySelector("#skin-overlay-toggle");
+const clearSupportLayersButton = document.querySelector("#clear-support-layers");
 const layerTrainingNote = document.querySelector("#layer-training-note");
 const referenceLayersField = document.querySelector("#reference-layers-field");
 const referenceLayerNote = document.querySelector("#reference-layer-note");
@@ -953,7 +955,7 @@ function studyDisplayName(studyId) {
 function studyMeshes() {
   return [
     ...connectiveMeshes.values(),
-    ...(skinMesh ? [skinMesh] : []),
+    ...(skinMesh && skinDisplayMode === "anatomical" ? [skinMesh] : []),
   ];
 }
 
@@ -1889,49 +1891,11 @@ function applyStudyLayerPreset(preset = "muscles") {
   // Keep the useful connective layers preselected while hidden. Turning the
   // connective layer on should immediately reveal fasciae, tendons and ligaments.
   setConnectiveLayerSelection(["fascia", "tendon", "ligament", "other"]);
-  boneDisplayMode =
-    preset === "muscles"
-      ? (regionIsolationActive() ? "xray" : "anatomical")
-      : "off";
-  boneMode.value = boneDisplayMode;
+  boneDisplayMode = "off";
+  boneMode.value = "off";
 
-  if (preset === "bones") {
-    muscleDisplayMode = "ghost";
-    boneDisplayMode = "anatomical";
-    boneMode.value = boneDisplayMode;
-  } else if (preset === "skin") {
-    muscleDisplayMode = "ghost";
-    skinDisplayMode = "anatomical";
-  } else if (preset === "subcutaneous") {
-    muscleDisplayMode = "ghost";
-    connectiveDisplayMode = "anatomical";
-    setConnectiveLayerSelection(["subcutaneous"]);
-  } else if (preset === "fascia") {
-    muscleDisplayMode = "ghost";
-    connectiveDisplayMode = "anatomical";
-    setConnectiveLayerSelection(["fascia"]);
-  } else if (preset === "attachments") {
-    muscleDisplayMode = "ghost";
-    connectiveDisplayMode = "anatomical";
-    setConnectiveLayerSelection([
-      "fascia",
-      "tendon",
-      "ligament",
-      "other",
-    ]);
-  } else if (preset === "all-tissues") {
-    muscleDisplayMode = "anatomical";
-    skinDisplayMode = "ghost";
-    connectiveDisplayMode = "ghost";
-    setConnectiveLayerSelection([
-      "subcutaneous",
-      "fascia",
-      "tendon",
-      "ligament",
-      "joint",
-      "cartilage",
-    ]);
-  }
+  // Historical preset values are intentionally collapsed to the clean muscle
+  // view. Supporting anatomy is controlled independently below.
 
   skinMode.value = skinDisplayMode;
   connectiveMode.value = connectiveDisplayMode;
@@ -1947,12 +1911,12 @@ function applyStudyLayerPreset(preset = "muscles") {
 
 function syncLayerPresetAvailability() {
   const available = currentModelSource === "bodyparts4";
-  layerPresetField.hidden = false;
-  layerPresetNote.hidden = false;
+  layerPresetField.hidden = true;
+  layerPresetNote.hidden = true;
   layerPreset.disabled = !available;
   layerPresetNote.textContent = available
-    ? "Кожа, подкожная клетчатка, фасции, сухожилия, связки, суставные структуры и хрящи доступны в этой модели."
-    : "Для кожи, фасций, сухожилий, связок и других соединительнотканных слоёв переключитесь на BodyParts3D. В Z-Anatomy доступны мышцы, кости и ориентиры безопасности.";
+    ? "Дополнительные ткани доступны как независимые слои."
+    : "Дополнительные тканевые слои доступны в BodyParts3D.";
 
   if (!available) {
     currentLayerPreset = "muscles";
@@ -1967,10 +1931,11 @@ function resetRegionSupportLayers() {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  boneDisplayMode = "xray";
+  boneDisplayMode = "off";
   if (skinMode) skinMode.value = "off";
+  if (skinOverlayToggle) skinOverlayToggle.checked = false;
   if (connectiveMode) connectiveMode.value = "off";
-  if (boneMode) boneMode.value = "xray";
+  if (boneMode) boneMode.value = "off";
   setConnectiveLayerSelection([]);
   for (const input of referenceLayerInputs) input.checked = false;
 }
@@ -8380,10 +8345,7 @@ function resetLoadedModel() {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  boneDisplayMode =
-    regionIsolation?.checked && selectedLearningRegion !== "all"
-      ? "xray"
-      : "anatomical";
+  boneDisplayMode = "off";
   layerPreset.value = "muscles";
   skinMode.value = "off";
   connectiveMode.value = "off";
@@ -8790,10 +8752,11 @@ function applyConnectiveDisplayMode() {
     return;
   }
 
-  connectiveField.hidden = false;
+  connectiveField.hidden = true;
   connectiveLayersField.hidden = false;
   layerTrainingNote.hidden = false;
   connectiveMode.disabled = false;
+  if (clearSupportLayersButton) clearSupportLayersButton.hidden = false;
 
   applyRegionStudyVisibility();
   const mode = connectiveDisplayMode;
@@ -8829,12 +8792,20 @@ function applyConnectiveDisplayMode() {
 
   canvas.dataset.connectiveMode = mode;
   canvas.dataset.connectiveVisibleLayers = visibleLayers.join(",");
+  if (clearSupportLayersButton) {
+    clearSupportLayersButton.disabled =
+      visibleLayers.length === 0 && skinDisplayMode === "off";
+  }
 }
 
 function applySkinDisplayMode() {
   if (!skinMesh) {
     skinMode.disabled = true;
     skinField.hidden = true;
+    if (skinOverlayToggle) {
+      skinOverlayToggle.disabled = true;
+      skinOverlayToggle.checked = false;
+    }
     canvas.dataset.skinMode = "unavailable";
     return;
   }
@@ -8842,6 +8813,10 @@ function applySkinDisplayMode() {
   skinField.hidden = false;
   layerTrainingNote.hidden = false;
   skinMode.disabled = false;
+  if (skinOverlayToggle) {
+    skinOverlayToggle.disabled = false;
+    skinOverlayToggle.checked = skinDisplayMode !== "off";
+  }
   applyRegionStudyVisibility();
   const mode = skinDisplayMode;
   const material = skinMesh.material;
@@ -8865,7 +8840,7 @@ function applySkinDisplayMode() {
   material.depthTest = true;
 
   if (mode === "ghost") {
-    material.opacity = 0.16;
+    material.opacity = 0.10;
     material.depthWrite = false;
     skinMesh.renderOrder = 4;
   } else {
@@ -9794,26 +9769,38 @@ boneMode.addEventListener("change", () => {
 
 connectiveMode.addEventListener("change", () => {
   connectiveDisplayMode = connectiveMode.value;
-  if (
-    connectiveDisplayMode !== "off" &&
-    selectedConnectiveLayers().size === 0
-  ) {
-    setConnectiveLayerSelection([
-      "fascia",
-      "tendon",
-      "ligament",
-      "other",
-    ]);
-  }
   applyConnectiveDisplayMode();
 });
 
 for (const input of connectiveLayerInputs) {
-  input.addEventListener("change", applyConnectiveDisplayMode);
+  input.addEventListener("change", () => {
+    connectiveDisplayMode =
+      selectedConnectiveLayers().size > 0 ? "anatomical" : "off";
+    connectiveMode.value = connectiveDisplayMode;
+    applyConnectiveDisplayMode();
+  });
 }
+
+skinOverlayToggle?.addEventListener("change", () => {
+  skinDisplayMode = skinOverlayToggle.checked ? "ghost" : "off";
+  skinMode.value = skinDisplayMode;
+  applySkinDisplayMode();
+  applyConnectiveDisplayMode();
+});
 
 skinMode.addEventListener("change", () => {
   skinDisplayMode = skinMode.value;
+  applySkinDisplayMode();
+});
+
+clearSupportLayersButton?.addEventListener("click", () => {
+  setConnectiveLayerSelection([]);
+  connectiveDisplayMode = "off";
+  connectiveMode.value = "off";
+  skinDisplayMode = "off";
+  skinMode.value = "off";
+  if (skinOverlayToggle) skinOverlayToggle.checked = false;
+  applyConnectiveDisplayMode();
   applySkinDisplayMode();
 });
 
