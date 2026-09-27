@@ -63,9 +63,9 @@ for (const sourceId of [
   );
 }
 
-assert(COURSE_ART_PRIMARY.length === 18, "Course-art exact set must contain 18 illustrations");
+assert(COURSE_ART_PRIMARY.length === 17, "Course-art exact set must contain 17 verified mappings");
 assert(
-  new Set(COURSE_ART_PRIMARY.map((item) => item.structureId)).size === 18 &&
+  new Set(COURSE_ART_PRIMARY.map((item) => item.structureId)).size === 17 &&
     COURSE_ART_PRIMARY.every(
       (item) =>
         item.match === "exact" &&
@@ -89,6 +89,24 @@ assert(
     trapeziusPart.primaryIllustration == null,
   "A whole-muscle illustration must not be presented as an exact image of a muscle part"
 );
+
+
+const erectorArt = muscleReferenceFor("Right erector spinae");
+assert(
+  erectorArt?.primaryIllustration?.structureId === "erector-spinae" &&
+    /Мышца, выпрямляющая позвоночник/.test(
+      erectorArt.primaryIllustration.locator || ""
+    ),
+  "Erector spinae illustration is not mapped to the corrected source image"
+);
+
+for (const sourceName of ["Right gluteus maximus", "Right adductor magnus"]) {
+  const reference = muscleReferenceFor(sourceName);
+  assert(
+    reference?.primaryIllustration == null,
+    sourceName + " must not keep a misleading primary illustration"
+  );
+}
 
 for (const id of [
   "structure-reference-facts",
