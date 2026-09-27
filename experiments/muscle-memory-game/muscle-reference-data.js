@@ -16,6 +16,50 @@ import { courseArtPrimaryForStructure } from "./reference-data/course-art.js";
 import { functionalRelationsForStructure } from "./reference-data/functional-relations.js";
 import { structureTerm } from "./anatomy-terms-ru.js";
 
+const Z_ANATOMY_REFERENCE_ALIASES = Object.freeze({
+  "abductor digiti minimi of foot": Object.freeze({ referenceId: "abductor-digiti-minimi-foot", coverage: "exact" }),
+  "abductor digiti minimi of hand": Object.freeze({ referenceId: "abductor-digiti-minimi-hand", coverage: "exact" }),
+  "dorsal interossei muscles of foot": Object.freeze({ referenceId: "dorsal-interossei-foot", coverage: "exact" }),
+  "dorsal interossei muscles of hand": Object.freeze({ referenceId: "dorsal-interossei", coverage: "exact" }),
+  "dorsal parts of lateral intertransversarii lumborum muscles": Object.freeze({ referenceId: "intertransversarii", coverage: "part" }),
+  "external intercostal muscles": Object.freeze({ referenceId: "external-intercostals", coverage: "exact" }),
+  "flexor digiti minimi of foot": Object.freeze({ referenceId: "flexor-digiti-minimi-brevis-foot", coverage: "exact" }),
+  "flexor digiti minimi of hand": Object.freeze({ referenceId: "flexor-digiti-minimi-brevis-hand", coverage: "exact" }),
+  "iliocostalis colli muscle": Object.freeze({ referenceId: "iliocostalis", coverage: "part" }),
+  "innermost intercostal muscles": Object.freeze({ referenceId: "innermost-intercostals", coverage: "exact" }),
+  "internal intercostal muscles": Object.freeze({ referenceId: "internal-intercostals", coverage: "exact" }),
+  "interspinales colli muscles": Object.freeze({ referenceId: "interspinales", coverage: "part" }),
+  "interspinales lumborum muscles": Object.freeze({ referenceId: "interspinales", coverage: "part" }),
+  "interspinales thoracis muscles": Object.freeze({ referenceId: "interspinales", coverage: "part" }),
+  "levatores breves costarum": Object.freeze({ referenceId: "levatores-costarum", coverage: "part" }),
+  "levatores longi costarum": Object.freeze({ referenceId: "levatores-costarum", coverage: "part" }),
+  "longissimus colli muscle": Object.freeze({ referenceId: "longissimus", coverage: "part" }),
+  "lumbrical muscles of foot": Object.freeze({ referenceId: "lumbricals-foot", coverage: "exact" }),
+  "lumbrical muscles of hand": Object.freeze({ referenceId: "lumbricals-hand", coverage: "exact" }),
+  "multifidus colli muscle": Object.freeze({ referenceId: "multifidus", coverage: "part" }),
+  "obliquus inferior capitis muscle": Object.freeze({ referenceId: "obliquus-capitis-inferior", coverage: "exact" }),
+  "obliquus superior capitis muscle": Object.freeze({ referenceId: "obliquus-capitis-superior", coverage: "exact" }),
+  "opponens digiti minimi muscle of hand": Object.freeze({ referenceId: "opponens-digiti-minimi", coverage: "exact" }),
+  "plantar interossei muscles": Object.freeze({ referenceId: "plantar-interossei-foot", coverage: "exact" }),
+  "rectus anterior capitis muscle": Object.freeze({ referenceId: "rectus-capitis-anterior", coverage: "exact" }),
+  "rectus lateralis capitis muscle": Object.freeze({ referenceId: "rectus-capitis-lateralis", coverage: "exact" }),
+  "rectus posterior major capitis muscle": Object.freeze({ referenceId: "rectus-capitis-posterior-major", coverage: "exact" }),
+  "rectus posterior minor capitis muscle": Object.freeze({ referenceId: "rectus-capitis-posterior-minor", coverage: "exact" }),
+  "semispinalis colli muscle": Object.freeze({ referenceId: "semispinalis", coverage: "part" }),
+  "spinalis colli muscle": Object.freeze({ referenceId: "spinalis", coverage: "part" }),
+  "splenius colli muscle": Object.freeze({ referenceId: "splenius-cervicis", coverage: "exact" }),
+  "ventral parts of lateral intertransversarii lumborum muscles": Object.freeze({ referenceId: "intertransversarii", coverage: "part" }),
+});
+
+function zAnatomyReferenceAlias(sourceName) {
+  const key = String(sourceName || "")
+    .trim()
+    .replace(/\.(?:l|r)\s*$/i, "")
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("en-US");
+  return Z_ANATOMY_REFERENCE_ALIASES[key] || null;
+}
+
 function normalizeModelName(value) {
   return String(value || "")
     .trim()
@@ -226,7 +270,7 @@ function ambiguityResult(labelRu, noteRu, candidateIds) {
 }
 
 export function muscleReferenceFor(sourceName) {
-  const mapping = aliasLookup(sourceName);
+  const mapping = aliasLookup(sourceName) || zAnatomyReferenceAlias(sourceName);
 
   if (mapping?.coverage === "ambiguous") {
     return ambiguityResult(
