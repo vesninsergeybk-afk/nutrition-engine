@@ -35,9 +35,11 @@ import {
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
 import {
+  BODYPARTS_FACE_OBJ_SUPPLEMENTS,
   BODYPARTS_FACE_PACK,
   BODYPARTS_TRUNK_OBJ_SUPPLEMENTS,
   BODYPARTS_TRUNK_PACK,
+  registeredBodyPartsV3FaceObjGeometry,
   registeredBodyPartsV3ObjGeometry,
 } from "./bodyparts-supplements.js";
 import {
@@ -8666,6 +8668,9 @@ async function loadBodyPartsFaceSupplements(
     });
 
     let triangles = 0;
+    let added = 0;
+    const failures = [];
+
     for (const part of selected) {
       const sid = structureNames.length;
       const color = baseColorFor(part.name);
@@ -8678,9 +8683,56 @@ async function loadBodyPartsFaceSupplements(
       muscleAnatomyParts.push(part);
       existingConceptIds.add(part.conceptId);
       triangles += Math.floor(part.indexCount / 3);
+      added += 1;
     }
 
-    return { added: selected.length, triangles, failures: [] };
+    for (const supplement of BODYPARTS_FACE_OBJ_SUPPLEMENTS) {
+      if (existingConceptIds.has(supplement.id)) continue;
+      try {
+        const objResponse = await fetch(supplement.url);
+        if (!objResponse.ok) throw new Error("OBJ");
+        const text = await objResponse.text();
+        const sid = structureNames.length;
+        const color = baseColorFor(supplement.name);
+        const geometry = registeredBodyPartsV3FaceObjGeometry(
+          text,
+          sid,
+          color
+        );
+        const vertexCount = geometry.getAttribute("position").count;
+        const bounds = geometry.boundingBox
+          ? [
+              geometry.boundingBox.min.toArray(),
+              geometry.boundingBox.max.toArray(),
+            ]
+          : null;
+
+        structureNames.push(supplement.name);
+        baseColors.push(color);
+        vertexCounts.push(vertexCount);
+        muscleChunks.push(geometry);
+        muscleAnatomyParts.push({
+          id: supplement.id,
+          conceptId: supplement.id,
+          name: supplement.name,
+          system: "muscular",
+          bounds,
+          sourceVersion: "BodyParts3D 3.0",
+        });
+        existingConceptIds.add(supplement.id);
+        triangles += Math.floor((geometry.index?.count || vertexCount) / 3);
+        added += 1;
+      } catch (error) {
+        console.warn(
+          "BodyParts3D facial OBJ supplement was not loaded:",
+          supplement.id,
+          error
+        );
+        failures.push(supplement.id);
+      }
+    }
+
+    return { added, triangles, failures };
   } catch (error) {
     console.warn("BodyParts3D facial supplement was not loaded.", error);
     return { added: 0, triangles: 0, failures: ["facial-pack"] };
