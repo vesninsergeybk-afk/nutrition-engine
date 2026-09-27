@@ -1987,6 +1987,13 @@ body:not(.motion-mode) .comparison-pane-static {
   line-height: 1.2;
 }
 
+.structure-reference-context {
+  margin: -3px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.42;
+}
+
 .structure-reference-ambiguity {
   display: grid;
   gap: 6px;
