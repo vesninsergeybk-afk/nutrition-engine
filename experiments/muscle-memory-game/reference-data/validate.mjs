@@ -4,16 +4,36 @@ import { REFERENCE_REGIONS } from "./regions/index.js";
 
 const errors = [];
 const warnings = [];
-const seenIds = new Set();
+const seenPilotIds = new Set();
+const regionStructureIds = new Set();
 
 function requireValue(condition, message) {
   if (!condition) errors.push(message);
 }
 
+function validateIllustrations(ownerId, illustrations = []) {
+  for (const illustration of illustrations) {
+    requireValue(
+      Boolean(REFERENCE_SOURCES[illustration.sourceId]),
+      `${ownerId}: illustration uses unknown source id ${illustration.sourceId}`
+    );
+
+    if (illustration.rightsStatus === "review" && illustration.src) {
+      errors.push(
+        `${ownerId}: illustration with rightsStatus=review must not expose src (${illustration.src})`
+      );
+    }
+
+    if (!illustration.rightsStatus) {
+      warnings.push(`${ownerId}: illustration has no rightsStatus`);
+    }
+  }
+}
+
 for (const muscle of MUSCLE_REFERENCE_PILOT) {
-  requireValue(Boolean(muscle.id), "Muscle without id");
-  requireValue(!seenIds.has(muscle.id), `Duplicate muscle id: ${muscle.id}`);
-  seenIds.add(muscle.id);
+  requireValue(Boolean(muscle.id), "Pilot muscle without id");
+  requireValue(!seenPilotIds.has(muscle.id), `Duplicate pilot muscle id: ${muscle.id}`);
+  seenPilotIds.add(muscle.id);
 
   requireValue(Boolean(muscle.names?.ru), `${muscle.id}: missing Russian name`);
   requireValue(Boolean(muscle.names?.latin), `${muscle.id}: missing Latin name`);
@@ -30,22 +50,7 @@ for (const muscle of MUSCLE_REFERENCE_PILOT) {
     );
   }
 
-  for (const illustration of muscle.illustrations || []) {
-    requireValue(
-      Boolean(REFERENCE_SOURCES[illustration.sourceId]),
-      `${muscle.id}: illustration uses unknown source id ${illustration.sourceId}`
-    );
-
-    if (illustration.rightsStatus === "review" && illustration.src) {
-      errors.push(
-        `${muscle.id}: illustration with rightsStatus=review must not expose src (${illustration.src})`
-      );
-    }
-
-    if (!illustration.rightsStatus) {
-      warnings.push(`${muscle.id}: illustration has no rightsStatus`);
-    }
-  }
+  validateIllustrations(muscle.id, muscle.illustrations);
 
   const verificationSources = new Set(muscle.verification?.checkedAgainst || []);
   if (!verificationSources.size) {
@@ -59,24 +64,6 @@ for (const muscle of MUSCLE_REFERENCE_PILOT) {
     );
   }
 }
-
-if (warnings.length) {
-  console.warn("\nWarnings:");
-  for (const warning of warnings) console.warn(`- ${warning}`);
-}
-
-if (errors.length) {
-  console.error("\nReference data validation failed:");
-  for (const error of errors) console.error(`- ${error}`);
-  process.exitCode = 1;
-} else {
-  console.log(
-    `Reference data OK: ${MUSCLE_REFERENCE_PILOT.length} muscles, ${Object.keys(REFERENCE_SOURCES).length} sources.`
-  );
-}
-
-
-const regionStructureIds = new Set();
 
 for (const region of REFERENCE_REGIONS) {
   requireValue(Boolean(region.id), "Region without id");
@@ -108,20 +95,21 @@ for (const region of REFERENCE_REGIONS) {
       );
     }
 
-    for (const illustration of structure.illustrations || []) {
-      requireValue(
-        Boolean(REFERENCE_SOURCES[illustration.sourceId]),
-        `${structure.id}: illustration uses unknown source id ${illustration.sourceId}`
-      );
-      if (illustration.rightsStatus === "review" && illustration.src) {
-        errors.push(
-          `${structure.id}: illustration with rightsStatus=review must not expose src (${illustration.src})`
-        );
-      }
-    }
+    validateIllustrations(structure.id, structure.illustrations);
   }
 }
 
-console.log(
-  `Regions indexed: ${REFERENCE_REGIONS.length}; verified region structures: ${regionStructureIds.size}.`
-);
+if (warnings.length) {
+  console.warn("\nWarnings:");
+  for (const warning of warnings) console.warn(`- ${warning}`);
+}
+
+if (errors.length) {
+  console.error("\nReference data validation failed:");
+  for (const error of errors) console.error(`- ${error}`);
+  process.exitCode = 1;
+} else {
+  console.log(
+    `Reference data OK: ${MUSCLE_REFERENCE_PILOT.length} pilot muscles, ${REFERENCE_REGIONS.length} regions, ${regionStructureIds.size} region structures, ${Object.keys(REFERENCE_SOURCES).length} sources.`
+  );
+}
