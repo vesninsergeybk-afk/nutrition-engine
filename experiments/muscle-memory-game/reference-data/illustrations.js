@@ -3,17 +3,18 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
   {
     "id": "gray-392-anterolateral-trunk",
     "sourceId": "gray-1918-plate-392",
-    "kind": "regional-plate",
+    "kind": "focused-plate",
     "regionIds": [
       "thorax-abdomen"
     ],
     "focusStructureIds": [
-      "external-oblique",
-      "rectus-abdominis"
+      "external-oblique"
     ],
     "rightsStatus": "public-domain",
-    "assetPath": null,
-    "status": "source-verified-asset-pending"
+    "assetPath": "./assets/reference/gray392-external-oblique.png",
+    "altRu": "Наружная косая мышца живота на переднебоковой поверхности туловища",
+    "captionRu": "Gray, plate 392: наружная косая мышца живота. Public domain.",
+    "status": "asset-ready"
   },
   {
     "id": "gray-409-posterior-trunk",
