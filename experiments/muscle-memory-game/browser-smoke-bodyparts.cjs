@@ -87,8 +87,8 @@ const assert = require('node:assert/strict');
     'logical-box'
   );
   assert.equal(await page.locator('#bone-mode').isDisabled(), false);
-  assert.equal(await page.locator('#bone-mode').inputValue(), 'off');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
+  assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
   assert.equal(await page.locator('#viewer').getAttribute('data-bone-transparent'), 'false');
   assert.equal(await page.locator('#viewer').getAttribute('data-bone-scope'), 'regional');
   const regionalBoneCount = Number(
