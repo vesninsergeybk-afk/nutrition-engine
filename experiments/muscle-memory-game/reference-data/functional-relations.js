@@ -98,28 +98,53 @@ export function functionalRelationsForStructure(structureId) {
     const movement = movementById.get(movementId);
     if (!movement) continue;
 
-    const synergistIds = (membership.get(movementId) || [])
+    const rawSynergistIds = (membership.get(movementId) || [])
       .filter(id => id !== structureId);
-    const antagonistIds = movement.opposite
+    const rawAntagonistIds = movement.opposite
       ? (membership.get(movement.opposite) || []).filter(id => id !== structureId)
       : [];
 
-    if (!synergistIds.length && !antagonistIds.length) continue;
+    // Whole-muscle cards can legitimately contain actions of different parts.
+    // Example: anterior deltoid contributes to internal rotation, while the
+    // posterior part contributes to external rotation. Such a structure must
+    // not be presented as both a synergist and antagonist in the same row.
+    const antagonistSet = new Set(rawAntagonistIds);
+    const contextDependentIds = rawSynergistIds.filter(id =>
+      antagonistSet.has(id)
+    );
+    const contextDependentSet = new Set(contextDependentIds);
+    const synergistIds = rawSynergistIds.filter(
+      id => !contextDependentSet.has(id)
+    );
+    const antagonistIds = rawAntagonistIds.filter(
+      id => !contextDependentSet.has(id)
+    );
+
+    if (
+      !synergistIds.length &&
+      !antagonistIds.length &&
+      !contextDependentIds.length
+    ) continue;
+
+    const related = ids =>
+      Object.freeze(
+        ids.map(id =>
+          Object.freeze({
+            id,
+            nameRu: displayName(id),
+          })
+        )
+      );
 
     rows.push(Object.freeze({
       movementId,
       movementRu: movement.labelRu,
-      synergists: Object.freeze(synergistIds.map(id => Object.freeze({
-        id,
-        nameRu: displayName(id),
-      }))),
-      antagonists: Object.freeze(antagonistIds.map(id => Object.freeze({
-        id,
-        nameRu: displayName(id),
-      }))),
+      synergists: related(synergistIds),
+      antagonists: related(antagonistIds),
+      contextDependent: related(contextDependentIds),
       method: "derived-from-verified-actions",
       noteRu:
-        "Связи показаны для указанного движения. Роль мышцы меняется с положением сустава, задачей и сочетанием движений.",
+        "Связи показаны для указанного движения. Для мышц с функционально различающимися частями роль вынесена отдельно; она также меняется с положением сустава и задачей.",
     }));
   }
 
