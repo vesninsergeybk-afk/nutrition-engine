@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "source": {
     "bodyParts3d3MuscleTree": "zlatnaspirala/anatomy-system@a2bab7185126109f6fa3bed61408e9a4226df6b9",
     "bodyParts3d4Atlas": "ashemag/human-atlas@1c38bf35c254a891200d3cedecfd57abebe83d8d",
@@ -10,9 +10,13 @@
     "v3MirrorFmaIdsMissingFromV4AnySystem": 49,
     "confirmedMissingUnion": 65,
     "restoredInTrainer": 65,
-    "unresolved": 0
+    "unresolved": 0,
+    "v3MirrorFmaIdsPresentInV4WrongSystem": 16,
+    "classificationOverridesForThoseIds": 16,
+    "wrongSystemUnresolved": 0,
+    "semanticExactDuplicatesAmongRestored": 0
   },
-  "note": "Presence in BodyParts3D 4.0 is checked by FMA concept ID across every system because several true muscles are mislabeled as skeletal or connective in the canonical atlas.",
+  "note": "Presence in BodyParts3D 4.0 is checked by FMA concept ID across every system. Sixteen historical muscle FMA IDs are present in v4 under non-muscular systems and are explicitly restored by classification. The 49 historical IDs absent from v4 plus independently verified facial detail form a 65-ID confirmed missing union; all 65 are connected to registered supplements.",
   "restored": [
     {
       "id": "FMA49005",
