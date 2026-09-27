@@ -306,11 +306,17 @@ const assert = require('node:assert/strict');
   await page.waitForTimeout(600);
   await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-front.png', fullPage: true });
 
-  await page.selectOption('#connective-mode', 'off');
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-front-no-connective.png', fullPage: true });
-  await page.selectOption('#connective-mode', 'anatomical');
-  await page.waitForTimeout(400);
+  await page.click('#clear-support-layers');
+  await page.waitForTimeout(250);
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-connective-visible-layers'),
+    ''
+  );
+  assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'off');
+  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
+  await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-front-clean-muscles.png', fullPage: true });
+  await page.check('[data-connective-layer="fascia"]');
+  await page.waitForTimeout(250);
 
   await page.selectOption('#view-preset', 'back');
   await page.waitForTimeout(600);
@@ -340,11 +346,14 @@ const assert = require('node:assert/strict');
   await page.waitForTimeout(600);
   await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-shoulder.png', fullPage: true });
 
-  // Source round-trip: incompatible BodyParts tissue presets must not
-  // leak into Z-Anatomy, while the selected learning block survives.
+  // Source round-trip: BodyParts-only support layers must not leak into
+  // Z-Anatomy, while the selected anatomical area survives.
   await page.selectOption('#learning-region', 'shoulder');
-  await page.selectOption('#layer-preset', 'fascia');
-  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'ghost');
+  if (!(await page.locator('[data-connective-layer="fascia"]').isChecked())) {
+    await page.check('[data-connective-layer="fascia"]');
+  }
+  await page.check('#skin-overlay-toggle');
+  assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
   await page.selectOption('#model-source', 'z-anatomy');
   await page.waitForFunction(
     () =>
@@ -356,8 +365,10 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#learning-region').inputValue(), 'shoulder');
   assert.equal(await page.locator('#viewer').getAttribute('data-learning-scope'), 'shoulder');
   assert.equal(await page.locator('#viewer').getAttribute('data-muscle-mode'), 'anatomical');
-  assert.equal(await page.locator('#layer-preset').inputValue(), 'muscles');
+  assert.equal(await page.locator('#layer-preset-field').isHidden(), true);
   assert.equal(await page.locator('#layer-preset').isDisabled(), true);
+  assert.equal(await page.locator('#viewer').getAttribute('data-connective-mode'), 'unavailable');
+  assert.equal(await page.locator('#viewer').getAttribute('data-skin-mode'), 'unavailable');
     if (errors.length) throw new Error(errors.join('\n'));
     console.log('[smoke:bodyparts] passed');
     await browser.close();
