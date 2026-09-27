@@ -42,16 +42,17 @@ assert(
   "Regional renderer does not independently control muscles, tissue layers and bones"
 );
 assert(
-  app.includes('boneDisplayMode = "xray"') &&
+  app.includes('boneDisplayMode = "off"') &&
     app.includes("applyRegionBoneVisibility()") &&
     app.includes('canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full"'),
-  "Regional bones are not visible-by-default and region-filtered"
+  "Regional bones must remain region-filtered while staying opt-in by default"
 );
 assert(
   app.includes("function applyStudyLayerPreset") &&
     app.includes("function peelAnatomicalMuscleLayer") &&
-    app.includes("function nextRegionalAnatomicalLayer"),
-  "Layered anatomy study controls are incomplete"
+    app.includes("function nextRegionalAnatomicalLayer") &&
+    app.includes('selectedConnectiveLayers().size > 0 ? "anatomical" : "off"'),
+  "Regional anatomy controls must combine verified muscle depth with opt-in support layers"
 );
 assert(
   !app.includes("function peelVisibleMuscleLayer"),
