@@ -188,6 +188,18 @@ h1 {
   display: none;
 }
 
+.viewer-quick-toggle[aria-pressed="true"] {
+  background: rgba(255, 255, 255, .98);
+  border-color: rgba(72, 96, 71, .34);
+  box-shadow: 0 2px 10px rgba(27, 27, 29, .055), inset 0 0 0 1px rgba(72, 96, 71, .12);
+}
+
+.viewer-quick-toggle[aria-pressed="true"]::before {
+  content: "✓";
+  margin-right: 5px;
+  font-size: 11px;
+}
+
 .display-panel-toggle {
   pointer-events: auto;
 }
