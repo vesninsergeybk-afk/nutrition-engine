@@ -1932,6 +1932,240 @@ body:not(.motion-mode) .comparison-pane-static {
   line-height: 1.35;
 }
 
+
+/* Full muscle reference card: learner-facing hierarchy and progressive disclosure. */
+.structure-reference {
+  gap: 12px;
+  padding: 14px;
+}
+
+.structure-reference-head {
+  align-items: flex-start;
+}
+
+.structure-reference-head strong {
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.structure-reference-head span {
+  max-width: 68%;
+  font-size: 11px;
+  line-height: 1.35;
+  font-style: italic;
+}
+
+.structure-reference-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.structure-reference-grid > div {
+  padding: 8px 9px;
+}
+
+.structure-reference-grid dd {
+  font-size: 11.5px;
+  line-height: 1.38;
+}
+
+.structure-reference-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.structure-reference-badges > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(27,27,29,.065);
+  color: rgba(27,27,29,.72);
+  font-size: 10px;
+  font-weight: 680;
+  line-height: 1.2;
+}
+
+.structure-reference-context {
+  margin: -3px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.42;
+}
+
+.structure-reference-ambiguity {
+  display: grid;
+  gap: 6px;
+  padding: 10px 11px;
+  border: 1px solid rgba(146,95,24,.20);
+  border-radius: 11px;
+  background: rgba(168,119,46,.075);
+}
+
+.structure-reference-ambiguity strong {
+  font-size: 12px;
+}
+
+.structure-reference-ambiguity p,
+.structure-reference-ambiguity li {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.42;
+}
+
+.structure-reference-ambiguity ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.structure-reference-facts {
+  gap: 9px;
+}
+
+.structure-reference-primary {
+  display: grid;
+  gap: 5px;
+  padding: 10px 11px;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.structure-reference-primary > strong,
+.structure-reference-study-cue > strong,
+.structure-reference-fact > strong {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 730;
+  line-height: 1.3;
+}
+
+.structure-reference-primary ul,
+.structure-reference-fact ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.structure-reference-primary li,
+.structure-reference-fact li,
+.structure-reference-fact > span {
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.structure-reference-primary li + li,
+.structure-reference-fact li + li {
+  margin-top: 3px;
+}
+
+.structure-reference-study-cue {
+  display: grid;
+  gap: 4px;
+  padding: 9px 10px 9px 12px;
+  border-left: 3px solid rgba(27,27,29,.28);
+  border-radius: 8px;
+  background: rgba(255,255,255,.62);
+}
+
+.structure-reference-study-cue > span {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.structure-reference-details {
+  border-top: 1px solid var(--line);
+}
+
+.structure-reference-details > summary {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  color: rgba(27,27,29,.82);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.structure-reference-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.structure-reference-details > summary::after {
+  content: "⌄";
+  margin-left: auto;
+  padding-left: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  transition: transform .15s ease;
+}
+
+.structure-reference-details[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.structure-reference-details-body {
+  display: grid;
+  gap: 9px;
+  padding: 0 0 10px;
+}
+
+.structure-reference-fact {
+  display: grid;
+  gap: 4px;
+}
+
+.structure-reference-sources-details .structure-reference-media {
+  padding: 0 0 10px;
+}
+
+.structure-reference-source-item {
+  gap: 3px;
+  padding: 7px 8px;
+}
+
+.structure-reference-source-item strong,
+.structure-reference-source-link {
+  color: #1b1b1d;
+  font-size: 10.5px;
+  font-weight: 690;
+  line-height: 1.35;
+}
+
+.structure-reference-source-link {
+  text-decoration: underline;
+  text-decoration-color: rgba(27,27,29,.22);
+  text-underline-offset: 2px;
+}
+
+.structure-reference-source-item span {
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.structure-reference-empty {
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+@media (max-width: 620px) {
+  .structure-reference {
+    padding: 12px;
+  }
+
+  .structure-reference-head span {
+    max-width: 62%;
+  }
+
+  .structure-reference-primary li,
+  .structure-reference-fact li,
+  .structure-reference-fact > span {
+    font-size: 12px;
+  }
+}
+
 /* Atlas controls: area selection, structure actions and display controls have separate roles. */
 .scope-controls {
   padding-bottom: 12px;

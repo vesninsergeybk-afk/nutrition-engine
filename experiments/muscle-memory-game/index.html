@@ -262,42 +262,99 @@
         <p id="feedback" class="feedback">Коснитесь мышцы или другой анатомической структуры на модели либо найдите её по названию.</p>
         <section id="structure-reference" class="structure-reference" hidden aria-live="polite">
           <div class="structure-reference-head">
-            <strong>Справка</strong>
+            <strong>Анатомия</strong>
             <span id="structure-reference-latin"></span>
           </div>
+
           <dl class="structure-reference-grid">
             <div>
               <dt>Область</dt>
               <dd id="structure-reference-region">—</dd>
             </div>
             <div>
+              <dt>Тип</dt>
+              <dd id="structure-reference-type">—</dd>
+            </div>
+            <div>
               <dt>Слой</dt>
               <dd id="structure-reference-depth">—</dd>
             </div>
-
           </dl>
-          <div id="structure-reference-facts" class="structure-reference-facts" hidden>
-            <div>
-              <strong>Начало</strong>
-              <span id="structure-reference-origin"></span>
-            </div>
-            <div>
-              <strong>Прикрепление</strong>
-              <span id="structure-reference-insertion"></span>
-            </div>
-            <div>
-              <strong>Функция</strong>
-              <ul id="structure-reference-actions"></ul>
-            </div>
-          </div>
-          <div class="structure-reference-media">
-            <strong>Источники и иллюстрации</strong>
-            <div id="structure-reference-sources" class="structure-reference-source-list"></div>
-            <div id="structure-reference-illustrations" class="structure-reference-source-list"></div>
-            <span id="structure-reference-empty">Подробная справка для этой мышцы ещё не заполнена. Карточки добавляются по проверенным источникам.</span>
-          </div>
-        </section>
 
+          <div id="structure-reference-badges" class="structure-reference-badges" hidden></div>
+          <p id="structure-reference-context" class="structure-reference-context" hidden></p>
+
+          <div id="structure-reference-ambiguity" class="structure-reference-ambiguity" hidden>
+            <strong id="structure-reference-ambiguity-label">Нужно уточнение</strong>
+            <p id="structure-reference-ambiguity-note"></p>
+            <ul id="structure-reference-ambiguity-candidates"></ul>
+          </div>
+
+          <div id="structure-reference-facts" class="structure-reference-facts" hidden>
+            <section class="structure-reference-primary" aria-labelledby="structure-reference-actions-label">
+              <strong id="structure-reference-actions-label">Основные действия</strong>
+              <ul id="structure-reference-actions"></ul>
+            </section>
+
+            <div id="structure-reference-study-cue" class="structure-reference-study-cue" hidden>
+              <strong>Ориентир для изучения</strong>
+              <span id="structure-reference-study-cue-text"></span>
+            </div>
+
+            <details class="structure-reference-details" open>
+              <summary>Начало, прикрепление и направление волокон</summary>
+              <div class="structure-reference-details-body">
+                <div class="structure-reference-fact">
+                  <strong>Начало</strong>
+                  <span id="structure-reference-origin"></span>
+                </div>
+                <div class="structure-reference-fact">
+                  <strong>Прикрепление</strong>
+                  <span id="structure-reference-insertion"></span>
+                </div>
+                <div id="structure-reference-orientation-row" class="structure-reference-fact">
+                  <strong>Направление волокон</strong>
+                  <span id="structure-reference-orientation"></span>
+                </div>
+              </div>
+            </details>
+
+            <details class="structure-reference-details">
+              <summary>Ориентиры и соседние структуры</summary>
+              <div class="structure-reference-details-body">
+                <div id="structure-reference-landmarks-row" class="structure-reference-fact">
+                  <strong>Ориентиры</strong>
+                  <ul id="structure-reference-landmarks"></ul>
+                </div>
+                <div id="structure-reference-relations-row" class="structure-reference-fact">
+                  <strong>Что находится рядом</strong>
+                  <ul id="structure-reference-relations"></ul>
+                </div>
+              </div>
+            </details>
+
+            <details id="structure-reference-innervation-details" class="structure-reference-details">
+              <summary>Иннервация</summary>
+              <div class="structure-reference-details-body">
+                <div class="structure-reference-fact">
+                  <span id="structure-reference-innervation"></span>
+                </div>
+              </div>
+            </details>
+
+            <details class="structure-reference-details structure-reference-sources-details">
+              <summary>Источники</summary>
+              <div class="structure-reference-media">
+                <div id="structure-reference-sources" class="structure-reference-source-list"></div>
+                <div id="structure-reference-illustrations" class="structure-reference-source-list"></div>
+              </div>
+            </details>
+          </div>
+
+          <span id="structure-reference-empty" class="structure-reference-empty">
+            Для выбранной структуры пока нет проверенной справочной карточки.
+          </span>
+        </section>
         <section id="deeper-structures" class="deeper-structures" hidden aria-live="polite">
           <div class="deeper-structures-head">
             <strong>Глубже здесь</strong>
