@@ -12,6 +12,11 @@ import {
 import {
   referenceIllustrationsForStructure,
 } from "./reference-data/illustrations.js";
+import {
+  publishableReferenceSourceArtForStructure,
+  referenceSourceArtForStructure,
+  referenceSupplementArtForStructure,
+} from "./reference-data/source-art.js";
 
 function normalizeModelName(value) {
   return String(value || "")
@@ -93,6 +98,19 @@ function candidateCard(candidate, mapping = null) {
       locator: item.id,
     }));
 
+  const exactArtCandidates = referenceSourceArtForStructure(
+    candidate.structure.id
+  );
+  const exactArt = publishableReferenceSourceArtForStructure(
+    candidate.structure.id
+  ).map((item) => ({
+    ...item,
+    source: REFERENCE_SOURCES[item.sourceId] || null,
+  }));
+  const supplementArt = referenceSupplementArtForStructure(
+    candidate.structure.id
+  );
+
   const illustrations = [];
   const seen = new Set();
   for (const item of [...localIllustrations, ...registryIllustrations]) {
@@ -125,6 +143,9 @@ function candidateCard(candidate, mapping = null) {
     studyCueRu: card.sections.studyCue,
     sources: card.sections.sources,
     illustrations: Object.freeze(illustrations),
+    exactArt: Object.freeze(exactArt),
+    exactArtMappedCount: exactArtCandidates.length,
+    supplementArtMappedCount: supplementArt.length,
     verificationStatus: candidate.structure.verification?.status || null,
     modelCoverage: mapping?.coverage || "exact",
     modelLabelRu: mapping?.labelRu || null,
