@@ -79,7 +79,7 @@ const PROFILES = Object.freeze({
       rule(
         "transversospinal-deep",
         "deepest",
-        /(?:multifidus (?:thoracis|lumborum)|\b(?:lumbar|thoracic) rotator\b|\brotatores\b|\binterspinal(?:is|es)\b|\bintertransversar(?:ius|ii)\b|levatores(?: (?:breves|longi))? costarum|quadratus lumborum)/i
+        /(?:multifidus(?: (?:thoracis|lumborum))?|\b(?:lumbar|thoracic) rotator\b|\brotatores\b|\binterspinal(?:is|es)\b|\bintertransversar(?:ius|ii)\b|levatores(?: (?:breves|longi))? costarum|quadratus lumborum)/i
       ),
     ]),
     covers: Object.freeze({
