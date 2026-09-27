@@ -204,7 +204,6 @@ const referenceLayerInputs = [
   ...document.querySelectorAll("[data-reference-layer]"),
 ];
 const debugPanel = document.querySelector("#debug-panel");
-const viewerSettings = document.querySelector(".viewer-settings");
 const displayPanel = document.querySelector("#display-panel");
 const displayPanelToggle = document.querySelector("#display-panel-toggle");
 const displayPanelClose = document.querySelector("#display-panel-close");
@@ -3312,7 +3311,7 @@ function startLearningSession(modeOverride = null) {
   sessionSummaryShown = false;
   document.body.classList.add("session-active");
   exitLearningSessionButton.hidden = false;
-  if (viewerSettings) viewerSettings.open = false;
+  setDisplayPanelOpen(false);
   applyTrainingDisplayOverride();
   startLearningSessionButton.textContent = "Перезапустить";
   syncQuestionCardPlacement();
@@ -8948,12 +8947,6 @@ modeQuizButton.addEventListener("click", () => setMode("quiz"));
 modeExploreButton.addEventListener("click", () => setMode("explore"));
 modeMotionButton.addEventListener("click", () => setMode("motion"));
 motionAtlasReturnButton?.addEventListener("click", () => setMode("explore"));
-viewerSettings?.addEventListener("toggle", () => {
-  document.body.classList.toggle(
-    "display-drawer-open",
-    Boolean(viewerSettings.open)
-  );
-});
 nextButton.addEventListener("click", nextSessionStep);
 answerButton.addEventListener("click", revealAnswer);
 revealDeeperButton.addEventListener("click", revealDeeperAfterMistake);
