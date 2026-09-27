@@ -7,6 +7,8 @@ on:
     paths:
       - "config/external-food-import-shortlist-v15.json"
       - "tools/packed/import-v15/**"
+      - "tools/normalize_external_food_import_v15.py"
+      - "config/external-food-import-provenance-extension-v15.json"
       - ".github/workflows/external-food-import-prep-v15.yml"
   workflow_dispatch:
 
@@ -87,6 +89,38 @@ jobs:
           print(json.dumps(r,ensure_ascii=False,indent=2))
           PY
 
+      - name: Normalize safe staging subset
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/normalize_external_food_import_v15.py \
+            --proposals staging/import-v15/import_proposals_v15.json \
+            --members staging/external-food-sources/v15/external_food_family_members.jsonl \
+            --current-glob "data/products.v5.3.210-p1.3.part-*.json" \
+            --schema-extension config/external-food-import-provenance-extension-v15.json \
+            --out-dir staging/import-v15/stage-b1
+
+      - name: Staging B1 assertions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          p=json.load(open("staging/import-v15/stage-b1/staging_products_v15_b1.json",encoding="utf-8"))
+          b=json.load(open("staging/import-v15/stage-b1/blocked_semantic_state_v15_b1.json",encoding="utf-8"))
+          r=json.load(open("staging/import-v15/stage-b1/stage_b1_report.json",encoding="utf-8"))
+          assert len(p)==28
+          assert len(b)==1 and b[0]["family_key"]=="bean pinto"
+          assert b[0]["stage_b1_block_reason"]=="HEI_STATE_MISMATCH_DRY_VS_COOKED"
+          assert r["errors"]==[]
+          assert r["production_main_changed"] is False
+          assert r["method_counts"]["SOURCE_REPORTED"]>0
+          assert r["method_counts"]["SOURCE_REPORTED_ZERO"]>0
+          assert r["method_counts"]["CALCULATED"]==56
+          assert r["method_counts"]["ASSUMED_ZERO"]==28
+          assert all(x["data_quality_v1_3"]["confidence_tier"]=="MEDIUM" for x in p)
+          print(json.dumps(r,ensure_ascii=False,indent=2))
+          PY
+
       - name: Publish summary
         shell: bash
         run: |
@@ -99,6 +133,13 @@ jobs:
           for k,v in sorted(r["status_counts"].items()): print(f"- {k}: {v}")
           print("- Production main changed: NO")
           print("- No null-to-zero nutrient coercion")
+          try:
+              b=json.load(open("staging/import-v15/stage-b1/stage_b1_report.json",encoding="utf-8"))
+              print(f"- Staging B1 safe products: {b['staging_products']}")
+              print(f"- Semantic-state blocked: {b['semantic_state_blocked']}")
+              print("- Staging B1 provenance/zero gate: PASS" if not b["errors"] else "- Staging B1 provenance/zero gate: FAIL")
+          except FileNotFoundError:
+              pass
           PY
 
       - name: Upload preparation artifact
