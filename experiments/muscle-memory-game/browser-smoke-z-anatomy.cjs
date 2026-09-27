@@ -52,6 +52,23 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('.status-card').count(), 0);
   assert.equal(await page.locator('#focus-shoulder').isHidden(), true);
 
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-bone-mode'),
+    'anatomical',
+    'Atlas must start with the skeletal context visible'
+  );
+  assert.equal(await page.locator('#bone-mode').inputValue(), 'anatomical');
+  assert.equal(await page.locator('#toggle-skeleton').isDisabled(), false);
+  assert.equal(await page.locator('#toggle-skeleton').getAttribute('aria-pressed'), 'true');
+
+  await page.click('#toggle-skeleton');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'off');
+  assert.equal(await page.locator('#toggle-skeleton').getAttribute('aria-pressed'), 'false');
+
+  await page.click('#toggle-skeleton');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
+  assert.equal(await page.locator('#toggle-skeleton').getAttribute('aria-pressed'), 'true');
+
   const visibleInitialText = await page.locator('body').innerText();
   assert.doesNotMatch(visibleInitialText, /Учебный каталог|треугольник|mesh|FMA\d+/i);
 
