@@ -1,0 +1,72 @@
+import { readFile } from "node:fs/promises";
+import {
+  referenceLayerNameRu,
+  referenceStructureSearchText,
+  referenceStructureTerm,
+} from "./reference-terms-ru.js";
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+for (const [source, layer, expected] of [
+  ["Left median nerve", "nervous", "Срединный нерв (слева)"],
+  ["Right sciatic nerve", "nervous", "Седалищный нерв (справа)"],
+  ["Left femoral artery", "vascular", "Бедренная артерия (слева)"],
+  ["Right great saphenous vein", "vascular", "Большая подкожная вена (справа)"],
+  ["Thoracic duct", "lymphatic", "Грудной проток"],
+]) {
+  const term = referenceStructureTerm(source, layer);
+  assert(term.specific, source + ": expected a specific Russian term");
+  assert(term.nameRu === expected, source + ": unexpected Russian term: " + term.nameRu);
+  assert(!/[A-Za-z]/.test(term.nameRu), source + ": Latin leaked into Russian UI");
+  assert(
+    referenceStructureSearchText(source, layer).includes(source.toLocaleLowerCase("ru-RU")),
+    source + ": source synonym missing from search text"
+  );
+}
+
+const fallback = referenceStructureTerm("Unmapped source object 17", "nervous");
+assert(!fallback.specific, "Unknown source object must remain explicitly unspecific");
+assert(
+  fallback.nameRu === "Нервная структура",
+  "Unknown nervous object must use a neutral Russian fallback"
+);
+assert(
+  referenceLayerNameRu("vascular") === "Кровеносные сосуды",
+  "Vascular layer label changed unexpectedly"
+);
+
+const app = await readFile(new URL("app.js", import.meta.url), "utf8");
+
+for (const required of [
+  'from "./reference-terms-ru.js"',
+  "let selectedReference = null",
+  "function referencePartIdFromHit",
+  "function referencePartIsVisible",
+  "function selectReferenceStructure",
+  "mesh.userData.referenceNames = sourceNames",
+  "...[...referenceMeshes.values()].filter((mesh) => mesh.visible)",
+  'matches.push({ kind: "reference", layerKey, partId })',
+  'match.kind === "reference"',
+  "referenceStructureSearchText(names[partId], layerKey)",
+  "referenceWorldBox(mesh, selectedReference.partId)",
+]) {
+  assert(app.includes(required), "Safety-landmark interaction contract missing: " + required);
+}
+
+assert(
+  app.includes("hit.object?.userData?.referenceLayer") &&
+    app.includes("selectReferenceStructure(hit.object.userData.referenceLayer, partId)"),
+  "Visible safety landmarks are not connected to Atlas picking"
+);
+
+assert(
+  app.includes('canvas.dataset.selectedReferenceLayer = layerKey') &&
+    app.includes('canvas.dataset.selectedReferenceSpecific = String(term.specific)'),
+  "Selected safety-landmark state is not exposed consistently"
+);
+
+console.log(
+  "Z-Anatomy safety landmarks: Russian labels + click + search + focus contract ok"
+);
