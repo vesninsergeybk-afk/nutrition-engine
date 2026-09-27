@@ -1,0 +1,122 @@
+name: External Food Import Source Probe v15
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "config/external-food-import-shortlist-v15.json"
+      - ".github/workflows/external-food-import-source-probe-v15.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify frozen shortlist
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          p="config/external-food-import-shortlist-v15.json"
+          d=json.load(open(p,encoding="utf-8"))
+          assert d["counts"] == {"CORE":39,"EXTENDED":45,"CHILD":5,"total":89}
+          assert len(d["entries"]) == 89
+          assert len({x["family_id"] for x in d["entries"]}) == 89
+          assert len({x["family_key"] for x in d["entries"]}) == 89
+          print("shortlist: PASS")
+          PY
+
+      - name: Download official enrichment sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/import-v15 staging/import-v15
+          curl -L --fail --retry 3 --retry-delay 2 \
+            -o .cache/import-v15/fndds_2021_2023_csv.zip \
+            "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip"
+          curl -L --fail --retry 3 --retry-delay 2 \
+            -o .cache/import-v15/fpid_1718.xls \
+            "https://www.ars.usda.gov/ARSUserFiles/80400530/apps/FPID_1718.xls"
+          sha256sum .cache/import-v15/* | tee staging/import-v15/source_sha256.txt
+          ls -lh .cache/import-v15
+
+      - name: Probe real schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pandas xlrd
+          python3 - <<'PY'
+          import csv, io, json, zipfile
+          from pathlib import Path
+          import pandas as pd
+
+          out=Path("staging/import-v15")
+          result={"schema_version":1,"sources":{}}
+
+          zpath=Path(".cache/import-v15/fndds_2021_2023_csv.zip")
+          with zipfile.ZipFile(zpath) as z:
+              members=[]
+              for name in z.namelist():
+                  info=z.getinfo(name)
+                  item={"name":name,"bytes":info.file_size}
+                  if name.lower().endswith(".csv"):
+                      raw=z.read(name)
+                      text=raw.decode("utf-8-sig",errors="replace")
+                      rdr=csv.reader(io.StringIO(text))
+                      header=next(rdr,[])
+                      sample=[]
+                      for i,row in enumerate(rdr):
+                          sample.append(row[:12])
+                          if i>=2: break
+                      item["columns"]=header
+                      item["first_rows_first_12_columns"]=sample
+                  members.append(item)
+              result["sources"]["USDA_FNDDS_2021_2023"]={"zip_members":members}
+
+          xls=Path(".cache/import-v15/fpid_1718.xls")
+          book=pd.ExcelFile(xls,engine="xlrd")
+          sheets={}
+          for s in book.sheet_names:
+              df=pd.read_excel(xls,sheet_name=s,engine="xlrd",nrows=8)
+              sheets[s]={
+                  "columns":[str(x) for x in df.columns],
+                  "first_rows":df.where(pd.notnull(df),None).to_dict(orient="records")
+              }
+          result["sources"]["USDA_FPID_2017_2018"]={"sheets":sheets}
+
+          (out/"official_source_schema_probe.json").write_text(
+              json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
+          print(json.dumps(result,ensure_ascii=False,indent=2)[:30000])
+          PY
+
+      - name: Publish summary
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d=json.load(open("staging/import-v15/official_source_schema_probe.json",encoding="utf-8"))
+          f=d["sources"]["USDA_FNDDS_2021_2023"]["zip_members"]
+          print("## Import enrichment source probe")
+          print("")
+          print("- Frozen shortlist: 89 = 39 CORE + 45 EXTENDED + 5 CHILD")
+          print(f"- FNDDS archive members: {len(f)}")
+          print("- FPID workbook sheets: "+", ".join(d["sources"]["USDA_FPID_2017_2018"]["sheets"].keys()))
+          print("- No production data changed")
+          PY
+
+      - name: Upload probe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-import-source-probe-v15
+          path: staging/import-v15/
+          if-no-files-found: error
+          retention-days: 14
