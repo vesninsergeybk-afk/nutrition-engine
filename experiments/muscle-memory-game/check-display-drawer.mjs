@@ -12,25 +12,27 @@ function assert(condition, message) {
 }
 
 assert(
-  html.includes('<details class="viewer-settings">') &&
-    html.includes("<summary>Отображение</summary>"),
-  "Display control must remain a direct, accessible control"
+  html.includes('id="display-panel-toggle"') &&
+    html.includes('aria-controls="display-panel"') &&
+    html.includes('id="display-panel" class="display-panel viewer-settings"'),
+  "Display control must be a direct button connected to the side drawer"
 );
 assert(
-  app.includes('"display-drawer-open"') &&
-    app.includes('viewerSettings?.addEventListener("toggle"'),
-  "Display drawer open state is not connected to the application shell"
+  app.includes("function setDisplayPanelOpen(open)") &&
+    app.includes('viewerWrap.classList.toggle("display-panel-open", next)') &&
+    app.includes('displayPanelToggle?.addEventListener("click"'),
+  "Display drawer open state is not connected to the viewer shell"
 );
 assert(
-  css.includes(".viewer-settings[open] .viewer-settings-menu") &&
-    css.includes("body.display-drawer-open:not(.motion-mode) .comparison-pane-static") &&
-    css.includes("left: var(--display-drawer-width)"),
-  "Display controls still behave like an overlay instead of a side drawer"
+  css.includes(".display-panel-open .comparison-pane-static") &&
+    css.includes("width: calc(100% - min(340px, 34%))") &&
+    css.includes(".display-panel-open .viewer-tools"),
+  "Desktop display controls must shift the atlas instead of covering it"
 );
 assert(
-  /max-height:s*calc(100% - 60px)/.test(css) &&
-    /overflow-y:s*auto/.test(css),
-  "Display drawer must remain usable when many layer controls are visible"
+  /overflow-y:\s*auto/.test(css) &&
+    css.includes(".display-section"),
+  "Display drawer must remain scrollable when many layer controls are visible"
 );
 
 console.log("Display UX: side drawer keeps the 3D model visible beside controls");
