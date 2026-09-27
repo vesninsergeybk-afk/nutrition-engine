@@ -111,6 +111,60 @@ const assert = require('node:assert/strict');
   const visibleInitialText = await page.locator('body').innerText();
   assert.doesNotMatch(visibleInitialText, /Учебный каталог|треугольник|mesh|FMA\d+/i);
 
+  console.log('[smoke:z-anatomy] reference-card');
+  await page.fill('#structure-search', 'трапециевидная');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  const trapeziusResult = page.locator('.search-result').filter({ hasText: /Трапециевидн/i }).first();
+  assert.equal(await trapeziusResult.count(), 1);
+  await trapeziusResult.click();
+
+  assert.equal(await page.locator('#structure-reference').isHidden(), false);
+  assert.match(await page.locator('#structure-reference-heading').innerText(), /Справка по мышце/i);
+  assert.equal(await page.locator('#structure-reference').getAttribute('data-reference-id'), 'trapezius');
+  assert.equal(
+    await page.locator('#structure-reference').getAttribute('data-reference-has-primary-art'),
+    'true'
+  );
+  assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), false);
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-selected-reference-illustration'),
+    'primary'
+  );
+  assert.ok(
+    await page.locator('#structure-reference details[data-reference-default-open][open]').count() >= 2
+  );
+  assert.ok((await page.locator('#structure-reference-origin').innerText()).trim().length > 10);
+  assert.ok((await page.locator('#structure-reference-insertion').innerText()).trim().length > 10);
+  assert.ok((await page.locator('#structure-reference-actions li').count()) > 0);
+
+  await page.fill('#structure-search', 'подостная');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  const infraspinatusResult = page.locator('.search-result').filter({ hasText: /Подостн/i }).first();
+  assert.equal(await infraspinatusResult.count(), 1);
+  await infraspinatusResult.click();
+  assert.equal(await page.locator('#structure-reference').getAttribute('data-reference-id'), 'infraspinatus');
+  assert.ok(
+    Number(await page.locator('#structure-reference').getAttribute('data-reference-atlas-illustration-count')) >= 1
+  );
+  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
+  assert.match(
+    await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
+    /gray412-shoulder\.png$/
+  );
+
+  await page.screenshot({
+    path: '/tmp/muscle-memory-reference-card.png',
+    fullPage: true,
+  });
+
     console.log('[smoke:z-anatomy] search/depth/deeper-links');
   await page.fill('#structure-search', 'deltoid');
   await page.waitForFunction(
