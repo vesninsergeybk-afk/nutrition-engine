@@ -2323,3 +2323,52 @@ body:not(.motion-mode) .comparison-pane-static {
   border-radius: 10px;
   background: rgba(255,255,255,.62);
 }
+
+
+.structure-reference-functional {
+  display: grid;
+  gap: 8px;
+  padding: 0 0 10px;
+}
+
+.structure-reference-functional-row {
+  display: grid;
+  gap: 6px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(255,255,255,.62);
+}
+
+.structure-reference-functional-row > strong {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.structure-reference-functional-group {
+  display: grid;
+  grid-template-columns: minmax(92px, .7fr) minmax(0, 1.6fr);
+  gap: 8px;
+  align-items: start;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.structure-reference-functional-label {
+  color: var(--muted);
+  font-weight: 680;
+}
+
+.structure-reference-functional-note {
+  margin: -2px 0 10px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+@media (max-width: 620px) {
+  .structure-reference-functional-group {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
