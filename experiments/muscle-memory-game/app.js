@@ -37,9 +37,11 @@ import {
 import {
   BODYPARTS_FACE_OBJ_SUPPLEMENTS,
   BODYPARTS_FACE_PACK,
+  BODYPARTS_FOOT_OBJ_SUPPLEMENTS,
   BODYPARTS_TRUNK_OBJ_SUPPLEMENTS,
   BODYPARTS_TRUNK_PACK,
   registeredBodyPartsV3FaceObjGeometry,
+  registeredBodyPartsV3FootObjGeometry,
   registeredBodyPartsV3ObjGeometry,
 } from "./bodyparts-supplements.js";
 import {
@@ -8739,6 +8741,69 @@ async function loadBodyPartsFaceSupplements(
   }
 }
 
+async function loadBodyPartsFootSupplements(
+  muscleChunks,
+  vertexCounts,
+  muscleAnatomyParts
+) {
+  const existingConceptIds = new Set(
+    muscleAnatomyParts.map((part) => part.conceptId).filter(Boolean)
+  );
+  let triangles = 0;
+  let added = 0;
+  const failures = [];
+
+  for (const supplement of BODYPARTS_FOOT_OBJ_SUPPLEMENTS) {
+    if (existingConceptIds.has(supplement.id)) continue;
+    try {
+      const response = await fetch(supplement.url);
+      if (!response.ok) throw new Error("OBJ");
+      const text = await response.text();
+      const sid = structureNames.length;
+      const color = baseColorFor(supplement.name);
+      const geometry = registeredBodyPartsV3FootObjGeometry(
+        text,
+        sid,
+        color,
+        supplement.side
+      );
+      const vertexCount = geometry.getAttribute("position").count;
+      const bounds = geometry.boundingBox
+        ? [
+            geometry.boundingBox.min.toArray(),
+            geometry.boundingBox.max.toArray(),
+          ]
+        : null;
+
+      structureNames.push(supplement.name);
+      baseColors.push(color);
+      vertexCounts.push(vertexCount);
+      muscleChunks.push(geometry);
+      muscleAnatomyParts.push({
+        id: supplement.id,
+        conceptId: supplement.id,
+        name: supplement.name,
+        system: "muscular",
+        bounds,
+        sourceVersion: "BodyParts3D 3.0",
+        registrationRegion: "foot",
+      });
+      existingConceptIds.add(supplement.id);
+      triangles += Math.floor((geometry.index?.count || vertexCount) / 3);
+      added += 1;
+    } catch (error) {
+      console.warn(
+        "BodyParts3D foot OBJ supplement was not loaded:",
+        supplement.id,
+        error
+      );
+      failures.push(supplement.id);
+    }
+  }
+
+  return { added, triangles, failures };
+}
+
 async function loadSkeletonLayer(loader) {
   try {
     const gltf = await loader.loadAsync(SKELETON_MODEL_URL);
@@ -9054,6 +9119,14 @@ async function loadBodyParts4Model() {
   );
   triangleCount += faceSupplement.triangles;
 
+  loadingEl.textContent = "Дополняю мышцы стопы BodyParts3D…";
+  const footSupplement = await loadBodyPartsFootSupplements(
+    muscleChunks,
+    vertexCounts,
+    muscleAnatomyParts
+  );
+  triangleCount += footSupplement.triangles;
+
   const mergedMuscles = mergeGeometries(muscleChunks, false);
   for (const geometry of muscleChunks) geometry.dispose();
   if (!mergedMuscles) throw new Error("Не удалось собрать полнотелую мышечную модель BodyParts3D.");
@@ -9126,9 +9199,14 @@ async function loadBodyParts4Model() {
   canvas.dataset.skinCount = String(skinParts.length);
   updateDiagnostics(
     "BodyParts3D 4.0 + проверенные мышцы 3.0: всё тело, " +
-    (classification.muscles + trunkSupplement.added + faceSupplement.added) +
+    (classification.muscles +
+      trunkSupplement.added +
+      faceSupplement.added +
+      footSupplement.added) +
     " мышечных (" +
-    (trunkSupplement.added + faceSupplement.added) +
+    (trunkSupplement.added +
+      faceSupplement.added +
+      footSupplement.added) +
     " восстановлено из 3.0), " +
     classification.bones +
     " костных, " +
@@ -9159,9 +9237,17 @@ async function loadBodyParts4Model() {
     " структур, ошибочно помеченных atlas как skeletal. " +
     (triangleCount + connectiveTriangleCount + skinTriangleCount).toLocaleString("ru-RU") +
     " треугольников загруженных слоёв." +
-    ([...trunkSupplement.failures, ...faceSupplement.failures].length
+    ([
+      ...trunkSupplement.failures,
+      ...faceSupplement.failures,
+      ...footSupplement.failures,
+    ].length
       ? " Не удалось загрузить дополнения: " +
-        [...trunkSupplement.failures, ...faceSupplement.failures].join(", ") +
+        [
+          ...trunkSupplement.failures,
+          ...faceSupplement.failures,
+          ...footSupplement.failures,
+        ].join(", ") +
         "."
       : "")
   );
