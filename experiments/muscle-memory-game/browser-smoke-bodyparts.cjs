@@ -59,7 +59,7 @@ const assert = require('node:assert/strict');
   await page.selectOption('#learning-region', 'shoulder');
 
   const pathnameBefore = new URL(page.url()).pathname;
-  await page.locator('.viewer-settings > summary').click();
+  await page.click('#display-panel-toggle');
   await page.selectOption('#model-source', 'bodyparts4');
 
   await page.waitForFunction(
@@ -113,19 +113,10 @@ const assert = require('node:assert/strict');
     await page.locator('#source-coverage-note').innerText(),
     /неполон.*1 из 5.*Z-Anatomy/i
   );
-  assert.equal(await page.locator('#peel-surface-layer').isDisabled(), false);
+  assert.equal(await page.locator('#peel-surface-layer').isDisabled(), true);
   assert.match(
-    await page.locator('#peel-surface-layer').innerText(),
-    /Почему послойность недоступна/i
-  );
-  assert.match(
-    (await page.locator('#peel-surface-layer').getAttribute('title')) || '',
-    /неполон.*1 из 5|послойност/i
-  );
-  await page.click('#peel-surface-layer');
-  assert.match(
-    await page.locator('#feedback').innerText(),
-    /неполон.*1 из 5|послойност/i
+    await page.locator('#layer-depth-status').innerText(),
+    /неполон.*1 из 5|достоверн.*послойност/i
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-specimen-clip'),
@@ -154,8 +145,9 @@ const assert = require('node:assert/strict');
   // state and should be reopened rather than mistaken for a missing control.
   assert.equal(await page.locator('#layer-preset-field').getAttribute('hidden'), null);
   assert.equal(await page.locator('#layer-preset').isDisabled(), false);
-  const settingsOpen = await page.locator('.viewer-settings').evaluate(el => el.open);
-  if (!settingsOpen) await page.locator('.viewer-settings > summary').click();
+  if (await page.locator('#display-panel').isHidden()) {
+    await page.click('#display-panel-toggle');
+  }
 
   await page.selectOption('#layer-preset', 'bones');
   assert.equal(await page.locator('#viewer').getAttribute('data-layer-preset'), 'bones');
@@ -222,8 +214,8 @@ const assert = require('node:assert/strict');
   // regional search must not leak structures from unrelated areas.
   await page.selectOption('#learning-region', 'lower-limb');
   assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
-  if (!(await page.locator('.viewer-settings').evaluate(el => el.open))) {
-    await page.locator('.viewer-settings > summary').click();
+  if (await page.locator('#display-panel').isHidden()) {
+    await page.click('#display-panel-toggle');
   }
   await page.selectOption('#layer-preset', 'fascia');
   await page.fill('#structure-search', 'подвздошно-большеберцовый');
