@@ -1141,6 +1141,7 @@ export const LEG_FOOT_REGION = deepFreeze({
         ]
       },
       "layer": "plantar-layer-1-lateral",
+      "modelAliasContext": "foot",
       "subregions": [
         "lateral-sole",
         "little-toe"
