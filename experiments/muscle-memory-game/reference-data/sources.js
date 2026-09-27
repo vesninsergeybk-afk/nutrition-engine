@@ -100,6 +100,17 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-plate-412": Object.freeze({
+    title: "Gray's Anatomy, plate 412 — dorsal muscles of the shoulder blade and triceps",
+    year: 1918,
+    role: "Региональная пластина задней поверхности плечевого пояса: мышцы лопатки, дельтовидная мышца и трёхглавая мышца плеча",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray412.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain / PD-scan для конкретного файла.",
+    }),
+  }),
+
   "gray-1918-plate-378-masseter": Object.freeze({
     title: "Gray's Anatomy, plate 378 — masseter highlighted",
     year: 1918,
