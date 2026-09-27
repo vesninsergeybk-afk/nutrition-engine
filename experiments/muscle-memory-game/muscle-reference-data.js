@@ -83,10 +83,19 @@ function candidateCard(candidate, mapping = null) {
 
   const card = referenceCardView(candidate.region, candidate.structure);
   const modelCoverage = mapping?.coverage || "exact";
-  const primaryIllustration =
-    modelCoverage === "exact"
+  const exactCourseArt =
+    modelCoverage === "exact" || modelCoverage === "part"
       ? courseArtPrimaryForStructure(candidate.structure.id)
       : null;
+  const primaryIllustration = exactCourseArt
+    ? Object.freeze({
+        ...exactCourseArt,
+        displayMatch:
+          modelCoverage === "part" ? "parent-muscle" : "exact-muscle",
+        selectedPartLabelRu:
+          modelCoverage === "part" ? (mapping?.labelRu || null) : null,
+      })
+    : null;
   const localIllustrations = candidate.structure.illustrations || [];
   const registryIllustrations = referenceIllustrationsForStructure(
     candidate.structure.id
