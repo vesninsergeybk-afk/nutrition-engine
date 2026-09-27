@@ -2,6 +2,13 @@ import { createMotionClip, sampleMotionClip } from "./motion-clip.js";
 import { MOTION_SOURCES } from "./motion-sources.js";
 
 const CLIPS = Object.freeze({
+  "shoulder-abduction": Object.freeze({
+    path: "./assets/motion/tsm/clips/tsm-abduction-teaching-01.json",
+    sourceMovementId: "shoulder-abduction",
+    playbackDirection: "forward",
+    interpretation:
+      "Verified source-derived CMC abduction excursion.",
+  }),
   "shoulder-adduction": Object.freeze({
     path: "./assets/motion/tsm/clips/tsm-abduction-teaching-01.json",
     sourceMovementId: "shoulder-abduction",

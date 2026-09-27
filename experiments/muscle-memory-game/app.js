@@ -89,6 +89,11 @@ import {
   tsmNativeMotionSpec,
 } from "./motion-native-clips.js";
 import {
+  loadTsmMusclePath,
+  sampleTsmMusclePath,
+  tsmMusclePathSpec,
+} from "./motion-tsm-muscle-path.js";
+import {
   loadMyoArmElbowRuntime,
   myoArmElbowBoneIds,
   myoArmElbowFrameAtProgress,
@@ -4157,6 +4162,67 @@ function fitIndependentMotionCamera(box) {  if (!box || box.isEmpty()) return;
   }
 }
 
+const TSM_PATH_AXIS = new THREE.Vector3(0, 1, 0);
+
+function createTsmPathSegments(pointCount, color = 0xb52c32) {
+  const segments = [];
+  for (
+    let index = 0;
+    index < Math.max(0, pointCount - 1);
+    index += 1
+  ) {
+    const geometry = new THREE.CylinderGeometry(1, 1, 1, 10, 1, false);
+    const material = new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.68,
+      metalness: 0,
+      emissive: new THREE.Color(color).multiplyScalar(0.08),
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.name = "TSM source-derived muscle path";
+    mesh.userData.motionKind = "muscle-path-segment";
+    mesh.userData.motionAssetId = "source-path-muscle-envelope";
+    motionModelGroup.add(mesh);
+    segments.push(mesh);
+  }
+  return segments;
+}
+
+function updateTsmPathSegments(segments, points, radius = 0.0048) {
+  const start = new THREE.Vector3();
+  const end = new THREE.Vector3();
+  const direction = new THREE.Vector3();
+  const midpoint = new THREE.Vector3();
+
+  for (let index = 0; index < segments.length; index += 1) {
+    const mesh = segments[index];
+    const a = points?.[index];
+    const b = points?.[index + 1];
+    if (!a || !b) {
+      mesh.visible = false;
+      continue;
+    }
+
+    start.set(a[0], a[1], a[2]);
+    end.set(b[0], b[1], b[2]);
+    direction.copy(end).sub(start);
+    const length = direction.length();
+    if (!(length > 1e-6)) {
+      mesh.visible = false;
+      continue;
+    }
+
+    mesh.visible = true;
+    midpoint.copy(start).add(end).multiplyScalar(0.5);
+    mesh.position.copy(midpoint);
+    mesh.quaternion.setFromUnitVectors(
+      TSM_PATH_AXIS,
+      direction.normalize()
+    );
+    mesh.scale.set(radius, length, radius);
+  }
+}
+
 function applyTsmNativeFrame(meshes, frame) {
   if (!meshes || !frame?.bodies) return;
   for (const bodyId of ["clavicle", "scapula", "humerus"]) {
@@ -4185,15 +4251,47 @@ function applyTsmNativePose(playback, progress) {
   const frame = sampleTsmNativeMotion(playback.loaded, progress);
   applyTsmNativeFrame(playback.meshes, frame);
 
+  if (playback.musclePath && playback.pathSegments?.length) {
+    const muscleFrame = sampleTsmMusclePath(
+      playback.musclePath,
+      progress
+    );
+    updateTsmPathSegments(
+      playback.pathSegments,
+      muscleFrame.points
+    );
+    playback.muscleFrame = muscleFrame;
+
+    if (playback.lengthOutput) {
+      playback.lengthOutput.textContent =
+        "Длина пути: " +
+        Math.round(muscleFrame.musculotendonLength * 1000) +
+        " мм";
+    }
+    if (motionCanvas) {
+      motionCanvas.dataset.motionTendonLength =
+        muscleFrame.musculotendonLength.toFixed(6);
+      motionCanvas.dataset.motionMuscleSegments = String(
+        playback.pathSegments.length
+      );
+    }
+  }
+
   playback.progress = progress;
+  const token =
+    playback.movementId === "shoulder-abduction"
+      ? "abduction"
+      : "adduction";
   if (motionCanvas) {
     motionCanvas.dataset.motionState =
-      progress >= 1 ? "source-native-adduction-end" : "source-native-adduction";
+      progress >= 1
+        ? "source-native-" + token + "-end"
+        : "source-native-" + token;
     motionCanvas.dataset.motionNativeProgress = progress.toFixed(4);
   }
 }
 
-function renderTsmNativeAdductionControls(selectedName, playback) {
+function renderTsmNativeControls(selectedName, playback) {
   if (!motionStateEl) return;
   motionStateEl.replaceChildren();
   motionStateEl.classList.add("motion-state-controls");
@@ -4203,21 +4301,38 @@ function renderTsmNativeAdductionControls(selectedName, playback) {
 
   const description = document.createElement("span");
   const range = tsmNativeMotionSourceRange(playback.loaded);
-  description.textContent =
-    "Сведение плеча: рука движется к туловищу, а ключица, лопатка и плечевая кость перемещаются согласованно.";
+  const isAbduction =
+    playback.movementId === "shoulder-abduction";
+  description.textContent = isAbduction
+    ? "Отведение плеча: плечевая кость поднимается, а лопатка и ключица участвуют в согласованном движении плечевого комплекса."
+    : "Приведение плеча: рука движется к туловищу, а ключица, лопатка и плечевая кость перемещаются согласованно.";
 
   const sourceNote = document.createElement("small");
   sourceNote.className = "motion-range-note";
   sourceNote.textContent = range
-    ? "Показан проверенный участок примерно от " +
+    ? "Показан подтверждённый источником участок примерно от " +
       Math.round(range.start) +
       "° до " +
       Math.round(range.end) +
-      "°. Недостающий крайний участок до полного приведения мы не достраиваем искусственно."
+      "°. За пределы записанного диапазона движение искусственно не достраивается."
     : "Показан только подтверждённый биомеханическим источником участок движения.";
 
   const controls = document.createElement("div");
   controls.className = "motion-controls";
+
+  if (playback.musclePath) {
+    const muscleNote = document.createElement("small");
+    muscleNote.className = "motion-range-note";
+    muscleNote.textContent =
+      "Красная структура показывает рассчитанный OpenSim ход выбранной мышцы. Это учебное представление её пути, а не точная объёмная форма мышцы.";
+
+    const length = document.createElement("output");
+    length.id = "motion-tsm-muscle-length";
+    length.textContent = "Длина пути";
+    playback.lengthOutput = length;
+    controls.append(muscleNote, length);
+  }
+
   const buttons = document.createElement("div");
   buttons.className = "motion-button-row";
 
@@ -4264,7 +4379,11 @@ function updateTsmNativePlayback(now) {
   }
 }
 
-async function buildTsmNativeBoneProbeScene(action, selectedName) {
+async function buildTsmNativeBoneProbeScene(
+  action,
+  selectedName,
+  selectedUnits = []
+) {
   const generation = ++motionNativeLoadGeneration;
   motionCameraIndependent = true;
   motionModelGroup.position.set(0, 0, 0);
@@ -4274,19 +4393,12 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
   if (motionCanvas) {
     motionCanvas.dataset.motionState = "source-native-loading";
     motionCanvas.dataset.motionPilot = action?.pilotId || "";
-    motionCanvas.dataset.motionAuthority = "source-native-geometry-probe";
+    motionCanvas.dataset.motionAuthority = "source-native-loading";
     motionCanvas.dataset.motionGeometryRuntimeBones = "tsm-native-bones";
+    motionCanvas.dataset.motionMusclePathMode = "";
+    motionCanvas.dataset.motionStandardAsset = "";
     motionCanvas.dataset.motionMuscles = "0";
     motionCanvas.dataset.motionBones = "0";
-  }
-  if (motionStateEl) {
-    motionStateEl.replaceChildren();
-    const strong = document.createElement("strong");
-    strong.textContent = selectedName || "Плечевой комплекс";
-    const span = document.createElement("span");
-    span.textContent =
-      "Загружаю самостоятельную source-native геометрию TSM. Статический атлас для этой сцены не используется.";
-    motionStateEl.append(strong, span);
   }
 
   try {
@@ -4313,11 +4425,30 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       ids.push(boneId);
     }
 
-    const supportsAdduction =
-      action?.movementId === "shoulder-adduction";
-    const referenceLoaded = await loadTsmNativeMotionClip(
-      "shoulder-adduction"
+    const supported = Boolean(
+      tsmNativeMotionSpec(action?.movementId)
     );
+    const movementId = supported
+      ? action.movementId
+      : "shoulder-adduction";
+    const loaded = await loadTsmNativeMotionClip(movementId);
+
+    const selectedSet = new Set(selectedUnits || []);
+    let musclePath = null;
+    if (
+      movementId === "shoulder-abduction" &&
+      selectedSet.has("deltoid-acromial") &&
+      tsmMusclePathSpec(
+        "deltoid-acromial",
+        "shoulder-abduction"
+      )
+    ) {
+      musclePath = await loadTsmMusclePath(
+        "deltoid-acromial",
+        "shoulder-abduction"
+      );
+    }
+
     if (
       generation !== motionNativeLoadGeneration ||
       appMode !== "motion"
@@ -4325,78 +4456,100 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       return;
     }
 
-    if (supportsAdduction) {
+    if (supported) {
+      const pathSegments = musclePath
+        ? createTsmPathSegments(
+            musclePath.data.resampledPointCount
+          )
+        : [];
+
       motionNativePlayback = {
         kind: "tsm-source-clip",
-        movementId: "shoulder-adduction",
-        loaded: referenceLoaded,
+        movementId,
+        loaded,
         meshes: nativeMeshes,
+        musclePath,
+        pathSegments,
         playing: false,
         startTime: 0,
         progress: 0,
+        lengthOutput: null,
       };
       applyTsmNativePose(motionNativePlayback, 0);
       fitTsmNativeAssembledScene();
-      renderTsmNativeAdductionControls(
+      renderTsmNativeControls(
         selectedName,
         motionNativePlayback
       );
     } else {
-      const referenceFrame = sampleTsmNativeMotion(referenceLoaded, 1);
+      const referenceFrame = sampleTsmNativeMotion(loaded, 1);
       applyTsmNativeFrame(nativeMeshes, referenceFrame);
       fitTsmNativeAssembledScene();
     }
 
     if (motionCanvas) {
-      motionCanvas.dataset.motionState = supportsAdduction
-        ? "source-native-adduction-ready"
+      const token =
+        movementId === "shoulder-abduction"
+          ? "abduction"
+          : "adduction";
+      motionCanvas.dataset.motionState = supported
+        ? "source-native-" + token + "-ready"
         : "source-native-reference-pose";
       motionCanvas.dataset.motionPilot = action?.pilotId || "";
-      motionCanvas.dataset.motionAuthority = supportsAdduction
+      motionCanvas.dataset.motionMovement = supported ? movementId : "";
+      motionCanvas.dataset.motionAuthority = supported
         ? "source-derived-clip"
         : "source-native-geometry-probe";
       motionCanvas.dataset.motionGeometryRuntimeBones = "tsm-native-bones";
       motionCanvas.dataset.motionNativeBoneIds = ids.join(",");
       motionCanvas.dataset.motionBones = String(ids.length);
-      motionCanvas.dataset.motionMuscles = "0";
-      const loadedForTelemetry =
-        motionNativePlayback?.loaded || referenceLoaded;
-      const sourceRange = tsmNativeMotionSourceRange(loadedForTelemetry);
+      motionCanvas.dataset.motionMuscles = musclePath ? "1" : "0";
+      motionCanvas.dataset.motionMusclePathMode = musclePath
+        ? "opensim-geometry-path"
+        : "";
+      motionCanvas.dataset.motionStandardAsset = musclePath
+        ? "source-path-muscle-envelope"
+        : "source-native-bones";
+      motionCanvas.dataset.motionSelectedUnits =
+        [...selectedSet].join(",");
+
+      const sourceRange = tsmNativeMotionSourceRange(loaded);
       motionCanvas.dataset.motionSourceClip =
-        loadedForTelemetry?.clip?.id || "";
+        loaded?.clip?.id || "";
       motionCanvas.dataset.motionSourcePlaybackDirection =
-        supportsAdduction
-          ? loadedForTelemetry?.spec?.playbackDirection || ""
+        supported
+          ? loaded?.spec?.playbackDirection || ""
           : "";
       motionCanvas.dataset.motionReferenceClip =
-        referenceLoaded?.clip?.id || "";
+        loaded?.clip?.id || "";
       motionCanvas.dataset.motionReferenceProgress =
-        supportsAdduction ? "0" : "1";
+        supported ? "0" : "1";
       motionCanvas.dataset.motionSourceRangeStart =
-        supportsAdduction && sourceRange
+        supported && sourceRange
           ? sourceRange.start.toFixed(3)
           : "";
       motionCanvas.dataset.motionSourceRangeEnd =
-        supportsAdduction && sourceRange
+        supported && sourceRange
           ? sourceRange.end.toFixed(3)
           : "";
       motionCanvas.dataset.motionSourceCoordinate =
-        supportsAdduction && sourceRange
+        supported && sourceRange
           ? sourceRange.coordinate
           : "";
     }
-    if (motionStateEl && !supportsAdduction) {
+
+    if (motionStateEl && !supported) {
       motionStateEl.replaceChildren();
       const strong = document.createElement("strong");
       strong.textContent = selectedName || "Плечевой комплекс";
       const span = document.createElement("span");
       span.textContent =
-        "Самостоятельная модель движения собрана в проверенной биомеханической опорной позе. Она не использует геометрию статического атласа; анимация для выбранного действия пока не подключена.";
+        "Для этой мышцы source-native геометрия доступна, но проверенная анимация выбранного действия пока не подключена.";
       motionStateEl.append(strong, span);
     }
   } catch (error) {
     if (generation !== motionNativeLoadGeneration) return;
-    console.error("TSM native bone probe failed", error);
+    console.error("TSM native Motion failed", error);
     motionCameraIndependent = false;
     if (motionCanvas) {
       motionCanvas.dataset.motionState = "source-native-error";
@@ -4407,7 +4560,7 @@ async function buildTsmNativeBoneProbeScene(action, selectedName) {
       strong.textContent = "Source-native TSM";
       const span = document.createElement("span");
       span.textContent =
-        "Не удалось загрузить независимую костную сцену. Обычный Motion Lab не изменён.";
+        "Не удалось загрузить отдельную модель движения. Статический атлас не изменён.";
       motionStateEl.append(strong, span);
     }
   }
@@ -6455,7 +6608,8 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
   if (shouldUseTsmNativeMotion(action)) {
     void buildTsmNativeBoneProbeScene(
       action,
-      displayStructureName(firstSid)
+      displayStructureName(firstSid),
+      [...selectedUnits]
     );
     return;
   }
@@ -6682,6 +6836,7 @@ function prepareMotionComparison(sid) {
     "source-native-loading",
     "source-native-reference-pose",
     "source-native-adduction-ready",
+    "source-native-abduction-ready",
     "source-native-elbow-loading",
     "source-native-elbow-ready",
     "source-native-elbow-playing",
