@@ -609,6 +609,20 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+  "ncbi-deep-perineum": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis: Deep Perineal Space",
+    role: "Сверка глубокого пространства промежности и наружного сфинктерного комплекса уретры",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK538272/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-perineal-body": Object.freeze({
+    title: "StatPearls: Anatomy, Abdomen and Pelvis, Perineal Body",
+    role: "Сверка прикреплений поверхностной и глубокой поперечных мышц промежности и связей промежностного тела",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK537345/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-pelvic-floor": Object.freeze({
     title: "StatPearls: Anatomy, Abdomen and Pelvis: Pelvic Floor",
     role: "Основная сверка levator ani, coccygeus и послойной организации тазового дна",
