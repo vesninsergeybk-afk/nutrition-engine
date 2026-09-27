@@ -964,8 +964,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-back": Object.freeze({
     title: "Урок 8. Методическое пособие «Мышцы спины»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/14hsD-zsEqE8XihZN98Yu6OZXV6nl5x50/view",
-    providerFileId: "14hsD-zsEqE8XihZN98Yu6OZXV6nl5x50",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
@@ -975,8 +973,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-leg-posterior": Object.freeze({
     title: "Урок 9. Методическое пособие «Мышцы ног. Задняя поверхность»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/11dsM0GqO5TYciQcEDIKg4oe2133WGnCk/view",
-    providerFileId: "11dsM0GqO5TYciQcEDIKg4oe2133WGnCk",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
@@ -986,8 +982,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-abdomen": Object.freeze({
     title: "Урок 10. Методическое пособие «Мышцы живота»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/1ecCMrUqgNkveZF0w41_24sEX8afDXnAD/view",
-    providerFileId: "1ecCMrUqgNkveZF0w41_24sEX8afDXnAD",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
@@ -997,8 +991,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-thorax": Object.freeze({
     title: "Урок 11. Методическое пособие «Мышцы грудной клетки»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/1Jm2U_qvMJ5xVj0_p1wS34gOFhOykm6fv/view",
-    providerFileId: "1Jm2U_qvMJ5xVj0_p1wS34gOFhOykm6fv",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
@@ -1008,8 +1000,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-neck": Object.freeze({
     title: "Урок 12. Методическое пособие «Мышцы шеи»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/1UJ-m2BOPTrGgWGNy9iyfTK2eKHduAS3p/view",
-    providerFileId: "1UJ-m2BOPTrGgWGNy9iyfTK2eKHduAS3p",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
@@ -1019,8 +1009,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-head": Object.freeze({
     title: "Урок 13. Методическое пособие «Мышцы головы»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/1VexJlbbW9Cgywf7GwQ3TqDCIIwvYumXs/view",
-    providerFileId: "1VexJlbbW9Cgywf7GwQ3TqDCIIwvYumXs",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
@@ -1030,8 +1018,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-upper-limb": Object.freeze({
     title: "Урок 14. Методическое пособие «Мышцы рук»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/1effxWGCb8__xZAlotBPl93CGrVm9w3x6/view",
-    providerFileId: "1effxWGCb8__xZAlotBPl93CGrVm9w3x6",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
@@ -1041,8 +1027,6 @@ export const REFERENCE_SOURCES = Object.freeze({
   "methodic-grandsecret-leg-anterior": Object.freeze({
     title: "Урок 15. Методическое пособие «Мышцы ног. Передняя поверхность»",
     role: "Источник художественных анатомических иллюстраций; анатомические подписи и функции из пособия не переносятся без независимой сверки",
-    sourcePage: "https://drive.google.com/file/d/1GBQ2_JXpCUtnh4s1iMn9GL1SlCiXi0LY/view",
-    providerFileId: "1GBQ2_JXpCUtnh4s1iMn9GL1SlCiXi0LY",
     rights: Object.freeze({
       illustrations: "permission-unverified",
       note: "Источник доступен в подключённой библиотеке, но право на публичное переиспользование отдельных рисунков в открытом GitHub-репозитории пока не подтверждено."
