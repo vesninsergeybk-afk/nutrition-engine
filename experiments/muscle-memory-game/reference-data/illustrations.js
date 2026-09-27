@@ -47,6 +47,28 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "source-verified-asset-pending"
   },
   {
+    "id": "gray-412-posterior-shoulder",
+    "sourceId": "gray-1918-plate-412",
+    "kind": "regional-plate",
+    "regionIds": [
+      "back-shoulder",
+      "upper-limb"
+    ],
+    "focusStructureIds": [
+      "deltoid",
+      "supraspinatus",
+      "infraspinatus",
+      "teres-major",
+      "teres-minor",
+      "triceps-brachii"
+    ],
+    "rightsStatus": "public-domain",
+    "assetPath": "./assets/reference/gray412-shoulder.png",
+    "altRu": "Задняя поверхность плечевого пояса и плеча: мышцы лопатки и трёхглавая мышца плеча",
+    "captionRu": "Региональная пластина Gray: мышцы задней поверхности лопатки и плеча.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-378-masseter",
     "sourceId": "gray-1918-plate-378-masseter",
     "kind": "focused-plate",
