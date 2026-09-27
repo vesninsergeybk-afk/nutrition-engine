@@ -63,11 +63,11 @@ assert(
   app.includes('activeDepthAvailability?.reason === "source-incomplete"') &&
     app.includes("sourceCoverageNoteEl.hidden = !sourceCoverageIncomplete") &&
     app.includes("sourceCoverageNoteEl.textContent = sourceCoverageMessage") &&
-    app.includes("Для полного препарата выберите Z-Anatomy"),
-  "Incomplete anatomy-source coverage is not explained to the learner"
+    app.includes("Для более полного набора выберите Z-Anatomy"),
+  "Genuinely incomplete anatomy-source coverage is not explained to the learner"
 );
 assert(
   app.includes("layerUnavailable") &&
-    app.includes("peelSurfaceLayerButton.title"),
+    app.includes("displayLayerActions.hidden = !canPeel && !canUndoLayer"),
   "Unsupported anatomical depth can still look like an available layer action"
 );
