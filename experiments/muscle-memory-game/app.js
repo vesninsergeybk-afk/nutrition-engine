@@ -4,6 +4,10 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
 import {
+  muscleReferenceFor,
+  muscleReferenceSource,
+} from "./muscle-reference-data.js";
+import {
   studyLayerNameRu,
   studyStructureSearchText,
   studyStructureTerm,
@@ -213,6 +217,13 @@ const structureReferenceLatin = document.querySelector("#structure-reference-lat
 const structureReferenceRegion = document.querySelector("#structure-reference-region");
 const structureReferenceDepth = document.querySelector("#structure-reference-depth");
 const structureReferenceSource = document.querySelector("#structure-reference-source");
+const structureReferenceFacts = document.querySelector("#structure-reference-facts");
+const structureReferenceOrigin = document.querySelector("#structure-reference-origin");
+const structureReferenceInsertion = document.querySelector("#structure-reference-insertion");
+const structureReferenceActions = document.querySelector("#structure-reference-actions");
+const structureReferenceSources = document.querySelector("#structure-reference-sources");
+const structureReferenceIllustrations = document.querySelector("#structure-reference-illustrations");
+const structureReferenceEmpty = document.querySelector("#structure-reference-empty");
 const modelSource = document.querySelector("#model-source");
 const layerPresetField = document.querySelector("#layer-preset-field");
 const layerPreset = document.querySelector("#layer-preset");
@@ -391,6 +402,32 @@ function hideStructureReference() {
   if (structureReferenceEl) structureReferenceEl.hidden = true;
 }
 
+function renderReferenceItems(container, items, kind) {
+  if (!container) return;
+  container.replaceChildren();
+  container.hidden = !items?.length;
+  for (const item of items || []) {
+    const source = muscleReferenceSource(item.sourceId);
+    const row = document.createElement("div");
+    row.className = "structure-reference-source-item";
+
+    const title = document.createElement("strong");
+    title.textContent =
+      (kind === "illustration" ? "Иллюстрация · " : "") +
+      (source?.title || item.sourceId || "Источник");
+
+    const detail = document.createElement("span");
+    const rights =
+      kind === "illustration" && source?.rightsStatus
+        ? " · " + source.rightsStatus
+        : "";
+    detail.textContent = (item.locator || "") + rights;
+
+    row.append(title, detail);
+    container.append(row);
+  }
+}
+
 function renderStructureReference(sid) {
   if (!structureReferenceEl || sid == null || !structureNames[sid]) {
     hideStructureReference();
@@ -401,6 +438,7 @@ function renderStructureReference(sid) {
   const term = structureTerm(sourceName);
   const target = learningTargetBySid.get(sid) || null;
   const depth = targetDepthInfo(target);
+  const reference = muscleReferenceFor(sourceName);
 
   structureReferenceLatin.textContent = term.latin || "";
   structureReferenceRegion.textContent = target?.region
@@ -413,6 +451,33 @@ function renderStructureReference(sid) {
     : "Для этой области карта глубины ещё не подтверждена";
   structureReferenceSource.textContent =
     currentModelSource === "bodyparts4" ? "BodyParts3D" : "Z-Anatomy";
+
+  if (reference) {
+    structureReferenceFacts.hidden = false;
+    structureReferenceEmpty.hidden = true;
+    structureReferenceOrigin.textContent = reference.originRu || "—";
+    structureReferenceInsertion.textContent = reference.insertionRu || "—";
+    structureReferenceActions.replaceChildren();
+    for (const action of reference.actionsRu || []) {
+      const li = document.createElement("li");
+      li.textContent = action;
+      structureReferenceActions.append(li);
+    }
+    renderReferenceItems(structureReferenceSources, reference.sources, "source");
+    renderReferenceItems(
+      structureReferenceIllustrations,
+      reference.illustrations,
+      "illustration"
+    );
+  } else {
+    structureReferenceFacts.hidden = true;
+    structureReferenceEmpty.hidden = false;
+    structureReferenceSources.replaceChildren();
+    structureReferenceIllustrations.replaceChildren();
+    structureReferenceSources.hidden = true;
+    structureReferenceIllustrations.hidden = true;
+  }
+
   structureReferenceEl.hidden = false;
 }
 
