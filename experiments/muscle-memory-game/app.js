@@ -9227,7 +9227,10 @@ function applyTrainingDisplayOverride() {
     material.needsUpdate = true;
   }
 
-  if (skeletonMesh) skeletonMesh.visible = false;
+  if (skeletonMesh) {
+    applyRegionBoneVisibility();
+    applyBoneDisplayMode();
+  }
   for (const mesh of connectiveMeshes.values()) mesh.visible = false;
   if (skinMesh) skinMesh.visible = false;
   for (const mesh of referenceMeshes.values()) mesh.visible = false;
@@ -9236,7 +9239,7 @@ function applyTrainingDisplayOverride() {
   canvas.dataset.connectiveTrainingHidden = String(connectiveMeshes.size > 0);
   canvas.dataset.skinTrainingHidden = String(Boolean(skinMesh));
   canvas.dataset.referenceTrainingHidden = String(referenceMeshes.size > 0);
-  canvas.dataset.boneTrainingHidden = String(Boolean(skeletonMesh));
+  canvas.dataset.boneTrainingHidden = "false";
 }
 
 function restoreDisplayAfterTraining() {
