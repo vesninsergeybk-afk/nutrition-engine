@@ -184,16 +184,16 @@ assert(
   "Obsolete mutually exclusive tissue presets must not remain user-facing"
 );
 assert(
-  html.includes(">Костные ориентиры<") &&
+  html.includes(">Скелет и костные ориентиры<") &&
     html.includes("Контур кожи") &&
     html.includes("Дополнительные ткани"),
   "Display drawer must present bones, skin and connective tissues by their actual learning roles"
 );
 assert(
-  app.includes('boneDisplayMode = "off"') &&
+  app.includes('boneDisplayMode = "anatomical"') &&
     app.includes('skinOverlayToggle.checked ? "ghost" : "off"') &&
     app.includes('skinMesh && skinDisplayMode === "anatomical"'),
-  "Support layers must not force translucent muscles or let the ghost skin intercept muscle picking"
+  "Skeletal context must stay visible by default without making the working muscle model translucent or letting ghost skin intercept muscle picking"
 );
 assert(
   !app.includes('muscleDisplayMode = "ghost";'),
