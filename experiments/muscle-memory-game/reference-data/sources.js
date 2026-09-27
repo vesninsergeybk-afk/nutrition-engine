@@ -125,6 +125,49 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+  "ncbi-foot-ankle": Object.freeze({
+    title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb: Foot and Ankle",
+    role: "Сверка вариабельной мышцы, противопоставляющей мизинец стопы",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK546698/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-opponens-foot": Object.freeze({
+    title: "Kenhub: Opponens digiti minimi muscle of foot",
+    role: "Сверка прикреплений, слоя и функции opponens digiti minimi pedis",
+    url: "https://www.kenhub.com/en/library/anatomy/opponens-digiti-minimi-muscle-of-foot",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "kenhub-adductor-magnus": Object.freeze({
+    title: "Kenhub: Adductor magnus muscle",
+    role: "Сверка adductor minimus как вариабельно выделяемой верхней части приводящей части adductor magnus",
+    url: "https://www.kenhub.com/en/library/anatomy/adductor-magnus",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-maxilla": Object.freeze({
+    title: "StatPearls: Anatomy, Head and Neck, Maxilla",
+    role: "Сверка levator labii superioris alaeque nasi и мышц средней зоны лица",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK538527/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "pmc-depressor-septi": Object.freeze({
+    title: "Anatomical review of depressor septi nasi and adjacent nasal muscles",
+    role: "Сверка вариабельных прикреплений depressor septi nasi",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10714083/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "pmc-temporoparietalis": Object.freeze({
+    title: "Temporoparietalis Muscle: A Cadaveric Study of 60 Hemisides",
+    year: 2026,
+    role: "Сверка вариабельности, слоя и связей temporoparietalis",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC13278336/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
   "ncbi-foot-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Bony Pelvis and Lower Limb, Foot Muscles",
     role: "Основная современная сверка наружных и собственных мышц стопы, компартментов и четырёх подошвенных слоёв",
