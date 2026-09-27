@@ -43,6 +43,18 @@ assert(
   "Runtime must start in Atlas mode"
 );
 assert(
+  /id="toggle-skeleton"[^>]*aria-pressed="true"[^>]*disabled/.test(html) &&
+    /id="bone-mode"[\s\S]*?<option value="anatomical" selected>Показать<\/option>/.test(html),
+  "Static Atlas shell must advertise skeletal context as the default once the model is ready"
+);
+assert(
+  app.includes('let boneDisplayMode = "anatomical";') &&
+    app.includes('function syncSkeletonQuickToggle()') &&
+    app.includes('boneDisplayMode = boneDisplayMode === "off" ? "anatomical" : "off";') &&
+    app.includes('boneMode.value = "anatomical";'),
+  "Runtime must keep the skeleton visible by default and expose a direct toggle"
+);
+assert(
   app.includes('const requestedMode = params.get("mode");') &&
     app.includes('if (requestedMode === "quiz") setMode("quiz");'),
   "Explicit quiz deep link must still work"
