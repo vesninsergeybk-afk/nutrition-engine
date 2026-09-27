@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "policy_version": "external-food-provenance-extension-v15",
+  "extends_policy": "v5.3.210-p1.3",
+  "status": "staging_only",
+  "nutrient_method_extension": {
+    "SOURCE_REPORTED": {
+      "description": "Value transcribed from a concrete official primary-dataset record. The upstream analytical/derivation method is not asserted.",
+      "relative_uncertainty": 0.2,
+      "production_status": "not_enabled"
+    }
+  },
+  "transformation_rules": {
+    "direct_nonzero_official_value": "SOURCE_REPORTED",
+    "direct_zero_official_value": "SOURCE_REPORTED_ZERO",
+    "salt": "CALCULATED from sodium_mg * 2.54 / 1000",
+    "unsat": "CALCULATED from source MUFA + PUFA components",
+    "added_sugar_without_direct_source": "ASSUMED_ZERO"
+  },
+  "zero_policy": {
+    "no_null_to_zero_coercion": true,
+    "assumed_zero_must_be_explicit": true,
+    "source_zero_must_be_explicit": true
+  },
+  "confidence": {
+    "staging_product_score": 0.78,
+    "staging_tier": "MEDIUM",
+    "review_status": "CONDITIONALLY_ACCEPTED"
+  }
+}
