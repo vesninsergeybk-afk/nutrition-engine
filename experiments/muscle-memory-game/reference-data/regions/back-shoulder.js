@@ -692,6 +692,117 @@ export const BACK_SHOULDER_REGION = Object.freeze({
       ]),
       verification: Object.freeze({ status: "cross-checked-with-functional-caution" }),
     }),
+
+    Object.freeze({
+      id: "interspinales",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Межостистые мышцы",
+        latin: "musculi interspinales",
+        modelAliases: Object.freeze(["interspinales", "interspinalis"]),
+      }),
+      subregions: Object.freeze(["deep-cervical-back", "deep-lumbar-back"]),
+      layer: "intrinsic-deepest-segmental",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Парные короткие пучки начинаются от верхней поверхности остистого отростка нижележащего позвонка."]),
+        insertionRu: Object.freeze(["Прикрепляются к нижней поверхности остистого отростка соседнего вышележащего позвонка."]),
+        fiberDirectionRu: "Короткие почти вертикальные пучки соединяют соседние остистые отростки.",
+        actionsRu: Object.freeze([
+          "Помогают разгибанию шейного и поясничного отделов.",
+          "Их более важная роль — сегментарная стабилизация и проприоцептивный контроль, а не создание большого движения.",
+        ]),
+        innervationRu: "Задние ветви соответствующих спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Остистые отростки соседних позвонков"]),
+        relationsRu: Object.freeze([
+          "Относятся к самому глубокому сегментарному слою собственных мышц спины.",
+          "Хорошо развиты главным образом в шейном и поясничном отделах; в грудном отделе выражены слабо и могут отсутствовать на отдельных уровнях.",
+        ]),
+      }),
+      movementCueRu: "В тренажёре нужны для точной послойной карты; отдельную поверхностную пальпацию или самостоятельное крупное движение им не приписываем.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.5 «Межостистые мышцы»", role: "teaching-source" }),
+        Object.freeze({ sourceId: "kenhub-deep-back", locator: "Deepest layer — Interspinales", role: "verification" }),
+        Object.freeze({ sourceId: "ncbi-thoracic-vertebrae", locator: "Muscles — short intersegmental muscles", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-with-functional-caution" }),
+    }),
+
+    Object.freeze({
+      id: "intertransversarii",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Межпоперечные мышцы",
+        latin: "musculi intertransversarii",
+        modelAliases: Object.freeze(["intertransversarii", "intertransversarius"]),
+      }),
+      subregions: Object.freeze(["deep-cervical-back", "deep-lumbar-back"]),
+      layer: "intrinsic-deepest-segmental",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Короткие пучки начинаются от поперечных и связанных с ними добавочных отростков одного позвонка."]),
+        insertionRu: Object.freeze(["Соединяются с поперечным, добавочным или сосцевидным отростком соседнего позвонка; точная организация зависит от отдела позвоночника."]),
+        fiberDirectionRu: "Короткие вертикальные или слегка косые пучки соединяют соседние поперечные элементы позвонков.",
+        actionsRu: Object.freeze([
+          "Участвуют в ипсилатеральном боковом сгибании шейного и поясничного отделов.",
+          "Существенна их роль в сегментарной стабилизации и проприоцептивном контроле.",
+        ]),
+        innervationRu: "Иннервация зависит от части и уровня: используются передние и задние ветви соответствующих шейных и поясничных спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Поперечные отростки соседних позвонков"]),
+        relationsRu: Object.freeze([
+          "Относятся к самому глубокому сегментарному слою.",
+          "Лучше развиты в шейном и поясничном отделах; отдельные компоненты имеют различную иннервацию, поэтому их нельзя без оговорок описывать как единую типичную собственную мышцу спины.",
+        ]),
+      }),
+      movementCueRu: "Основная учебная ценность — показать сегментарный глубокий слой и стабилизацию, а не создавать отдельную ручную задачу.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел I, 2.6 «Межпоперечные мышцы»", role: "teaching-source" }),
+        Object.freeze({ sourceId: "kenhub-deep-back", locator: "Deepest layer — Intertransversarii", role: "verification" }),
+        Object.freeze({ sourceId: "ncbi-lumbar-vertebrae", locator: "Muscles", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-with-innervation-nuance" }),
+    }),
+
+    Object.freeze({
+      id: "levatores-costarum",
+      kind: "muscle-group",
+      names: Object.freeze({
+        ru: "Мышцы, поднимающие рёбра",
+        latin: "musculi levatores costarum",
+        modelAliases: Object.freeze(["levatores costarum", "levatores costarum breves", "levatores costarum longi"]),
+      }),
+      subregions: Object.freeze(["deep-thoracic-back"]),
+      layer: "intrinsic-deepest-segmental",
+      anatomy: Object.freeze({
+        originRu: Object.freeze(["Поперечные отростки C7–T11."]),
+        insertionRu: Object.freeze([
+          "Короткие мышцы прикрепляются к верхнему краю и наружной поверхности следующего нижележащего ребра между бугорком и углом.",
+          "Длинные пучки, когда присутствуют, перекидываются через одно ребро.",
+        ]),
+        fiberDirectionRu: "Пучки идут вниз и латерально от поперечных отростков к рёбрам.",
+        actionsRu: Object.freeze([
+          "Могут поднимать рёбра.",
+          "Участвуют в небольшом боковом сгибании и вращении грудного отдела.",
+          "Вклад в дыхание возможен, но его не следует представлять как основную или хорошо количественно установленную дыхательную функцию.",
+        ]),
+        innervationRu: "Латеральные ветви задних ветвей грудных спинномозговых нервов.",
+      }),
+      surfaceMap: Object.freeze({
+        landmarksRu: Object.freeze(["Поперечные отростки C7–T11", "углы рёбер"]),
+        relationsRu: Object.freeze([
+          "Лежат в самом глубоком слое грудной части спины, латеральнее rotatores и медиальнее наружных межрёберных мышц.",
+        ]),
+      }),
+      movementCueRu: "Карточка нужна для завершения глубокого слоя грудной области; отдельную дыхательную «мишень» из этих мышц не создаём.",
+      sources: Object.freeze([
+        Object.freeze({ sourceId: "ncbi-thorax-muscles", locator: "Posterior thorax — levatores costarum", role: "verification" }),
+        Object.freeze({ sourceId: "kenhub-deep-back", locator: "Deepest layer — Levatores costarum", role: "verification" }),
+      ]),
+      verification: Object.freeze({ status: "cross-checked-with-respiratory-caution" }),
+    }),
+
   ]),
 });
 
