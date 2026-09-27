@@ -290,6 +290,16 @@
             <ul id="structure-reference-ambiguity-candidates"></ul>
           </div>
 
+          <figure id="structure-reference-preview" class="structure-reference-preview" hidden>
+            <div class="structure-reference-preview-frame">
+              <canvas id="structure-reference-preview-canvas" aria-label="Локальная анатомическая иллюстрация выбранной мышцы"></canvas>
+            </div>
+            <figcaption>
+              <strong id="structure-reference-preview-title"></strong>
+              <span id="structure-reference-preview-caption"></span>
+            </figcaption>
+          </figure>
+
           <div id="structure-reference-facts" class="structure-reference-facts" hidden>
             <section class="structure-reference-primary" aria-labelledby="structure-reference-actions-label">
               <strong id="structure-reference-actions-label">Основные действия</strong>
@@ -343,10 +353,14 @@
             </details>
 
             <details class="structure-reference-details structure-reference-sources-details">
-              <summary>Источники</summary>
+              <summary>Источники и дополнительные атласные пластины</summary>
               <div class="structure-reference-media">
                 <div id="structure-reference-sources" class="structure-reference-source-list"></div>
-                <div id="structure-reference-illustrations" class="structure-reference-source-list"></div>
+                <div id="structure-reference-atlas-block" class="structure-reference-atlas-block" hidden>
+                  <strong>Дополнительные атласные пластины</strong>
+                  <span>Показывают регион и соседние структуры; основной рисунок выше всегда строится для выбранной мышцы.</span>
+                  <div id="structure-reference-illustrations" class="structure-reference-source-list"></div>
+                </div>
               </div>
             </details>
           </div>
