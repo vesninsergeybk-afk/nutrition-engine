@@ -566,6 +566,34 @@ export function specimenById(id) {
   return SPECIMEN_BY_ID.get(id) || null;
 }
 
+export function bestRegionalSpecimenIdForTarget(target) {
+  if (!target) return null;
+
+  const text = targetText(target);
+  let best = null;
+  let bestScore = -1;
+
+  for (const item of VIRTUAL_SPECIMENS) {
+    if (item.type !== "region") continue;
+    if (matchesPatterns(text, item.excludePatterns)) continue;
+
+    const regionMatch = item.questionRegionIds.includes(target.region);
+    const patternMatch = matchesPatterns(text, item.questionPatterns);
+    if (!regionMatch && !patternMatch) continue;
+
+    // A named/pattern-defined regional preparation is more specific than a
+    // broad catalog bucket such as "thigh" or "back". On equal score prefer
+    // the later curated specimen, where surface-specific blocks are defined.
+    const score = patternMatch ? 2 : 1;
+    if (score >= bestScore) {
+      best = item.id;
+      bestScore = score;
+    }
+  }
+
+  return best;
+}
+
 export function specimenMatchesTarget(target, specimenOrId, mode = "question") {
   const item =
     typeof specimenOrId === "string" ? specimenById(specimenOrId) : specimenOrId;
