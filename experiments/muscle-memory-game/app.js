@@ -906,6 +906,15 @@ function studyDisplayName(studyId) {
   return studyStructureTerm(entry.sourceName, entry.layerKey).nameRu;
 }
 
+function boneSearchText(boneId) {
+  const sourceName = boneNames[boneId] || "";
+  const term = boneTermRu(sourceName);
+  return [term.nameRu, sourceName]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase("ru-RU");
+}
+
 function studyMeshes() {
   return [
     ...connectiveMeshes.values(),
@@ -7594,7 +7603,7 @@ function setMode(mode) {
     questionEl.textContent = "Выберите структуру";
     feedbackEl.className = "feedback";
     feedbackEl.textContent =
-      "Коснитесь мышцы, связки, сухожилия, фасциальной структуры или наружного слоя. Здесь можно свободно изучать их взаимное расположение.";
+      "Коснитесь мышцы, кости, связки, сухожилия, фасциальной структуры или наружного слоя. Здесь можно свободно изучать их взаимное расположение.";
 
     if (preservedSid != null && structureNames[preservedSid]) {
       selectExploreStructure(preservedSid);
@@ -7673,6 +7682,15 @@ function renderSearchResults(query) {
     }
   }
 
+  if (appMode === "explore" && matches.length < 10 && skeletonMesh) {
+    for (let boneId = 0; boneId < boneNames.length && matches.length < 10; boneId += 1) {
+      if (boneVisibility[boneId] === false) continue;
+      if (boneSearchText(boneId).includes(q)) {
+        matches.push({ kind: "bone", id: boneId });
+      }
+    }
+  }
+
   if (appMode === "explore" && matches.length < 10) {
     for (const entry of studyStructures) {
       if (matches.length >= 10) break;
@@ -7700,7 +7718,9 @@ function renderSearchResults(query) {
       const sid = match.id;
       button.textContent = displayStructureName(sid);
       button.addEventListener("click", () => {
-        if (isolated || selectedStudyId != null) restoreExploreContext();
+        if (isolated || selectedStudyId != null || selectedBoneId != null) {
+          restoreExploreContext();
+        }
         if (structureVisibility[sid] === false) {
           setStructureVisible(sid, true);
           for (let i = hiddenStack.length - 1; i >= 0; i -= 1) {
@@ -7711,12 +7731,27 @@ function renderSearchResults(query) {
         searchResults.replaceChildren();
         searchInput.value = displayStructureName(sid);
       });
+    } else if (match.kind === "bone") {
+      const boneId = match.id;
+      const term = boneTermRu(boneNames[boneId]);
+      button.textContent = term.nameRu + " · Кость";
+      button.addEventListener("click", () => {
+        if (isolated || selectedStudyId != null) restoreExploreContext();
+        if (boneDisplayMode === "off") {
+          boneDisplayMode = "anatomical";
+          boneMode.value = "anatomical";
+          applyBoneDisplayMode();
+        }
+        selectBoneStructure(boneId);
+        searchResults.replaceChildren();
+        searchInput.value = term.nameRu;
+      });
     } else {
       const entry = studyEntry(match.id);
       button.textContent =
         studyDisplayName(match.id) + " · " + studyLayerNameRu(entry?.layerKey);
       button.addEventListener("click", () => {
-        if (isolated) restoreExploreContext();
+        if (isolated || selectedBoneId != null) restoreExploreContext();
         ensureStudyLayerShown(entry);
         setStudyStructureVisible(match.id, true);
         selectStudyStructure(match.id);
