@@ -24,10 +24,22 @@ assert(
   "Display drawer open state is not connected to the viewer shell"
 );
 assert(
-  css.includes(".display-panel-open .comparison-pane-static") &&
-    css.includes("width: calc(100% - min(340px, 34%))") &&
-    css.includes(".display-panel-open .viewer-tools"),
-  "Desktop display controls must shift the atlas instead of covering it"
+  css.includes("--display-panel-width: clamp(340px, 36vw, 410px)") &&
+    css.includes("body:not(.motion-mode) .viewer-wrap.display-panel-open .comparison-pane-static") &&
+    css.includes("left: var(--display-panel-width)") &&
+    css.includes(".viewer-wrap.display-panel-open .viewer-tools"),
+  "Desktop display controls must occupy the full-height side panel and shift the atlas"
+);
+assert(
+  css.includes("height: 100%") &&
+    css.includes("max-height: none") &&
+    css.includes("overflow-y: auto"),
+  "Display panel can collapse or be clipped instead of filling the viewer height"
+);
+assert(
+  !css.includes(".viewer-settings[open] .viewer-settings-menu") &&
+    !css.includes("body.display-drawer-open"),
+  "Legacy disclosure drawer CSS still conflicts with the current display panel"
 );
 assert(
   /overflow-y:\s*auto/.test(css) &&
