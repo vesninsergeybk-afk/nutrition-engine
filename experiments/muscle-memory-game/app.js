@@ -1888,7 +1888,7 @@ function applyStudyLayerPreset(preset = "muscles") {
   connectiveDisplayMode = "off";
   // Keep the useful connective layers preselected while hidden. Turning the
   // connective layer on should immediately reveal fasciae, tendons and ligaments.
-  setConnectiveLayerSelection(["fascia", "tendon", "ligament", "joint", "cartilage"]);
+  setConnectiveLayerSelection(["fascia", "tendon", "ligament", "other"]);
   boneDisplayMode =
     preset === "muscles"
       ? (regionIsolationActive() ? "xray" : "anatomical")
@@ -1917,8 +1917,7 @@ function applyStudyLayerPreset(preset = "muscles") {
       "fascia",
       "tendon",
       "ligament",
-      "joint",
-      "cartilage",
+      "other",
     ]);
   } else if (preset === "all-tissues") {
     muscleDisplayMode = "anatomical";
@@ -9449,10 +9448,7 @@ async function loadBodyParts4Model() {
       !bodyPartsAnatomyKind(part) &&
       (
         part.system === "connective" ||
-        (
-          (part.system === "skeletal" || part.system === "integumentary") &&
-          CONNECTIVE_DISPLAY_NAME_RE.test(part.name)
-        )
+        CONNECTIVE_DISPLAY_NAME_RE.test(part.name)
       )
   );
   const connectiveIds = new Set(connectiveParts.map((part) => part.id));
@@ -9806,8 +9802,7 @@ connectiveMode.addEventListener("change", () => {
       "fascia",
       "tendon",
       "ligament",
-      "joint",
-      "cartilage",
+      "other",
     ]);
   }
   applyConnectiveDisplayMode();
