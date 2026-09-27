@@ -115,19 +115,16 @@ assert(
   "Atlas card is not wired to exact 2D primary illustration data"
 );
 
-const supraspinatus = muscleReferenceFor("Right supraspinatus");
+const trapezius = muscleReferenceFor("trapezius");
 assert(
-  supraspinatus.illustrations.some(
-    (item) =>
-      item.src === "./assets/reference/gray412-shoulder.png" &&
-      item.rightsStatus === "public-domain"
-  ),
-  "Verified Gray shoulder plate is not wired as a local public-domain illustration"
+  trapezius?.primaryIllustration?.kind === "course-art-exact" &&
+    trapezius.primaryIllustration.spritePath?.includes("reference-data/assets/course-art/"),
+  "Exact course artwork is not wired as the primary muscle illustration"
 );
 assert(
-  app.includes('image.loading = "lazy"') &&
-    app.includes('figure.className = "structure-reference-figure"'),
-  "Local reference illustrations are not rendered lazily"
+  app.includes("renderStructureReferencePrimaryArt(reference)") &&
+    app.includes("structureReferencePrimaryArtImage.style.backgroundImage"),
+  "Primary course artwork is not rendered by the muscle reference card"
 );
 assert(
   !html.includes("goldfinger") &&
