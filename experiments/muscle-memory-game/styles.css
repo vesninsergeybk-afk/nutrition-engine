@@ -2262,3 +2262,15 @@ body:not(.motion-mode) .comparison-pane-static {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.selected-structure-actions-primary {
+  margin: 10px 0 12px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,255,255,.7);
+}
+
+.selected-structure-actions-primary .layer-actions {
+  margin-top: 2px;
+}
