@@ -151,6 +151,14 @@ export function learningConceptSourceName(sourceName) {
   return neutral;
 }
 
+export function learningDepthSourceNames(sourceName) {
+  const exact = neutralSourceName(sourceName)
+    .replace(/\bmuscle\s*$/i, "")
+    .trim();
+  const concept = learningConceptSourceName(sourceName);
+  return [...new Set([exact, concept].filter(Boolean))];
+}
+
 function detailedRussianName(sourceName) {
   const neutralSource = neutralSourceName(sourceName);
   const neutralTranslation = bodyPartsMuscleNameRu(neutralSource);
