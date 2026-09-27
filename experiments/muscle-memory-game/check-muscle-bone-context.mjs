@@ -11,13 +11,13 @@ function assert(condition, message) {
 }
 
 assert(
-  /function resetRegionSupportLayers\(\)[\s\S]*?boneDisplayMode = "off"/.test(app),
-  "Regional atlas context must start with bone landmarks hidden"
+  /function resetRegionSupportLayers\(\)[\s\S]*?boneDisplayMode = "anatomical"/.test(app),
+  "Regional atlas context must start with solid bone landmarks visible"
 );
 assert(
-  app.includes('boneDisplayMode = "off"') &&
+  app.includes('boneDisplayMode = "anatomical"') &&
     !/preset === "muscles"[\s\S]*?muscleDisplayMode = "ghost"/.test(app),
-  "Muscle-first atlas context must not force x-ray bones or ghost muscles"
+  "Muscle-first atlas context must keep solid skeletal context without forcing x-ray bones or ghost muscles"
 );
 const selectedBoneContextStart = app.indexOf("function showSelectedMuscleBoneContext");
 const selectedBoneContextEnd = app.indexOf("function applyBoneDisplayMode", selectedBoneContextStart);
@@ -44,5 +44,5 @@ assert(
   html.includes('id="bone-opacity"') && html.includes('value="0.17"'),
   "Optional xray bone mode must retain an explicit opacity control"
 );
-console.log("Regional/default bone landmarks: opt-in");
+console.log("Regional/default bone landmarks: visible");
 console.log("Single-muscle isolation: local bone context preserved");
