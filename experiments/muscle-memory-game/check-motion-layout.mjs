@@ -82,30 +82,34 @@ assert(
 );
 
 const motionButtonIndex = html.indexOf('id="mode-motion"');
-const settingsIndex = html.indexOf('<details class="viewer-settings">');
 const modeSwitchStart = html.indexOf('<div class="mode-switch"');
 const modeSwitchEnd = html.indexOf('</div>', modeSwitchStart);
+const staticAtlasRelease = app.includes("const MOTION_UI_ENABLED = false");
 
-assert(
-  motionButtonIndex > modeSwitchStart &&
-    motionButtonIndex < modeSwitchEnd &&
-    motionButtonIndex < settingsIndex,
-  "Motion must remain a direct top-level mode, not a display submenu action"
-);
-assert(
-  !html.slice(settingsIndex, html.indexOf('</details>', settingsIndex)).includes('mode-motion'),
-  "Motion leaked into the Display submenu"
-);
-assert(
-  app.includes("if (viewerSettings) viewerSettings.open = false;"),
-  "Primary mode switching does not dismiss the auxiliary display submenu"
-);
-assert(
-  css.includes("grid-template-columns: repeat(3, minmax(0, 1fr))"),
-  "Mobile primary-mode switch can collapse or hide Motion"
-);
-
-console.log("Motion primary navigation: direct one-click top-level mode");
+if (staticAtlasRelease) {
+  assert(
+    /id="mode-motion"[^>]*hidden[^>]*disabled/.test(html),
+    "Static atlas release must keep Motion hidden and disabled"
+  );
+  assert(
+    app.includes('mode === "motion" && !MOTION_UI_ENABLED'),
+    "Static atlas release must guard the disabled Motion workspace"
+  );
+  console.log("Motion navigation: intentionally absent from the static atlas release");
+} else {
+  const settingsIndex = html.indexOf('id="display-panel-toggle"');
+  assert(
+    motionButtonIndex > modeSwitchStart &&
+      motionButtonIndex < modeSwitchEnd &&
+      motionButtonIndex < settingsIndex,
+    "Motion must remain a direct top-level mode, not a display action"
+  );
+  assert(
+    app.includes("setDisplayPanelOpen(false)"),
+    "Primary mode switching does not dismiss the display drawer"
+  );
+  console.log("Motion primary navigation: direct one-click top-level mode");
+}
 
 assert(
   app.includes('forearm-radius-hand-rotation-pivot') &&
