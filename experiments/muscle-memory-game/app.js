@@ -4540,13 +4540,20 @@ function referencePartSourceName(mesh, partId) {
   );
 }
 
+function referencePartIsInteractive(mesh, partId) {
+  if (!referencePartIsVisible(mesh, partId)) return false;
+  const layerKey = mesh?.userData?.referenceLayer;
+  const sourceName = referencePartSourceName(mesh, partId);
+  return referenceStructureTerm(sourceName, layerKey).specific;
+}
+
 function selectReferenceStructure(layerKey, partId) {
   const mesh = referenceMeshes.get(layerKey);
   if (
     appMode !== "explore" ||
     !mesh ||
     partId == null ||
-    !referencePartIsVisible(mesh, partId)
+    !referencePartIsInteractive(mesh, partId)
   ) return;
 
   clearDeeperStructures();
@@ -7871,7 +7878,7 @@ function renderSearchResults(query) {
     for (const [layerKey, mesh] of referenceMeshes) {
       const names = mesh.userData.referenceNames || [];
       for (let partId = 0; partId < names.length && matches.length < 10; partId += 1) {
-        if (!referencePartIsVisible(mesh, partId)) continue;
+        if (!referencePartIsInteractive(mesh, partId)) continue;
         if (referenceStructureSearchText(names[partId], layerKey).includes(q)) {
           matches.push({ kind: "reference", layerKey, partId });
         }
@@ -8068,7 +8075,7 @@ function onPointerUp(event) {
 
     if (hit.object?.userData?.referenceLayer) {
       const partId = referencePartIdFromHit(hit);
-      if (partId != null && referencePartIsVisible(hit.object, partId)) {
+      if (partId != null && referencePartIsInteractive(hit.object, partId)) {
         selectReferenceStructure(hit.object.userData.referenceLayer, partId);
         return;
       }
