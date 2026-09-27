@@ -1,0 +1,117 @@
+name: External Food Import Preparation v15
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "config/external-food-import-shortlist-v15.json"
+      - "tools/packed/import-v15/**"
+      - ".github/workflows/external-food-import-prep-v15.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reconstruct audited tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/v15
+          cat tools/packed/v15/build_external_food_families_v15.py.gz.b64.part{1,2,3,4} | base64 -d | gzip -d > .tmp/v15/build_external_food_families_v15.py
+          cat tools/packed/v15/audit_external_food_families_v15.py.gz.b64 | base64 -d | gzip -d > .tmp/v15/audit_external_food_families_v15.py
+          cat tools/packed/import-v15/prepare_external_food_import_v15.py.gz.b64 | base64 -d | gzip -d > .tmp/v15/prepare_external_food_import_v15.py
+          echo "09174842b338645e94e23ab3bce9071abb2d364dd8c61ea119ebc5af9654e48f  .tmp/v15/build_external_food_families_v15.py" | sha256sum -c -
+          echo "02b6247fa58f38ef0855598c8126864bb26b564497e89184a7d2082f252e7a2f  .tmp/v15/audit_external_food_families_v15.py" | sha256sum -c -
+          echo "501f4e4da29025cec90c4eeaf974d31b149b30c071492ab830fc6f3f9080b623  .tmp/v15/prepare_external_food_import_v15.py" | sha256sum -c -
+          python3 -m py_compile .tmp/v15/*.py
+
+      - name: Download official datasets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/external-food-sources staging/external-food-sources staging/import-v15
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/usda_foundation.zip "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_csv_2026-04-30.zip"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/usda_sr.zip "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/cnf.zip "https://open.canada.ca/data/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109/resource/019f2a90-e3a9-489d-b6e1-f74f4ba1d006/download/cnf_fcen_all-files-data_2026.zip"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/bls.zip "https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip?token=XZB4-P2AQ-9DM5-IP40-W5Y9-87HT-FMQG-Q3HQ"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/fndds.zip "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/fpid.xls "https://www.ars.usda.gov/ARSUserFiles/80400530/apps/FPID_1718.xls"
+          sha256sum .cache/external-food-sources/* > staging/import-v15/official_source_sha256.txt
+
+      - name: Build reproducible v15 family layer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet openpyxl pandas xlrd
+          python3 tools/import_external_food_sources.py             --repo .             --usda-foundation .cache/external-food-sources/usda_foundation.zip             --usda-sr .cache/external-food-sources/usda_sr.zip             --cnf .cache/external-food-sources/cnf.zip             --bls .cache/external-food-sources/bls.zip             --out-dir staging/external-food-sources
+          python3 tools/filter_external_food_sources.py             --input staging/external-food-sources/external_foods_staging.jsonl             --out-dir staging/external-food-sources
+          python3 .tmp/v15/build_external_food_families_v15.py             --input staging/external-food-sources/external_foods_core_generic.jsonl             --out-dir staging/external-food-sources/v15
+          python3 .tmp/v15/audit_external_food_families_v15.py             --input-core staging/external-food-sources/external_foods_core_generic.jsonl             --members staging/external-food-sources/v15/external_food_family_members.jsonl             --secondary staging/external-food-sources/v15/external_food_family_pass_secondary.jsonl             --report staging/external-food-sources/v15/independent_semantic_audit_v15.json
+
+      - name: Assert v15 checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("staging/external-food-sources/v15")
+          r=json.loads((p/"external_food_family_report.json").read_text())
+          a=json.loads((p/"independent_semantic_audit_v15.json").read_text())
+          expected={"input_core_records":13764,"family_eligible_records":13680,"residual_secondary_removed_from_default":84,"navigation_families":6887,"identity_profiles":8541}
+          for k,v in expected.items(): assert r[k]==v,(k,r[k],v)
+          assert a["pass"] is True and a["errors"]==[]
+          PY
+
+      - name: Prepare import proposals
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .tmp/v15/prepare_external_food_import_v15.py             --shortlist config/external-food-import-shortlist-v15.json             --families staging/external-food-sources/v15/external_food_families.json             --profiles staging/external-food-sources/v15/external_food_profiles.json             --members staging/external-food-sources/v15/external_food_family_members.jsonl             --source-staging staging/external-food-sources/external_foods_staging.jsonl             --fndds .cache/external-food-sources/fndds.zip             --fpid .cache/external-food-sources/fpid.xls             --current-glob "data/products.v5.3.210-p1.3.part-*.json"             --out-dir staging/import-v15             | tee staging/import-v15/preparation-console.txt
+
+      - name: Import-preparation assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          p=json.load(open("staging/import-v15/import_proposals_v15.json",encoding="utf-8"))
+          r=json.load(open("staging/import-v15/import_readiness_report_v15.json",encoding="utf-8"))
+          assert len(p)==89
+          assert len({x["family_id"] for x in p})==89
+          assert sum(r["status_counts"].values())==89
+          assert all(x["status"]!="READY_FOR_PRODUCTION" for x in p)
+          assert r["production_main_changed"] is False
+          print(json.dumps(r,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Publish summary
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r=json.load(open("staging/import-v15/import_readiness_report_v15.json",encoding="utf-8"))
+          print("## External food import preparation v15")
+          print("")
+          print("- Frozen shortlist: 89")
+          for k,v in sorted(r["status_counts"].items()): print(f"- {k}: {v}")
+          print("- Production main changed: NO")
+          print("- No null-to-zero nutrient coercion")
+          PY
+
+      - name: Upload preparation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-import-preparation-v15
+          path: staging/import-v15/
+          if-no-files-found: error
+          retention-days: 14
