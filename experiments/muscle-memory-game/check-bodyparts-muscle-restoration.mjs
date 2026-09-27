@@ -51,6 +51,20 @@ assert(
   "One of the registered BodyParts3D supplement loaders is disconnected"
 );
 assert(
+  supplements.includes("BODYPARTS_BACK_REPLACEMENTS") &&
+    supplements.includes('"FMA22740"') &&
+    supplements.includes('"FMA22741"') &&
+    app.includes("muscleReplacementIds.has(part.conceptId)") &&
+    app.includes("replacesBodyParts4: Boolean(supplement.replacement)"),
+  "Version-coherent iliocostalis replacements are not wired into the BodyParts3D loader"
+);
+assert(
+  app.includes("trunkSupplement.replaced") &&
+    app.includes("несовместимые 4.0-структуры заменены согласованными 3.0"),
+  "BodyParts diagnostics must distinguish restored missing muscles from version-coherent replacements"
+);
+
+assert(
   !supplements.includes("BODYPARTS_UNVALIDATED_REGIONAL_SUPPLEMENTS"),
   "Validated foot supplements are still marked as unvalidated"
 );

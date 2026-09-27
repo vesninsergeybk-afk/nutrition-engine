@@ -168,6 +168,33 @@ export const BODYPARTS_TRUNK_OBJ_SUPPLEMENTS = Object.freeze([
   ),
 ]);
 
+export const BODYPARTS_BACK_REPLACEMENTS = Object.freeze([
+  Object.freeze({
+    ...supplement(
+      "FMA22740",
+      "Right iliocostalis lumborum",
+      "FJ200_BP2353_FMA22740_Right_iliocostalis_lumborum.obj"
+    ),
+    replacement: true,
+    reason:
+      "Use the BodyParts3D 3.0 geometry with the restored 3.0 latissimus; the canonical 4.0 iliocostalis is locally displaced and penetrates the superficial layer.",
+  }),
+  Object.freeze({
+    ...supplement(
+      "FMA22741",
+      "Left iliocostalis lumborum",
+      "FJ70_BP2354_FMA22741_Left_iliocostalis_lumborum.obj"
+    ),
+    replacement: true,
+    reason:
+      "Use the BodyParts3D 3.0 geometry with the restored 3.0 latissimus; the canonical 4.0 iliocostalis is locally displaced and penetrates the superficial layer.",
+  }),
+]);
+
+export const BODYPARTS_MUSCLE_REPLACEMENT_IDS = Object.freeze(
+  BODYPARTS_BACK_REPLACEMENTS.map((item) => item.id)
+);
+
 export const BODYPARTS_FACE_OBJ_SUPPLEMENTS = Object.freeze([
   supplement(
     "FMA55608",

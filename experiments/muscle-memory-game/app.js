@@ -35,9 +35,11 @@ import {
   bodyPartsClassificationStats,
 } from "./bodyparts4-classification.js";
 import {
+  BODYPARTS_BACK_REPLACEMENTS,
   BODYPARTS_FACE_OBJ_SUPPLEMENTS,
   BODYPARTS_FACE_PACK,
   BODYPARTS_FOOT_OBJ_SUPPLEMENTS,
+  BODYPARTS_MUSCLE_REPLACEMENT_IDS,
   BODYPARTS_TRUNK_OBJ_SUPPLEMENTS,
   BODYPARTS_TRUNK_PACK,
   registeredBodyPartsV3FaceObjGeometry,
@@ -8715,6 +8717,8 @@ async function loadBodyPartsTrunkSupplements(
     muscleAnatomyParts.map((part) => part.conceptId).filter(Boolean)
   );
   let added = 0;
+  let restored = 0;
+  let replaced = 0;
   let triangles = 0;
   const failures = [];
 
@@ -8750,6 +8754,7 @@ async function loadBodyPartsTrunkSupplements(
         existingConceptIds.add(part.conceptId);
         triangles += Math.floor(part.indexCount / 3);
         added += 1;
+        restored += 1;
       }
     }
   } catch (error) {
@@ -8757,7 +8762,10 @@ async function loadBodyPartsTrunkSupplements(
     failures.push("packed-trunk");
   }
 
-  for (const supplement of BODYPARTS_TRUNK_OBJ_SUPPLEMENTS) {
+  for (const supplement of [
+    ...BODYPARTS_TRUNK_OBJ_SUPPLEMENTS,
+    ...BODYPARTS_BACK_REPLACEMENTS,
+  ]) {
     if (existingConceptIds.has(supplement.id)) continue;
 
     try {
@@ -8786,10 +8794,13 @@ async function loadBodyPartsTrunkSupplements(
         system: "muscular",
         bounds,
         sourceVersion: "BodyParts3D 3.0",
+        replacesBodyParts4: Boolean(supplement.replacement),
       });
       existingConceptIds.add(supplement.id);
       triangles += Math.floor((geometry.index?.count || vertexCount) / 3);
       added += 1;
+      if (supplement.replacement) replaced += 1;
+      else restored += 1;
     } catch (error) {
       console.warn(
         "BodyParts3D trunk OBJ supplement was not loaded:",
@@ -8800,7 +8811,7 @@ async function loadBodyPartsTrunkSupplements(
     }
   }
 
-  return { added, triangles, failures };
+  return { added, restored, replaced, triangles, failures };
 }
 
 
@@ -9107,8 +9118,11 @@ async function loadBodyParts4Model() {
   const atlas = await response.json();
 
   const anatomyParts = atlas.parts.filter((part) => bodyPartsAnatomyKind(part));
+  const muscleReplacementIds = new Set(BODYPARTS_MUSCLE_REPLACEMENT_IDS);
   const muscleAnatomyParts = atlas.parts.filter(
-    (part) => bodyPartsAnatomyKind(part) === "muscle"
+    (part) =>
+      bodyPartsAnatomyKind(part) === "muscle" &&
+      !muscleReplacementIds.has(part.conceptId)
   );
   const connectiveParts = atlas.parts.filter(
     (part) =>
@@ -9154,7 +9168,11 @@ async function loadBodyParts4Model() {
     const buffer = await fetchBodyPartsBuffer(atlas.chunks[chunkId]);
     const chunkParts = parts.filter((part) => part.chunk === chunkId);
 
-    const muscleParts = chunkParts.filter((part) => bodyPartsAnatomyKind(part) === "muscle");
+    const muscleParts = chunkParts.filter(
+      (part) =>
+        bodyPartsAnatomyKind(part) === "muscle" &&
+        !muscleReplacementIds.has(part.conceptId)
+    );
     if (muscleParts.length) {
       const geometries = [];
       for (const part of muscleParts) {
@@ -9357,15 +9375,14 @@ async function loadBodyParts4Model() {
   canvas.dataset.skinCount = String(skinParts.length);
   updateDiagnostics(
     "BodyParts3D 4.0 + проверенные мышцы 3.0: всё тело, " +
-    (classification.muscles +
-      trunkSupplement.added +
-      faceSupplement.added +
-      footSupplement.added) +
+    structureNames.length +
     " мышечных (" +
-    (trunkSupplement.added +
+    (trunkSupplement.restored +
       faceSupplement.added +
       footSupplement.added) +
-    " восстановлено из 3.0), " +
+    " восстановлено из 3.0; " +
+    trunkSupplement.replaced +
+    " несовместимые 4.0-структуры заменены согласованными 3.0), " +
     classification.bones +
     " костных, " +
     connective.total +

@@ -234,17 +234,17 @@ const assert = require('node:assert/strict');
   assert.match(await page.locator('#feedback').innerText(), /пространственный ориентир/i);
 
   await page.click('#isolate-selected');
-  assert.match(await page.locator('#isolate-selected').innerText(), /Показать окружение/i);
+  assert.match(await page.locator('#isolate-selected').innerText(), /Вернуть окружение/i);
   await page.click('#isolate-selected');
-  assert.match(await page.locator('#isolate-selected').innerText(), /Изолировать/i);
+  assert.match(await page.locator('#isolate-selected').innerText(), /Показать отдельно/i);
   await page.click('#show-nearest-muscle');
   assert.match(await page.locator('#question-label').innerText(), /Мышца/i);
 
   await page.click('#isolate-selected');
-  assert.match(await page.locator('#isolate-selected').innerText(), /Показать окружение/i);
+  assert.match(await page.locator('#isolate-selected').innerText(), /Вернуть окружение/i);
   assert.equal(
     await page.locator('#viewer').getAttribute('data-bone-mode'),
-    'xray'
+    'anatomical'
   );
   assert.ok(
     Number(
@@ -253,7 +253,7 @@ const assert = require('node:assert/strict');
     'Ordinary muscle isolation must keep relevant BodyParts3D bone landmarks'
   );
   await page.click('#isolate-selected');
-  assert.match(await page.locator('#isolate-selected').innerText(), /Изолировать/i);
+  assert.match(await page.locator('#isolate-selected').innerText(), /Показать отдельно/i);
   assert.equal(
     await page.locator('#viewer').getAttribute('data-selected-muscle-visible-bones'),
     ''
@@ -325,6 +325,26 @@ const assert = require('node:assert/strict');
   await page.selectOption('#view-preset', 'back');
   await page.waitForTimeout(600);
   await page.screenshot({ path: '/tmp/muscle-memory-bodyparts-back.png', fullPage: true });
+
+  // Reproduce the reported lumbar-layer case: select iliocostalis lumborum
+  // while the restored latissimus remains visible. The selected deep muscle
+  // must use the version-coherent 3.0 replacement, not the displaced 4.0 mesh.
+  await page.fill('#structure-search', 'iliocostalis lumborum');
+  await page.waitForFunction(
+    () => document.querySelectorAll('.search-result').length > 0,
+    null,
+    { timeout: 15000 }
+  );
+  await page.locator('.search-result').first().click();
+  assert.match(
+    await page.locator('#question').innerText(),
+    /Подвздошно-р[её]берная мышца поясницы/i
+  );
+  await page.waitForTimeout(400);
+  await page.screenshot({
+    path: '/tmp/muscle-memory-bodyparts-back-iliocostalis-selected.png',
+    fullPage: true,
+  });
 
   await page.locator('#focus-shoulder').dispatchEvent('click');
   await page.waitForTimeout(600);
