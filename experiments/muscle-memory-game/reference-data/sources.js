@@ -85,6 +85,73 @@ export const REFERENCE_SOURCES = Object.freeze({
 
 
 
+
+  "ncbi-upper-limb-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Muscles",
+    role: "Общая сверка мышц плеча, предплечья и кисти",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK482410/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-arm-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Arm Muscles",
+    role: "Сверка передней и задней групп мышц плеча",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK554420/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-biceps": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Biceps Muscle",
+    role: "Сверка двуглавой мышцы плеча, её сухожилий и основных функций",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK519538/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-forearm-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Forearm Muscles",
+    role: "Сверка слоёв и состава переднего и заднего отделов предплечья",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK536975/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-upper-limb-nerves": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Arm Nerves",
+    role: "Сверка моторной иннервации мышц плеча, предплечья и кисти",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK547735/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-hand-muscles": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Hand Muscles",
+    role: "Сверка собственных мышц кисти",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK537229/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-hand-intrinsic": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Hand Intrinsic Muscles",
+    role: "Сверка тенара, гипотенара, червеобразных и межкостных мышц",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK539810/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "ncbi-hand-interossei": Object.freeze({
+    title: "StatPearls: Anatomy, Shoulder and Upper Limb, Hand Interossei Muscles",
+    role: "Сверка ладонных и тыльных межкостных мышц",
+    url: "https://www.ncbi.nlm.nih.gov/books/NBK534772/",
+    rights: Object.freeze({ illustrations: "not-assumed" }),
+  }),
+
+  "gray-forearm-extensors-public-domain": Object.freeze({
+    title: "Gray anatomy — forearm extensor muscles and tendons",
+    role: "Проверенный кандидат для иллюстрации задней группы предплечья",
+    sourcePage: "https://www.ncbi.nlm.nih.gov/books/NBK534805/figure/article-31415.image.f1/",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "На странице NCBI изображение атрибутировано Henry Vandyke Carter, Public domain, via Wikimedia Commons."
+    }),
+  }),
+
   "ncbi-sternocleidomastoid": Object.freeze({
     title: "StatPearls: Anatomy, Head and Neck: Sternocleidomastoid Muscle",
     role: "Сверка прикреплений, функции и топографической роли грудино-ключично-сосцевидной мышцы",
