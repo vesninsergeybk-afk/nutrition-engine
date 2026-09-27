@@ -3898,13 +3898,13 @@ function applyMyoArmElbowPose(playback, progress) {
   }
   playback.progress = progress;
   playback.frame = frame;
-  if (playback.angleOutput) playback.angleOutput.textContent = Math.round(frame.jointDeg) + "°";
+  if (playback.angleOutput) playback.angleOutput.textContent = Math.round(frame.elbowFlexionDeg) + "°";
   if (playback.lengthOutput && representativeLength != null) {
     playback.lengthOutput.textContent = "Длина пути: " + Math.round(representativeLength * 1000) + " мм";
   }
   if (motionCanvas) {
     motionCanvas.dataset.motionState = playback.playing ? "source-native-elbow-playing" : "source-native-elbow-ready";
-    motionCanvas.dataset.motionAngle = Number(frame.jointDeg).toFixed(1);
+    motionCanvas.dataset.motionAngle = Number(frame.elbowFlexionDeg).toFixed(1);
     motionCanvas.dataset.motionTendonLength = representativeLength == null ? "" : Number(representativeLength).toFixed(6);
     motionCanvas.dataset.motionMuscleSegments = String(visibleSegments);
   }

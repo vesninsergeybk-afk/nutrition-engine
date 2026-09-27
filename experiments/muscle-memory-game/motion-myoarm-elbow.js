@@ -40,7 +40,7 @@ export async function loadMyoArmElbowRuntime() {
   }
   const data = await response.json();
   if (data?.schema !== "myoarm-elbow-motion-v1" ||
-      data?.source?.revision !== "93b0ca8f4ec90c9899ee7f05fee561e9911da91b" ||
+      data?.sourceRevision !== "93b0ca8f4ec90c9899ee7f05fee561e9911da91b" ||
       !Array.isArray(data?.frames) || data.frames.length < 2) {
     throw new Error("Unexpected MyoArm elbow runtime data");
   }
