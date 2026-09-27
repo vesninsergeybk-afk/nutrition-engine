@@ -32,13 +32,17 @@ for (const [sourceName, expectedId] of [
 const miology = muscleReferenceSource("miology-igma-2018");
 assert(miology?.year === 2018, "MIOL source metadata is incomplete");
 assert(
-  /требуют отдельной проверки прав/i.test(miology?.rightsStatus || ""),
+  miology?.rightsStatus === "review" &&
+    /открытая лицензия не установлена/i.test(miology?.rights?.note || ""),
   "MIOL illustration reuse must remain rights-gated"
 );
 
-const goldfinger = muscleReferenceSource("goldfinger-1991");
+const samusev = muscleReferenceSource("samusev-lipchenko-2003");
 assert(
-  /не включать.*без отдельного разрешения/i.test(goldfinger?.rightsStatus || ""),
+  samusev?.rightsStatus === "review" &&
+    /публичное воспроизведение.*требует отдельного основания/i.test(
+      samusev?.rights?.note || ""
+    ),
   "Copyrighted atlas images must remain reference-only by default"
 );
 
