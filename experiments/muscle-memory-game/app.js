@@ -8,6 +8,10 @@ import {
   muscleReferenceSource,
 } from "./muscle-reference-data.js";
 import {
+  clearMuscleReferencePreview,
+  renderMuscleReferencePreview,
+} from "./muscle-reference-preview.js";
+import {
   studyLayerNameRu,
   studyStructureSearchText,
   studyStructureTerm,
@@ -234,6 +238,10 @@ const structureReferenceType = document.querySelector("#structure-reference-type
 const structureReferenceDepth = document.querySelector("#structure-reference-depth");
 const structureReferenceBadges = document.querySelector("#structure-reference-badges");
 const structureReferenceContext = document.querySelector("#structure-reference-context");
+const structureReferencePreview = document.querySelector("#structure-reference-preview");
+const structureReferencePreviewCanvas = document.querySelector("#structure-reference-preview-canvas");
+const structureReferencePreviewTitle = document.querySelector("#structure-reference-preview-title");
+const structureReferencePreviewCaption = document.querySelector("#structure-reference-preview-caption");
 const structureReferenceAmbiguity = document.querySelector("#structure-reference-ambiguity");
 const structureReferenceAmbiguityLabel = document.querySelector("#structure-reference-ambiguity-label");
 const structureReferenceAmbiguityNote = document.querySelector("#structure-reference-ambiguity-note");
@@ -254,6 +262,7 @@ const structureReferenceInnervationDetails = document.querySelector("#structure-
 const structureReferenceInnervation = document.querySelector("#structure-reference-innervation");
 const structureReferenceSources = document.querySelector("#structure-reference-sources");
 const structureReferenceIllustrations = document.querySelector("#structure-reference-illustrations");
+const structureReferenceAtlasBlock = document.querySelector("#structure-reference-atlas-block");
 const structureReferenceEmpty = document.querySelector("#structure-reference-empty");
 const modelSource = document.querySelector("#model-source");
 const layerPresetField = document.querySelector("#layer-preset-field");
@@ -435,6 +444,8 @@ function setDisplayPanelOpen(open) {
 
 function hideStructureReference() {
   if (structureReferenceEl) structureReferenceEl.hidden = true;
+  if (structureReferencePreview) structureReferencePreview.hidden = true;
+  clearMuscleReferencePreview(structureReferencePreviewCanvas);
 }
 
 function renderReferenceList(container, items) {
@@ -512,6 +523,119 @@ function renderReferenceItems(container, items, kind) {
 
     container.append(row);
   }
+
+  return visibleItems.length;
+}
+
+function previewBoneIdsForSelectedMuscle(ids, limit = 14) {
+  if (!skeletonMesh || !ids?.length || !boneNames.length) return [];
+
+  const context = selectedMuscleBoneContextBox(ids);
+  if (!context || context.isEmpty()) return [];
+
+  const center = context.getCenter(new THREE.Vector3());
+  const candidates = [];
+
+  for (let boneId = 0; boneId < boneNames.length; boneId += 1) {
+    const box = boneWorldBox(boneId);
+    if (!box || box.isEmpty()) continue;
+
+    const boxCenter = box.getCenter(new THREE.Vector3());
+    const intersects = context.intersectsBox(box);
+    candidates.push({
+      boneId,
+      intersects,
+      distance: boxCenter.distanceToSquared(center),
+    });
+  }
+
+  candidates.sort(
+    (a, b) =>
+      Number(b.intersects) - Number(a.intersects) ||
+      a.distance - b.distance
+  );
+
+  const intersecting = candidates.filter((item) => item.intersects);
+  const chosen = intersecting.length
+    ? intersecting.slice(0, limit)
+    : candidates.slice(0, Math.min(3, limit));
+
+  return chosen.map((item) => item.boneId);
+}
+
+function renderStructureReferencePreview(sid, reference) {
+  if (
+    !structureReferencePreview ||
+    !structureReferencePreviewCanvas ||
+    sid == null ||
+    !anatomyMesh ||
+    !structureNames[sid]
+  ) {
+    if (structureReferencePreview) structureReferencePreview.hidden = true;
+    clearMuscleReferencePreview(structureReferencePreviewCanvas);
+    return;
+  }
+
+  const muscleIds = [sid];
+  const box = unclippedBoxForStructures(muscleIds);
+  const viewChoice = bestViewDirectionForBox(box);
+  const viewDirection =
+    viewChoice?.direction?.clone?.() ||
+    viewChoice?.clone?.() ||
+    currentViewDirection();
+  const boneIds = previewBoneIdsForSelectedMuscle(muscleIds);
+
+  const result = renderMuscleReferencePreview({
+    outputCanvas: structureReferencePreviewCanvas,
+    renderer,
+    anatomyMesh,
+    skeletonMesh,
+    muscleIds,
+    boneIds,
+    viewDirection,
+    width: 640,
+    height: 440,
+  });
+
+  if (!result.rendered) {
+    structureReferencePreview.hidden = true;
+    return;
+  }
+
+  const selectedName = displayStructureName(sid);
+  const modelName =
+    currentModelSource === "bodyparts4" ? "BodyParts3D" : "Z-Anatomy";
+  structureReferencePreviewTitle.textContent = selectedName;
+  structureReferencePreviewCanvas.setAttribute(
+    "aria-label",
+    "Анатомическая иллюстрация: " + selectedName
+  );
+  structureReferencePreviewCanvas.dataset.referencePreview = "exact-structure";
+  structureReferencePreviewCanvas.dataset.referencePreviewSid = String(sid);
+  structureReferencePreviewCanvas.dataset.referencePreviewBones = String(
+    result.boneCount || 0
+  );
+  structureReferencePreviewCanvas.dataset.referencePreviewTriangles = String(
+    result.muscleTriangleCount || 0
+  );
+  structureReferencePreviewCanvas.dataset.referencePreviewModel =
+    currentModelSource;
+
+  if (reference?.ambiguous) {
+    structureReferencePreviewCaption.textContent =
+      "Показан именно выбранный 3D-объект " + modelName + ". Его точное анатомическое соответствие требует уточнения.";
+  } else if (reference?.modelCoverage === "part") {
+    structureReferencePreviewCaption.textContent =
+      "Показана именно выбранная часть мышцы из " + modelName + "; светлым оставлены ближайшие костные ориентиры.";
+  } else if (reference?.modelCoverage === "group") {
+    structureReferencePreviewCaption.textContent =
+      "Показан выбранный элемент мышечной группы из " + modelName + "; светлым оставлены ближайшие костные ориентиры.";
+  } else {
+    structureReferencePreviewCaption.textContent =
+      "Показана только выбранная мышца из " + modelName + "; светлым оставлены ближайшие костные ориентиры.";
+  }
+
+  structureReferencePreview.hidden = false;
 }
 
 function renderReferenceBadges(reference) {
@@ -572,6 +696,7 @@ function renderStructureReference(sid) {
     : "Слой не подтверждён";
 
   renderReferenceAmbiguity(reference);
+  renderStructureReferencePreview(sid, reference);
 
   if (structureReferenceContext) {
     const contextText =
@@ -600,6 +725,7 @@ function renderStructureReference(sid) {
     structureReferenceIllustrations.replaceChildren();
     structureReferenceSources.hidden = true;
     structureReferenceIllustrations.hidden = true;
+    if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = true;
     structureReferenceEl.hidden = false;
     return;
   }
@@ -638,11 +764,14 @@ function renderStructureReference(sid) {
     structureReferenceInnervation.textContent = innervation;
 
     renderReferenceItems(structureReferenceSources, reference.sources, "source");
-    renderReferenceItems(
+    const atlasIllustrationCount = renderReferenceItems(
       structureReferenceIllustrations,
       reference.illustrations,
       "illustration"
     );
+    if (structureReferenceAtlasBlock) {
+      structureReferenceAtlasBlock.hidden = atlasIllustrationCount === 0;
+    }
   } else {
     structureReferenceFacts.hidden = true;
     structureReferenceEmpty.hidden = false;
@@ -652,6 +781,7 @@ function renderStructureReference(sid) {
     structureReferenceIllustrations.replaceChildren();
     structureReferenceSources.hidden = true;
     structureReferenceIllustrations.hidden = true;
+    if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = true;
   }
 
   structureReferenceEl.hidden = false;
