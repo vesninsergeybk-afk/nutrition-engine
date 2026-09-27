@@ -69,6 +69,13 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
   assert.equal(await page.locator('#toggle-skeleton').getAttribute('aria-pressed'), 'true');
 
+  await page.click('#display-panel-toggle');
+  assert.equal(await page.locator('#display-panel').isHidden(), false);
+  assert.match(await page.locator('#display-panel').innerText(), /Скелет и костные ориентиры/);
+  assert.match(await page.locator('#display-panel').innerText(), /Ориентиры безопасности/);
+  await page.click('#display-panel-close');
+  assert.equal(await page.locator('#display-panel').isHidden(), true);
+
   const visibleInitialText = await page.locator('body').innerText();
   assert.doesNotMatch(visibleInitialText, /Учебный каталог|треугольник|mesh|FMA\d+/i);
 
