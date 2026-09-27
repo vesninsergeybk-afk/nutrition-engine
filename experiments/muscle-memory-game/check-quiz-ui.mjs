@@ -14,9 +14,10 @@ function assert(condition, message) {
 }
 
 assert(
-  html.includes("<span>Учебный блок</span>") &&
-    html.includes('aria-label="Учебный блок или анатомическая область"'),
-  "Regional selector is not presented as a first-class learning block"
+  html.includes('id="scope-label">Анатомическая область</span>') &&
+    html.includes('aria-label="Учебный блок или анатомическая область"') &&
+    app.includes('scopeLabel.textContent = mode === "quiz" ? "Учебный блок" : "Анатомическая область"'),
+  "Regional selector must read as an anatomical area in Atlas and as a learning block in Training"
 );
 
 for (const scope of [
@@ -65,8 +66,8 @@ assert(
 );
 assert(
   app.includes("focusLearningRegion();") &&
-    app.includes('focusShoulderButton.textContent = "К блоку"'),
-  "Changing a learning block does not have native camera navigation"
+    app.includes('focusShoulderButton.textContent = appMode === "quiz" ? "К блоку" : "К области"'),
+  "Regional camera navigation must use mode-appropriate terminology"
 );
 assert(
   session.includes("const buckets = new Map()") &&
@@ -96,15 +97,16 @@ assert(
 );
 
 assert(
-  html.includes(">Тканевые слои<") &&
+  html.includes(">Слои модели<") &&
+    html.includes(">Глубина мышц<") &&
     !html.includes(">Послойное изучение<"),
-  "Tissue-layer selector is still confused with anatomical muscle depth"
+  "Display panel must separate tissue visibility from anatomical muscle depth"
 );
 assert(
   html.includes('id="show-all"') &&
-    app.includes('"Показать весь блок"') &&
-    app.includes('"Показать все структуры"'),
-  "Restore-scene action does not distinguish regional block from whole-atlas context"
+    app.includes('"Вернуть структуры области"') &&
+    app.includes('"Вернуть все структуры"'),
+  "Restore-scene action does not distinguish regional area from whole-atlas context"
 );
 
 assert(
