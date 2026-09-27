@@ -1949,14 +1949,19 @@ body:not(.motion-mode) .comparison-pane-static {
 .structure-reference {
   gap: 12px;
   padding: 14px;
+  border-color: rgba(27,27,29,.16);
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(27,27,29,.055);
+  scroll-margin-top: 12px;
 }
 
 .structure-reference-head {
   align-items: flex-start;
+  padding-bottom: 2px;
 }
 
 .structure-reference-head strong {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.25;
 }
 
@@ -2011,10 +2016,14 @@ body:not(.motion-mode) .comparison-pane-static {
   display: grid;
   gap: 7px;
   margin: 0;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
 }
 
 .structure-reference-primary-art-image {
-  width: min(100%, 300px);
+  width: min(100%, 330px);
   aspect-ratio: 1;
   margin: 0 auto;
   border: 1px solid var(--line);
@@ -2045,14 +2054,16 @@ body:not(.motion-mode) .comparison-pane-static {
 
 .structure-reference-atlas-block {
   display: grid;
-  gap: 5px;
-  margin-top: 4px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
+  gap: 7px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
 }
 
 .structure-reference-atlas-block > strong {
-  font-size: 10.5px;
+  font-size: 11.5px;
 }
 
 .structure-reference-atlas-block > span {
@@ -2166,6 +2177,10 @@ body:not(.motion-mode) .comparison-pane-static {
   color: var(--muted);
   font-size: 14px;
   transition: transform .15s ease;
+}
+
+.structure-reference-details[open] > summary {
+  color: #1b1b1d;
 }
 
 .structure-reference-details[open] > summary::after {
