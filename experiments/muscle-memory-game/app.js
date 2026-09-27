@@ -603,20 +603,36 @@ function renderStructureReferencePreview(sid, reference) {
   }
 
   const selectedName = displayStructureName(sid);
+  const modelName =
+    currentModelSource === "bodyparts4" ? "BodyParts3D" : "Z-Anatomy";
   structureReferencePreviewTitle.textContent = selectedName;
+  structureReferencePreviewCanvas.setAttribute(
+    "aria-label",
+    "Анатомическая иллюстрация: " + selectedName
+  );
+  structureReferencePreviewCanvas.dataset.referencePreview = "exact-structure";
+  structureReferencePreviewCanvas.dataset.referencePreviewSid = String(sid);
+  structureReferencePreviewCanvas.dataset.referencePreviewBones = String(
+    result.boneCount || 0
+  );
+  structureReferencePreviewCanvas.dataset.referencePreviewTriangles = String(
+    result.muscleTriangleCount || 0
+  );
+  structureReferencePreviewCanvas.dataset.referencePreviewModel =
+    currentModelSource;
 
   if (reference?.ambiguous) {
     structureReferencePreviewCaption.textContent =
-      "Показан именно выбранный 3D-объект модели. Его точное анатомическое соответствие требует уточнения.";
+      "Показан именно выбранный 3D-объект " + modelName + ". Его точное анатомическое соответствие требует уточнения.";
   } else if (reference?.modelCoverage === "part") {
     structureReferencePreviewCaption.textContent =
-      "Показана именно выбранная часть мышцы; светлым оставлены ближайшие костные ориентиры.";
+      "Показана именно выбранная часть мышцы из " + modelName + "; светлым оставлены ближайшие костные ориентиры.";
   } else if (reference?.modelCoverage === "group") {
     structureReferencePreviewCaption.textContent =
-      "Показан выбранный элемент мышечной группы; светлым оставлены ближайшие костные ориентиры.";
+      "Показан выбранный элемент мышечной группы из " + modelName + "; светлым оставлены ближайшие костные ориентиры.";
   } else {
     structureReferencePreviewCaption.textContent =
-      "Показана только выбранная мышца; светлым оставлены ближайшие костные ориентиры.";
+      "Показана только выбранная мышца из " + modelName + "; светлым оставлены ближайшие костные ориентиры.";
   }
 
   structureReferencePreview.hidden = false;
