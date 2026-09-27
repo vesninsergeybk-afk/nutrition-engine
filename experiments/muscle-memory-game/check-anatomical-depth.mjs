@@ -26,6 +26,7 @@ assert(
 );
 
 for (const concept of [
+  "multifidus",
   "multifidus thoracis",
   "thoracic rotator",
   "lateral lumbar intertransversarius",
