@@ -20,8 +20,9 @@ assert(
 );
 assert(
   app.includes("function applySelectedMuscleBoneVisibility") &&
-    app.includes("function showSelectedMuscleBoneContext"),
-  "Single-muscle bone context is missing"
+    app.includes("function showSelectedMuscleBoneContext") &&
+    /function showSelectedMuscleBoneContext[sS]*?boneDisplayMode = "anatomical"[sS]*?applySelectedMuscleBoneVisibility(ids)/.test(app),
+  "Single-muscle isolation must keep a local solid-bone anatomical context"
 );
 assert(
   /function isolateDeeperMuscle[\s\S]*?showSelectedMuscleBoneContext\(muscleIds\)/.test(app),
