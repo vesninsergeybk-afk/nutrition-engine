@@ -32,7 +32,10 @@ assert(response.ok, "Could not fetch pinned BodyParts3D atlas");
 const atlas = await response.json();
 
 const muscleParts = atlas.parts.filter((part) => bodyPartsAnatomyKind(part) === "muscle");
-assert(muscleParts.length === 416, "Unexpected muscle mesh count: " + muscleParts.length);
+assert(
+  muscleParts.length === 418,
+  "Unexpected classified BodyParts3D muscle mesh count: " + muscleParts.length
+);
 
 const catalog = buildMuscleCatalog(muscleParts.map((part) => part.name));
 const representedMeshes = catalog.reduce((sum, item) => sum + item.sids.length, 0);
