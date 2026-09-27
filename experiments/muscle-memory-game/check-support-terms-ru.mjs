@@ -76,6 +76,13 @@ assert(
     app.includes("selectBoneStructure(boneId)"),
   "Displayed bones are not connected to Atlas picking"
 );
+assert(
+  app.includes("function boneSearchText") &&
+    app.includes('matches.push({ kind: "bone", id: boneId })') &&
+    app.includes('button.textContent = term.nameRu + " · Кость"') &&
+    app.includes('boneDisplayMode = "anatomical"'),
+  "Russian bone names are not connected to Atlas search"
+);
 
 console.log(
   "Russian support terms: " +
