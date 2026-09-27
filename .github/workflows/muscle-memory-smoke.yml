@@ -20,8 +20,8 @@ permissions:
 # checkpoints. Full-smoke runs share one group: a newer checkpoint supersedes
 # an older checkpoint, but ordinary pushes cannot cancel it.
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
-  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]')) && 'muscle-memory-full-smoke' || contains(github.event.head_commit.message, '[motion-smoke]') && 'muscle-memory-motion-smoke' || contains(github.event.head_commit.message, '[native-bone-smoke]') && 'muscle-memory-native-bone-smoke' || contains(github.event.head_commit.message, '[elbow-smoke]') && 'muscle-memory-elbow-smoke' || format('muscle-memory-fast-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') || contains(github.event.head_commit.message, '[native-bone-smoke]') || contains(github.event.head_commit.message, '[elbow-smoke]') }}
 
 jobs:
   fast:
@@ -51,6 +51,7 @@ jobs:
           node --check experiments/muscle-memory-game/motion-vtp.js
           node --check experiments/muscle-memory-game/motion-native-bones.js
           node --check experiments/muscle-memory-game/motion-native-clips.js
+          node --check experiments/muscle-memory-game/motion-myoarm-elbow.js
           node --check experiments/muscle-memory-game/motion-clip.js
           node --check experiments/muscle-memory-game/motion-registration.js
           node --check experiments/muscle-memory-game/motion-contract.js
@@ -105,6 +106,7 @@ jobs:
           node --check experiments/muscle-memory-game/browser-smoke-mobile-atlas.cjs
           node --check experiments/muscle-memory-game/browser-smoke-motion.cjs
           node --check experiments/muscle-memory-game/browser-smoke-native-bones.cjs
+          node --check experiments/muscle-memory-game/browser-smoke-elbow.cjs
           node --check experiments/muscle-memory-game/browser-smoke-mobile-motion.cjs
           node --check experiments/muscle-memory-game/verify.mjs
           node --input-type=module <<'NODE'
@@ -326,3 +328,42 @@ jobs:
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           timeout 4m node experiments/muscle-memory-game/browser-smoke-mobile-motion.cjs
+
+
+  browser-elbow:
+    if: ${{ contains(github.event.head_commit.message, '[elbow-smoke]') }}
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run source-native elbow checkpoint
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          timeout 4m node experiments/muscle-memory-game/browser-smoke-elbow.cjs
+
+      - name: Upload elbow screenshot
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: muscle-memory-elbow-smoke
+          path: /tmp/muscle-memory-elbow-source-native.png
+          if-no-files-found: ignore
+          retention-days: 7

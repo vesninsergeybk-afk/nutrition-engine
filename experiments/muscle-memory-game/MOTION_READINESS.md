@@ -524,3 +524,20 @@ The native VTP files are body-local meshes. The earlier diagnostic scene framed 
 Learner-facing shoulder-adduction copy is now deliberately simple: the arm moves toward the trunk, the clavicle/scapula/humerus move together, and only the verified approximately 97° -> 23° excursion is shown. Technical provenance, exact source coordinate and reverse-playback direction remain in diagnostic telemetry/tests rather than the learning text.
 
 No new adduction trajectory was created. The motion remains the exact reverse playback of the pinned, thorax-relative TSM abduction teaching clip.
+
+## Minimal working elbow flexion — 2026-09-27
+
+For biceps long/short selections, elbow flexion no longer uses the atlas-derived
+muscle deformation path. Motion Lab loads project-local humerus/ulna/radius
+STL geometry from the same pinned MyoArm source as the motion export, applies
+the exported MuJoCo body transforms directly, and renders the biceps path only
+from MuJoCo wrap_xpos segment pairs.
+
+The runtime deliberately does not build a synthetic spline through the flattened
+path-point list. Each displayed red segment corresponds directly to one
+source-derived MuJoCo wrapping segment. This avoids recreating the old visual
+failure where an interpolated atlas muscle could pass through bone.
+
+This is intentionally a schematic muscle-path demonstration rather than a
+volumetric muscle belly: select a biceps head in the static atlas, enter Motion,
+and see a trustworthy source-derived elbow-flexion demonstration.

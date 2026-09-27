@@ -88,6 +88,14 @@ import {
   tsmNativeMotionSourceRange,
 } from "./motion-native-clips.js";
 import {
+  loadMyoArmElbowRuntime,
+  myoArmElbowBoneIds,
+  myoArmElbowFrameAtProgress,
+  myoArmElbowMaxWrapSegments,
+  myoArmElbowRange,
+  myoArmElbowSelectedHeads,
+} from "./motion-myoarm-elbow.js";
+import {
   clampMotionValue,
   elbowFlexionRadians,
   horizontalShoulderComplexPreview,
@@ -233,11 +241,18 @@ let motionPlayback = null;
 let motionNativeLoadGeneration = 0;
 let motionCameraIndependent = false;
 let motionNativePlayback = null;
+let motionElbowPlayback = null;
 const motionQuery = new URLSearchParams(window.location.search);
 const motionNativeBoneProbe =
   motionQuery.get("motionBones") === "tsm-native";
 const motionNativeMovementProbe =
   motionQuery.get("motionMovement") || null;
+
+function shouldUseMyoArmElbowMotion(action, selectedUnits) {
+  if (action?.pilotId !== "elbow" || action?.movementId !== "elbow-flexion") return false;
+  const selected = new Set(selectedUnits || []);
+  return selected.has("biceps-long") || selected.has("biceps-short");
+}
 
 function shouldUseTsmNativeMotion(action) {
   if (!action) return false;
@@ -3758,6 +3773,7 @@ function clearMotionPreview() {
   motionRig = null;
   motionStateEl?.classList.remove("motion-state-controls");
   motionNativePlayback = null;
+  motionElbowPlayback = null;
   motionNativeLoadGeneration += 1;
   motionCameraIndependent = false;
 
@@ -3808,11 +3824,240 @@ function clearMotionPreview() {
     motionCanvas.dataset.motionSourceRangeStart = "";
     motionCanvas.dataset.motionSourceRangeEnd = "";
     motionCanvas.dataset.motionSourceCoordinate = "";
+    motionCanvas.dataset.motionMusclePathMode = "";
+    motionCanvas.dataset.motionTendonLength = "";
+    motionCanvas.dataset.motionElbowSource = "";
+    motionCanvas.dataset.motionMuscleSegments = "";
   }
 }
 
-function fitIndependentMotionCamera(box) {
-  if (!box || box.isEmpty()) return;
+const MOTION_SEGMENT_AXIS = new THREE.Vector3(0, 1, 0);
+
+function createMyoArmPathSegments(count, color) {
+  const segments = [];
+  for (let index = 0; index < count; index += 1) {
+    const geometry = new THREE.CylinderGeometry(1, 1, 1, 10, 1, false);
+    const material = new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.72,
+      metalness: 0,
+      emissive: new THREE.Color(color).multiplyScalar(0.08),
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.name = "MyoArm biceps wrapping segment";
+    mesh.userData.motionKind = "muscle-path-segment";
+    motionModelGroup.add(mesh);
+    segments.push(mesh);
+  }
+  return segments;
+}
+
+function updateMyoArmPathSegments(segments, rows, radius = 0.0045) {
+  const start = new THREE.Vector3();
+  const end = new THREE.Vector3();
+  const direction = new THREE.Vector3();
+  const midpoint = new THREE.Vector3();
+  for (let index = 0; index < segments.length; index += 1) {
+    const mesh = segments[index];
+    const row = rows?.[index];
+    if (!row) { mesh.visible = false; continue; }
+    start.set(row.from[0], row.from[1], row.from[2]);
+    end.set(row.to[0], row.to[1], row.to[2]);
+    direction.copy(end).sub(start);
+    const length = direction.length();
+    if (!(length > 1e-6)) { mesh.visible = false; continue; }
+    mesh.visible = true;
+    midpoint.copy(start).add(end).multiplyScalar(0.5);
+    mesh.position.copy(midpoint);
+    mesh.quaternion.setFromUnitVectors(MOTION_SEGMENT_AXIS, direction.normalize());
+    mesh.scale.set(radius, length, radius);
+  }
+}
+
+function applyMyoArmElbowBodyFrame(meshes, frame) {
+  for (const bodyId of myoArmElbowBoneIds()) {
+    const mesh = meshes.get(bodyId);
+    const pose = frame?.bodies?.[bodyId];
+    if (!mesh || !pose) continue;
+    mesh.position.set(...pose.position);
+    mesh.quaternion.set(pose.quaternion[1], pose.quaternion[2], pose.quaternion[3], pose.quaternion[0]);
+  }
+}
+
+function applyMyoArmElbowPose(playback, progress) {
+  const frame = myoArmElbowFrameAtProgress(playback.runtime, progress);
+  applyMyoArmElbowBodyFrame(playback.meshes, frame);
+  let representativeLength = null;
+  let visibleSegments = 0;
+  for (const headId of playback.heads) {
+    const path = frame.musclePaths?.[headId];
+    if (!path) continue;
+    updateMyoArmPathSegments(playback.pathSegments.get(headId) || [], path.wrapRows || []);
+    visibleSegments += path.wrapRows?.length || 0;
+    if (representativeLength == null) representativeLength = path.length;
+  }
+  playback.progress = progress;
+  playback.frame = frame;
+  if (playback.angleOutput) playback.angleOutput.textContent = Math.round(frame.jointDeg) + "°";
+  if (playback.lengthOutput && representativeLength != null) {
+    playback.lengthOutput.textContent = "Длина пути: " + Math.round(representativeLength * 1000) + " мм";
+  }
+  if (motionCanvas) {
+    motionCanvas.dataset.motionState = playback.playing ? "source-native-elbow-playing" : "source-native-elbow-ready";
+    motionCanvas.dataset.motionAngle = Number(frame.jointDeg).toFixed(1);
+    motionCanvas.dataset.motionTendonLength = representativeLength == null ? "" : Number(representativeLength).toFixed(6);
+    motionCanvas.dataset.motionMuscleSegments = String(visibleSegments);
+  }
+}
+
+function renderMyoArmElbowControls(selectedName, playback) {
+  if (!motionStateEl) return;
+  motionStateEl.replaceChildren();
+  motionStateEl.classList.add("motion-state-controls");
+  const strong = document.createElement("strong");
+  strong.textContent = selectedName || "Двуглавая мышца плеча";
+  const description = document.createElement("span");
+  description.textContent = "Сгибание в локтевом суставе. Кости и путь выбранной головки бицепса взяты из одной MyoArm/MuJoCo-модели.";
+  const sourceNote = document.createElement("small");
+  sourceNote.className = "motion-range-note";
+  sourceNote.textContent = "Красная структура — схематический путь мышцы по рассчитанным MuJoCo wrapping-сегментам. Старая деформация atlas-mesh здесь не используется.";
+  const metrics = document.createElement("div");
+  metrics.className = "motion-button-row";
+  const angle = document.createElement("output");
+  angle.id = "motion-elbow-angle";
+  angle.textContent = "0°";
+  const length = document.createElement("output");
+  length.id = "motion-elbow-length";
+  length.textContent = "Длина пути";
+  metrics.append(angle, length);
+  playback.angleOutput = angle;
+  playback.lengthOutput = length;
+  const controls = document.createElement("div");
+  controls.className = "motion-controls";
+  const buttons = document.createElement("div");
+  buttons.className = "motion-button-row";
+  const play = document.createElement("button");
+  play.type = "button";
+  play.id = "motion-elbow-play";
+  play.textContent = "Показать движение";
+  play.addEventListener("click", () => {
+    playback.playing = true;
+    playback.startTime = performance.now();
+    playback.progress = 0;
+    applyMyoArmElbowPose(playback, 0);
+    if (motionCanvas) motionCanvas.dataset.motionPlaying = "true";
+  });
+  const reset = document.createElement("button");
+  reset.type = "button";
+  reset.id = "motion-elbow-reset";
+  reset.textContent = "В начало";
+  reset.addEventListener("click", () => {
+    playback.playing = false;
+    playback.progress = 0;
+    applyMyoArmElbowPose(playback, 0);
+    if (motionCanvas) motionCanvas.dataset.motionPlaying = "false";
+  });
+  buttons.append(play, reset);
+  controls.append(metrics, buttons);
+  motionStateEl.append(strong, description, sourceNote, controls);
+}
+
+function updateMyoArmElbowPlayback(now) {
+  const playback = motionElbowPlayback;
+  if (!playback?.playing) return;
+  const linear = Math.min(1, Math.max(0, (now - playback.startTime) / 2800));
+  const eased = 0.5 - 0.5 * Math.cos(Math.PI * linear);
+  applyMyoArmElbowPose(playback, eased);
+  if (linear >= 1) {
+    playback.playing = false;
+    if (motionCanvas) {
+      motionCanvas.dataset.motionPlaying = "false";
+      motionCanvas.dataset.motionState = "source-native-elbow-ready";
+    }
+  }
+}
+
+async function buildMyoArmElbowScene(action, selectedName, selectedUnits) {
+  const generation = ++motionNativeLoadGeneration;
+  motionCameraIndependent = true;
+  motionModelGroup.position.set(0, 0, 0);
+  motionModelGroup.quaternion.identity();
+  motionModelGroup.scale.set(1, 1, 1);
+  if (motionCanvas) {
+    motionCanvas.dataset.motionState = "source-native-elbow-loading";
+    motionCanvas.dataset.motionPilot = "elbow";
+    motionCanvas.dataset.motionMovement = "elbow-flexion";
+    motionCanvas.dataset.motionAuthority = "myoarm-mujoco-source";
+    motionCanvas.dataset.motionGeometryRuntimeBones = "myoarm-native-bones";
+    motionCanvas.dataset.motionMusclePathMode = "mujoco-wrap-segments";
+    motionCanvas.dataset.motionElbowSource = "MyoHub/myo_sim@93b0ca8f4ec90c9899ee7f05fee561e9911da91b";
+    motionCanvas.dataset.motionPlaying = "false";
+    motionCanvas.dataset.motionBones = "0";
+    motionCanvas.dataset.motionMuscles = "0";
+  }
+  if (motionStateEl) {
+    motionStateEl.replaceChildren();
+    const strong = document.createElement("strong");
+    strong.textContent = selectedName || "Двуглавая мышца плеча";
+    const span = document.createElement("span");
+    span.textContent = "Загружаю независимую модель сгибания локтя из MyoArm/MuJoCo…";
+    motionStateEl.append(strong, span);
+  }
+  try {
+    const runtime = await loadMyoArmElbowRuntime();
+    if (generation !== motionNativeLoadGeneration || appMode !== "motion") {
+      for (const geometry of runtime.geometries.values()) geometry.dispose();
+      return;
+    }
+    const meshes = new Map();
+    for (const bodyId of myoArmElbowBoneIds()) {
+      const geometry = runtime.geometries.get(bodyId);
+      if (!geometry) throw new Error("Missing MyoArm bone: " + bodyId);
+      const mesh = new THREE.Mesh(geometry, motionBoneMaterial());
+      mesh.name = "MyoArm " + bodyId;
+      mesh.userData.motionBoneUnit = bodyId;
+      mesh.userData.motionGeometrySource = "myoarm-native-bones";
+      motionModelGroup.add(mesh);
+      meshes.set(bodyId, mesh);
+    }
+    const heads = myoArmElbowSelectedHeads(selectedUnits);
+    const pathSegments = new Map();
+    const colors = { "biceps-long": 0xb94747, "biceps-short": 0xd76456 };
+    for (const headId of heads) {
+      pathSegments.set(headId, createMyoArmPathSegments(myoArmElbowMaxWrapSegments(runtime, headId), colors[headId] || 0xc4514b));
+    }
+    motionElbowPlayback = { kind: "myoarm-elbow-source", action, runtime, meshes, heads, pathSegments, playing: false, startTime: 0, progress: 0, frame: null, angleOutput: null, lengthOutput: null };
+    applyMyoArmElbowPose(motionElbowPlayback, 0);
+    fitIndependentMotionCamera(new THREE.Box3().setFromObject(motionModelGroup));
+    renderMyoArmElbowControls(selectedName, motionElbowPlayback);
+    applyMyoArmElbowPose(motionElbowPlayback, 0);
+    const range = myoArmElbowRange(runtime);
+    if (motionCanvas) {
+      motionCanvas.dataset.motionState = "source-native-elbow-ready";
+      motionCanvas.dataset.motionBones = String(meshes.size);
+      motionCanvas.dataset.motionMuscles = String(heads.length);
+      motionCanvas.dataset.motionSelectedUnits = heads.join(",");
+      motionCanvas.dataset.motionNativeBoneIds = myoArmElbowBoneIds().join(",");
+      motionCanvas.dataset.motionReferenceMax = range ? String(range.maxDeg) : "";
+      motionCanvas.dataset.motionPreviewMax = range ? String(range.maxDeg) : "";
+    }
+  } catch (error) {
+    if (generation !== motionNativeLoadGeneration) return;
+    console.error("MyoArm elbow scene failed", error);
+    motionCameraIndependent = false;
+    if (motionCanvas) { motionCanvas.dataset.motionState = "source-native-elbow-error"; motionCanvas.dataset.motionPlaying = "false"; }
+    if (motionStateEl) {
+      motionStateEl.replaceChildren();
+      const strong = document.createElement("strong");
+      strong.textContent = selectedName || "Сгибание в локте";
+      const span = document.createElement("span");
+      span.textContent = "Не удалось загрузить source-native локоть. Старая деформация мышцы намеренно не используется как запасной вариант.";
+      motionStateEl.append(strong, span);
+    }
+  }
+}
+
+function fitIndependentMotionCamera(box) {  if (!box || box.isEmpty()) return;
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
   const radius = Math.max(0.05, size.length() * 0.5);
@@ -6103,6 +6348,11 @@ function buildMotionPreview(muscleIds, preferredMovementId = null) {
     ? motionVisualAssetPolicy(action.pilotId)
     : null;
 
+  if (shouldUseMyoArmElbowMotion(action, selectedUnits)) {
+    void buildMyoArmElbowScene(action, displayStructureName(firstSid), [...selectedUnits]);
+    return;
+  }
+
   if (shouldUseTsmNativeMotion(action)) {
     void buildTsmNativeBoneProbeScene(
       action,
@@ -6315,9 +6565,15 @@ function prepareMotionComparison(sid) {
   // with disappearing context and a Play button that could not run.
   buildMotionPreview(ids);
 
-  const nativeReady =
-    motionCanvas?.dataset.motionState === "source-native-rest-pose" ||
-    motionCanvas?.dataset.motionState === "source-native-loading";
+  const nativeReady = [
+    "source-native-rest-pose",
+    "source-native-loading",
+    "source-native-reference-pose",
+    "source-native-adduction-ready",
+    "source-native-elbow-loading",
+    "source-native-elbow-ready",
+    "source-native-elbow-playing",
+  ].includes(motionCanvas?.dataset.motionState || "");
   const motionReady = Boolean(motionRig) || nativeReady;
 
   if (motionReady) {
@@ -8439,6 +8695,7 @@ function animate(now = performance.now()) {
   controls.update();
   updateMotionPlayback(now);
   updateTsmNativePlayback(now);
+  updateMyoArmElbowPlayback(now);
   renderer.render(scene, camera);
 
   if (appMode === "motion" && motionRenderer && !motionPane?.hidden) {
