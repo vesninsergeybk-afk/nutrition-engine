@@ -275,8 +275,26 @@
         </div>
         <section id="structure-reference" class="structure-reference" hidden aria-live="polite">
           <div class="structure-reference-head">
-            <strong>Анатомия</strong>
+            <strong id="structure-reference-heading">Справка по структуре</strong>
             <span id="structure-reference-latin"></span>
+          </div>
+
+          <figure id="structure-reference-primary-art" class="structure-reference-primary-art" hidden>
+            <div
+              id="structure-reference-primary-art-image"
+              class="structure-reference-primary-art-image"
+              role="img"
+            ></div>
+            <figcaption>
+              <strong id="structure-reference-primary-art-title"></strong>
+              <span id="structure-reference-primary-art-caption"></span>
+            </figcaption>
+          </figure>
+
+          <div id="structure-reference-atlas-block" class="structure-reference-atlas-block" hidden>
+            <strong>Атласная иллюстрация</strong>
+            <span>Показывает выбранную область и соседние структуры; индивидуальная справка по мышце приведена ниже.</span>
+            <div id="structure-reference-illustrations" class="structure-reference-source-list"></div>
           </div>
 
           <dl class="structure-reference-grid">
@@ -303,20 +321,8 @@
             <ul id="structure-reference-ambiguity-candidates"></ul>
           </div>
 
-          <figure id="structure-reference-primary-art" class="structure-reference-primary-art" hidden>
-            <div
-              id="structure-reference-primary-art-image"
-              class="structure-reference-primary-art-image"
-              role="img"
-            ></div>
-            <figcaption>
-              <strong id="structure-reference-primary-art-title"></strong>
-              <span id="structure-reference-primary-art-caption"></span>
-            </figcaption>
-          </figure>
-
           <div id="structure-reference-facts" class="structure-reference-facts" hidden>
-            <details class="structure-reference-details">
+            <details class="structure-reference-details" data-reference-default-open>
               <summary>Функция</summary>
               <div class="structure-reference-details-body">
                 <div class="structure-reference-fact">
@@ -333,7 +339,7 @@
               </p>
             </details>
 
-            <details class="structure-reference-details">
+            <details class="structure-reference-details" data-reference-default-open>
               <summary>Начало, прикрепление и направление волокон</summary>
               <div class="structure-reference-details-body">
                 <div class="structure-reference-fact">
@@ -393,14 +399,9 @@
             </details>
 
             <details class="structure-reference-details structure-reference-sources-details">
-              <summary>Источники и дополнительные атласные пластины</summary>
+              <summary>Источники</summary>
               <div class="structure-reference-media">
                 <div id="structure-reference-sources" class="structure-reference-source-list"></div>
-                <div id="structure-reference-atlas-block" class="structure-reference-atlas-block" hidden>
-                  <strong>Дополнительные атласные пластины</strong>
-                  <span>Показывают регион, слой и соседние структуры. Они дополняют индивидуальный учебный рисунок и не заменяют его.</span>
-                  <div id="structure-reference-illustrations" class="structure-reference-source-list"></div>
-                </div>
               </div>
             </details>
           </div>
