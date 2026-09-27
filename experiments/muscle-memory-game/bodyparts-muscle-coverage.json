@@ -1,0 +1,3681 @@
+{
+  "generatedFrom": {
+    "bodyParts3d3MuscleIndex": "zlatnaspirala/matrix-engine-starter@0a3d121ece6b265bddf0173c3d0dd65aca22f3c8",
+    "bodyParts3d3Names": "BodyParts3D 3.0 parts_list_e.txt mirror",
+    "bodyParts3d4Atlas": "ashemag/human-atlas@1c38bf35c254a891200d3cedecfd57abebe83d8d"
+  },
+  "counts": {
+    "v3MuscleMeshes": 292,
+    "presentInV4": 243,
+    "missingInV4AvailableInV3": 49
+  },
+  "priorityMissing": [
+    {
+      "id": "FMA46836",
+      "name": "left buccinator",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ211_BP2549_FMA46836_Left_buccinator.obj"
+    },
+    {
+      "id": "FMA13893",
+      "name": "left internal oblique",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ464_BP4594_FMA13893_Left_internal_oblique.obj"
+    },
+    {
+      "id": "FMA13359",
+      "name": "left latissimus dorsi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ921_BP2403_FMA13359_Left_latissimus_dorsi.obj"
+    },
+    {
+      "id": "FMA13378",
+      "name": "left rectus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ707_BP4592_FMA13378_Left_rectus_abdominis.obj"
+    },
+    {
+      "id": "FMA46840",
+      "name": "left risorius",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ148_BP2562_FMA46840_Left_risorius.obj"
+    },
+    {
+      "id": "FMA49008",
+      "name": "left temporalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ170_BP4479_FMA49008_Left_temporalis.obj"
+    },
+    {
+      "id": "FMA22345",
+      "name": "left transversus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ357_BP4591_FMA22345_Left_transversus_abdominis.obj"
+    },
+    {
+      "id": "FMA46813",
+      "name": "left zygomaticus major",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ168_BP2559_FMA46813_Left_zygomaticus_major.obj"
+    },
+    {
+      "id": "FMA46815",
+      "name": "left zygomaticus minor",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ638_BP2556_FMA46815_Left_zygomaticus_minor.obj"
+    },
+    {
+      "id": "FMA46841",
+      "name": "orbicularis oris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ867_BP2563_FMA46841_Orbicularis_oris.obj"
+    },
+    {
+      "id": "FMA46835",
+      "name": "right buccinator",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ54_BP2548_FMA46835_Right_buccinator.obj"
+    },
+    {
+      "id": "FMA13892",
+      "name": "right internal oblique",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ136_BP4589_FMA13892_Right_internal_oblique.obj"
+    },
+    {
+      "id": "FMA13358",
+      "name": "right latissimus dorsi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ920_BP2402_FMA13358_Right_latissimus_dorsi.obj"
+    },
+    {
+      "id": "FMA13377",
+      "name": "right rectus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ9_BP4587_FMA13377_Right_rectus_abdominis.obj"
+    },
+    {
+      "id": "FMA46839",
+      "name": "right risorius",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ115_BP2561_FMA46839_Right_risorius.obj"
+    },
+    {
+      "id": "FMA49007",
+      "name": "right temporalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ477_BP4478_FMA49007_Right_temporalis.obj"
+    },
+    {
+      "id": "FMA22344",
+      "name": "right transversus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ160_BP4586_FMA22344_Right_transversus_abdominis.obj"
+    },
+    {
+      "id": "FMA46812",
+      "name": "right zygomaticus major",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ771_BP2558_FMA46812_Right_zygomaticus_major.obj"
+    },
+    {
+      "id": "FMA46814",
+      "name": "right zygomaticus minor",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ18_BP2555_FMA46814_Right_zygomaticus_minor.obj"
+    }
+  ],
+  "muscles": [
+    {
+      "id": "FMA37464",
+      "name": "abductor digiti minimi of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1390M",
+          "name": "Abductor digiti minimi of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ555_BP2755_FMA37464_Abductor_digiti_minimi_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37397",
+      "name": "abductor digiti minimi of left hand",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1466M",
+          "name": "Abductor digiti minimi of left hand",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ238_BP2500_FMA37397_Abductor_digiti_minimi_of_left_hand.obj"
+    },
+    {
+      "id": "FMA37463",
+      "name": "abductor digiti minimi of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1390",
+          "name": "Abductor digiti minimi of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ239_BP2756_FMA37463_Abductor_digiti_minimi_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37396",
+      "name": "abductor digiti minimi of right hand",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1466",
+          "name": "Abductor digiti minimi of right hand",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ663_BP2499_FMA37396_Abductor_digiti_minimi_of_right_hand.obj"
+    },
+    {
+      "id": "FMA13295",
+      "name": "diaphragm",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ3131",
+          "name": "Diaphragm",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ829_BP4122_FMA13295_Diaphragm.obj"
+    },
+    {
+      "id": "FMA21930",
+      "name": "external anal sphincter",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1450M",
+          "name": "External anal sphincter",
+          "system": "muscular"
+        },
+        {
+          "id": "FJ2543",
+          "name": "External anal sphincter",
+          "system": "muscular"
+        },
+        {
+          "id": "FJ2548",
+          "name": "External anal sphincter",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ873_BP4533_FMA21930_External_anal_sphincter.obj"
+    },
+    {
+      "id": "FMA37718",
+      "name": "first lumbrical of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1383M",
+          "name": "First lumbrical of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ164_BP2738_FMA37718_First_lumbrical_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37717",
+      "name": "first lumbrical of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1383",
+          "name": "First lumbrical of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ666_BP2737_FMA37717_First_lumbrical_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37746",
+      "name": "first plantar interosseous of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1384M",
+          "name": "First plantar interosseous of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ339_BP2724_FMA37746_First_plantar_interosseous_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37745",
+      "name": "first plantar interosseous of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1384",
+          "name": "First plantar interosseous of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ668_BP2725_FMA37745_First_plantar_interosseous_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37472",
+      "name": "flexor digiti minimi brevis of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1391M",
+          "name": "Flexor digiti minimi brevis of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ629_BP2747_FMA37472_Flexor_digiti_minimi_brevis_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37399",
+      "name": "flexor digiti minimi brevis of left hand",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1470M",
+          "name": "Flexor digiti minimi brevis of left hand",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ393_BP2497_FMA37399_Flexor_digiti_minimi_brevis_of_left_hand.obj"
+    },
+    {
+      "id": "FMA37471",
+      "name": "flexor digiti minimi brevis of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1391",
+          "name": "Flexor digiti minimi brevis of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ628_BP2746_FMA37471_Flexor_digiti_minimi_brevis_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37398",
+      "name": "flexor digiti minimi brevis of right hand",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1470",
+          "name": "Flexor digiti minimi brevis of right hand",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ862_BP2496_FMA37398_Flexor_digiti_minimi_brevis_of_right_hand.obj"
+    },
+    {
+      "id": "FMA37484",
+      "name": "fourth lumbrical of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1389M",
+          "name": "Fourth lumbrical of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ504_BP2735_FMA37484_Fourth_lumbrical_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37483",
+      "name": "fourth lumbrical of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1389",
+          "name": "Fourth lumbrical of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ695_BP2734_FMA37483_Fourth_lumbrical_of_right_foot.obj"
+    },
+    {
+      "id": "FMA9758",
+      "name": "innermost intercostal muscle",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1454",
+          "name": "innermost intercostal muscle",
+          "system": "muscular"
+        },
+        {
+          "id": "FJ1454M",
+          "name": "Innermost intercostal muscle",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ872_BP2604_FMA9758_Innermost_intercostal_muscle.obj"
+    },
+    {
+      "id": "FMA9757",
+      "name": "internal intercostal muscle",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1455",
+          "name": "internal intercostal muscle",
+          "system": "muscular"
+        },
+        {
+          "id": "FJ1455M",
+          "name": "Internal intercostal muscle",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ543_BP2605_FMA9757_Internal_intercostal_muscle.obj"
+    },
+    {
+      "id": "FMA37460",
+      "name": "left abductor hallucis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1400M",
+          "name": "Left abductor hallucis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ442_BP2753_FMA37460_Left_abductor_hallucis.obj"
+    },
+    {
+      "id": "FMA37387",
+      "name": "left abductor pollicis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1483M",
+          "name": "Left abductor pollicis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ795_BP2493_FMA37387_Left_abductor_pollicis_brevis.obj"
+    },
+    {
+      "id": "FMA38517",
+      "name": "left abductor pollicis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1484M",
+          "name": "Left abductor pollicis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ575_BP2450_FMA38517_Left_abductor_pollicis_longus.obj"
+    },
+    {
+      "id": "FMA22454",
+      "name": "left adductor brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1401M",
+          "name": "Left adductor brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ68_BP2658_FMA22454_Left_adductor_brevis.obj"
+    },
+    {
+      "id": "FMA22457",
+      "name": "left adductor longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1402M",
+          "name": "Left adductor longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ810_BP2655_FMA22457_Left_adductor_longus.obj"
+    },
+    {
+      "id": "FMA22460",
+      "name": "left adductor magnus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1403M",
+          "name": "Left adductor magnus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ230_BP2652_FMA22460_Left_adductor_magnus.obj"
+    },
+    {
+      "id": "FMA43887",
+      "name": "left adductor minimus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1404M",
+          "name": "Left adductor minimus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ764_BP2649_FMA43887_Left_adductor_minimus.obj"
+    },
+    {
+      "id": "FMA37706",
+      "name": "left anconeus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1485M",
+          "name": "Left anconeus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ665_BP4325_FMA37706_Left_anconeus.obj"
+    },
+    {
+      "id": "FMA37669",
+      "name": "left brachialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1486M",
+          "name": "Left brachialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ664_BP4324_FMA37669_Left_brachialis.obj"
+    },
+    {
+      "id": "FMA38487",
+      "name": "left brachioradialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1487M",
+          "name": "Left brachioradialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ107_BP2466_FMA38487_Left_brachioradialis.obj"
+    },
+    {
+      "id": "FMA46836",
+      "name": "left buccinator",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ211_BP2549_FMA46836_Left_buccinator.obj"
+    },
+    {
+      "id": "FMA81753",
+      "name": "left cervical rotator",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1524M",
+          "name": "Left cervical rotator",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ175_BP2323_FMA81753_Left_cervical_rotator.obj"
+    },
+    {
+      "id": "FMA46444",
+      "name": "left coccygeus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1449M",
+          "name": "Left coccygeus",
+          "system": "muscular"
+        },
+        {
+          "id": "FJ2542",
+          "name": "Left coccygeus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ770_BP2636_FMA46444_Left_coccygeus.obj"
+    },
+    {
+      "id": "FMA37666",
+      "name": "left coracobrachialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1488M",
+          "name": "Left coracobrachialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ105_BP4323_FMA37666_Left_coracobrachialis.obj"
+    },
+    {
+      "id": "FMA46797",
+      "name": "left corrugator supercilii",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ448_BP2553_FMA46797_Left_corrugator_supercilii.obj"
+    },
+    {
+      "id": "FMA46830",
+      "name": "left depressor anguli oris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ639_BP2591_FMA46830_Left_depressor_anguli_oris.obj"
+    },
+    {
+      "id": "FMA46818",
+      "name": "left depressor labii inferioris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ674_BP4449_FMA46818_Left_depressor_labii_inferioris.obj"
+    },
+    {
+      "id": "FMA55609",
+      "name": "left depressor septi nasi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ215_BP2573_FMA55609_Left_depressor_septi_nasi.obj"
+    },
+    {
+      "id": "FMA38499",
+      "name": "left extensor carpi radialis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1489M",
+          "name": "Left extensor carpi radialis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ601_BP2454_FMA38499_Left_extensor_carpi_radialis_brevis.obj"
+    },
+    {
+      "id": "FMA38496",
+      "name": "left extensor carpi radialis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1490M",
+          "name": "Left extensor carpi radialis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ262_BP2463_FMA38496_Left_extensor_carpi_radialis_longus.obj"
+    },
+    {
+      "id": "FMA38505",
+      "name": "left extensor digiti minimi",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1491M",
+          "name": "Left extensor digiti minimi",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ632_BP2457_FMA38505_Left_extensor_digiti_minimi.obj"
+    },
+    {
+      "id": "FMA38502",
+      "name": "left extensor digitorum",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1492M",
+          "name": "Left extensor digitorum",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ263_BP2460_FMA38502_Left_extensor_digitorum.obj"
+    },
+    {
+      "id": "FMA51143",
+      "name": "left extensor digitorum brevis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ935_BP2760_FMA51143_Left_extensor_digitorum_brevis.obj"
+    },
+    {
+      "id": "FMA22549",
+      "name": "left extensor digitorum longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1406M",
+          "name": "Left extensor digitorum longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ409_BP2711_FMA22549_Left_extensor_digitorum_longus.obj"
+    },
+    {
+      "id": "FMA51145",
+      "name": "left extensor hallucis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1407M",
+          "name": "Left extensor hallucis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ213_BP2763_FMA51145_Left_extensor_hallucis_brevis.obj"
+    },
+    {
+      "id": "FMA22547",
+      "name": "left extensor hallucis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1408M",
+          "name": "Left extensor hallucis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ180_BP2708_FMA22547_Left_extensor_hallucis_longus.obj"
+    },
+    {
+      "id": "FMA38526",
+      "name": "left extensor indicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1493M",
+          "name": "Left extensor indicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ864_BP2438_FMA38526_Left_extensor_indicis.obj"
+    },
+    {
+      "id": "FMA38520",
+      "name": "left extensor pollicis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1494M",
+          "name": "Left extensor pollicis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ576_BP2447_FMA38520_Left_extensor_pollicis_brevis.obj"
+    },
+    {
+      "id": "FMA38523",
+      "name": "left extensor pollicis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1495M",
+          "name": "Left extensor pollicis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ146_BP2444_FMA38523_Left_extensor_pollicis_longus.obj"
+    },
+    {
+      "id": "FMA13337",
+      "name": "left external oblique",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1452M",
+          "name": "Left external oblique",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ125_BP4595_FMA13337_Left_external_oblique.obj"
+    },
+    {
+      "id": "FMA22555",
+      "name": "left fibularis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1409M",
+          "name": "Left fibularis brevis",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ302_BP2698_FMA22555_Left_fibularis_brevis.obj"
+    },
+    {
+      "id": "FMA22553",
+      "name": "left fibularis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1410M",
+          "name": "Left fibularis longus",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ861_BP2695_FMA22553_Left_fibularis_longus.obj"
+    },
+    {
+      "id": "FMA22551",
+      "name": "left fibularis tertius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1411M",
+          "name": "Left fibularis tertius",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ652_BP2705_FMA22551_Left_fibularis_tertius.obj"
+    },
+    {
+      "id": "FMA37466",
+      "name": "left flexor accessorius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1412M",
+          "name": "Left flexor accessorius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ736_BP2750_FMA37466_Left_flexor_accessorius.obj"
+    },
+    {
+      "id": "FMA38461",
+      "name": "left flexor carpi radialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1496M",
+          "name": "Left flexor carpi radialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ718_BP2474_FMA38461_Left_flexor_carpi_radialis.obj"
+    },
+    {
+      "id": "FMA37462",
+      "name": "left flexor digitorum brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1413M",
+          "name": "Left flexor digitorum brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ863_BP2744_FMA37462_Left_flexor_digitorum_brevis.obj"
+    },
+    {
+      "id": "FMA65017",
+      "name": "left flexor digitorum longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1414M",
+          "name": "Left flexor digitorum longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ852_BP2691_FMA65017_Left_flexor_digitorum_longus.obj"
+    },
+    {
+      "id": "FMA38480",
+      "name": "left flexor digitorum profundus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1497M",
+          "name": "Left flexor digitorum profundus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ15_BP2484_FMA38480_Left_flexor_digitorum_profundus.obj"
+    },
+    {
+      "id": "FMA65015",
+      "name": "left flexor hallucis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1415M",
+          "name": "Left flexor hallucis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ820_BP2688_FMA65015_Left_flexor_hallucis_longus.obj"
+    },
+    {
+      "id": "FMA38484",
+      "name": "left flexor pollicis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1498M",
+          "name": "Left flexor pollicis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ145_BP2478_FMA38484_Left_flexor_pollicis_longus.obj"
+    },
+    {
+      "id": "FMA22337",
+      "name": "left gemellus inferior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1416M",
+          "name": "Left gemellus inferior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ650_BP2778_FMA22337_Left_gemellus_inferior.obj"
+    },
+    {
+      "id": "FMA22335",
+      "name": "left gemellus superior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1417M",
+          "name": "Left gemellus superior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ367_BP2775_FMA22335_Left_gemellus_superior.obj"
+    },
+    {
+      "id": "FMA46327",
+      "name": "left geniohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1559",
+          "name": "Left geniohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ113_BP2524_FMA46327_Left_geniohyoid.obj"
+    },
+    {
+      "id": "FMA22329",
+      "name": "left gluteus maximus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1418M",
+          "name": "Left gluteus maximus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ497_BP2771_FMA22329_Left_gluteus_maximus.obj"
+    },
+    {
+      "id": "FMA22331",
+      "name": "left gluteus medius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1419M",
+          "name": "Left gluteus medius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ498_BP2768_FMA22331_Left_gluteus_medius.obj"
+    },
+    {
+      "id": "FMA22333",
+      "name": "left gluteus minimus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1420M",
+          "name": "Left gluteus minimus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ139_BP2797_FMA22333_Left_gluteus_minimus.obj"
+    },
+    {
+      "id": "FMA43884",
+      "name": "left gracilis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1421M",
+          "name": "Left gracilis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ558_BP2643_FMA43884_Left_gracilis.obj"
+    },
+    {
+      "id": "FMA22323",
+      "name": "left iliacus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1422M",
+          "name": "Left iliacus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ590_BP2800_FMA22323_Left_iliacus.obj"
+    },
+    {
+      "id": "FMA22745",
+      "name": "left iliocostalis cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1526M",
+          "name": "Left iliocostalis cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ467_BP2357_FMA22745_Left_iliocostalis_cervicis.obj"
+    },
+    {
+      "id": "FMA22741",
+      "name": "left iliocostalis lumborum",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1527M",
+          "name": "Left iliocostalis lumborum",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ70_BP2354_FMA22741_Left_iliocostalis_lumborum.obj"
+    },
+    {
+      "id": "FMA22743",
+      "name": "left iliocostalis thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1528M",
+          "name": "Left iliocostalis thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ466_BP2351_FMA22743_Left_iliocostalis_thoracis.obj"
+    },
+    {
+      "id": "FMA32548",
+      "name": "left infraspinatus muscle",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1500M",
+          "name": "Left infraspinatus muscle",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ471_BP2419_FMA32548_Left_infraspinatus.obj"
+    },
+    {
+      "id": "FMA13893",
+      "name": "left internal oblique",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ464_BP4594_FMA13893_Left_internal_oblique.obj"
+    },
+    {
+      "id": "FMA13359",
+      "name": "left latissimus dorsi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ921_BP2403_FMA13359_Left_latissimus_dorsi.obj"
+    },
+    {
+      "id": "FMA46824",
+      "name": "left levator anguli oris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ343_BP2584_FMA46824_Left_levator_anguli_oris.obj"
+    },
+    {
+      "id": "FMA46807",
+      "name": "left levator labii superioris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ52_BP2582_FMA46807_Left_levator_labii_superioris.obj"
+    },
+    {
+      "id": "FMA46804",
+      "name": "left levator labii superioris alaeque nasi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ394_BP2579_FMA46804_Left_levator_labii_superioris_alaeque_nas.obj"
+    },
+    {
+      "id": "FMA32541",
+      "name": "left levator scapulae",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1532M",
+          "name": "Left levator scapulae",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ336_BP4306_FMA32541_Left_levator_scapulae.obj"
+    },
+    {
+      "id": "FMA22756",
+      "name": "left longissimus capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1533M",
+          "name": "Left longissimus capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ468_BP2347_FMA22756_Left_longissimus_capitis.obj"
+    },
+    {
+      "id": "FMA22758",
+      "name": "left longissimus cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1534M",
+          "name": "Left longissimus cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ143_BP2344_FMA22758_Left_longissimus_cervicis.obj"
+    },
+    {
+      "id": "FMA22753",
+      "name": "left longissimus thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1535M",
+          "name": "Left longissimus thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ691_BP2341_FMA22753_Left_longissimus_thoracis.obj"
+    },
+    {
+      "id": "FMA46310",
+      "name": "left longus capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1561",
+          "name": "Left longus capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ80_BP2292_FMA46310_Left_longus_capitis.obj"
+    },
+    {
+      "id": "FMA23090",
+      "name": "left lumbar rotator",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1522M",
+          "name": "Left lumbar rotator",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ812_BP2320_FMA23090_Left_lumbar_rotator.obj"
+    },
+    {
+      "id": "FMA49013",
+      "name": "left medial pterygoid",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ55_BP4463_FMA49013_Left_medial_pterygoid.obj"
+    },
+    {
+      "id": "FMA46827",
+      "name": "left mentalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ267_BP4448_FMA46827_Left_mentalis.obj"
+    },
+    {
+      "id": "FMA22879",
+      "name": "left multifidus",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ811_BP2314_FMA22879_Left_multifidus.obj"
+    },
+    {
+      "id": "FMA46322",
+      "name": "left mylohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1562",
+          "name": "Left mylohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ282_BP2521_FMA46322_Left_mylohyoid.obj"
+    },
+    {
+      "id": "FMA55607",
+      "name": "left nasalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ608_BP4437_FMA55607_Left_nasalis.obj"
+    },
+    {
+      "id": "FMA32537",
+      "name": "left obliquus capitis inferior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1563",
+          "name": "Left obliquus capitis inferior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ598_BP2336_FMA32537_Left_obliquus_capitis_inferior.obj"
+    },
+    {
+      "id": "FMA32535",
+      "name": "left obliquus capitis superior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1564",
+          "name": "Left obliquus capitis superior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ624_BP2333_FMA32535_Left_obliquus_capitis_superior.obj"
+    },
+    {
+      "id": "FMA22327",
+      "name": "left obturator externus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1425M",
+          "name": "Left obturator externus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ159_BP2794_FMA22327_Left_obturator_externus.obj"
+    },
+    {
+      "id": "FMA22325",
+      "name": "left obturator internus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1426M",
+          "name": "Left obturator internus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ138_BP4603_FMA22325_Left_obturator_internus.obj"
+    },
+    {
+      "id": "FMA13349",
+      "name": "left omohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1565",
+          "name": "Left omohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ706_BP2535_FMA13349_Left_omohyoid.obj"
+    },
+    {
+      "id": "FMA37391",
+      "name": "left opponens pollicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1501M",
+          "name": "Left opponens pollicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ844_BP2490_FMA37391_Left_opponens_pollicis.obj"
+    },
+    {
+      "id": "FMA38464",
+      "name": "left palmaris longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1502M",
+          "name": "Left palmaris longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ240_BP2471_FMA38464_Left_palmaris_longus.obj"
+    },
+    {
+      "id": "FMA22451",
+      "name": "left pectineus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1427M",
+          "name": "Left pectineus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ832_BP2646_FMA22451_Left_pectineus.obj"
+    },
+    {
+      "id": "FMA13376",
+      "name": "left pectoralis minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1456M",
+          "name": "Left pectoralis minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ807_BP4309_FMA13376_Left_pectoralis_minor.obj"
+    },
+    {
+      "id": "FMA22341",
+      "name": "left piriformis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1428M",
+          "name": "Left piriformis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ432_BP2786_FMA22341_Left_piriformis.obj"
+    },
+    {
+      "id": "FMA22561",
+      "name": "left plantaris",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1429M",
+          "name": "Left plantaris",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ788_BP2678_FMA22561_Left_plantaris.obj"
+    },
+    {
+      "id": "FMA45740",
+      "name": "left platysma",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1558",
+          "name": "Left platysma",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ208_BP2531_FMA45740_Left_platysma.obj"
+    },
+    {
+      "id": "FMA22592",
+      "name": "left popliteus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1430M",
+          "name": "Left popliteus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ835_BP2685_FMA22592_Left_popliteus.obj"
+    },
+    {
+      "id": "FMA55611",
+      "name": "left procerus",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ400_BP2567_FMA55611_Left_procerus.obj"
+    },
+    {
+      "id": "FMA38455",
+      "name": "left pronator quadratus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1503M",
+          "name": "Left pronator quadratus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ507_BP2481_FMA38455_Left_pronator_quadratus.obj"
+    },
+    {
+      "id": "FMA22343",
+      "name": "left psoas major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1431M",
+          "name": "Left psoas major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ753_BP4583_FMA22343_Left_psoas_major.obj"
+    },
+    {
+      "id": "FMA22347",
+      "name": "left pyramidalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ358_BP4593_FMA22347_Left_pyramidalis.obj"
+    },
+    {
+      "id": "FMA22339",
+      "name": "left quadratus femoris",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1432M",
+          "name": "Left quadratus femoris",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ486_BP2784_FMA22339_Left_quadratus_femoris.obj"
+    },
+    {
+      "id": "FMA22349",
+      "name": "left quadratus lumborum",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ618_BP4582_FMA22349_Left_quadratus_lumborum.obj"
+    },
+    {
+      "id": "FMA13378",
+      "name": "left rectus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ707_BP4592_FMA13378_Left_rectus_abdominis.obj"
+    },
+    {
+      "id": "FMA46314",
+      "name": "left rectus capitis anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1566",
+          "name": "Left rectus capitis anterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ510_BP2299_FMA46314_Left_rectus_capitis_anterior.obj"
+    },
+    {
+      "id": "FMA46318",
+      "name": "left rectus capitis lateralis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1569",
+          "name": "Left rectus capitis lateralis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ769_BP2296_FMA46318_Left_rectus_capitis_lateralis.obj"
+    },
+    {
+      "id": "FMA32531",
+      "name": "left rectus capitis posterior major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1567",
+          "name": "Left rectus capitis posterior major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ623_BP2330_FMA32531_Left_rectus_capitis_posterior_major.obj"
+    },
+    {
+      "id": "FMA32533",
+      "name": "left rectus capitis posterior minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1568",
+          "name": "Left rectus capitis posterior minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ470_BP2327_FMA32533_Left_rectus_capitis_posterior_minor.obj"
+    },
+    {
+      "id": "FMA13382",
+      "name": "left rhomboid major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1536M",
+          "name": "Left rhomboid major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ224_BP4305_FMA13382_Left_rhomboid_major.obj"
+    },
+    {
+      "id": "FMA13384",
+      "name": "left rhomboid minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1537M",
+          "name": "Left rhomboid minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ483_BP4303_FMA13384_Left_rhomboid_minor.obj"
+    },
+    {
+      "id": "FMA46840",
+      "name": "left risorius",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ148_BP2562_FMA46840_Left_risorius.obj"
+    },
+    {
+      "id": "FMA22355",
+      "name": "left sartorius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1434M",
+          "name": "Left sartorius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ34_BP2669_FMA22355_Left_sartorius.obj"
+    },
+    {
+      "id": "FMA13393",
+      "name": "left scalenus anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1570",
+          "name": "Left scalenus anterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ565_BP2514_FMA13393_Left_scalenus_anterior.obj"
+    },
+    {
+      "id": "FMA13391",
+      "name": "left scalenus medius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1571",
+          "name": "Left scalenus medius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ778_BP2511_FMA13391_Left_scalenus_medius.obj"
+    },
+    {
+      "id": "FMA13389",
+      "name": "left scalenus posterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1572",
+          "name": "Left scalenus posterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ494_BP2508_FMA13389_Left_scalenus_posterior.obj"
+    },
+    {
+      "id": "FMA22449",
+      "name": "left semimembranosus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1435M",
+          "name": "Left semimembranosus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ433_BP2662_FMA22449_Left_semimembranosus.obj"
+    },
+    {
+      "id": "FMA22877",
+      "name": "left semispinalis capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1538M",
+          "name": "Left semispinalis capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ566_BP2311_FMA22877_Left_semispinalis_capitis.obj"
+    },
+    {
+      "id": "FMA22875",
+      "name": "left semispinalis cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1539M",
+          "name": "Left semispinalis cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ361_BP2308_FMA22875_Left_semispinalis_cervicis.obj"
+    },
+    {
+      "id": "FMA22873",
+      "name": "left semispinalis thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1540M",
+          "name": "Left semispinalis thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ11_BP2305_FMA22873_Left_semispinalis_thoracis.obj"
+    },
+    {
+      "id": "FMA22359",
+      "name": "left semitendinosus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1436M",
+          "name": "Left semitendinosus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ141_BP2665_FMA22359_Left_semitendinosus.obj"
+    },
+    {
+      "id": "FMA13399",
+      "name": "left serratus anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1459M",
+          "name": "Left serratus anterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ225_BP4304_FMA13399_Left_serratus_anterior.obj"
+    },
+    {
+      "id": "FMA13406",
+      "name": "left serratus posterior inferior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1541M",
+          "name": "Left serratus posterior inferior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ427_BP2375_FMA13406_Left_serratus_posterior_inferior.obj"
+    },
+    {
+      "id": "FMA13404",
+      "name": "left serratus posterior superior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1542M",
+          "name": "Left serratus posterior superior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ198_BP2372_FMA13404_Left_serratus_posterior_superior.obj"
+    },
+    {
+      "id": "FMA22559",
+      "name": "left soleus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1437M",
+          "name": "Left soleus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ834_BP2675_FMA22559_Left_soleus.obj"
+    },
+    {
+      "id": "FMA22780",
+      "name": "left spinalis thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1544M",
+          "name": "Left spinalis thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ435_BP2368_FMA22780_Left_spinalis_thoracis.obj"
+    },
+    {
+      "id": "FMA22729",
+      "name": "left splenius capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1545M",
+          "name": "Left splenius capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ161_BP2360_FMA22729_Left_splenius_capitis.obj"
+    },
+    {
+      "id": "FMA22727",
+      "name": "left splenius cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1546M",
+          "name": "Left splenius cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ620_BP2364_FMA22727_Left_splenius_cervicis.obj"
+    },
+    {
+      "id": "FMA13409",
+      "name": "left sternocleidomastoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1573",
+          "name": "Left sternocleidomastoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ588_BP2528_FMA13409_Left_sternocleidomastoid.obj"
+    },
+    {
+      "id": "FMA13347",
+      "name": "left sternohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1574",
+          "name": "Left sternohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ564_BP2538_FMA13347_Left_sternohyoid.obj"
+    },
+    {
+      "id": "FMA13351",
+      "name": "left sternothyroid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1575",
+          "name": "Left sternothyroid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ522_BP2544_FMA13351_Left_sternothyroid.obj"
+    },
+    {
+      "id": "FMA45827",
+      "name": "left stylohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1576",
+          "name": "Left stylohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ167_BP2518_FMA45827_Left_stylohyoid.obj"
+    },
+    {
+      "id": "FMA13411",
+      "name": "left subclavius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1460M",
+          "name": "Left subclavius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ157_BP4308_FMA13411_Left_subclavius.obj"
+    },
+    {
+      "id": "FMA13415",
+      "name": "left subscapularis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1504M",
+          "name": "Left subscapularis",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ744_BP2416_FMA13415_Left_subscapularis.obj"
+    },
+    {
+      "id": "FMA38514",
+      "name": "left supinator",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1505M",
+          "name": "Left supinator",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ574_BP2441_FMA38514_Left_supinator.obj"
+    },
+    {
+      "id": "FMA32545",
+      "name": "left supraspinatus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1506M",
+          "name": "Left supraspinatus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ625_BP2410_FMA32545_Left_supraspinatus.obj"
+    },
+    {
+      "id": "FMA49008",
+      "name": "left temporalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ170_BP4479_FMA49008_Left_temporalis.obj"
+    },
+    {
+      "id": "FMA22426",
+      "name": "left tensor fasciae latae",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1438M",
+          "name": "Left tensor fasciae latae",
+          "system": "connective"
+        }
+      ],
+      "v3MirrorFile": "FJ499_BP2780_FMA22426_Left_tensor_fasciae_latae.obj"
+    },
+    {
+      "id": "FMA32552",
+      "name": "left teres major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1507M",
+          "name": "Left teres major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ568_BP2407_FMA32552_Left_teres_major.obj"
+    },
+    {
+      "id": "FMA32554",
+      "name": "left teres minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1508M",
+          "name": "Left teres minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ12_BP2413_FMA32554_Left_teres_minor.obj"
+    },
+    {
+      "id": "FMA13353",
+      "name": "left thyrohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1577",
+          "name": "Left thyrohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ743_BP2541_FMA13353_Left_thyrohyoid.obj"
+    },
+    {
+      "id": "FMA22545",
+      "name": "left tibialis anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1439M",
+          "name": "Left tibialis anterior",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ619_BP2702_FMA22545_Left_tibialis_anterior.obj"
+    },
+    {
+      "id": "FMA65019",
+      "name": "left tibialis posterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1440M",
+          "name": "Left tibialis posterior",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ218_BP2682_FMA65019_Left_tibialis_posterior.obj"
+    },
+    {
+      "id": "FMA22345",
+      "name": "left transversus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ357_BP4591_FMA22345_Left_transversus_abdominis.obj"
+    },
+    {
+      "id": "FMA9762",
+      "name": "left transversus thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1461M",
+          "name": "Left transversus thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ364_BP4566_FMA9762_Left_transversus_thoracis.obj"
+    },
+    {
+      "id": "FMA46813",
+      "name": "left zygomaticus major",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ168_BP2559_FMA46813_Left_zygomaticus_major.obj"
+    },
+    {
+      "id": "FMA46815",
+      "name": "left zygomaticus minor",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ638_BP2556_FMA46815_Left_zygomaticus_minor.obj"
+    },
+    {
+      "id": "FMA86035",
+      "name": "opponens digiti minimi of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1399M",
+          "name": "Opponens digiti minimi of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ354_BP2741_FMA86035_Opponens_digiti_minimi_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37401",
+      "name": "opponens digiti minimi of left hand",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1482M",
+          "name": "Opponens digiti minimi of left hand",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ627_BP2503_FMA37401_Opponens_digiti_minimi_of_left_hand.obj"
+    },
+    {
+      "id": "FMA86034",
+      "name": "opponens digiti minimi of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1399",
+          "name": "Opponens digiti minimi of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ683_BP2740_FMA86034_Opponens_digiti_minimi_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37400",
+      "name": "opponens digiti minimi of right hand",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1482",
+          "name": "Opponens digiti minimi of right hand",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ413_BP2502_FMA37400_Opponens_digiti_minimi_of_right_hand.obj"
+    },
+    {
+      "id": "FMA46841",
+      "name": "orbicularis oris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ867_BP2563_FMA46841_Orbicularis_oris.obj"
+    },
+    {
+      "id": "FMA37459",
+      "name": "right abductor hallucis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1400",
+          "name": "Right abductor hallucis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ292_BP2752_FMA37459_Right_abductor_hallucis.obj"
+    },
+    {
+      "id": "FMA37386",
+      "name": "right abductor pollicis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1483",
+          "name": "Right abductor pollicis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ599_BP2492_FMA37386_Right_abductor_pollicis_brevis.obj"
+    },
+    {
+      "id": "FMA38516",
+      "name": "right abductor pollicis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1484",
+          "name": "Right abductor pollicis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ341_BP2449_FMA38516_Right_abductor_pollicis_longus.obj"
+    },
+    {
+      "id": "FMA22452",
+      "name": "right adductor brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1401",
+          "name": "Right adductor brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ379_BP2657_FMA22452_Right_adductor_brevis.obj"
+    },
+    {
+      "id": "FMA22456",
+      "name": "right adductor longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1402",
+          "name": "Right adductor longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ69_BP2654_FMA22456_Right_adductor_longus.obj"
+    },
+    {
+      "id": "FMA22459",
+      "name": "right adductor magnus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1403",
+          "name": "Right adductor magnus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ329_BP2651_FMA22459_Right_adductor_magnus.obj"
+    },
+    {
+      "id": "FMA43886",
+      "name": "right adductor minimus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1404",
+          "name": "Right adductor minimus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ559_BP2648_FMA43886_Right_adductor_minimus.obj"
+    },
+    {
+      "id": "FMA37705",
+      "name": "right anconeus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1485",
+          "name": "Right anconeus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ600_BP4032_FMA37705_Right_anconeus.obj"
+    },
+    {
+      "id": "FMA37668",
+      "name": "right brachialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1486",
+          "name": "Right brachialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ796_BP2431_FMA37668_Right_brachialis.obj"
+    },
+    {
+      "id": "FMA38486",
+      "name": "right brachioradialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1487",
+          "name": "Right brachioradialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ309_BP2465_FMA38486_Right_brachioradialis.obj"
+    },
+    {
+      "id": "FMA46835",
+      "name": "right buccinator",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ54_BP2548_FMA46835_Right_buccinator.obj"
+    },
+    {
+      "id": "FMA81752",
+      "name": "right cervical rotator",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1524",
+          "name": "Right cervical rotator",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ702_BP2322_FMA81752_Right_cervical_rotator.obj"
+    },
+    {
+      "id": "FMA46443",
+      "name": "right coccygeus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ2547",
+          "name": "Right coccygeus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ318_BP2635_FMA46443_Right_coccygeus.obj"
+    },
+    {
+      "id": "FMA37665",
+      "name": "right coracobrachialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1488",
+          "name": "Right coracobrachialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ384_BP2428_FMA37665_Right_coracobrachialis.obj"
+    },
+    {
+      "id": "FMA46796",
+      "name": "right corrugator supercilii",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ802_BP2552_FMA46796_Right_corrugator_supercilii.obj"
+    },
+    {
+      "id": "FMA46829",
+      "name": "right depressor anguli oris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ53_BP2590_FMA46829_Right_depressor_anguli_oris.obj"
+    },
+    {
+      "id": "FMA46817",
+      "name": "right depressor labii inferioris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ606_BP4447_FMA46817_Right_depressor_labii_inferioris.obj"
+    },
+    {
+      "id": "FMA55608",
+      "name": "right depressor septi nasi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ609_BP2572_FMA55608_Right_depressor_septi_nasi.obj"
+    },
+    {
+      "id": "FMA38498",
+      "name": "right extensor carpi radialis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1489",
+          "name": "Right extensor carpi radialis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ205_BP2453_FMA38498_Right_extensor_carpi_radialis_brevis.obj"
+    },
+    {
+      "id": "FMA38495",
+      "name": "right extensor carpi radialis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1490",
+          "name": "Right extensor carpi radialis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ799_BP2462_FMA38495_Right_extensor_carpi_radialis_longus.obj"
+    },
+    {
+      "id": "FMA38504",
+      "name": "right extensor digiti minimi",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1491",
+          "name": "Right extensor digiti minimi",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ206_BP2456_FMA38504_Right_extensor_digiti_minimi.obj"
+    },
+    {
+      "id": "FMA38501",
+      "name": "right extensor digitorum",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1492",
+          "name": "Right extensor digitorum",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ340_BP2459_FMA38501_Right_extensor_digitorum.obj"
+    },
+    {
+      "id": "FMA51142",
+      "name": "right extensor digitorum brevis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ934_BP2759_FMA51142_Right_extensor_digitorum_brevis.obj"
+    },
+    {
+      "id": "FMA22548",
+      "name": "right extensor digitorum longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1406",
+          "name": "Right extensor digitorum longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ787_BP2710_FMA22548_Right_extensor_digitorum_longus.obj"
+    },
+    {
+      "id": "FMA51144",
+      "name": "right extensor hallucis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1407",
+          "name": "Right extensor hallucis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ131_BP2762_FMA51144_Right_extensor_hallucis_brevis.obj"
+    },
+    {
+      "id": "FMA22546",
+      "name": "right extensor hallucis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1408",
+          "name": "Right extensor hallucis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ833_BP2707_FMA22546_Right_extensor_hallucis_longus.obj"
+    },
+    {
+      "id": "FMA38525",
+      "name": "right extensor indicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1493",
+          "name": "Right extensor indicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ108_BP2437_FMA38525_Right_extensor_indicis.obj"
+    },
+    {
+      "id": "FMA38519",
+      "name": "right extensor pollicis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1494",
+          "name": "Right extensor pollicis brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ187_BP2446_FMA38519_Right_extensor_pollicis_brevis.obj"
+    },
+    {
+      "id": "FMA38522",
+      "name": "right extensor pollicis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1495",
+          "name": "Right extensor pollicis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ602_BP2443_FMA38522_Right_extensor_pollicis_longus.obj"
+    },
+    {
+      "id": "FMA13336",
+      "name": "right external oblique",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1452",
+          "name": "Right external oblique",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ733_BP4590_FMA13336_Right_external_oblique.obj"
+    },
+    {
+      "id": "FMA22554",
+      "name": "right fibularis brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1409",
+          "name": "Right fibularis brevis",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ434_BP2697_FMA22554_Right_fibularis_brevis.obj"
+    },
+    {
+      "id": "FMA22552",
+      "name": "right fibularis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1410",
+          "name": "Right fibularis longus",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ380_BP2694_FMA22552_Right_fibularis_longus.obj"
+    },
+    {
+      "id": "FMA22550",
+      "name": "right fibularis tertius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1411",
+          "name": "Right fibularis tertius",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ591_BP2704_FMA22550_Right_fibularis_tertius.obj"
+    },
+    {
+      "id": "FMA37465",
+      "name": "right flexor accessorius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1412",
+          "name": "Right flexor accessorius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ845_BP2749_FMA37465_Right_flexor_accessorius.obj"
+    },
+    {
+      "id": "FMA38460",
+      "name": "right flexor carpi radialis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1496",
+          "name": "Right flexor carpi radialis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ165_BP2473_FMA38460_Right_flexor_carpi_radialis.obj"
+    },
+    {
+      "id": "FMA37461",
+      "name": "right flexor digitorum brevis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1413",
+          "name": "Right flexor digitorum brevis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ503_BP2743_FMA37461_Right_flexor_digitorum_brevis.obj"
+    },
+    {
+      "id": "FMA65016",
+      "name": "right flexor digitorum longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1414",
+          "name": "Right flexor digitorum longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ455_BP2690_FMA65016_Right_flexor_digitorum_longus.obj"
+    },
+    {
+      "id": "FMA38479",
+      "name": "right flexor digitorum profundus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1497",
+          "name": "Right flexor digitorum profundus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ373_BP2483_FMA38479_Right_flexor_digitorum_profundus.obj"
+    },
+    {
+      "id": "FMA65014",
+      "name": "right flexor hallucis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1415",
+          "name": "Right flexor hallucis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ678_BP2687_FMA65014_Right_flexor_hallucis_longus.obj"
+    },
+    {
+      "id": "FMA38482",
+      "name": "right flexor pollicis longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1498",
+          "name": "Right flexor pollicis longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ166_BP2477_FMA38482_Right_flexor_pollicis_longus.obj"
+    },
+    {
+      "id": "FMA22336",
+      "name": "right gemellus inferior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1416",
+          "name": "Right gemellus inferior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ711_BP2777_FMA22336_Right_gemellus_inferior.obj"
+    },
+    {
+      "id": "FMA22334",
+      "name": "right gemellus superior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1417",
+          "name": "Right gemellus superior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ97_BP2774_FMA22334_Right_gemellus_superior.obj"
+    },
+    {
+      "id": "FMA46326",
+      "name": "right geniohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1580",
+          "name": "Right geniohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ447_BP2523_FMA46326_Right_geniohyoid.obj"
+    },
+    {
+      "id": "FMA22328",
+      "name": "right gluteus maximus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1418",
+          "name": "Right gluteus maximus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ786_BP2770_FMA22328_Right_gluteus_maximus.obj"
+    },
+    {
+      "id": "FMA22330",
+      "name": "right gluteus medius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1419",
+          "name": "Right gluteus medius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ229_BP2767_FMA22330_Right_gluteus_medius.obj"
+    },
+    {
+      "id": "FMA22332",
+      "name": "right gluteus minimus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1420",
+          "name": "Right gluteus minimus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ32_BP2796_FMA22332_Right_gluteus_minimus.obj"
+    },
+    {
+      "id": "FMA43883",
+      "name": "right gracilis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1421",
+          "name": "Right gracilis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ207_BP2642_FMA43883_Right_gracilis.obj"
+    },
+    {
+      "id": "FMA22322",
+      "name": "right iliacus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1422",
+          "name": "Right iliacus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ67_BP2799_FMA22322_Right_iliacus.obj"
+    },
+    {
+      "id": "FMA22744",
+      "name": "right iliocostalis cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1526",
+          "name": "Right iliocostalis cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ712_BP2356_FMA22744_Right_iliocostalis_cervicis.obj"
+    },
+    {
+      "id": "FMA22740",
+      "name": "right iliocostalis lumborum",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1527",
+          "name": "Right iliocostalis lumborum",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ200_BP2353_FMA22740_Right_iliocostalis_lumborum.obj"
+    },
+    {
+      "id": "FMA22742",
+      "name": "right iliocostalis thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1528",
+          "name": "Right iliocostalis thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ201_BP2350_FMA22742_Right_iliocostalis_thoracis.obj"
+    },
+    {
+      "id": "FMA32547",
+      "name": "right infraspinatus muscle",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1500",
+          "name": "Right infraspinatus muscle",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ441_BP2418_FMA32547_Right_infraspinatus.obj"
+    },
+    {
+      "id": "FMA13892",
+      "name": "right internal oblique",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ136_BP4589_FMA13892_Right_internal_oblique.obj"
+    },
+    {
+      "id": "FMA13358",
+      "name": "right latissimus dorsi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ920_BP2402_FMA13358_Right_latissimus_dorsi.obj"
+    },
+    {
+      "id": "FMA46823",
+      "name": "right levator anguli oris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ114_BP2585_FMA46823_Right_levator_anguli_oris.obj"
+    },
+    {
+      "id": "FMA46806",
+      "name": "right levator labii superioris",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ511_BP2581_FMA46806_Right_levator_labii_superioris.obj"
+    },
+    {
+      "id": "FMA46803",
+      "name": "right levator labii superioris alaeque nasi",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ51_BP2578_FMA46803_Right_levator_labii_superioris_alaeque_nas.obj"
+    },
+    {
+      "id": "FMA32540",
+      "name": "right levator scapulae",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1532",
+          "name": "Right levator scapulae",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ305_BP4010_FMA32540_Right_levator_scapulae.obj"
+    },
+    {
+      "id": "FMA22754",
+      "name": "right longissimus capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1533",
+          "name": "Right longissimus capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ836_BP2346_FMA22754_Right_longissimus_capitis.obj"
+    },
+    {
+      "id": "FMA22757",
+      "name": "right longissimus cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1534",
+          "name": "Right longissimus cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ330_BP2343_FMA22757_Right_longissimus_cervicis.obj"
+    },
+    {
+      "id": "FMA22751",
+      "name": "right longissimus thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1535",
+          "name": "Right longissimus thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ359_BP2340_FMA22751_Right_longissimus_thoracis.obj"
+    },
+    {
+      "id": "FMA46309",
+      "name": "right longus capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1582",
+          "name": "Right longus capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ509_BP2291_FMA46309_Right_longus_capitis.obj"
+    },
+    {
+      "id": "FMA23089",
+      "name": "right lumbar rotator",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1522",
+          "name": "Right lumbar rotator",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ755_BP2319_FMA23089_Right_lumbar_rotator.obj"
+    },
+    {
+      "id": "FMA49012",
+      "name": "right medial pterygoid",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ117_BP4440_FMA49012_Right_medial_pterygoid.obj"
+    },
+    {
+      "id": "FMA46826",
+      "name": "right mentalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ6_BP4446_FMA46826_Right_mentalis.obj"
+    },
+    {
+      "id": "FMA22878",
+      "name": "right multifidus",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ257_BP2313_FMA22878_Right_multifidus.obj"
+    },
+    {
+      "id": "FMA46321",
+      "name": "right mylohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1583",
+          "name": "Right mylohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ81_BP2520_FMA46321_Right_mylohyoid.obj"
+    },
+    {
+      "id": "FMA55606",
+      "name": "right nasalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ560_BP4436_FMA55606_Right_nasalis.obj"
+    },
+    {
+      "id": "FMA32536",
+      "name": "right obliquus capitis inferior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1584",
+          "name": "Right obliquus capitis inferior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ551_BP2335_FMA32536_Right_obliquus_capitis_inferior.obj"
+    },
+    {
+      "id": "FMA32534",
+      "name": "right obliquus capitis superior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1585",
+          "name": "Right obliquus capitis superior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ184_BP2332_FMA32534_Right_obliquus_capitis_superior.obj"
+    },
+    {
+      "id": "FMA22326",
+      "name": "right obturator externus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1425",
+          "name": "Right obturator externus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ550_BP2793_FMA22326_Right_obturator_externus.obj"
+    },
+    {
+      "id": "FMA22324",
+      "name": "right obturator internus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1426",
+          "name": "Right obturator internus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ649_BP4601_FMA22324_Right_obturator_internus.obj"
+    },
+    {
+      "id": "FMA13348",
+      "name": "right omohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1586",
+          "name": "Right omohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ156_BP2534_FMA13348_Right_omohyoid.obj"
+    },
+    {
+      "id": "FMA37390",
+      "name": "right opponens pollicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1501",
+          "name": "Right opponens pollicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ473_BP2489_FMA37390_Right_opponens_pollicis.obj"
+    },
+    {
+      "id": "FMA38463",
+      "name": "right palmaris longus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1502",
+          "name": "Right palmaris longus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ14_BP2470_FMA38463_Right_palmaris_longus.obj"
+    },
+    {
+      "id": "FMA22450",
+      "name": "right pectineus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1427",
+          "name": "Right pectineus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ290_BP2645_FMA22450_Right_pectineus.obj"
+    },
+    {
+      "id": "FMA13375",
+      "name": "right pectoralis minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1456",
+          "name": "Right pectoralis minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ26_BP4016_FMA13375_Right_pectoralis_minor.obj"
+    },
+    {
+      "id": "FMA22340",
+      "name": "right piriformis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1428",
+          "name": "Right piriformis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ533_BP4600_FMA22340_Right_piriformis.obj"
+    },
+    {
+      "id": "FMA22560",
+      "name": "right plantaris",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1429",
+          "name": "Right plantaris",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ277_BP2677_FMA22560_Right_plantaris.obj"
+    },
+    {
+      "id": "FMA45739",
+      "name": "right platysma",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1587",
+          "name": "Right platysma",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ109_BP2530_FMA45739_Right_platysma.obj"
+    },
+    {
+      "id": "FMA22591",
+      "name": "right popliteus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1430",
+          "name": "Right popliteus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ653_BP2684_FMA22591_Right_popliteus.obj"
+    },
+    {
+      "id": "FMA55610",
+      "name": "right procerus",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ722_BP2566_FMA55610_Right_procerus.obj"
+    },
+    {
+      "id": "FMA38454",
+      "name": "right pronator quadratus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1503",
+          "name": "Right pronator quadratus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ631_BP2480_FMA38454_Right_pronator_quadratus.obj"
+    },
+    {
+      "id": "FMA22342",
+      "name": "right psoas major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1431",
+          "name": "Right psoas major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ33_BP4581_FMA22342_Right_psoas_major.obj"
+    },
+    {
+      "id": "FMA22346",
+      "name": "right pyramidalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ140_BP4588_FMA22346_Right_pyramidalis.obj"
+    },
+    {
+      "id": "FMA22338",
+      "name": "right quadratus femoris",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1432",
+          "name": "Right quadratus femoris",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ98_BP2783_FMA22338_Right_quadratus_femoris.obj"
+    },
+    {
+      "id": "FMA22348",
+      "name": "right quadratus lumborum",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ651_BP4580_FMA22348_Right_quadratus_lumborum.obj"
+    },
+    {
+      "id": "FMA13377",
+      "name": "right rectus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ9_BP4587_FMA13377_Right_rectus_abdominis.obj"
+    },
+    {
+      "id": "FMA46313",
+      "name": "right rectus capitis anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1588",
+          "name": "Right rectus capitis anterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ375_BP2298_FMA46313_Right_rectus_capitis_anterior.obj"
+    },
+    {
+      "id": "FMA46317",
+      "name": "right rectus capitis lateralis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1591",
+          "name": "Right rectus capitis lateralis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ210_BP2295_FMA46317_Right_rectus_capitis_lateralis.obj"
+    },
+    {
+      "id": "FMA32530",
+      "name": "right rectus capitis posterior major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1589",
+          "name": "Right rectus capitis posterior major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ792_BP2329_FMA32530_Right_rectus_capitis_posterior_major.obj"
+    },
+    {
+      "id": "FMA32532",
+      "name": "right rectus capitis posterior minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1590",
+          "name": "Right rectus capitis posterior minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ840_BP2326_FMA32532_Right_rectus_capitis_posterior_minor.obj"
+    },
+    {
+      "id": "FMA13381",
+      "name": "right rhomboid major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1536",
+          "name": "Right rhomboid major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ64_BP4009_FMA13381_Right_rhomboid_major.obj"
+    },
+    {
+      "id": "FMA13383",
+      "name": "right rhomboid minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1537",
+          "name": "Right rhomboid minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ126_BP4008_FMA13383_Right_rhomboid_minor.obj"
+    },
+    {
+      "id": "FMA46839",
+      "name": "right risorius",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ115_BP2561_FMA46839_Right_risorius.obj"
+    },
+    {
+      "id": "FMA22354",
+      "name": "right sartorius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1434",
+          "name": "Right sartorius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ99_BP2668_FMA22354_Right_sartorius.obj"
+    },
+    {
+      "id": "FMA13392",
+      "name": "right scalenus anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1592",
+          "name": "Right scalenus anterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ547_BP2513_FMA13392_Right_scalenus_anterior.obj"
+    },
+    {
+      "id": "FMA13390",
+      "name": "right scalenus medius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1593",
+          "name": "Right scalenus medius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ251_BP2510_FMA13390_Right_scalenus_medius.obj"
+    },
+    {
+      "id": "FMA13388",
+      "name": "right scalenus posterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1594",
+          "name": "Right scalenus posterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ690_BP2507_FMA13388_Right_scalenus_posterior.obj"
+    },
+    {
+      "id": "FMA22448",
+      "name": "right semimembranosus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1435",
+          "name": "Right semimembranosus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ378_BP2661_FMA22448_Right_semimembranosus.obj"
+    },
+    {
+      "id": "FMA22876",
+      "name": "right semispinalis capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1538",
+          "name": "Right semispinalis capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ524_BP2310_FMA22876_Right_semispinalis_capitis.obj"
+    },
+    {
+      "id": "FMA22874",
+      "name": "right semispinalis cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1539",
+          "name": "Right semispinalis cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ789_BP2307_FMA22874_Right_semispinalis_cervicis.obj"
+    },
+    {
+      "id": "FMA22872",
+      "name": "right semispinalis thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1540",
+          "name": "Right semispinalis thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ692_BP2304_FMA22872_Right_semispinalis_thoracis.obj"
+    },
+    {
+      "id": "FMA22358",
+      "name": "right semitendinosus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1436",
+          "name": "Right semitendinosus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ276_BP2664_FMA22358_Right_semitendinosus.obj"
+    },
+    {
+      "id": "FMA13398",
+      "name": "right serratus anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1459",
+          "name": "Right serratus anterior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ327_BP4007_FMA13398_Right_serratus_anterior.obj"
+    },
+    {
+      "id": "FMA13405",
+      "name": "right serratus posterior inferior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1541",
+          "name": "Right serratus posterior inferior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ252_BP2374_FMA13405_Right_serratus_posterior_inferior.obj"
+    },
+    {
+      "id": "FMA13403",
+      "name": "right serratus posterior superior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1542",
+          "name": "Right serratus posterior superior",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ808_BP2371_FMA13403_Right_serratus_posterior_superior.obj"
+    },
+    {
+      "id": "FMA22558",
+      "name": "right soleus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1437",
+          "name": "Right soleus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ754_BP2674_FMA22558_Right_soleus.obj"
+    },
+    {
+      "id": "FMA22779",
+      "name": "right spinalis thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1544",
+          "name": "Right spinalis thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ181_BP2367_FMA22779_Right_spinalis_thoracis.obj"
+    },
+    {
+      "id": "FMA22728",
+      "name": "right splenius capitis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1545",
+          "name": "Right splenius capitis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ256_BP2361_FMA22728_Right_splenius_capitis.obj"
+    },
+    {
+      "id": "FMA22726",
+      "name": "right splenius cervicis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1546",
+          "name": "Right splenius cervicis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ534_BP2363_FMA22726_Right_splenius_cervicis.obj"
+    },
+    {
+      "id": "FMA13408",
+      "name": "right sternocleidomastoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1595",
+          "name": "Right sternocleidomastoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ484_BP2527_FMA13408_Right_sternocleidomastoid.obj"
+    },
+    {
+      "id": "FMA13346",
+      "name": "right sternohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1596",
+          "name": "Right sternohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ689_BP2537_FMA13346_Right_sternohyoid.obj"
+    },
+    {
+      "id": "FMA13350",
+      "name": "right sternothyroid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1597",
+          "name": "Right sternothyroid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ63_BP2543_FMA13350_Right_sternothyroid.obj"
+    },
+    {
+      "id": "FMA45826",
+      "name": "right stylohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1598",
+          "name": "Right stylohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ147_BP2517_FMA45826_Right_stylohyoid.obj"
+    },
+    {
+      "id": "FMA13412",
+      "name": "right subclavius",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1460",
+          "name": "Right subclavius",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ548_BP4015_FMA13412_Right_subclavius.obj"
+    },
+    {
+      "id": "FMA13414",
+      "name": "right subscapularis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1504",
+          "name": "Right subscapularis",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ589_BP2415_FMA13414_Right_subscapularis.obj"
+    },
+    {
+      "id": "FMA38513",
+      "name": "right supinator",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1505",
+          "name": "Right supinator",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ557_BP2440_FMA38513_Right_supinator.obj"
+    },
+    {
+      "id": "FMA32544",
+      "name": "right supraspinatus",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1506",
+          "name": "Right supraspinatus",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ185_BP2409_FMA32544_Right_supraspinatus.obj"
+    },
+    {
+      "id": "FMA49007",
+      "name": "right temporalis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ477_BP4478_FMA49007_Right_temporalis.obj"
+    },
+    {
+      "id": "FMA22425",
+      "name": "right tensor fasciae latae",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1438",
+          "name": "Right tensor fasciae latae",
+          "system": "connective"
+        }
+      ],
+      "v3MirrorFile": "FJ142_BP2781_FMA22425_Right_tensor_fasciae_latae.obj"
+    },
+    {
+      "id": "FMA32551",
+      "name": "right teres major",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1507",
+          "name": "Right teres major",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ552_BP2406_FMA32551_Right_teres_major.obj"
+    },
+    {
+      "id": "FMA32553",
+      "name": "right teres minor",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1508",
+          "name": "Right teres minor",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ793_BP2412_FMA32553_Right_teres_minor.obj"
+    },
+    {
+      "id": "FMA13352",
+      "name": "right thyrohyoid",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1599",
+          "name": "Right thyrohyoid",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ523_BP2540_FMA13352_Right_thyrohyoid.obj"
+    },
+    {
+      "id": "FMA22544",
+      "name": "right tibialis anterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1439",
+          "name": "Right tibialis anterior",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ408_BP2701_FMA22544_Right_tibialis_anterior.obj"
+    },
+    {
+      "id": "FMA65018",
+      "name": "right tibialis posterior",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1440",
+          "name": "Right tibialis posterior",
+          "system": "skeletal"
+        }
+      ],
+      "v3MirrorFile": "FJ420_BP2681_FMA65018_Right_tibialis_posterior.obj"
+    },
+    {
+      "id": "FMA22344",
+      "name": "right transversus abdominis",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ160_BP4586_FMA22344_Right_transversus_abdominis.obj"
+    },
+    {
+      "id": "FMA9761",
+      "name": "right transversus thoracis",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1461",
+          "name": "Right transversus thoracis",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ274_BP4565_FMA9761_Right_transversus_thoracis.obj"
+    },
+    {
+      "id": "FMA46812",
+      "name": "right zygomaticus major",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ771_BP2558_FMA46812_Right_zygomaticus_major.obj"
+    },
+    {
+      "id": "FMA46814",
+      "name": "right zygomaticus minor",
+      "status": "missing-v4-available-v3",
+      "v4Parts": [],
+      "v3MirrorFile": "FJ18_BP2555_FMA46814_Right_zygomaticus_minor.obj"
+    },
+    {
+      "id": "FMA37720",
+      "name": "second lumbrical of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1385M",
+          "name": "Second lumbrical of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ372_BP2732_FMA37720_Second_lumbrical_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37719",
+      "name": "second lumbrical of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1385",
+          "name": "Second lumbrical of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ556_BP2731_FMA37719_Second_lumbrical_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37744",
+      "name": "second plantar interosseous of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1386M",
+          "name": "Second plantar interosseous of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ399_BP2722_FMA37744_Second_plantar_interosseous_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37743",
+      "name": "second plantar interosseous of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1386",
+          "name": "Second plantar interosseous of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ506_BP2721_FMA37743_Second_plantar_interosseous_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37486",
+      "name": "third lumbrical of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1387M",
+          "name": "Third lumbrical of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ573_BP2729_FMA37486_Third_lumbrical_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37485",
+      "name": "third lumbrical of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1387",
+          "name": "Third lumbrical of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ630_BP2728_FMA37485_Third_lumbrical_of_right_foot.obj"
+    },
+    {
+      "id": "FMA37742",
+      "name": "third plantar interosseous of left foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1388M",
+          "name": "Third plantar interosseous of left foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ717_BP2718_FMA37742_Third_plantar_interosseous_of_left_foot.obj"
+    },
+    {
+      "id": "FMA37741",
+      "name": "third plantar interosseous of right foot",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1388",
+          "name": "Third plantar interosseous of right foot",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ667_BP2719_FMA37741_Third_plantar_interosseous_of_right_foot.obj"
+    },
+    {
+      "id": "FMA23083",
+      "name": "thoracic rotator",
+      "status": "present-v4",
+      "v4Parts": [
+        {
+          "id": "FJ1525",
+          "name": "thoracic rotator",
+          "system": "muscular"
+        },
+        {
+          "id": "FJ1525M",
+          "name": "Thoracic rotator",
+          "system": "muscular"
+        }
+      ],
+      "v3MirrorFile": "FJ100_BP2317_FMA23083_Thoracic_rotator.obj"
+    }
+  ]
+}
