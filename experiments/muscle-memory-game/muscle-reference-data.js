@@ -12,6 +12,7 @@ import {
 import {
   referenceIllustrationsForStructure,
 } from "./reference-data/illustrations.js";
+import { courseArtPrimaryForStructure } from "./reference-data/course-art.js";
 
 function normalizeModelName(value) {
   return String(value || "")
@@ -81,6 +82,11 @@ function candidateCard(candidate, mapping = null) {
   if (!candidate) return null;
 
   const card = referenceCardView(candidate.region, candidate.structure);
+  const modelCoverage = mapping?.coverage || "exact";
+  const primaryIllustration =
+    modelCoverage === "exact"
+      ? courseArtPrimaryForStructure(candidate.structure.id)
+      : null;
   const localIllustrations = candidate.structure.illustrations || [];
   const registryIllustrations = referenceIllustrationsForStructure(
     candidate.structure.id
@@ -125,8 +131,9 @@ function candidateCard(candidate, mapping = null) {
     studyCueRu: card.sections.studyCue,
     sources: card.sections.sources,
     illustrations: Object.freeze(illustrations),
+    primaryIllustration,
     verificationStatus: candidate.structure.verification?.status || null,
-    modelCoverage: mapping?.coverage || "exact",
+    modelCoverage,
     modelLabelRu: mapping?.labelRu || null,
     parentStructureId: candidate.structure.parentStructureId || null,
   });
