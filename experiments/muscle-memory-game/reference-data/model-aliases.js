@@ -254,6 +254,26 @@ export const BODYPARTS3D_REFERENCE_ALIASES = Object.freeze(
     "referenceId": "plantar-interossei-foot",
     "labelRu": "Третья подошвенная межкостная мышца",
     "coverage": "group"
+  },
+  "straight part of cricothyroid": {
+    "referenceId": "cricothyroid",
+    "labelRu": "Прямая часть перстнещитовидной мышцы",
+    "coverage": "part"
+  },
+  "oblique part of cricothyroid": {
+    "referenceId": "cricothyroid",
+    "labelRu": "Косая часть перстнещитовидной мышцы",
+    "coverage": "part"
+  },
+  "external part of thyro-arytenoid": {
+    "referenceId": "thyroarytenoid",
+    "labelRu": "Наружная часть щиточерпаловидной мышцы",
+    "coverage": "part"
+  },
+  "superficial perineal muscle": {
+    "referenceId": "superficial-transverse-perineal",
+    "labelRu": "Поверхностная поперечная мышца промежности",
+    "coverage": "exact"
   }
 }
 );
