@@ -2301,6 +2301,177 @@ export const HEAD_NECK_REGION = deepFreeze({
       "verification": {
         "status": "cross-checked"
       }
+    },
+    {
+      "id": "levator-labii-superioris-alaeque-nasi",
+      "kind": "muscle",
+      "names": {
+        "ru": "Мышца, поднимающая верхнюю губу и крыло носа",
+        "latin": "musculus levator labii superioris alaeque nasi",
+        "modelAliases": [
+          "levator labii superioris alaeque nasi",
+          "levator nasolabialis"
+        ]
+      },
+      "subregions": [
+        "nasal-region",
+        "upper-lip",
+        "midface"
+      ],
+      "layer": "superficial-face",
+      "anatomy": {
+        "originRu": [
+          "Верхняя часть лобного отростка верхней челюсти."
+        ],
+        "insertionRu": [
+          "Кожа и надхрящница крыла носа.",
+          "Часть волокон продолжается в верхнюю губу и переплетается с мышцей, поднимающей верхнюю губу, и круговой мышцей рта."
+        ],
+        "fiberDirectionRu": "Тонкие пучки идут вниз и несколько латерально вдоль боковой поверхности носа.",
+        "actionsRu": [
+          "Поднимает и выворачивает верхнюю губу.",
+          "Поднимает крыло носа и может способствовать расширению ноздри.",
+          "Усиливает выраженность носогубной складки."
+        ],
+        "innervationRu": "Скуловые и щёчные ветви лицевого нерва (VII)."
+      },
+      "surfaceMap": {
+        "landmarksRu": [
+          "Лобный отросток верхней челюсти",
+          "крыло носа",
+          "верхняя губа",
+          "носогубная складка"
+        ],
+        "relationsRu": [
+          "Лежит медиальнее levator labii superioris и латеральнее nasalis; относится к поверхностным мимическим мышцам средней зоны лица."
+        ]
+      },
+      "movementCueRu": "Подъём верхней губы вместе с движением крыла носа показывает функцию лучше, чем попытка пальпаторно отделить её от соседних мимических мышц.",
+      "sources": [
+        {
+          "sourceId": "miology-igma-2018",
+          "locator": "Раздел IV, мышцы носа и верхней губы",
+          "role": "teaching-source"
+        },
+        {
+          "sourceId": "ncbi-maxilla",
+          "locator": "Muscles — levator labii superioris alaeque nasi",
+          "role": "verification"
+        }
+      ],
+      "verification": {
+        "status": "cross-checked"
+      }
+    },
+    {
+      "id": "depressor-septi-nasi",
+      "kind": "variable-muscle",
+      "names": {
+        "ru": "Мышца, опускающая перегородку носа",
+        "latin": "musculus depressor septi nasi",
+        "modelAliases": [
+          "depressor septi nasi"
+        ]
+      },
+      "subregions": [
+        "nasal-region",
+        "upper-lip"
+      ],
+      "layer": "deep-perinasal",
+      "anatomy": {
+        "originRu": [
+          "Область резцовой ямки и передней носовой ости верхней челюсти; часть волокон может быть связана с круговой мышцей рта."
+        ],
+        "insertionRu": [
+          "Подвижная часть перегородки носа, колумелла и медиальные ножки больших крыльных хрящей; точная конфигурация вариабельна."
+        ],
+        "fiberDirectionRu": "Короткие пучки направляются вверх от передней верхней челюсти к основанию перегородки и кончику носа.",
+        "actionsRu": [
+          "Тянет перегородку и кончик носа вниз.",
+          "Может влиять на форму ноздрей и движение центральной части верхней губы при мимике."
+        ],
+        "innervationRu": "Ветви лицевого нерва (VII), преимущественно щёчные."
+      },
+      "surfaceMap": {
+        "landmarksRu": [
+          "Передняя носовая ость",
+          "колумелла",
+          "медиальные ножки крыльных хрящей",
+          "верхняя губа"
+        ],
+        "relationsRu": [
+          "Лежит глубоко в области основания носа и тесно связан с orbicularis oris; анатомические варианты начала и прикрепления описаны часто."
+        ]
+      },
+      "movementCueRu": "В тренажёре важна как вариабельная глубокая мимическая структура; не следует превращать её в обязательную отдельную пальпаторную цель.",
+      "sources": [
+        {
+          "sourceId": "pmc-depressor-septi",
+          "locator": "Anatomy of depressor septi nasi",
+          "role": "verification"
+        }
+      ],
+      "verification": {
+        "status": "cross-checked-variable"
+      }
+    },
+    {
+      "id": "temporoparietalis",
+      "kind": "variable-muscle",
+      "names": {
+        "ru": "Височно-теменная мышца",
+        "latin": "musculus temporoparietalis",
+        "modelAliases": [
+          "temporoparietalis",
+          "temporoparietal muscle"
+        ]
+      },
+      "subregions": [
+        "temporal-scalp",
+        "auricular-region"
+      ],
+      "layer": "superficial-temporoparietal",
+      "anatomy": {
+        "originRu": [
+          "Нижняя часть волокон находится в поверхностном височно-теменном фасциальном слое и может иметь продолжение к ушной мускулатуре; выраженность и нижняя граница вариабельны."
+        ],
+        "insertionRu": [
+          "Верхние волокна продолжаются к сухожильному шлему (galea aponeurotica)."
+        ],
+        "fiberDirectionRu": "Тонкие вертикально-косые пучки проходят поверхностно от околоушно-височной области к сухожильному шлему.",
+        "actionsRu": [
+          "Может участвовать в небольших движениях и натяжении кожи височно-теменной области и ушной раковины.",
+          "Функциональный вклад невелик и значительно варьирует между людьми."
+        ],
+        "innervationRu": "Ветви лицевого нерва (VII), прежде всего височная и задняя ушная ветви."
+      },
+      "surfaceMap": {
+        "landmarksRu": [
+          "Ушная раковина",
+          "височная область",
+          "сухожильный шлем"
+        ],
+        "relationsRu": [
+          "Находится в поверхностной височно-теменной фасциальной плоскости и продолжается к galea aponeurotica.",
+          "Мышца может быть тонкой, фрагментарной или отсутствовать."
+        ]
+      },
+      "movementCueRu": "Карточка нужна для полноты 3D-анатомии; самостоятельную выраженную двигательную функцию на базовом уровне не демонстрируем.",
+      "sources": [
+        {
+          "sourceId": "miology-igma-2018",
+          "locator": "Раздел IV, надчерепная мышца — боковые/височно-теменные волокна",
+          "role": "teaching-source"
+        },
+        {
+          "sourceId": "pmc-temporoparietalis",
+          "locator": "Introduction; cadaveric variability and fascial continuity",
+          "role": "verification"
+        }
+      ],
+      "verification": {
+        "status": "cross-checked-variable"
+      }
     }
   ]
 });
