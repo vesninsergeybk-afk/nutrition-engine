@@ -81,12 +81,15 @@
           <section class="display-section">
             <h3>Анатомическая модель</h3>
             <label id="model-source-field" class="viewer-setting-field">
-              <span>Источник 3D-анатомии</span>
+              <span>3D-модель</span>
               <select id="model-source" aria-label="Источник 3D-модели">
                 <option value="z-anatomy" selected>Z-Anatomy</option>
                 <option value="bodyparts4">BodyParts3D</option>
               </select>
             </label>
+            <p id="model-source-note" class="viewer-setting-note">
+              Z-Anatomy — основной вариант для изучения мышц. BodyParts3D добавляет больше тканевых слоёв, но его набор мышц неполон.
+            </p>
           </section>
 
           <section class="display-section">
@@ -271,10 +274,7 @@
               <dt>Слой</dt>
               <dd id="structure-reference-depth">—</dd>
             </div>
-            <div>
-              <dt>3D-источник</dt>
-              <dd id="structure-reference-source">—</dd>
-            </div>
+
           </dl>
           <div id="structure-reference-facts" class="structure-reference-facts" hidden>
             <div>
