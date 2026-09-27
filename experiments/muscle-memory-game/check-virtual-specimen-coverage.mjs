@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import {
   buildMuscleCatalog,
   learningConceptSourceName,
@@ -63,7 +64,14 @@ const bpAtlas = await bpr.json();
 const bpMuscleParts = bpAtlas.parts.filter(
   (part) => bodyPartsAnatomyKind(part) === "muscle"
 );
-const bpNames = bpMuscleParts.map((part) => part.name);
+const coverage = JSON.parse(
+  await readFile(new URL("./bodyparts-muscle-coverage.json", import.meta.url), "utf8")
+);
+const restoredBodyPartsNames = coverage.restored.map((item) => item.name);
+const bpNames = [
+  ...bpMuscleParts.map((part) => part.name),
+  ...restoredBodyPartsNames,
+];
 const bpPartByName = new Map(bpMuscleParts.map((part) => [part.name, part]));
 
 const bpBodyMinY = Math.min(
@@ -206,7 +214,10 @@ for (const specimen of VIRTUAL_SPECIMENS) {
       .map((name) => bpPartByName.get(name))
       .filter(Boolean);
 
-    if (!parts.length) return true;
+    // Registered supplements do not have bounds in the pinned 4.0 atlas.
+    // Their spatial registration is validated separately, so this raw-atlas
+    // clipping check must not classify them as clipped solely for lacking v4 bounds.
+    if (!parts.length) return false;
 
     return !parts.some((part) => {
       const minY = Number(part.bounds?.[0]?.[1]);
@@ -338,8 +349,8 @@ for (const specimen of VIRTUAL_SPECIMENS) {
   if (specimen.id === "abdomen" || specimen.id === "anterior-abdominal-wall") {
     assert(zDepth.supported, specimen.id + ": Z-Anatomy should support full abdominal depth");
     assert(
-      !bpDepth.supported && bpDepth.reason === "source-incomplete",
-      specimen.id + ": BodyParts3D must be marked incomplete for abdominal depth"
+      bpDepth.supported,
+      specimen.id + ": extended BodyParts3D should support the restored abdominal depth"
     );
   }
 
