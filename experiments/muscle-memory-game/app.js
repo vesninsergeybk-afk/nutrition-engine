@@ -211,6 +211,7 @@ const exitLearningSessionButton = document.querySelector("#exit-learning-session
 const nameChoicesEl = document.querySelector("#name-choices");
 const revealDeeperButton = document.querySelector("#reveal-deeper");
 const boneMode = document.querySelector("#bone-mode");
+const toggleSkeletonButton = document.querySelector("#toggle-skeleton");
 const boneOpacity = document.querySelector("#bone-opacity");
 const boneOpacityField = document.querySelector("#bone-opacity-field");
 const connectiveMode = document.querySelector("#connective-mode");
@@ -1950,8 +1951,8 @@ function applyStudyLayerPreset(preset = "muscles") {
   // Keep the useful connective layers preselected while hidden. Turning the
   // connective layer on should immediately reveal fasciae, tendons and ligaments.
   setConnectiveLayerSelection(["fascia", "tendon", "ligament", "other"]);
-  boneDisplayMode = "off";
-  boneMode.value = "off";
+  boneDisplayMode = "anatomical";
+  boneMode.value = "anatomical";
 
   // Historical preset values are intentionally collapsed to the clean muscle
   // view. Supporting anatomy is controlled independently below.
@@ -1990,11 +1991,11 @@ function resetRegionSupportLayers() {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  boneDisplayMode = "off";
+  boneDisplayMode = "anatomical";
   if (skinMode) skinMode.value = "off";
   if (skinOverlayToggle) skinOverlayToggle.checked = false;
   if (connectiveMode) connectiveMode.value = "off";
-  if (boneMode) boneMode.value = "off";
+  if (boneMode) boneMode.value = "anatomical";
   setConnectiveLayerSelection([]);
   for (const input of referenceLayerInputs) input.checked = false;
 }
@@ -8393,9 +8394,22 @@ function showSelectedMuscleBoneContext(ids) {
   applySelectedMuscleBoneVisibility(ids);
 }
 
+function syncSkeletonQuickToggle() {
+  if (!toggleSkeletonButton) return;
+  const available = Boolean(skeletonMesh) && !boneMode.disabled;
+  const visible = available && boneDisplayMode !== "off";
+  toggleSkeletonButton.disabled = !available;
+  toggleSkeletonButton.setAttribute("aria-pressed", String(visible));
+  toggleSkeletonButton.classList.toggle("active", visible);
+  toggleSkeletonButton.title = visible
+    ? "Скрыть скелет"
+    : "Показать скелет";
+}
+
 function applyBoneDisplayMode() {
   if (!skeletonMesh) {
     boneOpacityField.hidden = true;
+    syncSkeletonQuickToggle();
     return;
   }
 
@@ -8411,6 +8425,7 @@ function applyBoneDisplayMode() {
     canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full";
     canvas.dataset.boneTransparent = "false";
     canvas.dataset.boneStencil = "off";
+    syncSkeletonQuickToggle();
     return;
   }
 
@@ -8440,6 +8455,7 @@ function applyBoneDisplayMode() {
   canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full";
   canvas.dataset.boneTransparent = String(Boolean(material.transparent));
   canvas.dataset.boneStencil = "off";
+  syncSkeletonQuickToggle();
 }
 
 function notifyEmbedHeight() {
@@ -8627,7 +8643,7 @@ function resetLoadedModel() {
   muscleDisplayMode = "anatomical";
   skinDisplayMode = "off";
   connectiveDisplayMode = "off";
-  boneDisplayMode = "off";
+  boneDisplayMode = "anatomical";
   layerPreset.value = "muscles";
   skinMode.value = "off";
   connectiveMode.value = "off";
@@ -8664,6 +8680,7 @@ function resetLoadedModel() {
   undoHideButton.disabled = true;
 
   boneMode.disabled = true;
+  if (toggleSkeletonButton) toggleSkeletonButton.disabled = true;
   boneOpacity.disabled = true;
   boneOpacityField.hidden = true;
   connectiveMode.disabled = true;
@@ -10056,6 +10073,13 @@ async function loadSelectedModel(source) {
 
 boneMode.addEventListener("change", () => {
   boneDisplayMode = boneMode.value;
+  applyBoneDisplayMode();
+});
+
+toggleSkeletonButton?.addEventListener("click", () => {
+  if (!skeletonMesh || boneMode.disabled) return;
+  boneDisplayMode = boneDisplayMode === "off" ? "anatomical" : "off";
+  boneMode.value = boneDisplayMode;
   applyBoneDisplayMode();
 });
 
