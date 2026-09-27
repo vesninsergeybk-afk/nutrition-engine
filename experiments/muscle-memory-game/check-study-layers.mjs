@@ -168,9 +168,12 @@ assert(
   "Nearest-muscle navigation does not preserve the exact source side/component"
 );
 assert(
-  app.includes("if (isolated || selectedStudyId != null) restoreExploreContext()") &&
-    app.includes("if (isolated) restoreExploreContext()"),
-  "Atlas search can leave the model stuck in study-structure isolation"
+  app.includes(
+    "if (isolated || selectedStudyId != null || selectedBoneId != null)"
+  ) &&
+    app.includes("if (isolated || selectedBoneId != null)") &&
+    app.includes("if (isolated || selectedStudyId != null)"),
+  "Atlas search can leave the model stuck in study-structure or bone isolation"
 );
 console.log("Study-layer deduplication and navigation state: ok");
 
