@@ -1,190 +1,205 @@
-export const MUSCLE_REFERENCE_SOURCES = Object.freeze({
-  "miology-igma-2018": Object.freeze({
-    title: "Растегаева Л. И. и др. Миология",
-    year: 2018,
-    publisher: "Ижевская государственная медицинская академия",
-    use: "Анатомические факты и указатели на учебные иллюстрации",
-    rightsStatus: "Иллюстрации требуют отдельной проверки прав перед публичным встраиванием",
-  }),
-  "gray-1918": Object.freeze({
-    title: "Gray's Anatomy of the Human Body, 20th U.S. edition",
-    year: 1918,
-    use: "Кандидаты на публично доступные атласные иллюстрации",
-    rightsStatus: "Public domain для проверенных сканов/производных, отмеченных как Public Domain",
-    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray412.png",
-  }),
-  "z-anatomy": Object.freeze({
-    title: "Z-Anatomy",
-    use: "3D-анатомия",
-    rightsStatus: "CC BY-SA 4.0; требуется атрибуция и соблюдение ShareAlike",
-  }),
-  "goldfinger-1991": Object.freeze({
-    title: "Eliot Goldfinger — Human Anatomy for Artists",
-    year: 1991,
-    use: "Сверка формы, поверхностных ориентиров и взаимного наложения",
-    rightsStatus: "Справочный источник; изображения не включать в публичный релиз без отдельного разрешения",
-  }),
-  "samusev-lipchenko-2003": Object.freeze({
-    title: "Р. П. Самусев, В. Я. Липченко — Атлас анатомии человека",
-    year: 2003,
-    use: "Контроль анатомических названий и пространственных отношений",
-    rightsStatus: "Справочный источник; изображения не включать в публичный релиз без отдельного разрешения",
-  }),
-});
+import { REFERENCE_SOURCES } from "./reference-data/sources.js";
+import {
+  REFERENCE_REGIONS,
+  referenceStructureById,
+} from "./reference-data/regions/index.js";
+import {
+  bodyPartsReferenceAlias,
+} from "./reference-data/model-aliases.js";
+import {
+  referenceCardView,
+} from "./reference-data/presentation.js";
+import {
+  referenceIllustrationsForStructure,
+} from "./reference-data/illustrations.js";
 
-const REFERENCES = Object.freeze([
-  Object.freeze({
-    id: "deltoid",
-    match: /deltoid/i,
-    originRu: "Ость лопатки, акромион и ключица.",
-    insertionRu: "Дельтовидная бугристость плечевой кости.",
-    actionsRu: Object.freeze([
-      "Передняя часть сгибает плечо и участвует во внутреннем вращении.",
-      "Задняя часть разгибает плечо и участвует в наружном вращении.",
-      "Совместное сокращение пучков отводит плечо.",
-    ]),
-    sources: Object.freeze([
-      Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел VI, мышцы пояса верхней конечности; дельтовидная мышца" }),
-    ]),
-    illustrations: Object.freeze([
-      Object.freeze({
-        sourceId: "miology-igma-2018",
-        locator: "Раздел VI, рис. 1 — пояс верхней конечности и задняя поверхность плеча",
-        rightsStatus: "review",
-      }),
-      Object.freeze({
-        sourceId: "gray-1918",
-        locator: "Gray's Anatomy, plate 412 — задняя поверхность лопатки и плечевого пояса",
-        rightsStatus: "public-domain",
-        src: "./assets/reference/gray412-shoulder.png",
-        altRu: "Задняя поверхность лопатки и плечевого пояса по Gray's Anatomy",
-        captionRu: "Gray's Anatomy, plate 412. Public domain.",
-      }),
-    ]),
-  }),
-  Object.freeze({
-    id: "supraspinatus",
-    match: /supraspinatus/i,
-    originRu: "Надостная ямка лопатки и надостная фасция.",
-    insertionRu: "Большой бугорок плечевой кости; часть сухожилия вплетается в капсулу плечевого сустава.",
-    actionsRu: Object.freeze([
-      "Участвует в отведении плеча.",
-      "Натягивает капсулу плечевого сустава.",
-    ]),
-    sources: Object.freeze([
-      Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел VI, мышцы пояса верхней конечности; надостная мышца" }),
-    ]),
-    illustrations: Object.freeze([
-      Object.freeze({
-        sourceId: "gray-1918",
-        locator: "Gray's Anatomy, plate 412 — надостная, подостная и малая круглая мышцы",
-        rightsStatus: "public-domain",
-        src: "./assets/reference/gray412-shoulder.png",
-        altRu: "Задняя поверхность лопатки с мышцами ротаторной манжеты",
-        captionRu: "Gray's Anatomy, plate 412. Public domain.",
-      }),
-    ]),
-  }),
-  Object.freeze({
-    id: "infraspinatus",
-    match: /infraspinatus/i,
-    originRu: "Подостная ямка лопатки и подостная фасция.",
-    insertionRu: "Большой бугорок плечевой кости; сухожилие проходит позади плечевого сустава.",
-    actionsRu: Object.freeze([
-      "Наружно вращает плечо.",
-      "Участвует в приведении плеча.",
-    ]),
-    sources: Object.freeze([
-      Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел VI, мышцы пояса верхней конечности; подостная мышца" }),
-    ]),
-    illustrations: Object.freeze([
-      Object.freeze({
-        sourceId: "gray-1918",
-        locator: "Gray's Anatomy, plate 412 — задняя поверхность лопатки",
-        rightsStatus: "public-domain",
-        src: "./assets/reference/gray412-shoulder.png",
-        altRu: "Задняя поверхность лопатки с подостной мышцей",
-        captionRu: "Gray's Anatomy, plate 412. Public domain.",
-      }),
-    ]),
-  }),
-  Object.freeze({
-    id: "teres-minor",
-    match: /teres.?minor/i,
-    originRu: "Латеральный край лопатки и подостная фасция.",
-    insertionRu: "Большой бугорок плечевой кости; сухожилие проходит позади плечевого сустава.",
-    actionsRu: Object.freeze([
-      "Наружно вращает плечо.",
-      "Участвует в приведении плеча.",
-      "Оттягивает капсулу плечевого сустава.",
-    ]),
-    sources: Object.freeze([
-      Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел VI, мышцы пояса верхней конечности; малая круглая мышца" }),
-    ]),
-    illustrations: Object.freeze([
-      Object.freeze({
-        sourceId: "gray-1918",
-        locator: "Gray's Anatomy, plate 412 — задняя поверхность плечевого пояса",
-        rightsStatus: "public-domain",
-        src: "./assets/reference/gray412-shoulder.png",
-        altRu: "Задняя поверхность плечевого пояса с малой круглой мышцей",
-        captionRu: "Gray's Anatomy, plate 412. Public domain.",
-      }),
-    ]),
-  }),
-  Object.freeze({
-    id: "subscapularis",
-    match: /subscapularis/i,
-    originRu: "Подлопаточная ямка и подлопаточная фасция.",
-    insertionRu: "Малый бугорок и гребень малого бугорка плечевой кости.",
-    actionsRu: Object.freeze([
-      "Приводит плечо.",
-      "Внутренне вращает плечо.",
-    ]),
-    sources: Object.freeze([
-      Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел VI, мышцы пояса верхней конечности; подлопаточная мышца" }),
-    ]),
-    illustrations: Object.freeze([
-      Object.freeze({
-        sourceId: "gray-1918",
-        locator: "Передняя поверхность лопатки / подлопаточная область — подобрать Public Domain файл после визуальной сверки",
-        rightsStatus: "public-domain-candidate",
-      }),
-    ]),
-  }),
-  Object.freeze({
-    id: "biceps-brachii",
-    match: /biceps.*brachii|biceps.*arm/i,
-    originRu: "Длинная головка — надсуставной бугорок лопатки; короткая головка — клювовидный отросток лопатки.",
-    insertionRu: "Бугристость лучевой кости; апоневроз вплетается в фасцию предплечья с медиальной стороны.",
-    actionsRu: Object.freeze([
-      "Сгибает предплечье в локтевом суставе.",
-      "Супинирует предплечье.",
-      "Участвует в сгибании плеча; короткая головка также участвует в приведении плеча.",
-    ]),
-    sources: Object.freeze([
-      Object.freeze({ sourceId: "miology-igma-2018", locator: "Раздел VI, мышцы плеча; двуглавая мышца плеча" }),
-    ]),
-    illustrations: Object.freeze([
-      Object.freeze({
-        sourceId: "miology-igma-2018",
-        locator: "Раздел VI, рис. 2 — передняя поверхность плеча",
-        rightsStatus: "review",
-      }),
-      Object.freeze({
-        sourceId: "gray-1918",
-        locator: "Передняя поверхность плеча — подобрать локальный Public Domain файл после визуальной сверки",
-        rightsStatus: "public-domain-candidate",
-      }),
-    ]),
-  }),
-]);
+function normalizeModelName(value) {
+  return String(value || "")
+    .toLocaleLowerCase("en-US")
+    .replace(/\bright\b|\bleft\b/g, " ")
+    .replace(/\bset of\b/g, " ")
+    .replace(/\bparts? of\b/g, " ")
+    .replace(/\bmuscles?\b/g, " ")
+    .replace(/\bmusculi?\b/g, " ")
+    .replace(/^\s*musculus\s+/, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function compactModelName(value) {
+  return normalizeModelName(value).replace(/\s+/g, "");
+}
+
+const DIRECT_INDEX = new Map();
+const COMPACT_INDEX = new Map();
+
+function addIndex(index, key, candidate) {
+  if (!key) return;
+  if (!index.has(key)) index.set(key, []);
+  const items = index.get(key);
+  if (!items.some((item) => item.structure.id === candidate.structure.id)) {
+    items.push(candidate);
+  }
+}
+
+for (const region of REFERENCE_REGIONS) {
+  for (const structure of region.structures || []) {
+    const candidate = { region, structure };
+    const terms = [
+      structure.id,
+      structure.names?.latin,
+      ...(structure.names?.modelAliases || []),
+    ].filter(Boolean);
+
+    for (const term of terms) {
+      addIndex(DIRECT_INDEX, normalizeModelName(term), candidate);
+      addIndex(COMPACT_INDEX, compactModelName(term), candidate);
+    }
+  }
+}
+
+function aliasLookup(sourceName) {
+  const raw = String(sourceName || "")
+    .trim()
+    .toLocaleLowerCase("en-US")
+    .replace(/\s+/g, " ");
+
+  return (
+    bodyPartsReferenceAlias(raw) ||
+    bodyPartsReferenceAlias(
+      raw.replace(/^right\s+|^left\s+/, "")
+    ) ||
+    null
+  );
+}
+
+function candidateCard(candidate, mapping = null) {
+  if (!candidate) return null;
+
+  const card = referenceCardView(candidate.region, candidate.structure);
+  const localIllustrations = candidate.structure.illustrations || [];
+  const registryIllustrations = referenceIllustrationsForStructure(
+    candidate.structure.id
+  )
+    .filter((item) => item.status === "asset-ready" && item.assetPath)
+    .map((item) => ({
+      sourceId: item.sourceId,
+      rightsStatus: item.rightsStatus,
+      src: item.assetPath,
+      locator: item.id,
+    }));
+
+  const illustrations = [];
+  const seen = new Set();
+  for (const item of [...localIllustrations, ...registryIllustrations]) {
+    const key = [
+      item.sourceId || "",
+      item.src || "",
+      item.locator || "",
+    ].join("|");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    illustrations.push(item);
+  }
+
+  return Object.freeze({
+    id: card.id,
+    titleRu: card.titleRu,
+    latin: card.latin,
+    regionId: candidate.region.id,
+    regionRu: card.regionRu,
+    typeRu: card.typeRu,
+    depthRu: card.depthRu,
+    badgesRu: card.badgesRu,
+    originRu: card.sections.attachments.originRu.join(" "),
+    insertionRu: card.sections.attachments.insertionRu.join(" "),
+    actionsRu: card.sections.actions,
+    orientationRu: card.sections.orientation,
+    landmarksRu: card.sections.landmarks,
+    relationsRu: card.sections.relations,
+    innervationRu: card.sections.innervation,
+    studyCueRu: card.sections.studyCue,
+    sources: card.sections.sources,
+    illustrations: Object.freeze(illustrations),
+    verificationStatus: candidate.structure.verification?.status || null,
+    modelCoverage: mapping?.coverage || "exact",
+    modelLabelRu: mapping?.labelRu || null,
+    parentStructureId: candidate.structure.parentStructureId || null,
+  });
+}
+
+function ambiguityResult(labelRu, noteRu, candidateIds) {
+  const candidates = (candidateIds || [])
+    .map((id) => referenceStructureById(id))
+    .filter(Boolean)
+    .map((candidate) => candidateCard(candidate));
+
+  return Object.freeze({
+    ambiguous: true,
+    labelRu: labelRu || "Неоднозначное имя структуры",
+    noteRu:
+      noteRu ||
+      "Имя в 3D-модели не позволяет однозначно выбрать одну анатомическую карточку.",
+    candidates: Object.freeze(candidates),
+  });
+}
 
 export function muscleReferenceFor(sourceName) {
-  const value = String(sourceName || "");
-  return REFERENCES.find((item) => item.match.test(value)) || null;
+  const mapping = aliasLookup(sourceName);
+
+  if (mapping?.coverage === "ambiguous") {
+    return ambiguityResult(
+      mapping.labelRu,
+      mapping.noteRu,
+      mapping.candidateReferenceIds
+    );
+  }
+
+  if (mapping?.referenceId) {
+    return candidateCard(
+      referenceStructureById(mapping.referenceId),
+      mapping
+    );
+  }
+
+  const key = normalizeModelName(sourceName);
+  const direct = DIRECT_INDEX.get(key) || [];
+
+  if (direct.length === 1) return candidateCard(direct[0]);
+
+  if (direct.length > 1) {
+    return ambiguityResult(
+      "Имя встречается у нескольких структур",
+      "Для точного сопоставления нужна область или более конкретное имя 3D-объекта.",
+      direct.map((item) => item.structure.id)
+    );
+  }
+
+  const compact = COMPACT_INDEX.get(compactModelName(sourceName)) || [];
+  if (compact.length === 1) return candidateCard(compact[0]);
+
+  if (compact.length > 1) {
+    return ambiguityResult(
+      "Имя встречается у нескольких структур",
+      "Для точного сопоставления нужна область или более конкретное имя 3D-объекта.",
+      compact.map((item) => item.structure.id)
+    );
+  }
+
+  return null;
 }
 
 export function muscleReferenceSource(sourceId) {
-  return MUSCLE_REFERENCE_SOURCES[sourceId] || null;
+  const source = REFERENCE_SOURCES[sourceId] || null;
+  if (!source) return null;
+
+  return Object.freeze({
+    ...source,
+    href: source.url || source.sourcePage || null,
+    rightsStatus:
+      source.rightsStatus ||
+      source.rights?.illustrations ||
+      null,
+  });
 }
