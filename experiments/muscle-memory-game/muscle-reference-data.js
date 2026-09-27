@@ -13,6 +13,8 @@ import {
   referenceIllustrationsForStructure,
 } from "./reference-data/illustrations.js";
 import { courseArtPrimaryForStructure } from "./reference-data/course-art.js";
+import { functionalRelationsForStructure } from "./reference-data/functional-relations.js";
+import { structureTerm } from "./anatomy-terms-ru.js";
 
 function normalizeModelName(value) {
   return String(value || "")
@@ -50,6 +52,7 @@ for (const region of REFERENCE_REGIONS) {
     const terms = [
       structure.id,
       structure.names?.latin,
+      structure.names?.ru,
       ...(structure.names?.modelAliases || []),
     ].filter(Boolean);
 
@@ -138,6 +141,7 @@ function candidateCard(candidate, mapping = null) {
     relationsRu: card.sections.relations,
     innervationRu: card.sections.innervation,
     studyCueRu: card.sections.studyCue,
+    functionalRelations: functionalRelationsForStructure(candidate.structure.id),
     sources: card.sections.sources,
     illustrations: Object.freeze(illustrations),
     primaryIllustration,
@@ -203,6 +207,48 @@ export function muscleReferenceFor(sourceName) {
       "Имя встречается у нескольких структур",
       "Для точного сопоставления нужна область или более конкретное имя 3D-объекта.",
       compact.map((item) => item.structure.id)
+    );
+  }
+
+  // Z-Anatomy frequently names one mesh as a head or part of a canonical
+  // muscle. Its learner-facing terminology already knows those names, so use
+  // those aliases as a final bridge into the same canonical reference cards
+  // used by BodyParts3D.
+  const translated = structureTerm(sourceName);
+  const translatedTerms = [
+    translated?.latin,
+    translated?.nameRu,
+    ...(translated?.aliases || []),
+  ].filter(Boolean);
+
+  const translatedCandidates = [];
+  const seenIds = new Set();
+  for (const term of translatedTerms) {
+    for (const candidate of [
+      ...(DIRECT_INDEX.get(normalizeModelName(term)) || []),
+      ...(COMPACT_INDEX.get(compactModelName(term)) || []),
+    ]) {
+      if (seenIds.has(candidate.structure.id)) continue;
+      seenIds.add(candidate.structure.id);
+      translatedCandidates.push(candidate);
+    }
+  }
+
+  if (translatedCandidates.length === 1) {
+    const source = String(sourceName || "");
+    const partLike =
+      /\b(?:part|head|belly) of\b|\bpars\b|\bcaput\b/i.test(source);
+    return candidateCard(translatedCandidates[0], {
+      coverage: partLike ? "part" : "exact",
+      labelRu: translated?.nameRu || null,
+    });
+  }
+
+  if (translatedCandidates.length > 1) {
+    return ambiguityResult(
+      translated?.nameRu || "Имя встречается у нескольких структур",
+      "Название 3D-объекта соответствует нескольким анатомическим карточкам. Нужна более точная идентификация структуры.",
+      translatedCandidates.map((item) => item.structure.id)
     );
   }
 
