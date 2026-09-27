@@ -72,6 +72,13 @@ for (const region of REFERENCE_REGIONS) {
     }
 
     validateIllustrations(structure.id, structure.illustrations);
+    if (structure.parentStructureId) {
+      requireValue(
+        Boolean(structure.parentStructureId),
+        `${structure.id}: empty parentStructureId`
+      );
+    }
+
 
     for (const memberId of structure.members || []) {
       // Member references are checked after the first pass, once every canonical id is known.
@@ -88,6 +95,19 @@ for (const region of REFERENCE_REGIONS) {
       });
     }
   }
+}
+
+// Validate parent-child links after every canonical id has been collected.
+for (const structure of structuresById.values()) {
+  if (!structure.parentStructureId) continue;
+  requireValue(
+    structuresById.has(structure.parentStructureId),
+    `${structure.id}: parentStructureId does not exist: ${structure.parentStructureId}`
+  );
+  requireValue(
+    structure.parentStructureId !== structure.id,
+    `${structure.id}: structure cannot be its own parent`
+  );
 }
 
 // Second pass: now every canonical structure id is known, validate cross-region relationships and groups.
@@ -154,7 +174,7 @@ for (const [alias, uses] of aliases.entries()) {
      `3D alias points to unknown referenceId: ${sourceName} -> ${mapping?.referenceId}`
    );
    requireValue(
-     mapping?.coverage === "exact" || mapping?.coverage === "group",
+     mapping?.coverage === "exact" || mapping?.coverage === "group" || mapping?.coverage === "part",
      `3D alias has invalid coverage type: ${sourceName}`
    );
    requireValue(Boolean(mapping?.labelRu), `3D alias has no Russian display label: ${sourceName}`);
