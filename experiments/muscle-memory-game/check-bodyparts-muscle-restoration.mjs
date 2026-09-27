@@ -16,6 +16,17 @@ assert(
   "Historical BodyParts3D 3.0 muscle tree count changed unexpectedly"
 );
 assert(
+  coverage.counts.v3MirrorFmaIdsPresentInV4WrongSystem === 16 &&
+    coverage.counts.classificationOverridesForThoseIds === 16 &&
+    coverage.counts.wrongSystemUnresolved === 0,
+  "Every historical muscle that v4 misclassifies outside muscular must be restored by classification"
+);
+assert(
+  coverage.counts.semanticExactDuplicatesAmongRestored === 0,
+  "Registered supplements must not duplicate an existing v4 muscle under the same normalized name"
+);
+
+assert(
   coverage.counts.v3MirrorFmaIdsMissingFromV4AnySystem === 49,
   "The corrected 3.0 -> 4.0 FMA gap count changed unexpectedly"
 );
