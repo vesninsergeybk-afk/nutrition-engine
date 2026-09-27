@@ -20,6 +20,7 @@ import {
   regionHasDepthProfile,
 } from "./regional-depth-map.js";
 import {
+  bestRegionalSpecimenIdForTarget,
   specimenById,
   specimenDepthAvailability,
   specimenDepthProfileId,
@@ -7794,6 +7795,7 @@ function applyInitialQueryState() {
     focusLearningRegion();
   } else if (requestedMode !== "quiz") {
     setFullBodyView();
+    syncLearningAreaQuery();
   }
 
   if (params.get("embed") === "1") {
@@ -9074,8 +9076,14 @@ exitLearningSessionButton.addEventListener("click", () => {
 
 function selectedMuscleRegionForNavigation() {
   if (selectedExploreSid == null) return null;
+
   const target = learningTargetBySid.get(selectedExploreSid) || null;
-  const region = target?.region || null;
+  if (!target) return null;
+
+  const specimenId = bestRegionalSpecimenIdForTarget(target);
+  if (specimenId && learningAreaOptionExists(specimenId)) return specimenId;
+
+  const region = target.region || null;
   if (!region || region === "all" || region === "other") return null;
   return learningAreaOptionExists(region) ? region : null;
 }
