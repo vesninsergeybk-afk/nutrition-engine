@@ -114,12 +114,35 @@ assert(
     !html.includes("structure-reference-preview-canvas"),
   "Atlas card is not wired to exact 2D primary illustration data"
 );
+assert(
+  html.includes('id="structure-reference-heading">Справка по структуре</strong>') &&
+    (html.match(/data-reference-default-open/g) || []).length >= 2 &&
+    app.includes("function openDefaultStructureReferenceDetails()") &&
+    app.includes('structureReferenceHeading.textContent = "Справка по мышце"'),
+  "Reference card must surface the key muscle facts without requiring the learner to discover collapsed sections"
+);
+assert(
+  app.includes("selectedReferenceIllustration") &&
+    app.includes("referenceAtlasIllustrationCount"),
+  "Reference-card illustration state is not exposed for browser verification"
+);
 
 const trapezius = muscleReferenceFor("trapezius");
 assert(
   trapezius?.primaryIllustration?.kind === "course-art-exact" &&
     trapezius.primaryIllustration.spritePath?.includes("reference-data/assets/course-art/"),
   "Exact course artwork is not wired as the primary muscle illustration"
+);
+
+const infraspinatus = muscleReferenceFor("Right infraspinatus");
+assert(
+  infraspinatus?.illustrations?.some(
+    (item) =>
+      item.sourceId === "gray-1918-plate-412" &&
+      item.src === "./assets/reference/gray412-shoulder.png" &&
+      item.rightsStatus === "public-domain"
+  ),
+  "Local public-domain Gray 412 shoulder plate is not wired to the infraspinatus card"
 );
 assert(
   app.includes("renderStructureReferencePrimaryArt(reference)") &&
