@@ -794,7 +794,10 @@ function renderStructureReferencePrimaryArt(reference) {
   const image = document.createElement("div");
   image.className = "structure-reference-course-art-image";
   image.style.backgroundImage = 'url("' + illustration.spritePath + '")';
-  image.style.backgroundSize = columns * 100 + "% 100%";
+  // Keep the selected sprite column complete inside the gallery stage. The
+  // source sheet is wider by the number of columns, so contain its height and
+  // select the requested column without cropping the illustration vertically.
+  image.style.backgroundSize = columns * 100 + "% auto";
   image.style.backgroundPosition = positionX + "% 50%";
   image.setAttribute("role", "img");
   image.setAttribute("aria-label", "Учебная анатомическая иллюстрация: " + (reference?.titleRu || "выбранная мышца"));
