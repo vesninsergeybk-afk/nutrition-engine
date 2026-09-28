@@ -2704,3 +2704,33 @@ body:not(.motion-mode) .comparison-pane-static {
     background: rgba(36,93,168,.14);
   }
 }
+
+@media (max-width: 920px) {
+  .mobile-context-trail:not([hidden]) {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .mobile-context-trail::-webkit-scrollbar { display: none; }
+  .mobile-context-track {
+    width: max-content;
+    margin: 0;
+  }
+  .mobile-context-node {
+    left: 0;
+    margin-left: -10px;
+  }
+  .mobile-context-rail {
+    right: auto;
+  }
+  .mobile-context-progress {
+    width: 0;
+    transition: width .48s cubic-bezier(.18,.78,.24,1);
+  }
+  .mobile-context-thumb {
+    left: 12px;
+    margin-left: -7px;
+    transition: left .48s cubic-bezier(.18,.78,.24,1), box-shadow .2s ease;
+  }
+}
