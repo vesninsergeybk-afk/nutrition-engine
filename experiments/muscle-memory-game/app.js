@@ -975,7 +975,12 @@ function renderSourceOnlyMotionState(selectedName, selectedUnits = []) {
 }
 
 function syncQuestionCardPlacement() {
-  const shouldDock = mobileTaskMedia.matches && appMode !== "motion";
+  // In Atlas mode the model must remain an unobstructed touch target.
+  // Only an active mobile training session may dock its task card over the viewer.
+  const shouldDock =
+    mobileTaskMedia.matches &&
+    appMode === "quiz" &&
+    document.body.classList.contains("session-active");
 
   if (shouldDock) {
     if (questionCardEl.parentElement !== viewerWrap) viewerWrap.appendChild(questionCardEl);
@@ -10525,6 +10530,7 @@ window.addEventListener("resize", () => {
   syncMotionStatePlacement();
 });
 
+renderer.domElement.style.touchAction = "none";
 renderer.domElement.addEventListener("pointerdown", onPointerDown);
 renderer.domElement.addEventListener("pointermove", onPointerMove);
 renderer.domElement.addEventListener("pointerup", onPointerUp);
