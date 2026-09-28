@@ -977,6 +977,66 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Межпоперечные мышцы между поперечными отростками соседних позвонков",
     "captionRu": "Межпоперечные мышцы по Gray's Anatomy. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-innermost-intercostals-frontal",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["innermost-intercostals"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Innermost%20intercostal%20muscles%20frontal.png",
+    "altRu": "Самые внутренние межрёберные мышцы, фронтальный пространственный вид на рёбрах",
+    "captionRu": "Anatomography/BodyParts3D: самые внутренние межрёберные мышцы, фронтальный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-innermost-intercostals-lateral",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["innermost-intercostals"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Innermost%20intercostal%20muscles%20lateral.png",
+    "altRu": "Самые внутренние межрёберные мышцы, латеральный вид с пространственным костным контекстом",
+    "captionRu": "Anatomography/BodyParts3D: самые внутренние межрёберные мышцы, латеральный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "grant-405-innermost-intercostal-layer",
+    "sourceId": "grant-1962-intercostal-space",
+    "kind": "layer-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["innermost-intercostals"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Grant%201962%20405.png",
+    "altRu": "Схема межрёберного пространства с тремя мышечными слоями и сосудисто-нервным пучком",
+    "captionRu": "Grant, 1962, fig. 405: наружный, внутренний и самый внутренний межрёберные слои. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "macleod-1918-subcostales",
+    "sourceId": "macleod-1918-subcostales",
+    "kind": "regional-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["subcostales"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Physiology%20and%20biochemistry%20in%20modern%20medicine%20%281918%29%20%2814758349676%29.jpg",
+    "altRu": "Внутренняя поверхность нижней половины грудной клетки; подрёберные мышцы обозначены на внутренней поверхности рёбер",
+    "captionRu": "Macleod, 1918: подрёберные мышцы на внутренней поверхности нижней грудной клетки. Public-domain-era scan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "testut-1887-pyramidalis",
+    "sourceId": "testut-1887-pyramidalis",
+    "kind": "focused-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["pyramidalis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/PyramidalisMuscle.jpg",
+    "altRu": "Пирамидальная мышца в нижней части передней брюшной стенки и её отношение к лобковой области и белой линии живота",
+    "captionRu": "Testut, Traité d'anatomie humaine, 1887: пирамидальная мышца и соседние структуры. Public domain.",
+    "status": "asset-ready"
   }]
 );
 
