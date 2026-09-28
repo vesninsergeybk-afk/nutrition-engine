@@ -2678,3 +2678,16 @@ body:not(.motion-mode) .comparison-pane-static {
     transition: none !important;
   }
 }
+
+@media (max-width: 920px) {
+  .mobile-context-track { --context-active: 0; }
+  .mobile-context-thumb {
+    left: calc((100% - 14px) * var(--context-active) / var(--context-depth));
+    transform: translateX(0);
+    transition: left .42s cubic-bezier(.2,.75,.25,1), box-shadow .2s ease;
+  }
+  .mobile-context-progress {
+    width: calc(100% * var(--context-active) / var(--context-depth));
+    transition: width .42s cubic-bezier(.2,.75,.25,1);
+  }
+}
