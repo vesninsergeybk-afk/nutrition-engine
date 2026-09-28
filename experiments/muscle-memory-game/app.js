@@ -2868,6 +2868,14 @@ function updateLayerButtons() {
   syncMobileMuscleCard();
 }
 
+function restoreMobileIsolationLevel(level) {
+  const depth = mobileIsolationStack.length;
+  if (!Number.isInteger(level) || level < 0 || level >= depth) return;
+  const snapshot = mobileIsolationStack[level];
+  mobileIsolationStack = mobileIsolationStack.slice(0, level);
+  restoreMobileIsolationState(snapshot);
+}
+
 function renderMobileContextTrail() {
   if (!mobileContextTrail) return;
   const depth = mobileIsolationStack.length;
@@ -2875,20 +2883,40 @@ function renderMobileContextTrail() {
   mobileContextTrail.replaceChildren();
   if (!depth) return;
 
+  const track = document.createElement("div");
+  track.className = "mobile-context-track";
+  track.style.setProperty("--context-depth", String(depth));
+
+  const rail = document.createElement("span");
+  rail.className = "mobile-context-rail";
+  const progress = document.createElement("span");
+  progress.className = "mobile-context-progress";
+  rail.append(progress);
+  track.append(rail);
+
   for (let index = 0; index <= depth; index += 1) {
-    const step = document.createElement("span");
-    step.className = "mobile-context-step" + (index === depth ? " active" : "");
-    step.setAttribute("aria-label", `Уровень ${index + 1}`);
-    const dot = document.createElement("span");
-    dot.className = "mobile-context-dot";
-    step.append(dot);
+    const step = document.createElement("button");
+    step.type = "button";
+    step.className = "mobile-context-node" + (index === depth ? " active" : "");
+    step.style.setProperty("--context-index", String(index));
+    step.setAttribute("aria-label", index === depth ? `Текущий уровень ${index + 1}` : `Вернуться к уровню ${index + 1}`);
+    step.setAttribute("aria-current", index === depth ? "step" : "false");
     if (index < depth) {
-      const line = document.createElement("span");
-      line.className = "mobile-context-line";
-      step.append(line);
+      step.addEventListener("click", () => restoreMobileIsolationLevel(index));
+    } else {
+      step.disabled = true;
     }
-    mobileContextTrail.append(step);
+    const dot = document.createElement("span");
+    dot.className = "mobile-context-node-dot";
+    step.append(dot);
+    track.append(step);
   }
+
+  const thumb = document.createElement("span");
+  thumb.className = "mobile-context-thumb";
+  thumb.setAttribute("aria-hidden", "true");
+  track.append(thumb);
+  mobileContextTrail.append(track);
 }
 
 function syncMobileMuscleCard() {
