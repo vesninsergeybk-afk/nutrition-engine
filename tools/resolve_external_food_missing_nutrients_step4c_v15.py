@@ -120,8 +120,20 @@ def main():
 
     if sorted(resolved)!=["oil cocoa butter","oil peanut"]:
         errors.append("resolved set drift:"+repr(sorted(resolved)))
+    fill_by_family=Counter(x["family_key"] for x in filled)
+    expected_fill_by_family={
+      "oil avocado":3,
+      "oil mustard":3,
+      "oil hazelnut":3,
+      "oil peanut":28,
+      "oil cocoa butter":1,
+      "oil rice bran":1,
+      "oil apricot kernel":1
+    }
     if len(filled)!=40: errors.append("filled field count:"+str(len(filled)))
+    if dict(fill_by_family)!=expected_fill_by_family: errors.append("fill family distribution:"+repr(dict(fill_by_family)))
     if remaining!=52: errors.append("remaining blocker count:"+str(remaining))
+    if remaining_nulls!=179: errors.append("remaining null fields:"+str(remaining_nulls))
     if status_counts["READY_FOR_NEXT_STAGING_GATE"]!=31: errors.append("ready count:"+str(status_counts))
     if status_counts["BLOCKED_OTHER_GATES"]!=58: errors.append("blocked count:"+str(status_counts))
 
@@ -133,6 +145,7 @@ def main():
       "proposals":len(out_props),
       "approved_families_touched":len(contract["approved_exact_donors"]),
       "donor_fields_filled":len(filled),
+      "donor_fields_by_family":dict(fill_by_family),
       "fully_resolved_missing_nutrient_families":resolved,
       "missing_nutrient_blockers_before":54,
       "missing_nutrient_blockers_after":remaining,
