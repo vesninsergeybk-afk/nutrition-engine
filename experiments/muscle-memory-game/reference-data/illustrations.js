@@ -1057,7 +1057,92 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Мышцы глазницы на учебниковой анатомической пластине: четыре прямые, две косые мышцы глаза и мышца, поднимающая верхнее веко",
     "captionRu": "Gray's Anatomy, figure 889: мышцы глазницы, включая levator palpebrae superioris. Public domain.",
     "status": "asset-ready"
-  }]
+  },
+  {
+    "id": "gray-hand-flexor-pollicis-brevis",
+    "sourceId": "gray-1918-hand-focused-commons",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["flexor-pollicis-brevis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20flexor%20pollicis%20brevis.png",
+    "altRu": "Короткий сгибатель большого пальца кисти, выделенный на ладонной поверхности кисти",
+    "captionRu": "Короткий сгибатель большого пальца на основе рисунка Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-hand-palmaris-brevis",
+    "sourceId": "gray-1918-hand-focused-commons",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["palmaris-brevis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20palmaris%20brevis.png",
+    "altRu": "Короткая ладонная мышца, выделенная у локтевого края ладони",
+    "captionRu": "Короткая ладонная мышца на основе рисунка Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-hand-abductor-digiti-minimi",
+    "sourceId": "gray-1918-hand-focused-commons",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["abductor-digiti-minimi-hand"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20abductor%20digiti%20minimi.png",
+    "altRu": "Мышца, отводящая мизинец кисти, выделенная в области гипотенара",
+    "captionRu": "Мышца, отводящая мизинец кисти, на основе рисунка Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-hand-opponens-digiti-minimi",
+    "sourceId": "gray-1918-hand-focused-commons",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["opponens-digiti-minimi"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20opponens%20digiti%20minimi.png",
+    "altRu": "Мышца, противопоставляющая мизинец, выделенная в глубоком слое гипотенара",
+    "captionRu": "Мышца, противопоставляющая мизинец, на основе рисунка Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-hand-flexor-digiti-minimi-brevis",
+    "sourceId": "gray-1918-hand-focused-commons",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["flexor-digiti-minimi-brevis-hand"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20flexor%20digiti%20minimi%20brevis.png",
+    "altRu": "Короткий сгибатель мизинца кисти, выделенный в области гипотенара",
+    "captionRu": "Короткий сгибатель мизинца кисти на основе рисунка Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-hand-palmar-interossei",
+    "sourceId": "gray-1918-hand-focused-commons",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["palmar-interossei"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20interossei%20palmares.png",
+    "altRu": "Ладонные межкостные мышцы между пястными костями",
+    "captionRu": "Ладонные межкостные мышцы на основе рисунка Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-hand-dorsal-interossei",
+    "sourceId": "gray-1918-hand-focused-commons",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["dorsal-interossei"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20interossei%20dorsales.png",
+    "altRu": "Тыльные межкостные мышцы кисти между пястными костями",
+    "captionRu": "Тыльные межкостные мышцы кисти на основе рисунка Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
+  }
+]
 );
 
 export function referenceIllustrationsForStructure(structureId) {
