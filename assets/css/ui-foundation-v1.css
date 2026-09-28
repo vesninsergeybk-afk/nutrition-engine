@@ -180,6 +180,14 @@ html[data-ui-foundation="1"] #mainContent label{
   font-weight:650;
 }
 
+/* Legacy AI planner cards lower helper text with opacity. Once the shared muted
+   token is applied, that extra opacity drops mobile-long contrast below AA.
+   The foundation owns semantic helper text, so keep the token at full opacity. */
+html[data-ui-foundation="1"] #mainContent .ai-planner-task-card small{
+  color:var(--ui-muted);
+  opacity:1;
+}
+
 /* Form fields: exclude native compact controls that must keep intrinsic geometry. */
 html[data-ui-foundation="1"] #mainContent :where(
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
