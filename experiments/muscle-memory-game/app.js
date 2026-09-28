@@ -10781,7 +10781,11 @@ mobileIsolateMuscleButton?.addEventListener("click", () => {
 });
 mobileIsolateRegionButton?.addEventListener("click", () => {
   const regionId = mobileIsolateRegionButton.dataset.region;
-  if (!regionId) return;
+  if (!regionId || selectedExploreSid == null) return;
+
+  // Region isolation changes the selected muscle's surroundings, not the
+  // selection itself. Preserve the muscle through the regional scene rebuild.
+  const sid = selectedExploreSid;
   captureMobileIsolationSnapshot("region");
   selectedLearningRegion = regionId;
   learningRegion.value = regionId;
@@ -10792,7 +10796,16 @@ mobileIsolateRegionButton?.addEventListener("click", () => {
   applyRegionScene({ resetLayers: false, focus: true });
   syncLearningAreaQuery();
   renderSearchResults(searchInput.value);
-  syncMobileMuscleCard();
+
+  if (structureNames[sid] && structureVisibility[sid] !== false) {
+    selectExploreStructure(sid);
+  } else {
+    selectedExploreSid = sid;
+    restoreHighlights();
+    highlightStructures([sid], "selected");
+    updateLayerButtons();
+    syncMobileMuscleCard();
+  }
 });
 mobileBackContextButton?.addEventListener("click", restoreMobileIsolationStep);
 mobileRootContextButton?.addEventListener("click", restoreMobileIsolationRoot);
