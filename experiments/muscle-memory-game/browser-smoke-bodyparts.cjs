@@ -310,6 +310,34 @@ const assert = require('node:assert/strict');
     assert.doesNotMatch(label, new RegExp(query, 'i'));
   }
 
+  console.log('[smoke:bodyparts] intrinsic hand mesh -> canonical card + 3D gallery');
+  for (const [query, referenceId] of [
+    ['abductor digiti minimi of hand', 'abductor-digiti-minimi-hand'],
+    ['set of dorsal interossei of hand', 'dorsal-interossei'],
+  ]) {
+    await page.fill('#structure-search', query);
+    await page.waitForFunction(
+      () => document.querySelectorAll('.search-result').length > 0,
+      null,
+      { timeout: 15000 }
+    );
+    await page.locator('.search-result').first().click();
+    assert.equal(
+      await page.locator('#structure-reference').getAttribute('data-reference-id'),
+      referenceId
+    );
+    await page.waitForFunction(
+      () => document.querySelector('[data-reference-3d="true"] canvas'),
+      null,
+      { timeout: 15000 }
+    );
+    assert.equal(
+      await page.locator('[data-reference-3d="true"] canvas').count(),
+      1,
+      query + ': interactive 3D reference slide is missing'
+    );
+  }
+
   await page.fill('#structure-search', 'дельтовидная');
   await page.waitForFunction(
     () => document.querySelectorAll('.search-result').length > 0,
