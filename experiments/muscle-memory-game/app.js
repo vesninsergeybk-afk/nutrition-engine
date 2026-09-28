@@ -8186,7 +8186,42 @@ function onPointerDown(event) {
     pointerType: event.pointerType,
   });
 
-  if (activePointers.size > 1) tapBlocked = true;
+  if (activePointers.size > 1) {
+    tapBlocked = true;
+    return;
+  }
+
+  // Real mobile browsers can let OrbitControls consume/cancel pointerup after a
+  // clean tap. Select on touch-down so Atlas selection does not depend on that
+  // later event. A subsequent drag still rotates normally; multi-touch is
+  // excluded above. Pointer-up remains as the mouse/pen path and as a fallback.
+  if (event.pointerType === "touch" && appMode === "explore" && anatomyMesh) {
+    const touchDownRadiusPx = 16;
+    const touchDownDiagonalPx = Math.round(touchDownRadiusPx * 0.7);
+    const touchDownOffsets = [
+      [0, 0],
+      [-touchDownRadiusPx, 0],
+      [touchDownRadiusPx, 0],
+      [0, -touchDownRadiusPx],
+      [0, touchDownRadiusPx],
+      [-touchDownDiagonalPx, -touchDownDiagonalPx],
+      [touchDownDiagonalPx, -touchDownDiagonalPx],
+      [-touchDownDiagonalPx, touchDownDiagonalPx],
+      [touchDownDiagonalPx, touchDownDiagonalPx],
+    ];
+
+    for (const [dx, dy] of touchDownOffsets) {
+      if (
+        selectVisibleMuscleAtClientPoint(
+          event.clientX + dx,
+          event.clientY + dy,
+          "touch-down"
+        )
+      ) {
+        break;
+      }
+    }
+  }
 }
 
 function onPointerMove(event) {
