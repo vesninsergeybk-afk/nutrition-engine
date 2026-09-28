@@ -1,6 +1,54 @@
 export const REFERENCE_ILLUSTRATIONS = Object.freeze(
 [
   {
+    "id": "gray-411-subclavius-focused",
+    "sourceId": "gray-1918-plate-411",
+    "kind": "focused-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["subclavius"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray411subclavius.png",
+    "altRu": "Подключичная мышца под ключицей и её отношение к первому ребру и плечевому поясу",
+    "captionRu": "Подключичная мышца, выделенная на основе Gray, plate 411. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-subclavius-lateral",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["subclavius"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Subclavius%20muscle%20lateral.png",
+    "altRu": "Подключичная мышца, латеральный пространственный вид",
+    "captionRu": "Anatomography/BodyParts3D: подключичная мышца, латеральный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-390-transversus-thoracis",
+    "sourceId": "gray-1918-plate-390",
+    "kind": "focused-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["transversus-thoracis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Transversus%20thoracis.png",
+    "altRu": "Поперечная мышца груди на внутренней поверхности грудины и рёберных хрящей",
+    "captionRu": "Поперечная мышца груди, производная от Gray, plate 390. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-395-intercostal-wall",
+    "sourceId": "gray-1918-plate-395",
+    "kind": "regional-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["external-intercostals", "internal-intercostals"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray395.png",
+    "altRu": "Наружные и внутренние межрёберные мышцы в послойном изображении боковой грудной стенки",
+    "captionRu": "Gray, plate 395: наружные и внутренние межрёберные мышцы и соседние слои. Public domain.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-389-deep-back",
     "sourceId": "gray-1918-plate-389",
     "kind": "layer-plate",
