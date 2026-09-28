@@ -125,6 +125,66 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "asset-ready"
   },
   {
+    "id": "anatomography-subscapularis-frontal",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["subscapularis"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Subscapularis%20muscle%20frontal.png",
+    "altRu": "Подлопаточная мышца спереди: мышца на передней поверхности лопатки и окружающие костные ориентиры",
+    "captionRu": "Anatomography/BodyParts3D: подлопаточная мышца, фронтальный пространственный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-subscapularis-lateral",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["subscapularis"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Subscapularis%20muscle%20lateral.png",
+    "altRu": "Подлопаточная мышца, латеральный вид относительно лопатки и проксимального отдела плечевой кости",
+    "captionRu": "Anatomography/BodyParts3D: подлопаточная мышца, латеральный пространственный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "commons-subscapularis-insertion",
+    "sourceId": "dr-jana-commons-2019",
+    "kind": "attachment-plate",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["subscapularis"],
+    "rightsStatus": "cc-by-sa-4.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Insertion-of-subscapularis-muscle.jpg",
+    "altRu": "Место прикрепления подлопаточной мышцы на малом бугорке плечевой кости",
+    "captionRu": "Малый бугорок плечевой кости как место прикрепления подлопаточной мышцы. CC BY-SA 4.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-serratus-anterior-lateral",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "thorax-abdomen"],
+    "focusStructureIds": ["serratus-anterior"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Serratus%20anterior%20muscles%20lateral.png",
+    "altRu": "Передняя зубчатая мышца, латеральный вид: реберные зубцы и положение относительно полупрозрачных лопаток",
+    "captionRu": "Anatomography/BodyParts3D: передняя зубчатая мышца, латеральный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-serratus-anterior-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "thorax-abdomen"],
+    "focusStructureIds": ["serratus-anterior"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Serratus%20anterior%20muscles%20back.png",
+    "altRu": "Передняя зубчатая мышца сзади с полупрозрачными лопатками для оценки её отношения к медиальному краю лопатки",
+    "captionRu": "Anatomography/BodyParts3D: передняя зубчатая мышца, вид сзади и костный контекст. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-409-trapezius-focused",
     "sourceId": "gray-1918-plate-409",
     "kind": "focused-plate",
