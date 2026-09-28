@@ -57,7 +57,31 @@ function zAnatomyReferenceAlias(sourceName) {
     .replace(/\.(?:l|r)\s*$/i, "")
     .replace(/\s+/g, " ")
     .toLocaleLowerCase("en-US");
-  return Z_ANATOMY_REFERENCE_ALIASES[key] || null;
+
+  const direct = Z_ANATOMY_REFERENCE_ALIASES[key] || null;
+  if (direct) return direct;
+
+  // Z-Anatomy may expose functional parts of trapezius as separate meshes.
+  // Resolve any side/wording variant to the parent muscle card while keeping
+  // the selected part explicit in the UI.
+  const trapeziusPart = key.match(
+    /\b(descending|transverse|ascending)\s+part\s+of\s+(?:(right|left)\s+)?trapezius(?:\s+muscle)?\b/i
+  );
+  if (trapeziusPart) {
+    const partLabel = {
+      descending: "Нисходящая часть трапециевидной мышцы",
+      transverse: "Поперечная часть трапециевидной мышцы",
+      ascending: "Восходящая часть трапециевидной мышцы",
+    }[trapeziusPart[1].toLocaleLowerCase("en-US")];
+
+    return Object.freeze({
+      referenceId: "trapezius",
+      coverage: "part",
+      labelRu: partLabel,
+    });
+  }
+
+  return null;
 }
 
 function normalizeModelName(value) {
