@@ -1036,7 +1036,27 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/PyramidalisMuscle.jpg",
     "altRu": "Пирамидальная мышца в нижней части передней брюшной стенки и её отношение к лобковой области и белой линии живота",
     "captionRu": "Testut, Traité d'anatomie humaine, 1887: пирамидальная мышца и соседние структуры. Public domain.",
+    "status": "asset-ready",
+  {
+    "id": "gray-889-orbit-muscles",
+    "sourceId": "gray-1918-plate-889-eye-muscles",
+    "kind": "regional-plate",
+    "regionIds": ["orbit"],
+    "focusStructureIds": [
+      "medial-rectus",
+      "lateral-rectus",
+      "superior-rectus",
+      "inferior-rectus",
+      "superior-oblique-eye",
+      "inferior-oblique-eye",
+      "levator-palpebrae-superioris"
+    ],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Eyemuscles.png",
+    "altRu": "Мышцы глазницы на учебниковой анатомической пластине: четыре прямые, две косые мышцы глаза и мышца, поднимающая верхнее веко",
+    "captionRu": "Gray's Anatomy, figure 889: мышцы глазницы, включая levator palpebrae superioris. Public domain.",
     "status": "asset-ready"
+  }
   }]
 );
 
