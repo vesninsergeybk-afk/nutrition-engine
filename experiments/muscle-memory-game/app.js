@@ -2890,7 +2890,17 @@ function renderMobileContextTrail() {
 
   let track = mobileContextTrail.querySelector(".mobile-context-track");
   let thumb = mobileContextTrail.querySelector(".mobile-context-thumb");
-  const previousDepth = mobileContextVisualDepth;
+  let previousThumbX = null;
+
+  // Capture the actual on-screen thumb position before changing the number of
+  // steps. Percent positions cannot animate correctly when the denominator
+  // (context depth) changes at the same time.
+  if (track && thumb) {
+    const trackRect = track.getBoundingClientRect();
+    const thumbRect = thumb.getBoundingClientRect();
+    previousThumbX =
+      thumbRect.left + thumbRect.width / 2 - trackRect.left;
+  }
 
   if (!track) {
     track = document.createElement("div");
@@ -2910,8 +2920,6 @@ function renderMobileContextTrail() {
 
   for (const node of [...track.querySelectorAll(".mobile-context-node")]) node.remove();
   track.style.setProperty("--context-depth", String(Math.max(depth, 1)));
-  const visualStart = Math.min(previousDepth, depth);
-  track.style.setProperty("--context-active", String(visualStart));
 
   for (let index = 0; index <= depth; index += 1) {
     const step = document.createElement("button");
@@ -2927,9 +2935,28 @@ function renderMobileContextTrail() {
     track.append(step);
   }
 
+  const targetNode = track.querySelector(".mobile-context-node.active");
+  const targetCenter = () => {
+    if (!targetNode) return 7;
+    const trackRect = track.getBoundingClientRect();
+    const nodeRect = targetNode.getBoundingClientRect();
+    return nodeRect.left + nodeRect.width / 2 - trackRect.left;
+  };
+
+  // Pin the thumb to its old physical pixel position first. Force layout so
+  // the browser commits that frame, then animate to the new node.
+  if (previousThumbX != null) {
+    thumb.style.left = previousThumbX + "px";
+    thumb.style.transition = "none";
+    void thumb.offsetWidth;
+  } else {
+    thumb.style.left = targetCenter() + "px";
+  }
+
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      track.style.setProperty("--context-active", String(depth));
+      thumb.style.transition = "";
+      thumb.style.left = targetCenter() + "px";
       mobileContextVisualDepth = depth;
     });
   });
