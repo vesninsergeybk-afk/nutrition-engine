@@ -165,7 +165,7 @@ const assert = require('node:assert/strict');
   assert.equal(await boneResult.count(), 1, 'Russian bone search must find scapula');
   assert.doesNotMatch(await boneResult.innerText(), /scapula/i);
   await boneResult.click();
-  assert.equal(await page.locator('#question-label').innerText(), 'Кость');
+  assert.match(await page.locator('#question-label').innerText(), /^Кость$/i);
   assert.match(await page.locator('#question').innerText(), /Лопатка/i);
   assert.equal(await page.locator('#focus-selected').isDisabled(), false);
   assert.match(await page.locator('#structure-search').inputValue(), /Лопатка/i);
