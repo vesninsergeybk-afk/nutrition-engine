@@ -453,6 +453,8 @@ function setDisplayPanelOpen(open) {
   displayPanel.hidden = !next;
   viewerWrap.classList.toggle("display-panel-open", next);
   displayPanelToggle.setAttribute("aria-expanded", String(next));
+  displayPanelToggle.classList.toggle("active", next);
+  displayPanelToggle.textContent = next ? "Отображение · открыто" : "Отображение";
   requestAnimationFrame(() => resize());
 }
 
