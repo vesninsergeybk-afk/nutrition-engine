@@ -817,7 +817,67 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "captionRu": "Anatomography/BodyParts3D: подостная мышца, пространственный вид сзади. CC BY-SA 2.1 Japan.",
     "status": "asset-ready"
   }
-]
+,
+  {
+    "id": "anatomography-serratus-posterior-superior-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["serratus-posterior-superior"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Serratus%20posterior%20superior%20muscle%20back.png",
+    "altRu": "Верхняя задняя зубчатая мышца, вид сзади, с полупрозрачными лопатками и костными ориентирами",
+    "captionRu": "Anatomography/BodyParts3D: верхняя задняя зубчатая мышца, вид сзади; лопатки показаны полупрозрачными. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-serratus-posterior-superior-lateral",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["serratus-posterior-superior"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Serratus%20posterior%20superior%20muscle%20lateral.png",
+    "altRu": "Верхняя задняя зубчатая мышца, латеральный вид относительно позвоночника, рёбер и лопатки",
+    "captionRu": "Anatomography/BodyParts3D: верхняя задняя зубчатая мышца, латеральный пространственный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-serratus-posterior-inferior-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["serratus-posterior-inferior"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Serratus%20posterior%20inferior%20muscle%20back.png",
+    "altRu": "Нижняя задняя зубчатая мышца, вид сзади в пространственном костном контексте",
+    "captionRu": "Anatomography/BodyParts3D: нижняя задняя зубчатая мышца, вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-409-serratus-posterior-inferior",
+    "sourceId": "gray-1918-plate-409",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["serratus-posterior-inferior"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray409serratusposteriorinferior.png",
+    "altRu": "Нижняя задняя зубчатая мышца на классической анатомической пластине задней поверхности туловища",
+    "captionRu": "Gray, plate 409: нижняя задняя зубчатая мышца в контексте задней поверхности туловища. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-389-levatores-costarum-focused",
+    "sourceId": "gray-1918-plate-389",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["levatores-costarum"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Levatores%20costarum.png",
+    "altRu": "Мышцы, поднимающие рёбра, выделенные на глубоком слое задней поверхности грудной клетки",
+    "captionRu": "Мышцы, поднимающие рёбра, выделенные на основе Gray, plate 389. Public domain.",
+    "status": "asset-ready"
+  }]
 );
 
 export function referenceIllustrationsForStructure(structureId) {
