@@ -925,6 +925,34 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Мышцы, поднимающие рёбра, выделенные на глубоком слое задней поверхности грудной клетки",
     "captionRu": "Мышцы, поднимающие рёбра, выделенные на основе Gray, plate 389. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-abductor-pollicis-brevis-focused", "sourceId": "gray-1918-plate-410", "kind": "focused-plate",
+    "regionIds": ["upper-limb"], "focusStructureIds": ["abductor-pollicis-brevis"], "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20abductor%20pollicis%20brevis.png",
+    "altRu": "Короткая мышца, отводящая большой палец кисти, выделенная на ладонной поверхности кисти",
+    "captionRu": "Короткая мышца, отводящая большой палец кисти, на основе Gray. Public domain.", "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-opponens-pollicis-focused", "sourceId": "gray-1918-plate-410", "kind": "focused-plate",
+    "regionIds": ["upper-limb"], "focusStructureIds": ["opponens-pollicis"], "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20opponens%20pollicis.png",
+    "altRu": "Мышца, противопоставляющая большой палец кисти, выделенная в глубоком слое тенара",
+    "captionRu": "Мышца, противопоставляющая большой палец кисти, на основе Gray. Public domain.", "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-adductor-pollicis-focused", "sourceId": "gray-1918-plate-410", "kind": "focused-plate",
+    "regionIds": ["upper-limb"], "focusStructureIds": ["adductor-pollicis"], "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20adductor%20pollicis.png",
+    "altRu": "Мышца, приводящая большой палец кисти, выделенная в глубоком слое ладони",
+    "captionRu": "Мышца, приводящая большой палец кисти, на основе Gray. Public domain.", "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-lumbricals-hand-focused", "sourceId": "gray-1918-plate-410", "kind": "focused-plate",
+    "regionIds": ["upper-limb"], "focusStructureIds": ["lumbricals-hand"], "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20lumbricales.png",
+    "altRu": "Червеобразные мышцы кисти, выделенные между сухожилиями сгибателей пальцев",
+    "captionRu": "Червеобразные мышцы кисти на основе Gray. Public domain.", "status": "asset-ready"
   }]
 );
 
