@@ -147,6 +147,11 @@ assert(
   "Reference-card illustration state is not exposed for browser verification"
 );
 assert(
+  app.includes('row.setAttribute("data-reference-3d", "true")') &&
+    app.includes('querySelector(\'[data-reference-3d="true"]\')'),
+  "Interactive 3D gallery slides must use one consistent data-reference-3d marker"
+);
+assert(
   app.includes('structureReferenceEl.dataset.referenceId = ""') &&
     app.includes('structureReferenceEl.dataset.referenceAtlasIllustrationCount = "0"') &&
     app.includes("clearStructureReferencePrimaryArt()"),
