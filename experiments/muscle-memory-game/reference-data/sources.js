@@ -113,6 +113,17 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-plate-390": Object.freeze({
+    title: "Gray's Anatomy, plate 390 — transversus thoracis",
+    year: 1918,
+    role: "Внутренняя поверхность передней грудной стенки с поперечной мышцей груди",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray390.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain для пластины Gray's Anatomy.",
+    }),
+  }),
+
   "gray-1918-plate-395": Object.freeze({
     title: "Gray's Anatomy, plate 395 — internal oblique",
     year: 1918,
