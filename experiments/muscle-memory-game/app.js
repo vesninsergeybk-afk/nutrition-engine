@@ -456,6 +456,7 @@ let currentTarget = null;
 let selectedExploreSid = null;
 let mobileIsolationStack = [];
 let mobileContextVisualDepth = 0;
+let mobileContextAnimating = false;
 
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
 
@@ -2916,7 +2917,7 @@ function restoreMobileIsolationLevel(level) {
 }
 
 function renderMobileContextTrail() {
-  if (!mobileContextTrail) return;
+  if (!mobileContextTrail || mobileContextAnimating) return;
   const depth = mobileIsolationStack.length;
   mobileContextTrail.hidden = depth === 0;
   if (!depth) {
@@ -10748,51 +10749,77 @@ searchInput.addEventListener("keydown", (event) => {
 });
 
 function animateMobileContextForward(done) {
-  const currentDepth = mobileIsolationStack.length;
-  const nextDepth = currentDepth + 1;
-  const stepPx = 44;
-  const edgePx = 12;
-
-  // Ensure the existing level is rendered first. The next point is introduced
-  // as a destination, not as an already-active state.
-  renderMobileContextTrail();
-  const track = mobileContextTrail?.querySelector(".mobile-context-track");
-  const thumb = track?.querySelector(".mobile-context-thumb");
-  const rail = track?.querySelector(".mobile-context-rail");
-  const progress = track?.querySelector(".mobile-context-progress");
-  if (!track || !thumb || !rail || !progress) {
+  if (!mobileContextTrail || mobileContextAnimating) {
     done();
     return;
   }
 
+  const currentDepth = mobileIsolationStack.length;
+  const nextDepth = currentDepth + 1;
+  const stepPx = 44;
+  const edgePx = 12;
   const startX = edgePx + currentDepth * stepPx;
   const targetX = edgePx + nextDepth * stepPx;
   const trackWidth = edgePx * 2 + nextDepth * stepPx;
+  mobileContextAnimating = true;
+  mobileContextTrail.hidden = false;
+
+  // Forward navigation owns a stable miniature timeline while it is moving.
+  // This also covers the first transition, where committed depth is still 0.
+  let track = mobileContextTrail.querySelector(".mobile-context-track");
+  if (!track) {
+    track = document.createElement("div");
+    track.className = "mobile-context-track";
+    const rail = document.createElement("span");
+    rail.className = "mobile-context-rail";
+    const progress = document.createElement("span");
+    progress.className = "mobile-context-progress";
+    rail.append(progress);
+    track.append(rail);
+    const thumb = document.createElement("span");
+    thumb.className = "mobile-context-thumb";
+    thumb.setAttribute("aria-hidden", "true");
+    track.append(thumb);
+    mobileContextTrail.replaceChildren(track);
+  }
+
+  const thumb = track.querySelector(".mobile-context-thumb");
+  const rail = track.querySelector(".mobile-context-rail");
+  const progress = track.querySelector(".mobile-context-progress");
   track.style.width = trackWidth + "px";
   track.style.minWidth = trackWidth + "px";
-
-  const destination = document.createElement("span");
-  destination.className = "mobile-context-node mobile-context-node-pending";
-  destination.style.left = targetX + "px";
-  destination.setAttribute("aria-hidden", "true");
-  const dot = document.createElement("span");
-  dot.className = "mobile-context-node-dot";
-  destination.append(dot);
-  track.append(destination);
-
+  rail.style.left = edgePx + "px";
   rail.style.right = edgePx + "px";
+
+  for (const node of [...track.querySelectorAll(".mobile-context-node")]) node.remove();
+  for (let index = 0; index <= nextDepth; index += 1) {
+    const node = document.createElement("span");
+    node.className = "mobile-context-node" +
+      (index === nextDepth ? " mobile-context-node-pending" : "");
+    node.style.left = edgePx + index * stepPx + "px";
+    node.setAttribute("aria-hidden", "true");
+    const dot = document.createElement("span");
+    dot.className = "mobile-context-node-dot";
+    node.append(dot);
+    track.append(node);
+  }
+
   thumb.style.transition = "none";
   progress.style.transition = "none";
+  thumb.style.setProperty("--thumb-x", String(startX));
   thumb.style.transform = `translate3d(${startX}px, 0, 0)`;
   progress.style.width = Math.max(0, startX - edgePx) + "px";
-  void thumb.offsetWidth;
+  void track.offsetWidth;
 
   requestAnimationFrame(() => {
-    thumb.style.transition = "";
-    progress.style.transition = "";
-    destination.classList.add("arriving");
-    thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
-    progress.style.width = Math.max(0, targetX - edgePx) + "px";
+    requestAnimationFrame(() => {
+      thumb.style.transition = "";
+      progress.style.transition = "";
+      thumb.style.setProperty("--thumb-x", String(targetX));
+      thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
+      progress.style.width = Math.max(0, targetX - edgePx) + "px";
+      track.querySelector(".mobile-context-node-pending")?.classList.add("arriving");
+    });
   });
 
   let finished = false;
@@ -10800,14 +10827,15 @@ function animateMobileContextForward(done) {
     if (finished) return;
     finished = true;
     thumb.removeEventListener("transitionend", onEnd);
-    destination.remove();
+    mobileContextVisualDepth = nextDepth;
+    mobileContextAnimating = false;
     done();
   };
   const onEnd = (event) => {
     if (event.propertyName === "transform") finish();
   };
   thumb.addEventListener("transitionend", onEnd);
-  window.setTimeout(finish, 650);
+  window.setTimeout(finish, 700);
 }
 
 function captureMobileIsolationSnapshot(kind = "context") {
