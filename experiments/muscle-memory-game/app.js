@@ -308,6 +308,8 @@ const mobileHideMuscleButton = document.querySelector("#mobile-hide-muscle");
 const mobileIsolateMuscleButton = document.querySelector("#mobile-isolate-muscle");
 const mobileIsolateRegionButton = document.querySelector("#mobile-isolate-region");
 const mobileBackContextButton = document.querySelector("#mobile-back-context");
+const mobileRootContextButton = document.querySelector("#mobile-root-context");
+const mobileContextTrail = document.querySelector("#mobile-context-trail");
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdedbd4);
@@ -451,7 +453,7 @@ let examDeadline = 0;
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
-let mobileIsolationSnapshot = null;
+let mobileIsolationStack = [];
 
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
 
@@ -2866,6 +2868,29 @@ function updateLayerButtons() {
   syncMobileMuscleCard();
 }
 
+function renderMobileContextTrail() {
+  if (!mobileContextTrail) return;
+  const depth = mobileIsolationStack.length;
+  mobileContextTrail.hidden = depth === 0;
+  mobileContextTrail.replaceChildren();
+  if (!depth) return;
+
+  for (let index = 0; index <= depth; index += 1) {
+    const step = document.createElement("span");
+    step.className = "mobile-context-step" + (index === depth ? " active" : "");
+    step.setAttribute("aria-label", `Уровень ${index + 1}`);
+    const dot = document.createElement("span");
+    dot.className = "mobile-context-dot";
+    step.append(dot);
+    if (index < depth) {
+      const line = document.createElement("span");
+      line.className = "mobile-context-line";
+      step.append(line);
+    }
+    mobileContextTrail.append(step);
+  }
+}
+
 function syncMobileMuscleCard() {
   if (!mobileMuscleCard) return;
   const sid = selectedExploreSid;
@@ -2877,25 +2902,26 @@ function syncMobileMuscleCard() {
   mobileMuscleKind.textContent =
     reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
   mobileMuscleName.textContent = displayStructureName(sid);
-  mobileHideMuscleButton.disabled =
-    isolated || structureVisibility[sid] === false;
+  mobileHideMuscleButton.disabled = structureVisibility[sid] === false;
   mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
 
   const target = learningTargetBySid.get(sid) || null;
   const regionId = target?.region || "";
   const canIsolateRegion =
     regionId && regionId !== "all" &&
-    [...learningRegion.options].some((option) => option.value === regionId);
+    [...learningRegion.options].some((option) => option.value === regionId) &&
+    !(regionIsolationActive() && selectedLearningRegion === regionId);
   mobileIsolateRegionButton.hidden = !canIsolateRegion;
   mobileIsolateRegionButton.dataset.region = canIsolateRegion ? regionId : "";
   mobileIsolateRegionButton.textContent =
     canIsolateRegion ? "Изолировать область: " + regionNameRu(regionId) : "Изолировать область";
 
-  const hasSnapshot = Boolean(mobileIsolationSnapshot);
-  mobileBackContextButton.hidden = !hasSnapshot;
-  mobileHideMuscleButton.hidden = hasSnapshot;
-  mobileIsolateMuscleButton.hidden = hasSnapshot;
-  mobileIsolateRegionButton.hidden = hasSnapshot || !canIsolateRegion;
+  const depth = mobileIsolationStack.length;
+  mobileBackContextButton.hidden = depth === 0;
+  mobileRootContextButton.hidden = depth < 2;
+  mobileHideMuscleButton.hidden = false;
+  mobileIsolateMuscleButton.hidden = false;
+  renderMobileContextTrail();
 }
 
 function setStructureVisible(sid, visible) {
@@ -10615,9 +10641,9 @@ searchInput.addEventListener("keydown", (event) => {
   }
 });
 
-function captureMobileIsolationSnapshot() {
-  if (mobileIsolationSnapshot) return;
-  mobileIsolationSnapshot = {
+function captureMobileIsolationSnapshot(kind = "context") {
+  mobileIsolationStack.push({
+    kind,
     region: selectedLearningRegion,
     regionIsolation: Boolean(regionIsolation.checked),
     selectedSid: selectedExploreSid,
@@ -10626,14 +10652,11 @@ function captureMobileIsolationSnapshot() {
       .filter((sid) => sid != null),
     cameraPosition: camera.position.clone(),
     controlsTarget: controls.target.clone(),
-  };
+  });
 }
 
-function restoreMobileIsolationSnapshot() {
-  const snapshot = mobileIsolationSnapshot;
+function restoreMobileIsolationState(snapshot) {
   if (!snapshot) return;
-  mobileIsolationSnapshot = null;
-
   selectedLearningRegion = snapshot.region;
   learningRegion.value = snapshot.region;
   regionIsolation.checked = snapshot.regionIsolation;
@@ -10657,12 +10680,24 @@ function restoreMobileIsolationSnapshot() {
   syncMobileMuscleCard();
 }
 
+function restoreMobileIsolationStep() {
+  restoreMobileIsolationState(mobileIsolationStack.pop());
+}
+
+function restoreMobileIsolationRoot() {
+  if (!mobileIsolationStack.length) return;
+  const root = mobileIsolationStack[0];
+  mobileIsolationStack = [];
+  restoreMobileIsolationState(root);
+}
+
+
 mobileHideMuscleButton?.addEventListener("click", () => {
   hideSelectedStructure();
 });
 mobileIsolateMuscleButton?.addEventListener("click", () => {
   if (selectedExploreSid == null) return;
-  captureMobileIsolationSnapshot();
+  captureMobileIsolationSnapshot("muscle");
   const target = learningTargetBySid.get(selectedExploreSid) || null;
   const muscleIds = targetSideStructureIds(target, selectedExploreSid);
   setVisibleStructures(muscleIds);
@@ -10676,7 +10711,7 @@ mobileIsolateMuscleButton?.addEventListener("click", () => {
 mobileIsolateRegionButton?.addEventListener("click", () => {
   const regionId = mobileIsolateRegionButton.dataset.region;
   if (!regionId) return;
-  captureMobileIsolationSnapshot();
+  captureMobileIsolationSnapshot("region");
   selectedLearningRegion = regionId;
   learningRegion.value = regionId;
   regionIsolation.checked = true;
@@ -10686,7 +10721,8 @@ mobileIsolateRegionButton?.addEventListener("click", () => {
   renderSearchResults(searchInput.value);
   syncMobileMuscleCard();
 });
-mobileBackContextButton?.addEventListener("click", restoreMobileIsolationSnapshot);
+mobileBackContextButton?.addEventListener("click", restoreMobileIsolationStep);
+mobileRootContextButton?.addEventListener("click", restoreMobileIsolationRoot);
 
 isolateButton.addEventListener("click", () => {
   if (selectedStudyId != null) {
