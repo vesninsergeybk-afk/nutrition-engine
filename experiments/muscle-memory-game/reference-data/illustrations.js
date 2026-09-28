@@ -272,6 +272,54 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "source-verified-asset-pending"
   },
   {
+    "id": "gray-411-coracobrachialis-focused",
+    "sourceId": "gray-1918-plate-411",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["coracobrachialis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20coracobrachialis.png",
+    "altRu": "Клювовидно-плечевая мышца, выделенная на переднемедиальной поверхности плеча",
+    "captionRu": "Клювовидно-плечевая мышца на основе Gray, plate 411. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-anconeus-focused",
+    "sourceId": "gray-1918-plate-410",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["anconeus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20anconeus.png",
+    "altRu": "Локтевая мышца, выделенная на заднелатеральной поверхности локтевого сустава",
+    "captionRu": "Локтевая мышца на основе Gray, plate 410. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-411-biceps-brachii-focused",
+    "sourceId": "gray-1918-plate-411",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["biceps-brachii"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20biceps%20brachii.png",
+    "altRu": "Двуглавая мышца плеча, выделенная на передней поверхности плеча",
+    "captionRu": "Двуглавая мышца плеча на основе Gray. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-triceps-brachii-focused",
+    "sourceId": "gray-1918-plate-410",
+    "kind": "focused-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["triceps-brachii"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20triceps%20brachii.png",
+    "altRu": "Трёхглавая мышца плеча, выделенная на задней поверхности плеча",
+    "captionRu": "Трёхглавая мышца плеча на основе Gray. Public domain.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-411-axilla-thorax",
     "sourceId": "gray-1918-plate-411",
     "kind": "regional-plate",
