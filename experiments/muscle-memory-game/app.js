@@ -2875,34 +2875,55 @@ function animateMobileContextToDepth(targetDepth, done) {
   const track = mobileContextTrail?.querySelector(".mobile-context-track");
   const thumb = track?.querySelector(".mobile-context-thumb");
   const progress = track?.querySelector(".mobile-context-progress");
-  if (!track || !thumb || !progress) {
+  if (!track || !thumb || !progress || mobileContextAnimating) {
     done();
     return;
   }
 
   const stepPx = 44;
   const edgePx = 12;
+  const currentDepth = mobileContextVisualDepth;
   const targetX = edgePx + Math.max(0, targetDepth) * stepPx;
-  thumb.style.transition = "";
-  progress.style.transition = "";
-  requestAnimationFrame(() => {
-    thumb.style.setProperty("--thumb-x", String(targetX));
-    thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
-    progress.style.width = Math.max(0, targetX - edgePx) + "px";
-  });
+  const startX = edgePx + Math.max(0, currentDepth) * stepPx;
+  mobileContextAnimating = true;
 
-  let finished = false;
-  const finish = () => {
-    if (finished) return;
-    finished = true;
-    thumb.removeEventListener("transitionend", onEnd);
-    done();
-  };
-  const onEnd = (event) => {
-    if (event.propertyName === "transform") finish();
-  };
-  thumb.addEventListener("transitionend", onEnd);
-  window.setTimeout(finish, 650);
+  // Keep the existing path and nodes in place while travelling backwards.
+  // This mirrors animateMobileContextForward: only the thumb moves during
+  // transit; the abandoned segment is removed after arrival.
+  progress.style.transition = "none";
+  progress.style.width = Math.max(0, startX - edgePx) + "px";
+  thumb.getAnimations().forEach((animation) => animation.cancel());
+  thumb.style.setProperty("--thumb-x", String(startX));
+  thumb.style.transform = `translate3d(${startX}px, 0, 0)`;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const motion = thumb.animate(
+        [
+          { transform: `translate3d(${startX}px, 0, 0)` },
+          { transform: `translate3d(${targetX}px, 0, 0)` },
+        ],
+        {
+          duration: 680,
+          easing: "cubic-bezier(.22,.72,.22,1)",
+          fill: "forwards",
+        }
+      );
+
+      const finish = () => {
+        thumb.style.setProperty("--thumb-x", String(targetX));
+        thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
+        motion.cancel();
+        mobileContextVisualDepth = targetDepth;
+        mobileContextAnimating = false;
+        done();
+      };
+      motion.addEventListener("finish", finish, { once: true });
+      motion.addEventListener("cancel", () => {
+        if (mobileContextAnimating) finish();
+      }, { once: true });
+    });
+  });
 }
 
 function restoreMobileIsolationLevel(level) {
