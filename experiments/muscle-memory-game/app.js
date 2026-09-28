@@ -2870,12 +2870,49 @@ function updateLayerButtons() {
   syncMobileMuscleCard();
 }
 
+function animateMobileContextToDepth(targetDepth, done) {
+  const track = mobileContextTrail?.querySelector(".mobile-context-track");
+  const thumb = track?.querySelector(".mobile-context-thumb");
+  const progress = track?.querySelector(".mobile-context-progress");
+  if (!track || !thumb || !progress) {
+    done();
+    return;
+  }
+
+  const stepPx = 44;
+  const edgePx = 12;
+  const targetX = edgePx + Math.max(0, targetDepth) * stepPx;
+  thumb.style.transition = "";
+  progress.style.transition = "";
+  requestAnimationFrame(() => {
+    thumb.style.setProperty("--thumb-x", String(targetX));
+    thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
+    progress.style.width = Math.max(0, targetX - edgePx) + "px";
+  });
+
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    thumb.removeEventListener("transitionend", onEnd);
+    done();
+  };
+  const onEnd = (event) => {
+    if (event.propertyName === "transform") finish();
+  };
+  thumb.addEventListener("transitionend", onEnd);
+  window.setTimeout(finish, 650);
+}
+
 function restoreMobileIsolationLevel(level) {
   const depth = mobileIsolationStack.length;
   if (!Number.isInteger(level) || level < 0 || level >= depth) return;
   const snapshot = mobileIsolationStack[level];
-  mobileIsolationStack = mobileIsolationStack.slice(0, level);
-  restoreMobileIsolationState(snapshot);
+  animateMobileContextToDepth(level, () => {
+    mobileIsolationStack = mobileIsolationStack.slice(0, level);
+    mobileContextVisualDepth = level;
+    restoreMobileIsolationState(snapshot);
+  });
 }
 
 function renderMobileContextTrail() {
@@ -10750,14 +10787,24 @@ function restoreMobileIsolationState(snapshot) {
 }
 
 function restoreMobileIsolationStep() {
-  restoreMobileIsolationState(mobileIsolationStack.pop());
+  if (!mobileIsolationStack.length) return;
+  const targetDepth = mobileIsolationStack.length - 1;
+  const snapshot = mobileIsolationStack[targetDepth];
+  animateMobileContextToDepth(targetDepth, () => {
+    mobileIsolationStack.pop();
+    mobileContextVisualDepth = targetDepth;
+    restoreMobileIsolationState(snapshot);
+  });
 }
 
 function restoreMobileIsolationRoot() {
   if (!mobileIsolationStack.length) return;
   const root = mobileIsolationStack[0];
-  mobileIsolationStack = [];
-  restoreMobileIsolationState(root);
+  animateMobileContextToDepth(0, () => {
+    mobileIsolationStack = [];
+    mobileContextVisualDepth = 0;
+    restoreMobileIsolationState(root);
+  });
 }
 
 
