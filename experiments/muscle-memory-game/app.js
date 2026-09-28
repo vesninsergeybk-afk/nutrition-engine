@@ -4567,11 +4567,25 @@ function selectExploreStructure(sid, hitStack = null) {
   focusedStructureIds = [sid];
   isolated = keepIsolation;
 
-  const coveringIds = keepIsolation ? [] : verifiedCoveringStructureIds(sid);
-  const selectedMuscleReference = muscleReferenceFor(structureNames[sid]);
-  const parentContextIds = keepIsolation
-    ? []
-    : parentMuscleContextIds(sid, selectedMuscleReference);
+  // Direct Atlas selection must never depend on optional reference/depth
+  // enrichment. Some structures have richer metadata than others; a metadata
+  // error must not make an otherwise visible muscle feel unclickable.
+  let coveringIds = [];
+  let selectedMuscleReference = null;
+  let parentContextIds = [];
+  try {
+    coveringIds = keepIsolation ? [] : verifiedCoveringStructureIds(sid);
+  } catch (error) {
+    console.warn("Atlas covering-structure enrichment failed.", structureNames[sid], error);
+  }
+  try {
+    selectedMuscleReference = muscleReferenceFor(structureNames[sid]);
+    parentContextIds = keepIsolation
+      ? []
+      : parentMuscleContextIds(sid, selectedMuscleReference);
+  } catch (error) {
+    console.warn("Atlas muscle-reference enrichment failed.", structureNames[sid], error);
+  }
 
   // A named functional part stays dark blue. Other visible parts of the same
   // parent muscle are shown in a lighter blue so the learner sees the whole
@@ -4591,14 +4605,27 @@ function selectExploreStructure(sid, hitStack = null) {
   questionLabelEl.textContent =
     selectedMuscleReference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
   questionEl.textContent = displayStructureName(sid);
-  renderStructureReference(sid);
   feedbackEl.className = "feedback";
-  const pointDeeperIds = hitStack
-    ? deeperMuscleIdsFromHits(hitStack, sid)
-    : [];
-  const relatedDeeperIds = pointDeeperIds.length
-    ? pointDeeperIds
-    : verifiedDeeperMuscleIds(sid);
+
+  // The title/highlight above are the guaranteed selection result. Reference
+  // cards and depth relations are secondary and may fail independently.
+  try {
+    renderStructureReference(sid);
+  } catch (error) {
+    console.warn("Atlas reference card failed.", structureNames[sid], error);
+    hideStructureReference();
+  }
+
+  let pointDeeperIds = [];
+  let relatedDeeperIds = [];
+  try {
+    pointDeeperIds = hitStack ? deeperMuscleIdsFromHits(hitStack, sid) : [];
+    relatedDeeperIds = pointDeeperIds.length
+      ? pointDeeperIds
+      : verifiedDeeperMuscleIds(sid);
+  } catch (error) {
+    console.warn("Atlas depth enrichment failed.", structureNames[sid], error);
+  }
   const pointSpecific = pointDeeperIds.length > 0;
 
   feedbackEl.textContent = selectedMuscleReference?.modelCoverage === "part"
@@ -4612,8 +4639,15 @@ function selectExploreStructure(sid, hitStack = null) {
         ? "Ниже показаны только подтверждённые мышцы, которые модель пересекает глубже в выбранной точке."
         : "Для этой мышцы есть проверенные более глубокие отношения. Конкретное перекрытие зависит от выбранной точки."
       : "Можно приблизить выбранную мышцу, изолировать её или продолжить исследование модели.";
-  renderDeeperStructures(relatedDeeperIds, { pointSpecific });
+  try {
+    renderDeeperStructures(relatedDeeperIds, { pointSpecific });
+  } catch (error) {
+    console.warn("Atlas deeper-structure UI failed.", structureNames[sid], error);
+    clearDeeperStructures();
+  }
 
+  canvas.dataset.selectedStructureId = String(sid);
+  canvas.dataset.selectedStructureName = structureNames[sid];
   focusSelectedButton.disabled = false;
   isolateButton.disabled = false;
   updateLayerButtons();
