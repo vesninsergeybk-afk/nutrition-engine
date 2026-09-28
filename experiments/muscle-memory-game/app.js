@@ -753,6 +753,7 @@ function appendReference3DGallerySlide(sid) {
   });
 }
 
+// Reference gallery deploy marker: unified course art + atlas + 3D.
 function renderStructureReferencePrimaryArt(reference) {
   const illustration = reference?.primaryIllustration || null;
 
