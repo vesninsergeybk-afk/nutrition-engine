@@ -44,7 +44,13 @@ const assert = require('node:assert/strict');
     );
     const result = page.locator('.search-result').first();
     assert.equal(await result.count(), 1, query + ': search result missing');
-    await result.click();
+    await result.click({ noWaitAfter: true });
+    await page.waitForFunction(
+      expectedId =>
+        document.querySelector('#structure-reference')?.getAttribute('data-reference-id') === expectedId,
+      referenceId,
+      { timeout: 15000 }
+    );
 
     assert.equal(
       await page.locator('#structure-reference').getAttribute('data-reference-id'),
