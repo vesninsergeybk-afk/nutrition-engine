@@ -67,6 +67,18 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "anatomography-commons-2012": Object.freeze({
+    title: "Anatomography / BodyParts3D — individual muscle views",
+    year: 2012,
+    role: "Пространственные виды отдельных мышц на костном контексте для анатомической галереи",
+    sourcePage: "https://commons.wikimedia.org/wiki/Category:Anatomography",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-2.1-jp",
+      attribution: "BodyParts3D, © The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan",
+      note: "Для каждой иллюстрации используется конкретная страница файла Wikimedia Commons; сохраняются указанная там атрибуция и CC BY-SA 2.1 Japan.",
+    }),
+  }),
+
   "gray-1918-plate-389": Object.freeze({
     title: "Gray's Anatomy, plate 389 — deep muscles of the back",
     year: 1918,
