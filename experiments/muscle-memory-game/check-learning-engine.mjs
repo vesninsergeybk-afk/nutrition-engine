@@ -87,6 +87,24 @@ for (const wholeName of [
   assert(target && target.sids.length >= 4, wholeName + ": heads were not grouped");
 }
 
+for (const [nameRu, minMeshes] of [
+  ["Мышца, отводящая мизинец кисти", 2],
+  ["Короткий сгибатель мизинца кисти", 2],
+  ["Мышца, противопоставляющая мизинец кисти", 2],
+  ["Ладонные межкостные мышцы кисти", 2],
+  ["Тыльные межкостные мышцы кисти", 2],
+]) {
+  const target = catalog.find((item) => item.nameRu === nameRu);
+  assert(target, nameRu + ": BodyParts3D learning target is missing");
+  assert(
+    target.sids.length >= minMeshes &&
+      target.sidsBySide?.right?.length >= 1 &&
+      target.sidsBySide?.left?.length >= 1,
+    nameRu + ": right/left BodyParts3D meshes were not grouped correctly"
+  );
+  assert(target.region === "forearm-hand", nameRu + ": wrong learning region");
+}
+
 const latinNames = catalog.filter((item) => /[A-Za-z]/.test(item.nameRu));
 assert(
   latinNames.length === 0,
