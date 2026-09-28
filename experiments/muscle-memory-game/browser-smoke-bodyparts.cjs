@@ -188,12 +188,12 @@ const assert = require('node:assert/strict');
     fullPage: true,
   });
 
-  // Training temporarily hides support layers while preserving their settings.
+  // Training keeps anatomical bone landmarks but temporarily hides connective/skin overlays while preserving their settings.
   await page.click('#mode-quiz');
   await page.click('[data-learning-mode="find"]');
   await page.click('#start-learning-session');
   assert.equal(await page.locator('#viewer').getAttribute('data-training-display'), 'true');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-training-hidden'), 'true');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-training-hidden'), 'false');
   assert.equal(await page.locator('#viewer').getAttribute('data-connective-training-hidden'), 'true');
   assert.equal(await page.locator('#viewer').getAttribute('data-skin-training-hidden'), 'true');
   await page.click('#exit-learning-session');
