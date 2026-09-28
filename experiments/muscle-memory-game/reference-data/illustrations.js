@@ -77,6 +77,54 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "asset-ready"
   },
   {
+    "id": "anatomography-levator-scapulae-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["levator-scapulae"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Levator%20scapulae%20muscle%20back.png",
+    "altRu": "Мышца, поднимающая лопатку, вид сзади в пространственном костном контексте",
+    "captionRu": "Anatomography/BodyParts3D: мышца, поднимающая лопатку, вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-rhomboid-major-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["rhomboid-major"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Rhomboid%20major%20muscle%20back.png",
+    "altRu": "Большая ромбовидная мышца, вид сзади в пространственном костном контексте",
+    "captionRu": "Anatomography/BodyParts3D: большая ромбовидная мышца, вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-teres-minor-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["teres-minor"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Teres%20minor%20muscle%20back.png",
+    "altRu": "Малая круглая мышца, вид сзади на лопатке и плечевой кости",
+    "captionRu": "Anatomography/BodyParts3D: малая круглая мышца на костном контексте, вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-teres-minor-lateral",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["teres-minor"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Teres%20minor%20muscle%20lateral.png",
+    "altRu": "Малая круглая мышца, латеральный пространственный вид относительно лопатки и плечевой кости",
+    "captionRu": "Anatomography/BodyParts3D: малая круглая мышца, латеральный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-409-trapezius-focused",
     "sourceId": "gray-1918-plate-409",
     "kind": "focused-plate",
