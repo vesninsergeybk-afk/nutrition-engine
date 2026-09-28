@@ -2845,3 +2845,26 @@ body:not(.motion-mode) .comparison-pane-static {
 .structure-reference-course-art-figure {
   margin: 0;
 }
+
+/* The unified illustration gallery is the muscle card's primary visual block. */
+.structure-reference-atlas-block {
+  display: grid;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid rgba(27,27,29,.10);
+  border-radius: 16px;
+  background: var(--surface-soft);
+}
+.structure-reference-atlas-block[hidden] { display: none; }
+.structure-reference-gallery .structure-reference-source-item {
+  background: transparent;
+}
+.structure-reference-course-art-image {
+  min-height: 280px;
+  background-size: cover;
+  background-position-y: center;
+}
+@media(max-width:620px){
+  .structure-reference-atlas-block { padding: 8px 5px; }
+  .structure-reference-course-art-image { min-height: min(62vw, 330px); }
+}
