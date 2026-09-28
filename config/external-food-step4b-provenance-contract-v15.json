@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "policy_version": "external-food-step4b-provenance-v15",
+  "status": "staging_only",
+  "extends_production_policy": "config/product-provenance-policy.v5.3.210-p1.3.json",
+  "production_policy_changed": false,
+  "production_enablement": false,
+  "canonical_nutrient_count": 33,
+  "input_compatibility_method": {
+    "SOURCE_REPORTED_COMPAT": {
+      "allowed_stage": "pre_resolution_only",
+      "forbidden_after_step4b": true
+    }
+  },
+  "allowed_resolved_methods": [
+    "SOURCE_REPORTED",
+    "SOURCE_REPORTED_ZERO",
+    "CALCULATED",
+    "ASSUMED_ZERO",
+    "MISSING"
+  ],
+  "resolution_rules": {
+    "missing_or_null": "MISSING",
+    "added_sugar_plain_single_ingredient": "ASSUMED_ZERO",
+    "salt": "CALCULATED:sodium_mg*2.54/1000",
+    "unsat": "CALCULATED:source_MUFA_plus_PUFA",
+    "direct_source_zero": "SOURCE_REPORTED_ZERO",
+    "direct_source_nonzero": "SOURCE_REPORTED"
+  },
+  "null_semantics": {
+    "null_is_not_zero": true,
+    "missing_must_remain_null": true,
+    "missing_requires_method": "MISSING",
+    "no_imputation_in_step4b": true
+  },
+  "source_identity_required_for": [
+    "SOURCE_REPORTED",
+    "SOURCE_REPORTED_ZERO"
+  ],
+  "invariant": "Step 4B resolves provenance schema only; it must not fill missing nutrients, resolve HEI equivalents, or change production main."
+}
