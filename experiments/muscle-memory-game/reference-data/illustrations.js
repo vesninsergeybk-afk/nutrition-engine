@@ -1,6 +1,66 @@
 export const REFERENCE_ILLUSTRATIONS = Object.freeze(
 [
   {
+    "id": "gray-389-deep-back",
+    "sourceId": "gray-1918-plate-389",
+    "kind": "layer-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["erector-spinae","transversospinalis","iliocostalis","longissimus","spinalis","semispinalis","multifidus","rotatores","quadratus-lumborum"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray389%20-%20Erector%20spinae.png",
+    "altRu": "Глубокие мышцы спины с выделением комплекса разгибателя позвоночника",
+    "captionRu": "Gray, plate 389: глубокие мышцы спины. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-389-multifidus",
+    "sourceId": "gray-1918-plate-389",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["multifidus","transversospinalis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Multifidi.png",
+    "altRu": "Многораздельные мышцы на пластине глубоких мышц спины",
+    "captionRu": "Многораздельные мышцы, выделенные на основе Gray, plate 389. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-389-quadratus-lumborum",
+    "sourceId": "gray-1918-plate-389",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["quadratus-lumborum"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Quadratuslumborum.png",
+    "altRu": "Квадратная мышца поясницы, выделенная на задней поверхности туловища",
+    "captionRu": "Квадратная мышца поясницы, производная от Gray, plate 389. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-409-levator-scapulae",
+    "sourceId": "gray-1918-plate-409",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["levator-scapulae"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Levator%20scapulae.png",
+    "altRu": "Мышца, поднимающая лопатку, выделенная на задней поверхности плечевого пояса",
+    "captionRu": "Мышца, поднимающая лопатку, производная от Gray, plate 409. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-384-splenius",
+    "sourceId": "gray-1918-plate-384",
+    "kind": "regional-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["splenius-capitis","splenius-cervicis","semispinalis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray384.png",
+    "altRu": "Задняя поверхность шеи с ременными и соседними глубокими мышцами",
+    "captionRu": "Gray, plate 384: мышцы задней поверхности шеи. Public domain.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-392-anterolateral-trunk",
     "sourceId": "gray-1918-plate-392",
     "kind": "focused-plate",
