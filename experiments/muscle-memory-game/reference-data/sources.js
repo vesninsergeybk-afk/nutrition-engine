@@ -1180,6 +1180,17 @@ export const REFERENCE_SOURCES = Object.freeze({
     url: "https://www.ncbi.nlm.nih.gov/books/NBK539869/",
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
+
+  "gray-1918-plate-889-eye-muscles": Object.freeze({
+    title: "Gray\'s Anatomy, figure 889 — muscles of the orbit",
+    year: 1918,
+    role: "Учебниковая региональная иллюстрация наружных мышц глаза и мышцы, поднимающей верхнее веко",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Eyemuscles.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Файл основан на figure 889 Gray\'s Anatomy; Wikimedia Commons указывает Public Domain.",
+    }),
+  }),
 });
 
 export function referenceSource(sourceId) {
