@@ -662,6 +662,8 @@ function appendReference3DGallerySlide(sid) {
     const boneVisibilityBefore = [...boneVisibility];
     const anatomyVisibleBefore = anatomyMesh?.visible;
     const skeletonVisibleBefore = skeletonMesh?.visible;
+    const cameraPositionBefore = camera.position.clone();
+    const controlsTargetBefore = controls.target.clone();
     const reference = muscleReferenceFor(structureNames[sid]);
     const target = learningTargetBySid.get(sid) || null;
     const muscleIds = [
@@ -680,6 +682,13 @@ function appendReference3DGallerySlide(sid) {
       if (skeletonMesh) {
         skeletonMesh.visible = true;
         applySelectedMuscleBoneVisibility(muscleIds);
+      }
+
+      // Gallery framing must be local to the selected muscle. Reusing the Atlas
+      // camera makes small structures occupy only a tiny fraction of the slide.
+      const galleryBox = selectedMuscleBoneContextBox(muscleIds);
+      if (!galleryBox.isEmpty()) {
+        focusBox(galleryBox, 1.12, currentViewDirection());
       }
       renderer.render(scene, camera);
 
@@ -736,6 +745,9 @@ function appendReference3DGallerySlide(sid) {
           if (visible) setBoneVisible(boneId, true);
         });
       }
+      camera.position.copy(cameraPositionBefore);
+      controls.target.copy(controlsTargetBefore);
+      controls.update();
       renderer.render(scene, camera);
     }
   });
