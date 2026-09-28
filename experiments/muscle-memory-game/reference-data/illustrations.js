@@ -612,6 +612,102 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "rightsStatus": "public-domain",
     "assetPath": null,
     "status": "source-verified-asset-pending"
+  },
+  {
+    "id": "gray-410-pectoralis-major",
+    "sourceId": "gray-1918-plate-410",
+    "kind": "focused-plate",
+    "regionIds": ["thorax-abdomen","upper-limb"],
+    "focusStructureIds": ["pectoralis-major"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray410.png",
+    "altRu": "Большая грудная мышца на передней поверхности грудной клетки",
+    "captionRu": "Gray, plate 410: большая грудная мышца и её положение относительно ключицы, грудины и плечевой кости. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gerrish-294-pectoralis-major-attachments",
+    "sourceId": "gerrish-1902-fig-294",
+    "kind": "attachment-plate",
+    "regionIds": ["thorax-abdomen","upper-limb"],
+    "focusStructureIds": ["pectoralis-major"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gerrish%27s%20Text-book%20of%20Anatomy%20%281902%29%20-%20Fig.%20294.png",
+    "altRu": "Большая грудная мышца: контур и зоны начала и прикрепления",
+    "captionRu": "Gerrish, fig. 294: контур большой грудной мышцы и зоны её костных прикреплений. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-pectoralis-minor-frontal",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["thorax-abdomen","upper-limb"],
+    "focusStructureIds": ["pectoralis-minor"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pectoralis%20minor%20muscle%20frontal.png",
+    "altRu": "Малая грудная мышца на костном контексте, фронтальный вид",
+    "captionRu": "Anatomography/BodyParts3D: малая грудная мышца от рёбер к клювовидному отростку. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-398-rectus-abdominis",
+    "sourceId": "gray-1918-plate-398",
+    "kind": "regional-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["rectus-abdominis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray398.png",
+    "altRu": "Прямая мышца живота и структуры передней брюшной стенки",
+    "captionRu": "Gray, plate 398: прямая мышца живота в контексте передней брюшной стенки. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-395-internal-oblique",
+    "sourceId": "gray-1918-plate-395",
+    "kind": "layer-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["internal-oblique"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray395.png",
+    "altRu": "Внутренняя косая мышца живота после удаления поверхностного слоя",
+    "captionRu": "Gray, plate 395: внутренняя косая мышца живота и направление её волокон. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-397-transversus-abdominis",
+    "sourceId": "gray-1918-plate-397",
+    "kind": "layer-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["transversus-abdominis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Transversus%20abdominis.png",
+    "altRu": "Поперечная мышца живота в глубоком слое брюшной стенки",
+    "captionRu": "Gray, plate 397: поперечная мышца живота и поперечное направление её волокон. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-human-diaphragm",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["diaphragm"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Human%20diaphragm.png",
+    "altRu": "Диафрагма в пространственном костном контексте нижней апертуры грудной клетки",
+    "captionRu": "Anatomography/BodyParts3D: пространственная модель диафрагмы. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "charpy-diaphragm-attachments",
+    "sourceId": "charpy-1894-diaphragm-attachments",
+    "kind": "attachment-plate",
+    "regionIds": ["thorax-abdomen"],
+    "focusStructureIds": ["diaphragm"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/DiaphragmAttachments.jpg",
+    "altRu": "Схема грудино-рёберных прикреплений диафрагмы",
+    "captionRu": "Charpy, 1894: зоны прикрепления диафрагмы к грудине, рёберным хрящам и рёбрам. Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
