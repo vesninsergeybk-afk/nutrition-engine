@@ -307,6 +307,7 @@ const mobileMuscleName = document.querySelector("#mobile-muscle-name");
 const mobileHideMuscleButton = document.querySelector("#mobile-hide-muscle");
 const mobileIsolateMuscleButton = document.querySelector("#mobile-isolate-muscle");
 const mobileIsolateRegionButton = document.querySelector("#mobile-isolate-region");
+const mobileBackContextButton = document.querySelector("#mobile-back-context");
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdedbd4);
@@ -450,6 +451,7 @@ let examDeadline = 0;
 let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
+let mobileIsolationSnapshot = null;
 
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
 
@@ -2877,8 +2879,7 @@ function syncMobileMuscleCard() {
   mobileMuscleName.textContent = displayStructureName(sid);
   mobileHideMuscleButton.disabled =
     isolated || structureVisibility[sid] === false;
-  mobileIsolateMuscleButton.textContent =
-    isolated ? "Вернуть" : "Изолировать";
+  mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
 
   const target = learningTargetBySid.get(sid) || null;
   const regionId = target?.region || "";
@@ -2888,7 +2889,13 @@ function syncMobileMuscleCard() {
   mobileIsolateRegionButton.hidden = !canIsolateRegion;
   mobileIsolateRegionButton.dataset.region = canIsolateRegion ? regionId : "";
   mobileIsolateRegionButton.textContent =
-    canIsolateRegion ? regionNameRu(regionId) : "Область";
+    canIsolateRegion ? "Изолировать область: " + regionNameRu(regionId) : "Изолировать область";
+
+  const hasSnapshot = Boolean(mobileIsolationSnapshot);
+  mobileBackContextButton.hidden = !hasSnapshot;
+  mobileHideMuscleButton.hidden = hasSnapshot;
+  mobileIsolateMuscleButton.hidden = hasSnapshot;
+  mobileIsolateRegionButton.hidden = hasSnapshot || !canIsolateRegion;
 }
 
 function setStructureVisible(sid, visible) {
@@ -10608,18 +10615,78 @@ searchInput.addEventListener("keydown", (event) => {
   }
 });
 
+function captureMobileIsolationSnapshot() {
+  if (mobileIsolationSnapshot) return;
+  mobileIsolationSnapshot = {
+    region: selectedLearningRegion,
+    regionIsolation: Boolean(regionIsolation.checked),
+    selectedSid: selectedExploreSid,
+    visibleIds: structureVisibility
+      .map((visible, sid) => visible ? sid : null)
+      .filter((sid) => sid != null),
+    cameraPosition: camera.position.clone(),
+    controlsTarget: controls.target.clone(),
+  };
+}
+
+function restoreMobileIsolationSnapshot() {
+  const snapshot = mobileIsolationSnapshot;
+  if (!snapshot) return;
+  mobileIsolationSnapshot = null;
+
+  selectedLearningRegion = snapshot.region;
+  learningRegion.value = snapshot.region;
+  regionIsolation.checked = snapshot.regionIsolation;
+  availableTargets = filterCatalogByRegion(learningCatalog, selectedLearningRegion);
+  if (anatomyMesh) anatomyMesh.visible = true;
+  writeVisibleStructures(snapshot.visibleIds);
+  isolated = false;
+  applyRegionStudyVisibility();
+  applyBoneDisplayMode();
+  camera.position.copy(snapshot.cameraPosition);
+  controls.target.copy(snapshot.controlsTarget);
+  controls.update();
+
+  if (snapshot.selectedSid != null && structureNames[snapshot.selectedSid]) {
+    selectExploreStructure(snapshot.selectedSid);
+  } else {
+    selectedExploreSid = null;
+    restoreHighlights();
+    updateLayerButtons();
+  }
+  syncMobileMuscleCard();
+}
+
 mobileHideMuscleButton?.addEventListener("click", () => {
   hideSelectedStructure();
 });
 mobileIsolateMuscleButton?.addEventListener("click", () => {
-  isolateButton.click();
+  if (selectedExploreSid == null) return;
+  captureMobileIsolationSnapshot();
+  const target = learningTargetBySid.get(selectedExploreSid) || null;
+  const muscleIds = targetSideStructureIds(target, selectedExploreSid);
+  setVisibleStructures(muscleIds);
+  focusedStructureIds = [...muscleIds];
+  showSelectedMuscleBoneContext(muscleIds);
+  isolated = true;
+  focusSelectedStructures();
+  updateLayerButtons();
+  syncMobileMuscleCard();
 });
 mobileIsolateRegionButton?.addEventListener("click", () => {
   const regionId = mobileIsolateRegionButton.dataset.region;
   if (!regionId) return;
+  captureMobileIsolationSnapshot();
+  selectedLearningRegion = regionId;
   learningRegion.value = regionId;
-  learningRegion.dispatchEvent(new Event("change", { bubbles: true }));
+  regionIsolation.checked = true;
+  applyLearningRegion();
+  applyRegionScene({ resetLayers: true, focus: true });
+  syncLearningAreaQuery();
+  renderSearchResults(searchInput.value);
+  syncMobileMuscleCard();
 });
+mobileBackContextButton?.addEventListener("click", restoreMobileIsolationSnapshot);
 
 isolateButton.addEventListener("click", () => {
   if (selectedStudyId != null) {
