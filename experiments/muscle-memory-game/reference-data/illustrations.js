@@ -282,27 +282,52 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "source-verified-asset-pending"
   },
   {
-    "id": "gray-forearm-extensors",
-    "sourceId": "gray-forearm-extensors-public-domain",
-    "kind": "regional-plate",
-    "regionIds": [
-      "upper-limb"
-    ],
-    "focusStructureIds": [
-      "extensor-carpi-radialis-longus",
-      "extensor-carpi-radialis-brevis",
-      "extensor-digitorum",
-      "extensor-digiti-minimi",
-      "extensor-carpi-ulnaris",
-      "supinator",
-      "abductor-pollicis-longus",
-      "extensor-pollicis-brevis",
-      "extensor-pollicis-longus",
-      "extensor-indicis"
-    ],
+    "id": "gray-414-forearm-flexors-superficial",
+    "sourceId": "gray-1918-plate-414",
+    "kind": "layer-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["pronator-teres","flexor-carpi-radialis","palmaris-longus","flexor-carpi-ulnaris","flexor-digitorum-superficialis"],
     "rightsStatus": "public-domain",
-    "assetPath": null,
-    "status": "source-verified-asset-pending"
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Forearm%20muscles%20front%20superficial.png",
+    "altRu": "Поверхностные мышцы передней поверхности предплечья",
+    "captionRu": "Gray, plate 414: поверхностный слой передней группы предплечья. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-415-forearm-flexors-deep",
+    "sourceId": "gray-1918-plate-415",
+    "kind": "layer-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["flexor-digitorum-profundus","flexor-pollicis-longus","pronator-quadratus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Forearm%20muscles%20front%20deep.png",
+    "altRu": "Глубокие мышцы передней поверхности предплечья",
+    "captionRu": "Gray, plate 415: глубокий слой передней группы предплечья. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-418-forearm-extensors-superficial",
+    "sourceId": "gray-1918-plate-418",
+    "kind": "layer-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["brachioradialis","extensor-carpi-radialis-longus","extensor-carpi-radialis-brevis","extensor-digitorum","extensor-digiti-minimi","extensor-carpi-ulnaris"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Forearm%20muscles%20back%20superficial.png",
+    "altRu": "Поверхностные мышцы задней поверхности предплечья",
+    "captionRu": "Gray, plate 418: поверхностный слой задней группы предплечья. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-419-forearm-extensors-deep",
+    "sourceId": "gray-1918-plate-419",
+    "kind": "layer-plate",
+    "regionIds": ["upper-limb"],
+    "focusStructureIds": ["supinator","abductor-pollicis-longus","extensor-pollicis-brevis","extensor-pollicis-longus","extensor-indicis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Forearm%20muscles%20back%20deep.png",
+    "altRu": "Глубокие мышцы задней поверхности предплечья",
+    "captionRu": "Gray, plate 419: глубокий слой задней группы предплечья. Public domain.",
+    "status": "asset-ready"
   },
   {
     "id": "commons-extraocular",
