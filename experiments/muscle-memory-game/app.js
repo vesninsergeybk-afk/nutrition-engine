@@ -2885,45 +2885,46 @@ function animateMobileContextToDepth(targetDepth, done) {
   const currentDepth = mobileContextVisualDepth;
   const targetX = edgePx + Math.max(0, targetDepth) * stepPx;
   const startX = edgePx + Math.max(0, currentDepth) * stepPx;
+  if (Math.abs(targetX - startX) < 0.5) {
+    done();
+    return;
+  }
+
   mobileContextAnimating = true;
 
-  // Keep the existing path and nodes in place while travelling backwards.
-  // This mirrors animateMobileContextForward: only the thumb moves during
-  // transit; the abandoned segment is removed after arrival.
+  // Freeze the complete current navigator. The scene, nodes and rail are not
+  // rebuilt until the physical thumb has finished travelling backwards.
   progress.style.transition = "none";
   progress.style.width = Math.max(0, startX - edgePx) + "px";
   thumb.getAnimations().forEach((animation) => animation.cancel());
+  thumb.style.transition = "none";
   thumb.style.setProperty("--thumb-x", String(startX));
   thumb.style.transform = `translate3d(${startX}px, 0, 0)`;
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      const motion = thumb.animate(
-        [
-          { transform: `translate3d(${startX}px, 0, 0)` },
-          { transform: `translate3d(${targetX}px, 0, 0)` },
-        ],
-        {
-          duration: 680,
-          easing: "cubic-bezier(.22,.72,.22,1)",
-          fill: "forwards",
-        }
-      );
+  const duration = 720;
+  const startedAt = performance.now();
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
 
-      const finish = () => {
-        thumb.style.setProperty("--thumb-x", String(targetX));
-        thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
-        motion.cancel();
-        mobileContextVisualDepth = targetDepth;
-        mobileContextAnimating = false;
-        done();
-      };
-      motion.addEventListener("finish", finish, { once: true });
-      motion.addEventListener("cancel", () => {
-        if (mobileContextAnimating) finish();
-      }, { once: true });
-    });
-  });
+  const frame = (now) => {
+    const raw = Math.min(1, Math.max(0, (now - startedAt) / duration));
+    const t = ease(raw);
+    const x = startX + (targetX - startX) * t;
+    thumb.style.transform = `translate3d(${x}px, 0, 0)`;
+    thumb.style.setProperty("--thumb-x", String(x));
+
+    if (raw < 1) {
+      requestAnimationFrame(frame);
+      return;
+    }
+
+    thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
+    thumb.style.setProperty("--thumb-x", String(targetX));
+    mobileContextVisualDepth = targetDepth;
+    mobileContextAnimating = false;
+    done();
+  };
+
+  requestAnimationFrame(frame);
 }
 
 function restoreMobileIsolationLevel(level) {
