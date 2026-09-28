@@ -1132,6 +1132,15 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+  "commons-pk0001-2019": Object.freeze({
+    title: "Wikimedia Commons: Transversospinales interspinales enko",
+    year: 2019,
+    role: "Иллюстрация межостистых мышц в глубоком слое позвоночника",
+    url: "https://commons.wikimedia.org/wiki/File:Transversospinales_interspinales_enko.svg",
+    rightsStatus: "cc-by-sa-4.0",
+    rights: Object.freeze({ illustrations: "CC BY-SA 4.0" }),
+  }),
+
   "ncbi-masseter": Object.freeze({
     title: "StatPearls: Anatomy, Head and Neck, Masseter Muscle",
     role: "Современная сверка жевательной мышцы",
