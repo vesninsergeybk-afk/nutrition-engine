@@ -62,7 +62,16 @@ def load_fpid(path):
             for c in df.columns:
                 if re.search(r"food.*code|^code$|ndb",str(c),re.I) and pd.notna(row[c]):
                     code=str(row[c]); break
-            rows.append({"sheet":sheet,"row_index":int(idx),"code":code,"text":text})
+            payload={"sheet":sheet,"row_index":int(idx),"code":code,"text":text}
+            for col in [
+                "F_TOTAL (cup eq.)","G_TOTAL (oz. eq.)","G_WHOLE (oz. eq.)","G_REFINED (oz. eq.)",
+                "PF_TOTAL (oz. eq.)","PF_SEAFD_HI (oz. eq.)","PF_SEAFD_LOW (oz. eq.)",
+                "PF_NUTSDS (oz. eq.)","PF_LEGUMES (oz. eq.)","D_TOTAL (cup eq.)","ADD_SUGARS (tsp. eq.)"
+            ]:
+                if col in df.columns and pd.notna(row[col]):
+                    try: payload[col]=float(row[col])
+                    except Exception: pass
+            rows.append(payload)
     return schema,rows
 
 def top_matches(q,rows,text_key,n=12):
@@ -106,8 +115,30 @@ def main():
             "fndds_top":top_matches(q,fndds,"description",12),
         })
     json.dump(report,open(out/"step4d_semantic_probe.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
-    json.dump({"fpid_sheets":fpid_schema,"fpid_rows_indexed":len(fpid),"fndds_rows_indexed":len(fndds),"targets":len(target)},
-              open(out/"step4d_source_schema.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
+
+    exact_counts={}
+    for p in target:
+        q=norm(p["primary_source"]["source_name"])
+        exact_counts[p["family_key"]]=sum(norm(r["text"])==q for r in fpid)
+
+    fish_rows=[r for r in fpid if re.search(r"^Fish, .*raw$", r["text"], re.I)]
+    fish_signature_fields=["PF_TOTAL (oz. eq.)","PF_SEAFD_HI (oz. eq.)","PF_SEAFD_LOW (oz. eq.)"]
+    fish_sigs={}
+    for r in fish_rows:
+        sig=tuple(r.get(k) for k in fish_signature_fields)
+        fish_sigs[str(sig)]=fish_sigs.get(str(sig),0)+1
+
+    json.dump({
+        "fpid_sheets":fpid_schema,
+        "fpid_rows_indexed":len(fpid),
+        "fndds_rows_indexed":len(fndds),
+        "targets":len(target),
+        "fpid_exact_match_counts":exact_counts,
+        "raw_fish_rows":len(fish_rows),
+        "raw_fish_signature_fields":fish_signature_fields,
+        "raw_fish_signature_counts":fish_sigs,
+        "raw_fish_examples":fish_rows[:25],
+    }, open(out/"step4d_source_schema.json","w",encoding="utf-8"),ensure_ascii=False,indent=2)
     # Compact CSV for review.
     with open(out/"step4d_semantic_probe_review.csv","w",encoding="utf-8-sig",newline="") as fh:
         w=csv.writer(fh);w.writerow(["family_key","name_ru","issues","query","fpid_1","fpid_1_score","fpid_2","fpid_2_score","fndds_1","fndds_1_score","fndds_2","fndds_2_score"])
