@@ -4568,17 +4568,17 @@ function selectExploreStructure(sid, hitStack = null) {
   isolated = keepIsolation;
 
   const coveringIds = keepIsolation ? [] : verifiedCoveringStructureIds(sid);
-  const selectedReference = muscleReferenceFor(structureNames[sid]);
+  const selectedMuscleReference = muscleReferenceFor(structureNames[sid]);
   const parentContextIds = keepIsolation
     ? []
-    : parentMuscleContextIds(sid, selectedReference);
+    : parentMuscleContextIds(sid, selectedMuscleReference);
 
   // A named functional part stays dark blue. Other visible parts of the same
   // parent muscle are shown in a lighter blue so the learner sees the whole
   // muscle and does not mistake one selectable part for the complete muscle.
   if (parentContextIds.length) highlightStructures(parentContextIds, "parentContext");
   highlightStructures([sid], "selected");
-  canvas.dataset.selectedMuscleCoverage = selectedReference?.modelCoverage || "exact";
+  canvas.dataset.selectedMuscleCoverage = selectedMuscleReference?.modelCoverage || "exact";
   canvas.dataset.selectedParentContextCount = String(parentContextIds.length);
   canvas.dataset.selectedCovered = coveringIds.length ? "true" : "false";
   canvas.dataset.selectedCoverCount = String(coveringIds.length);
@@ -4589,7 +4589,7 @@ function selectExploreStructure(sid, hitStack = null) {
   }
 
   questionLabelEl.textContent =
-    selectedReference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
+    selectedMuscleReference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
   questionEl.textContent = displayStructureName(sid);
   renderStructureReference(sid);
   feedbackEl.className = "feedback";
@@ -4601,7 +4601,7 @@ function selectExploreStructure(sid, hitStack = null) {
     : verifiedDeeperMuscleIds(sid);
   const pointSpecific = pointDeeperIds.length > 0;
 
-  feedbackEl.textContent = selectedReference?.modelCoverage === "part"
+  feedbackEl.textContent = selectedMuscleReference?.modelCoverage === "part"
     ? parentContextIds.length
       ? "Выбрана отдельная часть мышцы: она выделена синим, остальные видимые части этой же мышцы — светло-голубым."
       : "Выбрана отдельная часть мышцы. Справочная карточка относится к мышце целиком и отдельно указывает выбранную часть."
