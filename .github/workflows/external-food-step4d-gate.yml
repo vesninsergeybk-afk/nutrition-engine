@@ -1,0 +1,87 @@
+name: External Food Step 4D Semantic Gate
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "config/external-food-step4d-semantic-contract-v15.json"
+      - "tools/resolve_external_food_semantics_step4d_v15.py"
+      - ".github/workflows/external-food-step4d-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download last successful Step 4C artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p staging/import-v15
+          gh run download 36403150075 \
+            --repo "${{ github.repository }}" \
+            --name external-food-import-preparation-v15 \
+            --dir staging/import-v15
+
+      - name: Download official FPID and FNDDS sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/external-food-sources
+          curl -L --fail --retry 3 --retry-delay 2 \
+            -o .cache/external-food-sources/fndds.zip \
+            "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip"
+          curl -L --fail --retry 3 --retry-delay 2 \
+            -o .cache/external-food-sources/fpid.xls \
+            "https://www.ars.usda.gov/ARSUserFiles/80400530/apps/FPID_1718.xls"
+
+      - name: Install parser dependencies
+        run: python3 -m pip install --quiet pandas xlrd
+
+      - name: Resolve exact Step 4D semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/resolve_external_food_semantics_step4d_v15.py \
+            --proposals staging/import-v15/step4c/import_proposals_v15_step4c.json \
+            --fpid .cache/external-food-sources/fpid.xls \
+            --fndds .cache/external-food-sources/fndds.zip \
+            --contract config/external-food-step4d-semantic-contract-v15.json \
+            --out-dir staging/import-v15/step4d
+
+      - name: Assert exact Step 4D result
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          r=json.load(open("staging/import-v15/step4d/step4d_semantic_gate_report.json",encoding="utf-8"))
+          assert r["status"]=="PASS", r
+          assert r["resolved_families"]==["cheese provolone","cheese swiss"], r
+          assert r["issue_counts_after"].get("HEI_EQUIVALENTS_UNRESOLVED")==28, r
+          assert r["issue_counts_after"].get("FPID_EXACT_NAME_AMBIGUOUS",0)==0, r
+          assert r["issue_counts_after"].get("FNDDS_EXACT_NAME_AMBIGUOUS",0)==0, r
+          assert r["status_after_step4d"]["READY_FOR_NEXT_STAGING_GATE"]==33, r
+          assert r["status_after_step4d"]["BLOCKED_OTHER_GATES"]==56, r
+          assert r["nutrient_values_changed"] is False
+          assert r["production_main_changed"] is False
+          print(json.dumps(r,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Upload Step 4D gate
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-step4d-semantic-gate
+          path: staging/import-v15/step4d/
+          if-no-files-found: error
+          retention-days: 14
