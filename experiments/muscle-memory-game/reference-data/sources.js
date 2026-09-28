@@ -111,6 +111,17 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-plate-410": Object.freeze({
+    title: "Gray's Anatomy, plate 410 — scapular and shoulder muscles",
+    year: 1918,
+    role: "Индивидуальные public-domain изображения дельтовидной, надостной и подостной мышц плечевого пояса",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray_%E2%80%94_deltoideus.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Выделенные изображения производны от Gray's Anatomy, plate 410; Wikimedia Commons маркирует соответствующие файлы как Public Domain.",
+    }),
+  }),
+
   "gray-1918-plate-411": Object.freeze({
     title: "Gray's Anatomy, plate 411 — axillary and thoracic muscles",
     year: 1918,
