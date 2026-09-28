@@ -30,8 +30,8 @@ jobs:
           cat tools/packed/v15/audit_external_food_families_v15.py.gz.b64 | base64 -d | gzip -d > .tmp/v15/audit_external_food_families_v15.py
           echo "09174842b338645e94e23ab3bce9071abb2d364dd8c61ea119ebc5af9654e48f  .tmp/v15/build_external_food_families_v15.py" | sha256sum -c -
           echo "02b6247fa58f38ef0855598c8126864bb26b564497e89184a7d2082f252e7a2f  .tmp/v15/audit_external_food_families_v15.py" | sha256sum -c -
-          echo "20d018ed5b425ecee60098ab733dc4da7453d8adf3af09b4d94712a55c31d590  tools/patch_external_food_variants_v15_1.py" | sha256sum -c -
-          echo "e91a67faa1669efb199536f9882a5e4d0ab64280df2055c5fd9f116c5fd0b41e  tools/audit_external_food_variants_v15_1.py" | sha256sum -c -
+          test "$(git hash-object tools/patch_external_food_variants_v15_1.py)" = "1c69c7695806caf2abe842d9b6201ba88d1c720a"
+          test "$(git hash-object tools/audit_external_food_variants_v15_1.py)" = "9563039187a32f4295d09d6ef3d960a541aefe97"
 
       - name: Download official source datasets
         shell: bash
