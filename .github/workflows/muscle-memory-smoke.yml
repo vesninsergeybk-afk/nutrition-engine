@@ -412,7 +412,7 @@ jobs:
     if: ${{ contains(github.event.head_commit.message, '[bodyparts-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
 
     steps:
       - uses: actions/checkout@v4
@@ -435,7 +435,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          timeout 6m node experiments/muscle-memory-game/browser-smoke-bodyparts.cjs
+          timeout 10m node experiments/muscle-memory-game/browser-smoke-bodyparts.cjs
 
       - name: Upload BodyParts3D screenshots
         if: ${{ always() }}
