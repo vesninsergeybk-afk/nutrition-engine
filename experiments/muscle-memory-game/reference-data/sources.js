@@ -79,6 +79,18 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "dr-jana-commons-2019": Object.freeze({
+    title: "Insertion of subscapularis muscle — proximal humerus",
+    year: 2019,
+    role: "Отдельная схема места прикрепления подлопаточной мышцы к малому бугорку плечевой кости",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Insertion-of-subscapularis-muscle.jpg",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-4.0",
+      attribution: "Doctor Jana / Wikimedia Commons",
+      note: "Страница файла Wikimedia Commons указывает лицензию Creative Commons Attribution-ShareAlike 4.0 International.",
+    }),
+  }),
+
   "gray-1918-plate-389": Object.freeze({
     title: "Gray's Anatomy, plate 389 — deep muscles of the back",
     year: 1918,
