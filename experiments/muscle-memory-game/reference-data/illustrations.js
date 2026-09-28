@@ -37,15 +37,23 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "kind": "regional-plate",
     "regionIds": [
       "back-shoulder",
-      "thorax-abdomen"
+      "thorax-abdomen",
+      "upper-limb"
     ],
     "focusStructureIds": [
       "serratus-anterior",
-      "pectoralis-minor"
+      "pectoralis-minor",
+      "subscapularis",
+      "teres-major",
+      "deltoid",
+      "biceps-brachii",
+      "brachialis"
     ],
     "rightsStatus": "public-domain",
-    "assetPath": null,
-    "status": "source-verified-asset-pending"
+    "assetPath": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Gray411.png",
+    "altRu": "Передняя стенка подмышечной области и плечевого пояса после удаления большой грудной мышцы: видны передняя зубчатая, малая грудная, подлопаточная и соседние мышцы",
+    "captionRu": "Gray, plate 411: передняя стенка подмышечной области, мышцы грудной клетки, лопатки и плеча. Public domain.",
+    "status": "asset-ready"
   },
   {
     "id": "gray-412-posterior-shoulder",
