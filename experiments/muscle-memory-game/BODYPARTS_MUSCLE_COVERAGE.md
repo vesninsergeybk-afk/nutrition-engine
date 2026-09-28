@@ -24,3 +24,10 @@ The complete machine-readable inventory is `bodyparts-muscle-coverage.json`.
 - Foot: separate right/left similarity registration fitted to talus, calcaneus and five metatarsals. Fitted bone-center RMS is about 0.91-0.95 mm; held-out neighboring muscle-center checks are approximately 0.93-4.52 mm.
 
 No missing muscle is added merely because its name is absent from the `muscular` system. FMA identity is checked across the entire 4.0 atlas first, which prevents duplicates of muscles that BodyParts3D mislabeled as `skeletal` or `connective`.
+
+
+## Intrinsic hand note
+
+The pinned BodyParts3D 4.0 atlas contains bilateral meshes for abductor digiti minimi of hand, flexor digiti minimi brevis of hand, opponens digiti minimi of hand, and the palmar and dorsal interosseous sets. Their source names are explicitly mapped to the canonical hand reference cards and covered by regression tests.
+
+No separate palmaris brevis mesh was found in the audited BodyParts3D 3.0 muscle tree or the pinned BodyParts3D 4.0 atlas. The trainer must not substitute a neighbouring hypothenar muscle for it. Its anatomical reference card and 2D illustration remain valid independently of 3D availability.
