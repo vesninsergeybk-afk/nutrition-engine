@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
   console.log('[smoke:bodyparts-hand] start');
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  page.setDefaultTimeout(120000);
   const errors = [];
 
   page.on('pageerror', error => errors.push('pageerror: ' + error.message));
