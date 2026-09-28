@@ -9,6 +9,8 @@ on:
       - "tools/packed/import-v15/**"
       - "tools/normalize_external_food_import_v15.py"
       - "config/external-food-import-provenance-extension-v15.json"
+      - "config/external-food-step4b-provenance-contract-v15.json"
+      - "tools/resolve_external_food_provenance_step4b_v15.py"
       - ".github/workflows/external-food-import-prep-v15.yml"
   workflow_dispatch:
 
