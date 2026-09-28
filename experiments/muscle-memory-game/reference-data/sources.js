@@ -1174,6 +1174,17 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-hand-focused-commons": Object.freeze({
+    title: "Gray's Anatomy — focused intrinsic hand muscle illustrations",
+    year: 1918,
+    role: "Набор отдельных учебниковых изображений собственных мышц кисти, выделенных на основе рисунков Gray's Anatomy",
+    sourcePage: "https://commons.wikimedia.org/wiki/Category:Muscles_of_the_human_hand",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Используемые файлы на Wikimedia Commons являются производными от Gray's Anatomy и отмечены как Public Domain.",
+    }),
+  }),
+
   "ncbi-masseter": Object.freeze({
     title: "StatPearls: Anatomy, Head and Neck, Masseter Muscle",
     role: "Современная сверка жевательной мышцы",
