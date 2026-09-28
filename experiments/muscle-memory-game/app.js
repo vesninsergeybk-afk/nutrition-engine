@@ -8151,11 +8151,11 @@ function structureIdFromHit(hit) {
 let lastCanvasSelectionAt = 0;
 let lastCanvasPointerType = null;
 
-function selectVisibleMuscleAtClientPoint(clientX, clientY, inputLabel = "pointer") {
-  if (!anatomyMesh || appMode !== "explore") return false;
+function visibleMuscleHitAtClientPoint(clientX, clientY) {
+  if (!anatomyMesh) return null;
 
   const rect = renderer.domElement.getBoundingClientRect();
-  if (!rect.width || !rect.height) return false;
+  if (!rect.width || !rect.height) return null;
 
   pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
   pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
@@ -8166,10 +8166,58 @@ function selectVisibleMuscleAtClientPoint(clientX, clientY, inputLabel = "pointe
     const sid = structureIdFromHit(candidateHit);
     return sid != null && structureVisibility[sid] !== false;
   });
-  if (!hit) return false;
+  if (!hit) return null;
 
-  const sid = structureIdFromHit(hit);
-  selectExploreStructure(sid, muscleHits);
+  return { sid: structureIdFromHit(hit), muscleHits };
+}
+
+function selectVisibleMuscleAtClientPoint(clientX, clientY, inputLabel = "pointer") {
+  if (appMode !== "explore") return false;
+  const candidate = visibleMuscleHitAtClientPoint(clientX, clientY);
+  if (!candidate) return false;
+
+  selectExploreStructure(candidate.sid, candidate.muscleHits);
+  canvas.dataset.lastSelectionInput = inputLabel;
+  lastCanvasSelectionAt = performance.now();
+  return true;
+}
+
+function selectVisibleMuscleNearClientPoint(
+  clientX,
+  clientY,
+  inputLabel = "touch",
+  radiusPx = 18
+) {
+  if (!anatomyMesh || appMode !== "explore") return false;
+
+  // Do not let the first halo sample steal the tap from the muscle under the
+  // fingertip. Collect all nearby hits and choose the closest screen sample.
+  // This matters for adjacent small structures in the face, arm and chest.
+  const diagonalPx = Math.round(radiusPx * 0.7);
+  const offsets = [
+    [0, 0],
+    [-radiusPx, 0],
+    [radiusPx, 0],
+    [0, -radiusPx],
+    [0, radiusPx],
+    [-diagonalPx, -diagonalPx],
+    [diagonalPx, -diagonalPx],
+    [-diagonalPx, diagonalPx],
+    [diagonalPx, diagonalPx],
+  ];
+
+  let best = null;
+  for (const [dx, dy] of offsets) {
+    const candidate = visibleMuscleHitAtClientPoint(clientX + dx, clientY + dy);
+    if (!candidate) continue;
+    const distanceSq = dx * dx + dy * dy;
+    if (!best || distanceSq < best.distanceSq) {
+      best = { ...candidate, distanceSq };
+    }
+  }
+  if (!best) return false;
+
+  selectExploreStructure(best.sid, best.muscleHits);
   canvas.dataset.lastSelectionInput = inputLabel;
   lastCanvasSelectionAt = performance.now();
   return true;
@@ -8196,31 +8244,11 @@ function onPointerDown(event) {
   // later event. A subsequent drag still rotates normally; multi-touch is
   // excluded above. Pointer-up remains as the mouse/pen path and as a fallback.
   if (event.pointerType === "touch" && appMode === "explore" && anatomyMesh) {
-    const touchDownRadiusPx = 16;
-    const touchDownDiagonalPx = Math.round(touchDownRadiusPx * 0.7);
-    const touchDownOffsets = [
-      [0, 0],
-      [-touchDownRadiusPx, 0],
-      [touchDownRadiusPx, 0],
-      [0, -touchDownRadiusPx],
-      [0, touchDownRadiusPx],
-      [-touchDownDiagonalPx, -touchDownDiagonalPx],
-      [touchDownDiagonalPx, -touchDownDiagonalPx],
-      [-touchDownDiagonalPx, touchDownDiagonalPx],
-      [touchDownDiagonalPx, touchDownDiagonalPx],
-    ];
-
-    for (const [dx, dy] of touchDownOffsets) {
-      if (
-        selectVisibleMuscleAtClientPoint(
-          event.clientX + dx,
-          event.clientY + dy,
-          "touch-down"
-        )
-      ) {
-        break;
-      }
-    }
+    selectVisibleMuscleNearClientPoint(
+      event.clientX,
+      event.clientY,
+      "touch-down"
+    );
   }
 }
 
@@ -8278,32 +8306,14 @@ function onPointerUp(event) {
   // sample a very small screen-space halo and prefer a visible muscle hit before
   // falling through to bones/support layers. This does not run after a drag.
   if (start.pointerType === "touch") {
-    // Approximate a fingertip, not a mouse cursor. The center remains first so
-    // precise taps keep their exact target; the surrounding samples only help
-    // when the finger lands a few pixels beside a narrow visible muscle.
-    const touchRadiusPx = 16;
-    const touchDiagonalPx = Math.round(touchRadiusPx * 0.7);
-    const touchOffsets = [
-      [0, 0],
-      [-touchRadiusPx, 0],
-      [touchRadiusPx, 0],
-      [0, -touchRadiusPx],
-      [0, touchRadiusPx],
-      [-touchDiagonalPx, -touchDiagonalPx],
-      [touchDiagonalPx, -touchDiagonalPx],
-      [-touchDiagonalPx, touchDiagonalPx],
-      [touchDiagonalPx, touchDiagonalPx],
-    ];
-    for (const [dx, dy] of touchOffsets) {
-      if (
-        selectVisibleMuscleAtClientPoint(
-          event.clientX + dx,
-          event.clientY + dy,
-          "touch"
-        )
-      ) {
-        return;
-      }
+    if (
+      selectVisibleMuscleNearClientPoint(
+        event.clientX,
+        event.clientY,
+        "touch"
+      )
+    ) {
+      return;
     }
 
     pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -10615,31 +10625,15 @@ renderer.domElement.addEventListener("click", (event) => {
   if (!coarsePointer && lastCanvasPointerType !== "touch") return;
   if (performance.now() - lastCanvasSelectionAt < 280) return;
 
-  const fallbackRadiusPx = 16;
-  const fallbackDiagonalPx = Math.round(fallbackRadiusPx * 0.7);
-  const fallbackOffsets = [
-    [0, 0],
-    [-fallbackRadiusPx, 0],
-    [fallbackRadiusPx, 0],
-    [0, -fallbackRadiusPx],
-    [0, fallbackRadiusPx],
-    [-fallbackDiagonalPx, -fallbackDiagonalPx],
-    [fallbackDiagonalPx, -fallbackDiagonalPx],
-    [-fallbackDiagonalPx, fallbackDiagonalPx],
-    [fallbackDiagonalPx, fallbackDiagonalPx],
-  ];
-
-  for (const [dx, dy] of fallbackOffsets) {
-    if (
-      selectVisibleMuscleAtClientPoint(
-        event.clientX + dx,
-        event.clientY + dy,
-        "touch-fallback"
-      )
-    ) {
-      event.preventDefault();
-      return;
-    }
+  if (
+    selectVisibleMuscleNearClientPoint(
+      event.clientX,
+      event.clientY,
+      "touch-fallback"
+    )
+  ) {
+    event.preventDefault();
+    return;
   }
 });
 renderer.domElement.addEventListener("webglcontextlost", (event) => {
