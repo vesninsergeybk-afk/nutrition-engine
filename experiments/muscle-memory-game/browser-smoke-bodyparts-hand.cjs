@@ -69,15 +69,30 @@ const assert = require('node:assert/strict');
     );
   }
 
-  for (const [query, referenceId] of [
-    ['abductor digiti minimi of right hand', 'abductor-digiti-minimi-hand'],
-    ['flexor digiti minimi brevis of left hand', 'flexor-digiti-minimi-brevis-hand'],
-    ['opponens digiti minimi of right hand', 'opponens-digiti-minimi'],
-    ['set of palmar interossei of left hand', 'palmar-interossei'],
-    ['set of dorsal interossei of right hand', 'dorsal-interossei'],
+  console.log('[smoke:bodyparts-hand] representative interactive 3D card');
+  await selectMuscle(
+    'abductor digiti minimi of right hand',
+    'abductor-digiti-minimi-hand'
+  );
+
+  for (const [query, expectedLabel] of [
+    ['flexor digiti minimi brevis of left hand', /Короткий сгибатель мизинца кисти/i],
+    ['opponens digiti minimi of right hand', /противопоставляющая мизинец/i],
+    ['set of palmar interossei of left hand', /Ладонные межкостные мышцы кисти/i],
+    ['set of dorsal interossei of right hand', /Тыльные межкостные мышцы кисти/i],
   ]) {
-    console.log('[smoke:bodyparts-hand] ' + query);
-    await selectMuscle(query, referenceId);
+    console.log('[smoke:bodyparts-hand] searchable mesh: ' + query);
+    await page.fill('#structure-search', query);
+    await page.waitForFunction(
+      () => document.querySelectorAll('.search-result').length > 0,
+      null,
+      { timeout: 15000 }
+    );
+    assert.match(
+      await page.locator('.search-result').first().innerText(),
+      expectedLabel,
+      query + ': wrong or missing user-facing search result'
+    );
   }
 
   await page.fill('#structure-search', 'palmaris brevis');
