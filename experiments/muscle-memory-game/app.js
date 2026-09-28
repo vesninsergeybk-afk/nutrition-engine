@@ -8147,7 +8147,8 @@ function onPointerDown(event) {
   activePointers.set(event.pointerId, {
     x: event.clientX,
     y: event.clientY,
-    threshold: event.pointerType === "touch" ? 12 : 5,
+    threshold: event.pointerType === "touch" ? 20 : 5,
+    pointerType: event.pointerType,
   });
 
   if (activePointers.size > 1) tapBlocked = true;
@@ -8200,7 +8201,45 @@ function onPointerUp(event) {
     ...studyMeshes().filter((mesh) => mesh.visible),
     ...[...referenceMeshes.values()].filter((mesh) => mesh.visible),
   ].filter(Boolean);
-  const hits = raycaster.intersectObjects(pickables, false);
+
+  let hits = raycaster.intersectObjects(pickables, false);
+
+  // A finger is much less precise than a mouse cursor. For a genuine touch tap,
+  // sample a very small screen-space halo and prefer a visible muscle hit before
+  // falling through to bones/support layers. This does not run after a drag.
+  if (start.pointerType === "touch") {
+    const touchRadiusPx = 11;
+    const touchOffsets = [
+      [0, 0],
+      [-touchRadiusPx, 0],
+      [touchRadiusPx, 0],
+      [0, -touchRadiusPx],
+      [0, touchRadiusPx],
+    ];
+    let nearbyMuscleHit = null;
+    for (const [dx, dy] of touchOffsets) {
+      pointer.x = ((event.clientX + dx - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((event.clientY + dy - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const muscleHits = raycaster.intersectObject(anatomyMesh, false);
+      nearbyMuscleHit = muscleHits.find((hit) => {
+        const sid = structureIdFromHit(hit);
+        return sid != null && structureVisibility[sid] !== false;
+      });
+      if (nearbyMuscleHit) break;
+    }
+    if (nearbyMuscleHit) {
+      const sid = structureIdFromHit(nearbyMuscleHit);
+      selectExploreStructure(sid, [nearbyMuscleHit]);
+      canvas.dataset.lastSelectionInput = "touch";
+      return;
+    }
+
+    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    hits = raycaster.intersectObjects(pickables, false);
+  }
 
   for (const hit of hits) {
     if (hit.object === anatomyMesh) {
