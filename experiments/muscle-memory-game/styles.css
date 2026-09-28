@@ -2416,3 +2416,31 @@ body:not(.motion-mode) .comparison-pane-static {
     gap: 2px;
   }
 }
+
+/* Mobile Atlas: the information card must never cover the interactive anatomy. */
+@media (max-width: 920px) {
+  body:not(.session-active) .panel .question-card,
+  body:not(.motion-mode):not(.session-active) .panel .question-card {
+    position: static;
+    inset: auto;
+    max-height: none;
+    overflow: visible;
+    margin: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  body:not(.motion-mode):not(.session-active) .viewer-wrap {
+    min-height: 68dvh;
+  }
+}
+
+@media (max-width: 620px) {
+  body:not(.motion-mode):not(.session-active) .viewer-wrap {
+    min-height: 70dvh;
+  }
+
+  body:not(.motion-mode):not(.session-active) .panel {
+    padding-top: 8px;
+  }
+}
