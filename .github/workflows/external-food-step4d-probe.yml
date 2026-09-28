@@ -1,0 +1,81 @@
+name: External Food Step 4D Semantic Probe
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "tools/probe_external_food_semantics_step4d_v15.py"
+      - ".github/workflows/external-food-step4d-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download last successful Step 4C artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p staging/import-v15
+          gh run download 36403150075 \
+            --repo "${{ github.repository }}" \
+            --name external-food-import-preparation-v15 \
+            --dir staging/import-v15
+
+      - name: Download official FPID and FNDDS sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/external-food-sources
+          curl -L --fail --retry 3 --retry-delay 2 \
+            -o .cache/external-food-sources/fndds.zip \
+            "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip"
+          curl -L --fail --retry 3 --retry-delay 2 \
+            -o .cache/external-food-sources/fpid.xls \
+            "https://www.ars.usda.gov/ARSUserFiles/80400530/apps/FPID_1718.xls"
+
+      - name: Install parser dependencies
+        run: python3 -m pip install --quiet pandas xlrd
+
+      - name: Run Step 4D semantic probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/probe_external_food_semantics_step4d_v15.py \
+            --proposals staging/import-v15/step4c/import_proposals_v15_step4c.json \
+            --fndds .cache/external-food-sources/fndds.zip \
+            --fpid .cache/external-food-sources/fpid.xls \
+            --out-dir staging/import-v15/step4d-probe
+
+      - name: Assert probe scope
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          p=json.load(open("staging/import-v15/step4d-probe/step4d_semantic_probe.json",encoding="utf-8"))
+          s=json.load(open("staging/import-v15/step4d-probe/step4d_source_schema.json",encoding="utf-8"))
+          assert len(p)==33, len(p)
+          assert s["targets"]==33
+          assert s["fpid_rows_indexed"]>0
+          assert s["fndds_rows_indexed"]>0
+          print(json.dumps(s,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Upload Step 4D probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-step4d-semantic-probe
+          path: staging/import-v15/step4d-probe/
+          if-no-files-found: error
+          retention-days: 14
