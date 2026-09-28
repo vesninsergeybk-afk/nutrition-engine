@@ -66,6 +66,44 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#toggle-skeleton').isVisible(), true);
   assert.equal(await page.locator('#display-panel-toggle').isVisible(), true);
 
+  // A coarse-pointer click without a preceding pointerup is the Android/WebView
+  // fallback path. It must still be able to select a visible muscle.
+  const fallbackTargets = await page.evaluate(() => {
+    const canvas = document.querySelector('#viewer');
+    const rect = canvas.getBoundingClientRect();
+    const samples = [
+      [0.50, 0.30], [0.42, 0.34], [0.58, 0.34],
+      [0.50, 0.40], [0.38, 0.42], [0.62, 0.42],
+      [0.46, 0.50], [0.54, 0.50],
+    ];
+    return samples.map(([x, y]) => ({
+      x: rect.left + rect.width * x,
+      y: rect.top + rect.height * y,
+    }));
+  });
+  let fallbackSelected = false;
+  for (const point of fallbackTargets) {
+    await page.evaluate(({ x, y }) => {
+      const canvas = document.querySelector('#viewer');
+      canvas.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+      }));
+    }, point);
+    await page.waitForTimeout(80);
+    if ((await page.locator('#viewer').getAttribute('data-last-selection-input')) === 'touch-fallback') {
+      fallbackSelected = true;
+      break;
+    }
+  }
+  assert.equal(
+    fallbackSelected,
+    true,
+    'Coarse-pointer click fallback could not select a visible muscle'
+  );
+
   // Real touch input, not a synthetic mouse click, must reach the canvas.
   const viewerBox = await page.locator('#viewer').boundingBox();
   assert.ok(viewerBox && viewerBox.width > 250 && viewerBox.height > 300);
