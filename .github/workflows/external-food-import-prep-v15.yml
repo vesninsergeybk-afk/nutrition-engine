@@ -91,6 +91,16 @@ jobs:
           print(json.dumps(r,ensure_ascii=False,indent=2))
           PY
 
+      - name: Step 4B resolve provenance schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/resolve_external_food_provenance_step4b_v15.py \
+            --proposals staging/import-v15/import_proposals_v15.json \
+            --production-policy config/product-provenance-policy.v5.3.210-p1.3.json \
+            --contract config/external-food-step4b-provenance-contract-v15.json \
+            --out-dir staging/import-v15/step4b
+
       - name: Normalize safe staging subset
         shell: bash
         run: |
