@@ -2888,18 +2888,15 @@ function renderMobileContextTrail() {
     return;
   }
 
+  const stepPx = 44;
+  const edgePx = 12;
   let track = mobileContextTrail.querySelector(".mobile-context-track");
   let thumb = mobileContextTrail.querySelector(".mobile-context-thumb");
   let previousThumbX = null;
 
-  // Capture the actual on-screen thumb position before changing the number of
-  // steps. Percent positions cannot animate correctly when the denominator
-  // (context depth) changes at the same time.
   if (track && thumb) {
-    const trackRect = track.getBoundingClientRect();
-    const thumbRect = thumb.getBoundingClientRect();
-    previousThumbX =
-      thumbRect.left + thumbRect.width / 2 - trackRect.left;
+    previousThumbX = Number.parseFloat(thumb.style.left);
+    if (!Number.isFinite(previousThumbX)) previousThumbX = edgePx + mobileContextVisualDepth * stepPx;
   }
 
   if (!track) {
@@ -2918,14 +2915,23 @@ function renderMobileContextTrail() {
     mobileContextTrail.replaceChildren(track);
   }
 
-  for (const node of [...track.querySelectorAll(".mobile-context-node")]) node.remove();
-  track.style.setProperty("--context-depth", String(Math.max(depth, 1)));
+  const targetX = edgePx + depth * stepPx;
+  const trackWidth = edgePx * 2 + depth * stepPx;
+  track.style.width = trackWidth + "px";
+  track.style.minWidth = trackWidth + "px";
 
+  const rail = track.querySelector(".mobile-context-rail");
+  const progress = track.querySelector(".mobile-context-progress");
+  rail.style.left = edgePx + "px";
+  rail.style.right = edgePx + "px";
+  progress.style.width = Math.max(0, targetX - edgePx) + "px";
+
+  for (const node of [...track.querySelectorAll(".mobile-context-node")]) node.remove();
   for (let index = 0; index <= depth; index += 1) {
     const step = document.createElement("button");
     step.type = "button";
     step.className = "mobile-context-node" + (index === depth ? " active" : "");
-    step.style.setProperty("--context-index", String(index));
+    step.style.left = edgePx + index * stepPx + "px";
     step.setAttribute("aria-label", index === depth ? `Текущий уровень ${index + 1}` : `Вернуться к уровню ${index + 1}`);
     if (index < depth) step.addEventListener("click", () => restoreMobileIsolationLevel(index));
     else step.disabled = true;
@@ -2935,29 +2941,18 @@ function renderMobileContextTrail() {
     track.append(step);
   }
 
-  const targetNode = track.querySelector(".mobile-context-node.active");
-  const targetCenter = () => {
-    if (!targetNode) return 7;
-    const trackRect = track.getBoundingClientRect();
-    const nodeRect = targetNode.getBoundingClientRect();
-    return nodeRect.left + nodeRect.width / 2 - trackRect.left;
-  };
-
-  // Pin the thumb to its old physical pixel position first. Force layout so
-  // the browser commits that frame, then animate to the new node.
-  if (previousThumbX != null) {
-    thumb.style.left = previousThumbX + "px";
-    thumb.style.transition = "none";
-    void thumb.offsetWidth;
-  } else {
-    thumb.style.left = targetCenter() + "px";
-  }
+  if (previousThumbX == null) previousThumbX = edgePx;
+  thumb.style.transition = "none";
+  thumb.style.left = previousThumbX + "px";
+  void thumb.offsetWidth;
 
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       thumb.style.transition = "";
-      thumb.style.left = targetCenter() + "px";
+      thumb.style.left = targetX + "px";
       mobileContextVisualDepth = depth;
+      const targetScroll = Math.max(0, targetX - mobileContextTrail.clientWidth + 28);
+      mobileContextTrail.scrollTo({ left: targetScroll, behavior: "smooth" });
     });
   });
 }
