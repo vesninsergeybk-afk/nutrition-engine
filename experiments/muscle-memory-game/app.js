@@ -10764,8 +10764,6 @@ function animateMobileContextForward(done) {
   mobileContextAnimating = true;
   mobileContextTrail.hidden = false;
 
-  // Forward navigation owns a stable miniature timeline while it is moving.
-  // This also covers the first transition, where committed depth is still 0.
   let track = mobileContextTrail.querySelector(".mobile-context-track");
   if (!track) {
     track = document.createElement("div");
@@ -10804,38 +10802,46 @@ function animateMobileContextForward(done) {
     track.append(node);
   }
 
-  thumb.style.transition = "none";
+  // Draw the complete path before movement. Only the thumb moves; the line
+  // must not visually grow and drag the thumb with it.
   progress.style.transition = "none";
+  progress.style.width = Math.max(0, targetX - edgePx) + "px";
+  thumb.getAnimations().forEach((animation) => animation.cancel());
   thumb.style.setProperty("--thumb-x", String(startX));
   thumb.style.transform = `translate3d(${startX}px, 0, 0)`;
-  progress.style.width = Math.max(0, startX - edgePx) + "px";
-  void track.offsetWidth;
 
+  // Commit the start frame, then use WAAPI so accumulated CSS transition rules
+  // cannot collapse the forward motion into a single layout update.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      thumb.style.transition = "";
-      progress.style.transition = "";
-      thumb.style.setProperty("--thumb-x", String(targetX));
-      thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
-      progress.style.width = Math.max(0, targetX - edgePx) + "px";
+      const motion = thumb.animate(
+        [
+          { transform: `translate3d(${startX}px, 0, 0)` },
+          { transform: `translate3d(${targetX}px, 0, 0)` },
+        ],
+        {
+          duration: 680,
+          easing: "cubic-bezier(.22,.72,.22,1)",
+          fill: "forwards",
+        }
+      );
+
       track.querySelector(".mobile-context-node-pending")?.classList.add("arriving");
+
+      const finish = () => {
+        thumb.style.setProperty("--thumb-x", String(targetX));
+        thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
+        motion.cancel();
+        mobileContextVisualDepth = nextDepth;
+        mobileContextAnimating = false;
+        done();
+      };
+      motion.addEventListener("finish", finish, { once: true });
+      motion.addEventListener("cancel", () => {
+        if (mobileContextAnimating) finish();
+      }, { once: true });
     });
   });
-
-  let finished = false;
-  const finish = () => {
-    if (finished) return;
-    finished = true;
-    thumb.removeEventListener("transitionend", onEnd);
-    mobileContextVisualDepth = nextDepth;
-    mobileContextAnimating = false;
-    done();
-  };
-  const onEnd = (event) => {
-    if (event.propertyName === "transform") finish();
-  };
-  thumb.addEventListener("transitionend", onEnd);
-  window.setTimeout(finish, 700);
 }
 
 function captureMobileIsolationSnapshot(kind = "context") {
