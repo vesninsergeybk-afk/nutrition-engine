@@ -2514,3 +2514,39 @@ body:not(.motion-mode) .comparison-pane-static {
   }
   .mobile-muscle-actions button:disabled { opacity: .45; }
 }
+
+@media (max-width: 920px) {
+  body:not(.session-active):not(.motion-mode) .mobile-muscle-card:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 8px;
+    padding: 9px 10px;
+  }
+  .mobile-muscle-card-copy { width: 100%; }
+  .mobile-muscle-card-copy strong {
+    font-size: 14px;
+    line-height: 1.22;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+  .mobile-muscle-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .mobile-muscle-actions button {
+    flex: 0 0 auto;
+    min-height: 32px;
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+  .mobile-muscle-actions .mobile-back-context {
+    flex: 1 0 100%;
+    justify-self: stretch;
+    text-align: center;
+    font-weight: 700;
+  }
+}
