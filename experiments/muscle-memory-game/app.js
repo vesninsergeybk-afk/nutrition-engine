@@ -301,6 +301,12 @@ const showNearestMuscleButton = document.querySelector("#show-nearest-muscle");
 const peelSurfaceLayerButton = document.querySelector("#peel-surface-layer");
 const undoHideButton = document.querySelector("#undo-hide");
 const showAllButton = document.querySelector("#show-all");
+const mobileMuscleCard = document.querySelector("#mobile-muscle-card");
+const mobileMuscleKind = document.querySelector("#mobile-muscle-kind");
+const mobileMuscleName = document.querySelector("#mobile-muscle-name");
+const mobileHideMuscleButton = document.querySelector("#mobile-hide-muscle");
+const mobileIsolateMuscleButton = document.querySelector("#mobile-isolate-muscle");
+const mobileIsolateRegionButton = document.querySelector("#mobile-isolate-region");
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdedbd4);
@@ -2855,6 +2861,34 @@ function updateLayerButtons() {
     selectedExploreSid == null ||
     isolated ||
     structureVisibility[selectedExploreSid] === false;
+  syncMobileMuscleCard();
+}
+
+function syncMobileMuscleCard() {
+  if (!mobileMuscleCard) return;
+  const sid = selectedExploreSid;
+  const show = appMode === "explore" && sid != null && structureNames[sid];
+  mobileMuscleCard.hidden = !show;
+  if (!show) return;
+
+  const reference = muscleReferenceFor(structureNames[sid]);
+  mobileMuscleKind.textContent =
+    reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
+  mobileMuscleName.textContent = displayStructureName(sid);
+  mobileHideMuscleButton.disabled =
+    isolated || structureVisibility[sid] === false;
+  mobileIsolateMuscleButton.textContent =
+    isolated ? "Вернуть" : "Изолировать";
+
+  const target = learningTargetBySid.get(sid) || null;
+  const regionId = target?.region || "";
+  const canIsolateRegion =
+    regionId && regionId !== "all" &&
+    [...learningRegion.options].some((option) => option.value === regionId);
+  mobileIsolateRegionButton.hidden = !canIsolateRegion;
+  mobileIsolateRegionButton.dataset.region = canIsolateRegion ? regionId : "";
+  mobileIsolateRegionButton.textContent =
+    canIsolateRegion ? regionNameRu(regionId) : "Область";
 }
 
 function setStructureVisible(sid, visible) {
@@ -2980,6 +3014,7 @@ function hideSelectedStructure() {
   focusedStructureIds = [];
   focusSelectedButton.disabled = true;
   isolateButton.disabled = true;
+  syncMobileMuscleCard();
   questionLabelEl.textContent = "Слой скрыт";
   questionEl.textContent = displayStructureName(sid);
   feedbackEl.className = "feedback";
@@ -10571,6 +10606,19 @@ searchInput.addEventListener("keydown", (event) => {
     searchResults.replaceChildren();
     renderer.domElement.focus?.();
   }
+});
+
+mobileHideMuscleButton?.addEventListener("click", () => {
+  hideSelectedStructure();
+});
+mobileIsolateMuscleButton?.addEventListener("click", () => {
+  isolateButton.click();
+});
+mobileIsolateRegionButton?.addEventListener("click", () => {
+  const regionId = mobileIsolateRegionButton.dataset.region;
+  if (!regionId) return;
+  learningRegion.value = regionId;
+  learningRegion.dispatchEvent(new Event("change", { bubbles: true }));
 });
 
 isolateButton.addEventListener("click", () => {
