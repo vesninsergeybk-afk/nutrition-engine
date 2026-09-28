@@ -11,6 +11,8 @@ on:
       - "config/external-food-import-provenance-extension-v15.json"
       - "config/external-food-step4b-provenance-contract-v15.json"
       - "tools/resolve_external_food_provenance_step4b_v15.py"
+      - "config/external-food-step4c-missing-nutrient-contract-v15.json"
+      - "tools/resolve_external_food_missing_nutrients_step4c_v15.py"
       - ".github/workflows/external-food-import-prep-v15.yml"
   workflow_dispatch:
 
@@ -101,6 +103,17 @@ jobs:
             --contract config/external-food-step4b-provenance-contract-v15.json \
             --out-dir staging/import-v15/step4b
 
+      - name: Step 4C resolve exact missing nutrients
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/resolve_external_food_missing_nutrients_step4c_v15.py \
+            --proposals staging/import-v15/step4b/import_proposals_v15_step4b.json \
+            --source-staging staging/external-food-sources/external_foods_staging.jsonl \
+            --members staging/external-food-sources/v15/external_food_family_members.jsonl \
+            --contract config/external-food-step4c-missing-nutrient-contract-v15.json \
+            --out-dir staging/import-v15/step4c
+
       - name: Normalize safe staging subset
         shell: bash
         run: |
@@ -145,6 +158,13 @@ jobs:
           for k,v in sorted(r["status_counts"].items()): print(f"- {k}: {v}")
           print("- Production main changed: NO")
           print("- No null-to-zero nutrient coercion")
+          try:
+              c=json.load(open("staging/import-v15/step4c/step4c_missing_nutrient_gate_report.json",encoding="utf-8"))
+              print(f"- Step 4C exact donor fills: {c['donor_fields_filled']}")
+              print(f"- Step 4C missing-nutrient blockers: {c['missing_nutrient_blockers_before']} -> {c['missing_nutrient_blockers_after']}")
+              print(f"- Step 4C newly complete: {', '.join(c['fully_resolved_missing_nutrient_families'])}")
+          except FileNotFoundError:
+              pass
           try:
               b=json.load(open("staging/import-v15/stage-b1/stage_b1_report.json",encoding="utf-8"))
               print(f"- Staging B1 safe products: {b['staging_products']}")
