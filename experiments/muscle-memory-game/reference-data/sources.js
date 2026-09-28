@@ -847,6 +847,15 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+  "gerrish-1902-fig-287": Object.freeze({
+    title: "Gerrish’s Text-book of Anatomy (1902), fig. 287",
+    year: 1902,
+    role: "Схема контуров и костных зон прикрепления большой и малой ромбовидных мышц",
+    url: "https://commons.wikimedia.org/wiki/File:Gerrish%27s_Text-book_of_Anatomy_(1902)_-_Fig._287.png",
+    rightsStatus: "public-domain",
+    rights: Object.freeze({ illustrations: "public-domain" }),
+  }),
+
   "ncbi-thorax-muscles": Object.freeze({
     title: "StatPearls: Anatomy, Thorax, Muscles",
     role: "Сверка грудных мышц, межрёберных мышц и диафрагмы",
