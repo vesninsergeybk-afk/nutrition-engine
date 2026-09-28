@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "policy_version": "external-food-step4c-missing-nutrients-v15",
+  "step": "4C",
+  "status": "staging_only",
+  "invariant": "Only fill a null nutrient from an explicitly approved exact-equivalent official source row. Never overwrite a non-null value. Never coerce unresolved null to zero.",
+  "approved_exact_donors": {
+    "oil avocado": [
+      {
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "450",
+        "expected_name": "Vegetable oil, avocado"
+      }
+    ],
+    "oil mustard": [
+      {
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "452",
+        "expected_name": "Vegetable oil, mustard"
+      }
+    ],
+    "oil hazelnut": [
+      {
+        "source_registry_id": "GERMANY_BLS",
+        "source_record_id": "Q140000",
+        "expected_name": "Hazelnut oil"
+      },
+      {
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "443",
+        "expected_name": "Vegetable oil, hazelnut"
+      }
+    ],
+    "oil peanut": [
+      {
+        "source_registry_id": "USDA_FDC",
+        "source_record_id": "171410",
+        "expected_name": "Oil, peanut, salad or cooking"
+      },
+      {
+        "source_registry_id": "GERMANY_BLS",
+        "source_record_id": "Q210000",
+        "expected_name": "Peanut oil"
+      }
+    ],
+    "oil cocoa butter": [
+      {
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "429",
+        "expected_name": "Vegetable oil, cocoa butter"
+      }
+    ],
+    "oil rice bran": [
+      {
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "416",
+        "expected_name": "Vegetable oil, rice bran"
+      }
+    ],
+    "oil apricot kernel": [
+      {
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "441",
+        "expected_name": "Vegetable oil, apricot kernel"
+      }
+    ]
+  },
+  "forbidden_semantic_widening_examples": [
+    "generic flour -> whole-groat/partially-debranned/typed flour",
+    "raw fish -> salted/cooked fish",
+    "dry legume -> boiled/raw legume",
+    "sweetened product -> assumed zero added sugar"
+  ]
+}
