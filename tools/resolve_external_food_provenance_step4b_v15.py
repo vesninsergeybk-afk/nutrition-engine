@@ -168,6 +168,30 @@ def main():
     if total_classified != expected_total:
         errors.append(f"classification_count:{total_classified}!={expected_total}")
 
+    expected_methods = {
+        "ASSUMED_ZERO": 85,
+        "CALCULATED": 174,
+        "MISSING": 219,
+        "SOURCE_REPORTED": 2009,
+        "SOURCE_REPORTED_ZERO": 450,
+    }
+    expected_status = {
+        "BLOCKED_OTHER_GATES": 60,
+        "READY_FOR_NEXT_STAGING_GATE": 29,
+    }
+    expected_remaining = {
+        "FNDDS_EXACT_NAME_AMBIGUOUS": 1,
+        "FPID_EXACT_NAME_AMBIGUOUS": 2,
+        "HEI_EQUIVALENTS_UNRESOLVED": 30,
+        "MISSING_CALCULATOR_NUTRIENTS": 54,
+    }
+    if dict(method_counts) != expected_methods:
+        errors.append(f"method_counts:{dict(method_counts)}")
+    if dict(status_counts) != expected_status:
+        errors.append(f"status_counts:{dict(status_counts)}")
+    if dict(remaining_issue_counts) != expected_remaining:
+        errors.append(f"remaining_issue_counts:{dict(remaining_issue_counts)}")
+
     report = {
         "schema_version": 1,
         "policy_version": contract["policy_version"],
