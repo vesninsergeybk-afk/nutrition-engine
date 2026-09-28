@@ -65,8 +65,8 @@ jobs:
           import json
           p=json.load(open("staging/import-v15/step4d-probe/step4d_semantic_probe.json",encoding="utf-8"))
           s=json.load(open("staging/import-v15/step4d-probe/step4d_source_schema.json",encoding="utf-8"))
-          assert len(p)==33, len(p)
-          assert s["targets"]==33
+          assert len(p)==30, len(p)
+          assert s["targets"]==30
           assert s["fpid_rows_indexed"]>0
           assert s["fndds_rows_indexed"]>0
           print(json.dumps(s,ensure_ascii=False,indent=2))
