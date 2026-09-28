@@ -67,7 +67,8 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#display-panel-toggle').isVisible(), true);
 
   // A coarse-pointer click without a preceding pointerup is the Android/WebView
-  // fallback path. It must still be able to select a visible muscle.
+  // fallback path. It must still be able to select a visible muscle before the
+  // ordinary touchscreen.tap contract is exercised below.
   const fallbackTargets = await page.evaluate(() => {
     const canvas = document.querySelector('#viewer');
     const rect = canvas.getBoundingClientRect();
