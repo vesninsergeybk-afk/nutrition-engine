@@ -2892,11 +2892,11 @@ function renderMobileContextTrail() {
   const edgePx = 12;
   let track = mobileContextTrail.querySelector(".mobile-context-track");
   let thumb = mobileContextTrail.querySelector(".mobile-context-thumb");
-  let previousThumbX = null;
+  let previousThumbX = edgePx + mobileContextVisualDepth * stepPx;
 
   if (track && thumb) {
-    previousThumbX = Number.parseFloat(thumb.style.left);
-    if (!Number.isFinite(previousThumbX)) previousThumbX = edgePx + mobileContextVisualDepth * stepPx;
+    const inlineX = Number.parseFloat(thumb.style.getPropertyValue("--thumb-x"));
+    if (Number.isFinite(inlineX)) previousThumbX = inlineX;
   }
 
   if (!track) {
@@ -2924,7 +2924,6 @@ function renderMobileContextTrail() {
   const progress = track.querySelector(".mobile-context-progress");
   rail.style.left = edgePx + "px";
   rail.style.right = edgePx + "px";
-  progress.style.width = Math.max(0, targetX - edgePx) + "px";
 
   for (const node of [...track.querySelectorAll(".mobile-context-node")]) node.remove();
   for (let index = 0; index <= depth; index += 1) {
@@ -2941,19 +2940,18 @@ function renderMobileContextTrail() {
     track.append(step);
   }
 
-  if (previousThumbX == null) previousThumbX = edgePx;
-  thumb.style.transition = "none";
-  thumb.style.left = previousThumbX + "px";
+  // Animate only the transform of one persistent thumb. The track itself does
+  // not scroll during this movement, so container motion cannot cancel it.
+  thumb.style.setProperty("--thumb-x", String(previousThumbX));
+  thumb.style.transform = `translate3d(${previousThumbX}px, 0, 0)`;
+  progress.style.width = Math.max(0, previousThumbX - edgePx) + "px";
   void thumb.offsetWidth;
 
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      thumb.style.transition = "";
-      thumb.style.left = targetX + "px";
-      mobileContextVisualDepth = depth;
-      const targetScroll = Math.max(0, targetX - mobileContextTrail.clientWidth + 28);
-      mobileContextTrail.scrollTo({ left: targetScroll, behavior: "smooth" });
-    });
+    thumb.style.setProperty("--thumb-x", String(targetX));
+    thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
+    progress.style.width = Math.max(0, targetX - edgePx) + "px";
+    mobileContextVisualDepth = depth;
   });
 }
 
