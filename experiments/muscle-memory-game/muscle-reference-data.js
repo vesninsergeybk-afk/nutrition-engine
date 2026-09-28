@@ -248,6 +248,18 @@ function candidateCard(candidate, mapping = null) {
     illustrations.push(item);
   }
 
+  const referenceCoverage = Object.freeze({
+    actions: Boolean(card.sections.actions?.length),
+    origin: Boolean(card.sections.attachments.originRu?.length),
+    insertion: Boolean(card.sections.attachments.insertionRu?.length),
+    innervation: Boolean(card.sections.innervation),
+    orientation: Boolean(card.sections.orientation),
+    topography: Boolean(card.sections.landmarks?.length || card.sections.relations?.length),
+    exactArt: Boolean(primaryIllustration),
+    atlasArt: illustrations.length > 0,
+    galleryCount: illustrations.length + (primaryIllustration ? 1 : 0),
+  });
+
   return Object.freeze({
     id: card.id,
     titleRu: card.titleRu,
@@ -270,6 +282,7 @@ function candidateCard(candidate, mapping = null) {
     sources: card.sections.sources,
     illustrations: Object.freeze(illustrations),
     primaryIllustration,
+    referenceCoverage,
     verificationStatus: candidate.structure.verification?.status || null,
     modelCoverage,
     modelLabelRu: mapping?.labelRu || null,
