@@ -35,6 +35,12 @@ for (const [sourceName, expectedId] of [
   ["Right teres minor", "teres-minor"],
   ["Acromial part of right deltoid", "deltoid"],
   ["Right biceps brachii", "biceps-brachii"],
+  ["Abductor digiti minimi of right hand", "abductor-digiti-minimi-hand"],
+  ["Abductor digiti minimi of left hand", "abductor-digiti-minimi-hand"],
+  ["Flexor digiti minimi brevis of right hand", "flexor-digiti-minimi-brevis-hand"],
+  ["Opponens digiti minimi of left hand", "opponens-digiti-minimi"],
+  ["Set of palmar interossei of right hand", "palmar-interossei"],
+  ["Set of dorsal interossei of left hand", "dorsal-interossei"],
 ]) {
   const reference = muscleReferenceFor(sourceName);
   assert(reference?.id === expectedId, sourceName + " did not resolve to " + expectedId);
