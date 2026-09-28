@@ -1141,6 +1141,39 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "CC BY-SA 4.0" }),
   }),
 
+  "grant-1962-intercostal-space": Object.freeze({
+    title: "Grant's Atlas of Anatomy — diagram of an intercostal space",
+    year: 1962,
+    role: "Послойная схема межрёберного пространства с наружным, внутренним и самым внутренним межрёберными слоями",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Grant_1962_405.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain (US copyright not renewed).",
+    }),
+  }),
+
+  "testut-1887-pyramidalis": Object.freeze({
+    title: "Testut, Traité d'anatomie humaine — pyramidalis muscle",
+    year: 1887,
+    role: "Анатомическая иллюстрация пирамидальной мышцы и соседних структур передней брюшной стенки",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:PyramidalisMuscle.jpg",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain.",
+    }),
+  }),
+
+  "macleod-1918-subcostales": Object.freeze({
+    title: "Physiology and biochemistry in modern medicine — lower thorax",
+    year: 1918,
+    role: "Историческая схема внутренней поверхности нижней половины грудной клетки с обозначенными подрёберными мышцами",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Physiology_and_biochemistry_in_modern_medicine_(1918)_(14758349676).jpg",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Издание 1918 года; Wikimedia Commons распространяет скан как материал без известных авторско-правовых ограничений.",
+    }),
+  }),
+
   "ncbi-masseter": Object.freeze({
     title: "StatPearls: Anatomy, Head and Neck, Masseter Muscle",
     role: "Современная сверка жевательной мышцы",
