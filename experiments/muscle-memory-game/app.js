@@ -2872,10 +2872,11 @@ function updateLayerButtons() {
 }
 
 function animateMobileContextToDepth(targetDepth, done) {
+  if (mobileContextAnimating) return;
   const track = mobileContextTrail?.querySelector(".mobile-context-track");
   const thumb = track?.querySelector(".mobile-context-thumb");
   const progress = track?.querySelector(".mobile-context-progress");
-  if (!track || !thumb || !progress || mobileContextAnimating) {
+  if (!track || !thumb || !progress) {
     done();
     return;
   }
@@ -2928,6 +2929,7 @@ function animateMobileContextToDepth(targetDepth, done) {
 }
 
 function restoreMobileIsolationLevel(level) {
+  if (mobileContextAnimating) return;
   const depth = mobileIsolationStack.length;
   if (!Number.isInteger(level) || level < 0 || level >= depth) return;
   const snapshot = mobileIsolationStack[level];
@@ -10906,7 +10908,7 @@ function restoreMobileIsolationState(snapshot) {
 }
 
 function restoreMobileIsolationStep() {
-  if (!mobileIsolationStack.length) return;
+  if (mobileContextAnimating || !mobileIsolationStack.length) return;
   const targetDepth = mobileIsolationStack.length - 1;
   const snapshot = mobileIsolationStack[targetDepth];
   animateMobileContextToDepth(targetDepth, () => {
@@ -10917,7 +10919,7 @@ function restoreMobileIsolationStep() {
 }
 
 function restoreMobileIsolationRoot() {
-  if (!mobileIsolationStack.length) return;
+  if (mobileContextAnimating || !mobileIsolationStack.length) return;
   const root = mobileIsolationStack[0];
   animateMobileContextToDepth(0, () => {
     mobileIsolationStack = [];
