@@ -306,9 +306,18 @@
           </figure>
 
           <div id="structure-reference-atlas-block" class="structure-reference-atlas-block" hidden>
-            <strong>Атласная иллюстрация</strong>
-            <span>Показывает выбранную область и соседние структуры; индивидуальная справка по мышце приведена ниже.</span>
-            <div id="structure-reference-illustrations" class="structure-reference-source-list"></div>
+            <div class="structure-reference-gallery-head">
+              <div>
+                <strong>Анатомическая галерея</strong>
+                <span>Иллюстрации выбранной мышцы, её прикреплений и окружающих костных ориентиров.</span>
+              </div>
+              <span id="structure-reference-gallery-count" class="structure-reference-gallery-count"></span>
+            </div>
+            <div class="structure-reference-gallery-shell">
+              <button id="structure-reference-gallery-prev" class="structure-reference-gallery-nav" type="button" aria-label="Предыдущая иллюстрация">‹</button>
+              <div id="structure-reference-illustrations" class="structure-reference-source-list structure-reference-gallery"></div>
+              <button id="structure-reference-gallery-next" class="structure-reference-gallery-nav" type="button" aria-label="Следующая иллюстрация">›</button>
+            </div>
           </div>
 
           <dl class="structure-reference-grid">
