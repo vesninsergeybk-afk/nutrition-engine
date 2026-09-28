@@ -8243,13 +8243,21 @@ function onPointerUp(event) {
   // sample a very small screen-space halo and prefer a visible muscle hit before
   // falling through to bones/support layers. This does not run after a drag.
   if (start.pointerType === "touch") {
-    const touchRadiusPx = 12;
+    // Approximate a fingertip, not a mouse cursor. The center remains first so
+    // precise taps keep their exact target; the surrounding samples only help
+    // when the finger lands a few pixels beside a narrow visible muscle.
+    const touchRadiusPx = 16;
+    const touchDiagonalPx = Math.round(touchRadiusPx * 0.7);
     const touchOffsets = [
       [0, 0],
       [-touchRadiusPx, 0],
       [touchRadiusPx, 0],
       [0, -touchRadiusPx],
       [0, touchRadiusPx],
+      [-touchDiagonalPx, -touchDiagonalPx],
+      [touchDiagonalPx, -touchDiagonalPx],
+      [-touchDiagonalPx, touchDiagonalPx],
+      [touchDiagonalPx, touchDiagonalPx],
     ];
     for (const [dx, dy] of touchOffsets) {
       if (
@@ -10572,8 +10580,31 @@ renderer.domElement.addEventListener("click", (event) => {
   if (!coarsePointer && lastCanvasPointerType !== "touch") return;
   if (performance.now() - lastCanvasSelectionAt < 280) return;
 
-  if (selectVisibleMuscleAtClientPoint(event.clientX, event.clientY, "touch-fallback")) {
-    event.preventDefault();
+  const fallbackRadiusPx = 16;
+  const fallbackDiagonalPx = Math.round(fallbackRadiusPx * 0.7);
+  const fallbackOffsets = [
+    [0, 0],
+    [-fallbackRadiusPx, 0],
+    [fallbackRadiusPx, 0],
+    [0, -fallbackRadiusPx],
+    [0, fallbackRadiusPx],
+    [-fallbackDiagonalPx, -fallbackDiagonalPx],
+    [fallbackDiagonalPx, -fallbackDiagonalPx],
+    [-fallbackDiagonalPx, fallbackDiagonalPx],
+    [fallbackDiagonalPx, fallbackDiagonalPx],
+  ];
+
+  for (const [dx, dy] of fallbackOffsets) {
+    if (
+      selectVisibleMuscleAtClientPoint(
+        event.clientX + dx,
+        event.clientY + dy,
+        "touch-fallback"
+      )
+    ) {
+      event.preventDefault();
+      return;
+    }
   }
 });
 renderer.domElement.addEventListener("webglcontextlost", (event) => {
