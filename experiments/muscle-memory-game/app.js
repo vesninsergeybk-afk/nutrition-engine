@@ -933,7 +933,8 @@ function renderStructureReference(sid) {
     : "Слой не подтверждён";
 
   renderReferenceAmbiguity(reference);
-  const hasPrimaryIllustration = renderStructureReferencePrimaryArt(reference);
+  // Illustration rendering happens once, below, into the single unified gallery.
+  // Do not render a separate hero card or a transient duplicate here.
 
   if (structureReferenceContext) {
     const contextText =
@@ -968,11 +969,11 @@ function renderStructureReference(sid) {
     structureReferenceIllustrations.hidden = true;
     if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = true;
     structureReferenceEl.dataset.referenceId = "";
-    structureReferenceEl.dataset.referenceHasPrimaryArt = String(Boolean(hasPrimaryIllustration));
+    structureReferenceEl.dataset.referenceHasPrimaryArt = "false";
     structureReferenceEl.dataset.referenceAtlasIllustrationCount = "0";
     structureReferenceEl.dataset.referenceSourceCount = "0";
     canvas.dataset.selectedReferenceCard = "";
-    canvas.dataset.selectedReferenceIllustration = hasPrimaryIllustration ? "primary" : "none";
+    canvas.dataset.selectedReferenceIllustration = "none";
     structureReferenceEl.hidden = false;
     return;
   }
@@ -1033,11 +1034,9 @@ function renderStructureReference(sid) {
     structureReferenceEl.dataset.referenceAtlasIllustrationCount = String(galleryIllustrationCount);
     structureReferenceEl.dataset.referenceSourceCount = String(reference.sources?.length || 0);
     canvas.dataset.selectedReferenceCard = reference.id || "";
-    canvas.dataset.selectedReferenceIllustration = hasPrimaryIllustration
-      ? "primary"
-      : atlasIllustrationCount > 0
-        ? "atlas"
-        : "none";
+    canvas.dataset.selectedReferenceIllustration = galleryIllustrationCount > 0
+      ? "unified-gallery"
+      : "none";
 
     openDefaultStructureReferenceDetails();
   } else {
