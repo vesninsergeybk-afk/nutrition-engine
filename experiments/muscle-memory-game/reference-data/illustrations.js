@@ -602,8 +602,10 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
       "bulbospongiosus"
     ],
     "rightsStatus": "public-domain",
-    "assetPath": null,
-    "status": "source-verified-asset-pending"
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscles_of_the_male_perineum-Gray406.png",
+    "altRu": "Поверхностные мышцы мужской промежности и наружный сфинктер заднего прохода на анатомической пластине",
+    "captionRu": "Gray's Anatomy, plate 406: поверхностные мышцы мужской промежности и наружный анальный сфинктер. Public domain.",
+    "status": "asset-ready"
   },
   {
     "id": "gray-960-larynx",
