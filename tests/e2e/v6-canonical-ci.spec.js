@@ -479,6 +479,15 @@ test('mobile search results and help dialog stay inside their usable viewport', 
   await waitForInterfacePass1(page);
 
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  // This test deliberately enters analysis routes before the deferred runtime is
+  // user-accessible in order to verify empty semantics. A real user cannot enter
+  // ration/search until the bootstrap guard reports background-ready, so wait for
+  // that same production contract before exercising the search itself.
+  await page.waitForFunction(() =>
+    window.__APP_BACKGROUND_READY__ === true &&
+    window.DB && Array.isArray(window.DB.items) && window.DB.items.length > 10 &&
+    typeof window.__v35RenderSearch === 'function'
+  , null, { timeout: 30000 });
   const search = page.locator('#globalSearchInput');
   await search.fill('банан');
   await page.waitForFunction(() => {
