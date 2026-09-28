@@ -657,10 +657,32 @@ function appendReference3DGallerySlide(sid) {
 
   requestAnimationFrame(() => {
     if (selectedExploreSid !== sid || !structureNames[sid]) return;
+
+    const muscleVisibilityBefore = [...structureVisibility];
+    const boneVisibilityBefore = [...boneVisibility];
+    const anatomyVisibleBefore = anatomyMesh?.visible;
+    const skeletonVisibleBefore = skeletonMesh?.visible;
+    const reference = muscleReferenceFor(structureNames[sid]);
+    const target = learningTargetBySid.get(sid) || null;
+    const muscleIds = [
+      ...new Set([
+        ...targetSideStructureIds(target, sid),
+        sid,
+        ...parentMuscleContextIds(sid, reference),
+      ]),
+    ].filter((id) => structureNames[id]);
+
     try {
-      // Capture the same spatial view the learner is using: selected muscle
-      // plus the currently visible bone landmarks.
+      // The reference slide is an anatomical preparation, not a screenshot of
+      // the Atlas: show the selected whole muscle on its skeletal landmarks.
+      if (anatomyMesh) anatomyMesh.visible = true;
+      writeVisibleStructures(muscleIds);
+      if (skeletonMesh) {
+        skeletonMesh.visible = true;
+        applySelectedMuscleBoneVisibility(muscleIds);
+      }
       renderer.render(scene, camera);
+
       const src = renderer.domElement.toDataURL("image/png");
       if (!src || src === "data:,") return;
 
@@ -673,19 +695,18 @@ function appendReference3DGallerySlide(sid) {
       row.dataset.reference3d = "true";
 
       const title = document.createElement("strong");
-      title.textContent = "3D · мышца и костные ориентиры";
+      title.textContent = "3D · мышца на скелете";
 
       const figure = document.createElement("figure");
       figure.className = "structure-reference-figure structure-reference-3d-figure";
 
       const image = document.createElement("img");
       image.src = src;
-      image.alt = "3D-вид: " + displayStructureName(sid) + " и окружающие костные ориентиры";
+      image.alt = "3D-вид: " + displayStructureName(sid) + " на окружающих костях";
 
       const caption = document.createElement("figcaption");
       caption.textContent =
-        "Пространственное положение выбранной мышцы относительно окружающих костей. " +
-        "Ракурс соответствует текущему виду 3D-модели.";
+        "Выбранная мышца показана отдельно на скелете, чтобы были видны её пространственное положение, начало, прикрепление и костные ориентиры.";
 
       figure.append(image, caption);
       row.append(title, figure);
@@ -701,6 +722,21 @@ function appendReference3DGallerySlide(sid) {
       canvas.dataset.selectedReferenceIllustration = "gallery-with-3d";
     } catch (error) {
       console.warn("3D reference gallery capture failed.", structureNames[sid], error);
+    } finally {
+      if (anatomyMesh) anatomyMesh.visible = anatomyVisibleBefore;
+      writeVisibleStructures(
+        muscleVisibilityBefore
+          .map((visible, id) => (visible ? id : null))
+          .filter((id) => id != null)
+      );
+      if (skeletonMesh) {
+        skeletonMesh.visible = skeletonVisibleBefore;
+        setAllBonesVisible(false);
+        boneVisibilityBefore.forEach((visible, boneId) => {
+          if (visible) setBoneVisible(boneId, true);
+        });
+      }
+      renderer.render(scene, camera);
     }
   });
 }
