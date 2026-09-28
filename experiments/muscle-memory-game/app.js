@@ -273,6 +273,9 @@ const structureReferenceInnervation = document.querySelector("#structure-referen
 const structureReferenceSources = document.querySelector("#structure-reference-sources");
 const structureReferenceIllustrations = document.querySelector("#structure-reference-illustrations");
 const structureReferenceAtlasBlock = document.querySelector("#structure-reference-atlas-block");
+const structureReferenceGalleryPrev = document.querySelector("#structure-reference-gallery-prev");
+const structureReferenceGalleryNext = document.querySelector("#structure-reference-gallery-next");
+const structureReferenceGalleryCount = document.querySelector("#structure-reference-gallery-count");
 const structureReferenceEmpty = document.querySelector("#structure-reference-empty");
 const modelSource = document.querySelector("#model-source");
 const layerPresetField = document.querySelector("#layer-preset-field");
@@ -558,6 +561,27 @@ function renderReferenceList(container, items) {
   }
 }
 
+function syncReferenceGalleryControls() {
+  if (!structureReferenceIllustrations) return;
+  const slides = [...structureReferenceIllustrations.querySelectorAll(".structure-reference-source-item")];
+  const count = slides.length;
+  if (structureReferenceGalleryCount) {
+    structureReferenceGalleryCount.textContent = count ? count + " илл." : "";
+  }
+  if (structureReferenceGalleryPrev) structureReferenceGalleryPrev.hidden = count < 2;
+  if (structureReferenceGalleryNext) structureReferenceGalleryNext.hidden = count < 2;
+}
+
+function moveReferenceGallery(direction) {
+  if (!structureReferenceIllustrations) return;
+  const slide = structureReferenceIllustrations.querySelector(".structure-reference-source-item");
+  const width = slide?.getBoundingClientRect().width || structureReferenceIllustrations.clientWidth;
+  structureReferenceIllustrations.scrollBy({ left: direction * width, behavior: "smooth" });
+}
+
+structureReferenceGalleryPrev?.addEventListener("click", () => moveReferenceGallery(-1));
+structureReferenceGalleryNext?.addEventListener("click", () => moveReferenceGallery(1));
+
 function renderReferenceItems(container, items, kind) {
   if (!container) return;
   const visibleItems =
@@ -624,6 +648,7 @@ function renderReferenceItems(container, items, kind) {
     container.append(row);
   }
 
+  if (kind === "illustration") syncReferenceGalleryControls();
   return visibleItems.length;
 }
 
