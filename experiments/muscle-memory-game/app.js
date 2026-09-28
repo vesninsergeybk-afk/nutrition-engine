@@ -685,7 +685,7 @@ function appendReference3DGallerySlide(sid) {
 
     const row = document.createElement("div");
     row.className = "structure-reference-source-item structure-reference-3d-slide";
-    row.dataset.reference3d = "true";
+    row.setAttribute("data-reference-3d", "true");
 
     const title = document.createElement("strong");
     title.textContent = "3D · мышца на скелете";
