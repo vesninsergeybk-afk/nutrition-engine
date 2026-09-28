@@ -756,6 +756,66 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Схема грудино-рёберных прикреплений диафрагмы",
     "captionRu": "Charpy, 1894: зоны прикрепления диафрагмы к грудине, рёберным хрящам и рёбрам. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-trapezius-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["trapezius"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Trapezius%20back.png",
+    "altRu": "Трапециевидная мышца, вид сзади на костном контексте",
+    "captionRu": "Anatomography/BodyParts3D: трапециевидная мышца, пространственный вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-latissimus-dorsi-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["latissimus-dorsi"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Latissimus%20dorsi%20muscle%20back.png",
+    "altRu": "Широчайшая мышца спины, вид сзади на костном контексте",
+    "captionRu": "Anatomography/BodyParts3D: широчайшая мышца спины, пространственный вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-deltoid-lateral",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["deltoid"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Deltoid%20muscle%20lateral5.png",
+    "altRu": "Дельтовидная мышца, латеральный пространственный вид с костями плечевого пояса",
+    "captionRu": "Anatomography/BodyParts3D: дельтовидная мышца и её части, латеральный вид. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-supraspinatus-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["supraspinatus"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Supraspinatus%20muscle%20back.png",
+    "altRu": "Надостная мышца, вид сзади относительно лопатки и плечевой кости",
+    "captionRu": "Anatomography/BodyParts3D: надостная мышца, пространственный вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-infraspinatus-back",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "spatial-bone-context",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["infraspinatus"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Infraspinatus%20muscle%20back4.png",
+    "altRu": "Подостная мышца, вид сзади относительно лопатки и плечевой кости",
+    "captionRu": "Anatomography/BodyParts3D: подостная мышца, пространственный вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
   }
 ]
 );
