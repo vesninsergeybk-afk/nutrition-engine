@@ -10747,6 +10747,69 @@ searchInput.addEventListener("keydown", (event) => {
   }
 });
 
+function animateMobileContextForward(done) {
+  const currentDepth = mobileIsolationStack.length;
+  const nextDepth = currentDepth + 1;
+  const stepPx = 44;
+  const edgePx = 12;
+
+  // Ensure the existing level is rendered first. The next point is introduced
+  // as a destination, not as an already-active state.
+  renderMobileContextTrail();
+  const track = mobileContextTrail?.querySelector(".mobile-context-track");
+  const thumb = track?.querySelector(".mobile-context-thumb");
+  const rail = track?.querySelector(".mobile-context-rail");
+  const progress = track?.querySelector(".mobile-context-progress");
+  if (!track || !thumb || !rail || !progress) {
+    done();
+    return;
+  }
+
+  const startX = edgePx + currentDepth * stepPx;
+  const targetX = edgePx + nextDepth * stepPx;
+  const trackWidth = edgePx * 2 + nextDepth * stepPx;
+  track.style.width = trackWidth + "px";
+  track.style.minWidth = trackWidth + "px";
+
+  const destination = document.createElement("span");
+  destination.className = "mobile-context-node mobile-context-node-pending";
+  destination.style.left = targetX + "px";
+  destination.setAttribute("aria-hidden", "true");
+  const dot = document.createElement("span");
+  dot.className = "mobile-context-node-dot";
+  destination.append(dot);
+  track.append(destination);
+
+  rail.style.right = edgePx + "px";
+  thumb.style.transition = "none";
+  progress.style.transition = "none";
+  thumb.style.transform = `translate3d(${startX}px, 0, 0)`;
+  progress.style.width = Math.max(0, startX - edgePx) + "px";
+  void thumb.offsetWidth;
+
+  requestAnimationFrame(() => {
+    thumb.style.transition = "";
+    progress.style.transition = "";
+    destination.classList.add("arriving");
+    thumb.style.transform = `translate3d(${targetX}px, 0, 0)`;
+    progress.style.width = Math.max(0, targetX - edgePx) + "px";
+  });
+
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    thumb.removeEventListener("transitionend", onEnd);
+    destination.remove();
+    done();
+  };
+  const onEnd = (event) => {
+    if (event.propertyName === "transform") finish();
+  };
+  thumb.addEventListener("transitionend", onEnd);
+  window.setTimeout(finish, 650);
+}
+
 function captureMobileIsolationSnapshot(kind = "context") {
   mobileIsolationStack.push({
     kind,
@@ -10813,16 +10876,19 @@ mobileHideMuscleButton?.addEventListener("click", () => {
 });
 mobileIsolateMuscleButton?.addEventListener("click", () => {
   if (selectedExploreSid == null) return;
-  captureMobileIsolationSnapshot("muscle");
-  const target = learningTargetBySid.get(selectedExploreSid) || null;
-  const muscleIds = targetSideStructureIds(target, selectedExploreSid);
-  setVisibleStructures(muscleIds);
-  focusedStructureIds = [...muscleIds];
-  showSelectedMuscleBoneContext(muscleIds);
-  isolated = true;
-  focusSelectedStructures();
-  updateLayerButtons();
-  syncMobileMuscleCard();
+  const sid = selectedExploreSid;
+  const target = learningTargetBySid.get(sid) || null;
+  const muscleIds = targetSideStructureIds(target, sid);
+  animateMobileContextForward(() => {
+    captureMobileIsolationSnapshot("muscle");
+    setVisibleStructures(muscleIds);
+    focusedStructureIds = [...muscleIds];
+    showSelectedMuscleBoneContext(muscleIds);
+    isolated = true;
+    focusSelectedStructures();
+    updateLayerButtons();
+    syncMobileMuscleCard();
+  });
 });
 mobileIsolateRegionButton?.addEventListener("click", () => {
   const regionId = mobileIsolateRegionButton.dataset.region;
@@ -10831,26 +10897,28 @@ mobileIsolateRegionButton?.addEventListener("click", () => {
   // Region isolation changes the selected muscle's surroundings, not the
   // selection itself. Preserve the muscle through the regional scene rebuild.
   const sid = selectedExploreSid;
-  captureMobileIsolationSnapshot("region");
-  selectedLearningRegion = regionId;
-  learningRegion.value = regionId;
-  regionIsolation.checked = true;
-  applyLearningRegion();
-  boneDisplayMode = "anatomical";
-  boneMode.value = "anatomical";
-  applyRegionScene({ resetLayers: false, focus: true });
-  syncLearningAreaQuery();
-  renderSearchResults(searchInput.value);
+  animateMobileContextForward(() => {
+    captureMobileIsolationSnapshot("region");
+    selectedLearningRegion = regionId;
+    learningRegion.value = regionId;
+    regionIsolation.checked = true;
+    applyLearningRegion();
+    boneDisplayMode = "anatomical";
+    boneMode.value = "anatomical";
+    applyRegionScene({ resetLayers: false, focus: true });
+    syncLearningAreaQuery();
+    renderSearchResults(searchInput.value);
 
-  if (structureNames[sid] && structureVisibility[sid] !== false) {
-    selectExploreStructure(sid);
-  } else {
-    selectedExploreSid = sid;
-    restoreHighlights();
-    highlightStructures([sid], "selected");
-    updateLayerButtons();
-    syncMobileMuscleCard();
-  }
+    if (structureNames[sid] && structureVisibility[sid] !== false) {
+      selectExploreStructure(sid);
+    } else {
+      selectedExploreSid = sid;
+      restoreHighlights();
+      highlightStructures([sid], "selected");
+      updateLayerButtons();
+      syncMobileMuscleCard();
+    }
+  });
 });
 mobileBackContextButton?.addEventListener("click", restoreMobileIsolationStep);
 mobileRootContextButton?.addEventListener("click", restoreMobileIsolationRoot);
