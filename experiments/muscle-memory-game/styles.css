@@ -2834,3 +2834,14 @@ body:not(.motion-mode) .comparison-pane-static {
     max-height:min(58vh,520px);
   }
 }
+
+.structure-reference-course-art-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  background-repeat: no-repeat;
+  background-color: #f4f2ed;
+}
+.structure-reference-course-art-figure {
+  margin: 0;
+}
