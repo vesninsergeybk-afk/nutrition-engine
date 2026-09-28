@@ -88,7 +88,7 @@ def main():
         issues=set(p.get("issues_after_step4c") or [])
         if issues & {"HEI_EQUIVALENTS_UNRESOLVED","FPID_EXACT_NAME_AMBIGUOUS","FNDDS_EXACT_NAME_AMBIGUOUS"}:
             target.append(p)
-    assert len(target)==33, len(target)
+    assert len(target)==30, len(target)
 
     fndds=load_fndds(Path(a.fndds))
     fpid_schema,fpid=load_fpid(Path(a.fpid))
