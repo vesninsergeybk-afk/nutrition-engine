@@ -760,56 +760,57 @@ function renderStructureReferencePrimaryArt(reference) {
     !illustration ||
     illustration.match !== "exact" ||
     !illustration.spritePath ||
-    !structureReferencePrimaryArt ||
-    !structureReferencePrimaryArtImage
+    !structureReferenceIllustrations
   ) {
     clearStructureReferencePrimaryArt();
     return false;
   }
 
+  // Course illustrations are useful anatomical material, but they belong to
+  // the same gallery as atlas plates and the 3D skeletal view. Keeping a
+  // second standalone illustration above the gallery duplicates the content.
+  clearStructureReferencePrimaryArt();
+
   const columns = Math.max(1, Number(illustration.spriteColumns) || 1);
-  const column = Math.max(
-    0,
-    Math.min(columns - 1, Number(illustration.column) || 0)
-  );
-  const positionX =
-    columns > 1 ? (column / (columns - 1)) * 100 : 0;
+  const column = Math.max(0, Math.min(columns - 1, Number(illustration.column) || 0));
+  const positionX = columns > 1 ? (column / (columns - 1)) * 100 : 0;
   const source = muscleReferenceSource(illustration.sourceId);
 
-  structureReferencePrimaryArtImage.style.backgroundImage =
-    'url("' + illustration.spritePath + '")';
-  structureReferencePrimaryArtImage.style.backgroundSize =
-    columns * 100 + "% 100%";
-  structureReferencePrimaryArtImage.style.backgroundPosition =
-    positionX + "% 50%";
-  structureReferencePrimaryArtImage.setAttribute(
-    "aria-label",
-    "Учебная анатомическая иллюстрация: " +
-      (reference?.titleRu || "выбранная мышца")
-  );
+  structureReferenceIllustrations
+    .querySelector('[data-reference-course-art="true"]')
+    ?.remove();
 
-  if (structureReferencePrimaryArtTitle) {
-    structureReferencePrimaryArtTitle.textContent =
-      reference?.titleRu || "";
-  }
+  const row = document.createElement("div");
+  row.className = "structure-reference-source-item structure-reference-course-art-slide";
+  row.dataset.referenceCourseArt = "true";
 
-  if (structureReferencePrimaryArtCaption) {
-    const details = [
-      source?.title || "Методический материал курса",
-      illustration.locator || "",
-    ].filter(Boolean);
-    const relation =
-      illustration.displayMatch === "parent-muscle" &&
-      illustration.selectedPartLabelRu
-        ? "Показана вся мышца; выбрана её часть: " +
-          illustration.selectedPartLabelRu +
-          ". "
-        : "";
-    structureReferencePrimaryArtCaption.textContent =
-      relation + "Учебная иллюстрация · " + details.join(" · ");
-  }
+  const title = document.createElement("strong");
+  title.textContent = "Учебная иллюстрация · " + (reference?.titleRu || "мышца");
 
-  structureReferencePrimaryArt.hidden = false;
+  const figure = document.createElement("figure");
+  figure.className = "structure-reference-figure structure-reference-course-art-figure";
+
+  const image = document.createElement("div");
+  image.className = "structure-reference-course-art-image";
+  image.style.backgroundImage = 'url("' + illustration.spritePath + '")';
+  image.style.backgroundSize = columns * 100 + "% 100%";
+  image.style.backgroundPosition = positionX + "% 50%";
+  image.setAttribute("role", "img");
+  image.setAttribute("aria-label", "Учебная анатомическая иллюстрация: " + (reference?.titleRu || "выбранная мышца"));
+
+  const caption = document.createElement("figcaption");
+  const details = [source?.title || "Методический материал курса", illustration.locator || ""].filter(Boolean);
+  const relation =
+    illustration.displayMatch === "parent-muscle" && illustration.selectedPartLabelRu
+      ? "Показана вся мышца; выбрана её часть: " + illustration.selectedPartLabelRu + ". "
+      : "";
+  caption.textContent = relation + details.join(" · ");
+
+  figure.append(image, caption);
+  row.append(title, figure);
+  structureReferenceIllustrations.prepend(row);
+  structureReferenceIllustrations.hidden = false;
+  if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = false;
   return true;
 }
 
@@ -1018,13 +1019,17 @@ function renderStructureReference(sid) {
       reference.illustrations,
       "illustration"
     );
+    const hasPrimaryIllustration = renderStructureReferencePrimaryArt(reference);
+    const galleryIllustrationCount =
+      atlasIllustrationCount + (hasPrimaryIllustration ? 1 : 0);
     if (structureReferenceAtlasBlock) {
-      structureReferenceAtlasBlock.hidden = atlasIllustrationCount === 0;
+      structureReferenceAtlasBlock.hidden = galleryIllustrationCount === 0;
     }
+    syncReferenceGalleryControls();
 
     structureReferenceEl.dataset.referenceId = reference.id || "";
     structureReferenceEl.dataset.referenceHasPrimaryArt = String(Boolean(hasPrimaryIllustration));
-    structureReferenceEl.dataset.referenceAtlasIllustrationCount = String(atlasIllustrationCount);
+    structureReferenceEl.dataset.referenceAtlasIllustrationCount = String(galleryIllustrationCount);
     structureReferenceEl.dataset.referenceSourceCount = String(reference.sources?.length || 0);
     canvas.dataset.selectedReferenceCard = reference.id || "";
     canvas.dataset.selectedReferenceIllustration = hasPrimaryIllustration
