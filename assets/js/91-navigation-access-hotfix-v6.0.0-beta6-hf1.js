@@ -10,7 +10,7 @@
   var VERSION='release1-navigation-reversibility-2026-09-26';
   var CONTEXT_KEY='nutritionCalculator.navigationContext.v1';
   var RETURN_KEY='nutritionCalculator.navigationReturn.v1';
-  var timer=0,contextTimer=0,observer=null;
+  var timer=0,contextTimer=0,restoreTimer=0,restoreGeneration=0,observer=null;
   var routeContexts={},targetByRoute={},returnContext=null,pendingHistorySemantic=null,pendingManualContext=null;
 
   function byId(id){return d.getElementById(id);}
@@ -324,14 +324,23 @@
     var el=e.target;if(el&&el.tagName==='DETAILS'&&(el.hasAttribute('data-contributor-key')||el.hasAttribute('data-hei-contributor-key')))scheduleContextCapture(60);
   }
   function routeChanged(e){
-    var detail=e&&e.detail||{},r=normalizeRoute(detail.route||route()),ctx=null;
+    var detail=e&&e.detail||{},r=normalizeRoute(detail.route||route()),ctx=null,generation;
+    /* A delayed semantic restore belongs to the route that scheduled it.
+       Rapid navigation (especially Firefox) can otherwise let an older restore
+       fire after a newer route is active and pull the user back unexpectedly. */
+    restoreGeneration+=1;generation=restoreGeneration;
+    w.clearTimeout(restoreTimer);restoreTimer=0;
     if(detail.targetId)targetByRoute[r]=String(detail.targetId);
     if(pendingHistorySemantic&&normalizeRoute(pendingHistorySemantic.route)===r){ctx=pendingHistorySemantic.context||null;returnContext=pendingHistorySemantic.returnContext||null;pendingHistorySemantic=null;}
     else if(pendingManualContext&&normalizeRoute(pendingManualContext.route)===r){ctx=pendingManualContext;pendingManualContext=null;returnContext=null;}
     else if(routeContexts[r]&&workspaceFor(r)==='analysis'&&!detail.targetId){ctx=routeContexts[r];}
     if(workspaceFor(r)==='analysis')returnContext=null;
     else if(r!=='ration'&&r!=='correction')returnContext=null;
-    if(ctx)w.setTimeout(function(){restoreContext(ctx);},60);
+    if(ctx)restoreTimer=w.setTimeout(function(){
+      restoreTimer=0;
+      if(generation!==restoreGeneration||normalizeRoute(route())!==r)return;
+      restoreContext(ctx);
+    },60);
     scheduleContextCapture(140);updateSemanticReturn();
   }
   function onPopState(e){
