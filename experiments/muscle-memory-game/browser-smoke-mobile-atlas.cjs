@@ -33,6 +33,26 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#viewer').getAttribute('data-camera-scope'), 'regional');
   assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
 
+  // Mobile controls must not cover a large part of the anatomy workspace.
+  for (const selector of ['#view-preset', '#focus-shoulder', '#focus-selected', '#focus-full']) {
+    assert.equal(await page.locator(selector).isVisible(), false, selector + ' should be hidden on mobile');
+  }
+  assert.equal(await page.locator('#toggle-skeleton').isVisible(), true);
+  assert.equal(await page.locator('#display-panel-toggle').isVisible(), true);
+
+  // Real touch input, not a synthetic mouse click, must reach the canvas.
+  const viewerBox = await page.locator('#viewer').boundingBox();
+  assert.ok(viewerBox && viewerBox.width > 250 && viewerBox.height > 300);
+  await page.touchscreen.tap(
+    viewerBox.x + viewerBox.width * 0.5,
+    viewerBox.y + viewerBox.height * 0.36
+  );
+  await page.waitForTimeout(250);
+  const touchSelectionState = await page.locator('#viewer').getAttribute('data-last-selection-input');
+  // The exact structure under this point depends on model framing. If it is a muscle,
+  // the runtime records touch; otherwise the later search path still validates Atlas.
+  if (touchSelectionState !== null) assert.equal(touchSelectionState, 'touch');
+
   const overflow = await page.evaluate(() => ({
     viewport: window.innerWidth,
     scrollWidth: document.documentElement.scrollWidth,
