@@ -953,6 +953,30 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20lumbricales.png",
     "altRu": "Червеобразные мышцы кисти, выделенные между сухожилиями сгибателей пальцев",
     "captionRu": "Червеобразные мышцы кисти на основе Gray. Public domain.", "status": "asset-ready"
+  },
+  {
+    "id": "commons-interspinales-transversospinales",
+    "sourceId": "commons-pk0001-2019",
+    "kind": "focused-diagram",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["interspinales"],
+    "rightsStatus": "cc-by-sa-4.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Transversospinales%20interspinales%20enko.svg",
+    "altRu": "Межостистые мышцы в глубоком слое позвоночника с пространственным отношением к соседним коротким мышцам",
+    "captionRu": "Схема глубоких мышц позвоночника с межостистыми мышцами. Pk0001, Wikimedia Commons, CC BY-SA 4.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-intertransversarii-focused",
+    "sourceId": "gray-1918-plate-389",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["intertransversarii"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Intertransversarii%20muscles.jpg",
+    "altRu": "Межпоперечные мышцы между поперечными отростками соседних позвонков",
+    "captionRu": "Межпоперечные мышцы по Gray's Anatomy. Public domain.",
+    "status": "asset-ready"
   }]
 );
 
