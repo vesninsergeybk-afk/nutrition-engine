@@ -77,6 +77,78 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "asset-ready"
   },
   {
+    "id": "gray-409-trapezius-focused",
+    "sourceId": "gray-1918-plate-409",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["trapezius"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Trapezius%20Gray409.PNG",
+    "altRu": "Трапециевидная мышца, выделенная на задней поверхности туловища",
+    "captionRu": "Трапециевидная мышца на основе Gray, plate 409. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-409-latissimus-focused",
+    "sourceId": "gray-1918-plate-409",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["latissimus-dorsi"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Latissimus%20dorsi.PNG",
+    "altRu": "Широчайшая мышца спины, выделенная на задней поверхности туловища",
+    "captionRu": "Широчайшая мышца спины на основе Gray, plate 409. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-409-rhomboid-minor-focused",
+    "sourceId": "gray-1918-plate-409",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["rhomboid-minor"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Rhomboideus%20minor.png",
+    "altRu": "Малая ромбовидная мышца, выделенная на задней поверхности плечевого пояса",
+    "captionRu": "Малая ромбовидная мышца на основе Gray, plate 409. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gerrish-287-rhomboid-attachments",
+    "sourceId": "gerrish-1902-fig-287",
+    "kind": "attachment-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["rhomboid-minor", "rhomboid-major"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gerrish%27s%20Text-book%20of%20Anatomy%20%281902%29%20-%20Fig.%20287.png",
+    "altRu": "Большая и малая ромбовидные мышцы и зоны их костных прикреплений",
+    "captionRu": "Gerrish, 1902, fig. 287: контуры и зоны прикрепления большой и малой ромбовидных мышц. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-409-rhomboid-major-focused",
+    "sourceId": "gray-1918-plate-409",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["rhomboid-major"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Musculus%20rhomboideus%20major.PNG",
+    "altRu": "Большая ромбовидная мышца, выделенная на задней поверхности плечевого пояса",
+    "captionRu": "Большая ромбовидная мышца на основе Gray, plate 409. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-409-teres-major-focused",
+    "sourceId": "gray-1918-plate-409",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder"],
+    "focusStructureIds": ["teres-major"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Teres%20major.PNG",
+    "altRu": "Большая круглая мышца, выделенная на задней поверхности плечевого пояса",
+    "captionRu": "Большая круглая мышца на основе Gray. Public domain.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-409-posterior-trunk",
     "sourceId": "gray-1918-plate-409",
     "kind": "regional-plate",
