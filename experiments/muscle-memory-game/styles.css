@@ -2868,3 +2868,61 @@ body:not(.motion-mode) .comparison-pane-static {
   .structure-reference-atlas-block { padding: 8px 5px; }
   .structure-reference-course-art-image { min-height: min(62vw, 330px); }
 }
+
+/* Unified muscle gallery: every slide uses the same uncropped visual stage. */
+.structure-reference-gallery > .structure-reference-source-item {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  align-content: start;
+  gap: 7px;
+  overflow: hidden;
+}
+.structure-reference-gallery > .structure-reference-source-item > strong,
+.structure-reference-gallery > .structure-reference-source-item > .structure-reference-source-link,
+.structure-reference-gallery > .structure-reference-source-item > span {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.structure-reference-gallery .structure-reference-figure {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+.structure-reference-gallery .structure-reference-figure img,
+.structure-reference-gallery .structure-reference-course-art-image {
+  width: 100%;
+  height: min(56vh, 520px);
+  min-height: 320px;
+  max-height: 520px;
+  box-sizing: border-box;
+  object-fit: contain !important;
+  object-position: center;
+  border-radius: 12px;
+  background-color: #f4f2ed;
+}
+.structure-reference-gallery .structure-reference-course-art-image {
+  aspect-ratio: auto;
+  background-repeat: no-repeat;
+  background-color: #f4f2ed;
+}
+.structure-reference-gallery .structure-reference-figure figcaption {
+  position: static;
+  width: 100%;
+  min-height: 2.7em;
+  margin: 0;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+@media(max-width:620px){
+  .structure-reference-gallery .structure-reference-figure img,
+  .structure-reference-gallery .structure-reference-course-art-image {
+    height: min(58vh, 470px);
+    min-height: min(92vw, 360px);
+    max-height: 470px;
+  }
+}
