@@ -557,6 +557,14 @@ button:disabled {
   color: #fff;
 }
 
+.display-panel-toggle.active,
+.display-panel-toggle[aria-expanded="true"] {
+  background: #1b1b1d;
+  border-color: #1b1b1d;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(27, 27, 29, .16);
+}
+
 .learning-mode-buttons button:disabled {
   opacity: .34;
 }
@@ -902,6 +910,10 @@ button:disabled {
   body:not(.motion-mode) .viewer-tools #toggle-skeleton,
   body:not(.motion-mode) .viewer-tools #display-panel-toggle {
     flex: 0 0 auto;
+  }
+
+  body:not(.motion-mode) .viewer-tools #display-panel-toggle[aria-expanded="true"] {
+    min-width: 132px;
   }
 
   .viewer-tools button,
