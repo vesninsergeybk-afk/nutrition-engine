@@ -67,6 +67,28 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-plate-389": Object.freeze({
+    title: "Gray's Anatomy, plate 389 — deep muscles of the back",
+    year: 1918,
+    role: "Глубокие мышцы спины: erector spinae, transversospinales и квадратная мышца поясницы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray389_-_Erector_spinae.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain; основа — Gray's Anatomy, 1918.",
+    }),
+  }),
+
+  "gray-1918-plate-384": Object.freeze({
+    title: "Gray's Anatomy, plate 384 — posterior cervical muscles",
+    year: 1918,
+    role: "Ременные мышцы головы и шеи и соседние глубокие мышцы задней поверхности шеи",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray384.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons относит пластину к Gray's Anatomy plates of muscles.",
+    }),
+  }),
+
   "gray-1918-plate-392": Object.freeze({
     title: "Gray's Anatomy, plate 392 — external oblique / anterolateral trunk",
     year: 1918,
