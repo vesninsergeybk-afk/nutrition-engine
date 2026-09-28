@@ -32,6 +32,7 @@ SUITES = [
     ("client_guard", ["node", "tests/p0-4-client-guard-stability.test.js"]),
     ("hosting_check", ["node", "tests/p0-4-1-hosting-check.test.js"]),
     ("release1_navigation_context", ["node", "tests/release1-navigation-context-static.test.js"]),
+    ("release2_ui_foundation", ["node", "tests/release2-ui-foundation-static.test.js"]),
 ]
 
 

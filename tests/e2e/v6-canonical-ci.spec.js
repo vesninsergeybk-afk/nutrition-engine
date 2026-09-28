@@ -479,6 +479,15 @@ test('mobile search results and help dialog stay inside their usable viewport', 
   await waitForInterfacePass1(page);
 
   await page.evaluate(() => window.NavigationShellV1.navigate('ration'));
+  // This test deliberately enters analysis routes before the deferred runtime is
+  // user-accessible in order to verify empty semantics. A real user cannot enter
+  // ration/search until the bootstrap guard reports background-ready, so wait for
+  // that same production contract before exercising the search itself.
+  await page.waitForFunction(() =>
+    window.__APP_BACKGROUND_READY__ === true &&
+    window.DB && Array.isArray(window.DB.items) && window.DB.items.length > 10 &&
+    typeof window.__v35RenderSearch === 'function'
+  , null, { timeout: 30000 });
   const search = page.locator('#globalSearchInput');
   await search.fill('банан');
   await page.waitForFunction(() => {
@@ -892,4 +901,86 @@ test('Release 1 ignores stale delayed restores after rapid analysis navigation',
     expect(loaderState.visibility).toBe('hidden');
     expect(loaderState.pointerEvents).toBe('none');
   }
+});
+
+test('Release 2 UI foundation keeps shared primitives readable at 1440, 820 and 390px', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+  await openNeeds(page);
+
+  const widths = [1440, 820, 390];
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: width <= 390 ? 844 : 900 });
+    await page.waitForTimeout(120);
+
+    const metrics = await page.evaluate(() => {
+      const html = document.documentElement;
+      const root = getComputedStyle(html);
+      const body = getComputedStyle(document.body);
+      const field = document.getElementById('needs_age');
+      const secondary = document.getElementById('needs_reset_btn');
+      const surface = document.getElementById('needsCompact');
+      const fieldStyle = field ? getComputedStyle(field) : null;
+      const buttonStyle = secondary ? getComputedStyle(secondary) : null;
+      const surfaceStyle = surface ? getComputedStyle(surface) : null;
+      return {
+        foundation: html.getAttribute('data-ui-foundation'),
+        bodyFont: parseFloat(body.fontSize),
+        fieldHeight: field ? field.getBoundingClientRect().height : 0,
+        buttonHeight: secondary ? secondary.getBoundingClientRect().height : 0,
+        fieldRadius: fieldStyle ? parseFloat(fieldStyle.borderRadius) : -1,
+        surfaceRadius: surfaceStyle ? parseFloat(surfaceStyle.borderRadius) : -1,
+        accent: root.getPropertyValue('--ui-accent').trim(),
+        controlMin: parseFloat(root.getPropertyValue('--ui-control-min')),
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth
+      };
+    });
+
+    expect(metrics.foundation).toBe('1');
+    expect(metrics.bodyFont).toBeGreaterThanOrEqual(15);
+    expect(metrics.accent.length).toBeGreaterThan(0);
+    expect(metrics.fieldRadius).toBeGreaterThanOrEqual(0);
+    expect(metrics.surfaceRadius).toBeGreaterThanOrEqual(0);
+    expect(metrics.fieldHeight).toBeGreaterThanOrEqual(width <= 860 ? 44 : 42);
+    expect(metrics.buttonHeight).toBeGreaterThanOrEqual(width <= 860 ? 44 : 40);
+    expect(metrics.controlMin).toBeGreaterThanOrEqual(width <= 860 ? 44 : 40);
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
+  }
+});
+
+test('Release 2 preserves theme voice while sharing the same foundation roles', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+
+  const observations = {};
+  for (const theme of ['modern', 'retro-2bit', 'ivory-brass']) {
+    await page.evaluate(value => {
+      const button = document.querySelector('#themeSwitcher [data-theme-value="' + value + '"]');
+      if (button) button.click();
+    }, theme);
+    await page.waitForFunction(value => document.documentElement.getAttribute('data-theme') === value, theme);
+
+    observations[theme] = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      return {
+        radius: parseFloat(root.getPropertyValue('--ui-radius-surface')),
+        surface: root.getPropertyValue('--ui-surface').trim(),
+        text: root.getPropertyValue('--ui-text').trim(),
+        displayFont: root.getPropertyValue('--ui-font-display').trim()
+      };
+    });
+  }
+
+  expect(observations.modern.surface.length).toBeGreaterThan(0);
+  expect(observations['retro-2bit'].surface.length).toBeGreaterThan(0);
+  expect(observations['ivory-brass'].surface.length).toBeGreaterThan(0);
+  expect(observations['retro-2bit'].radius).toBe(0);
+  expect(observations.modern.radius).toBeGreaterThan(0);
+  expect(observations['ivory-brass'].radius).toBeGreaterThan(0);
+  expect(observations['retro-2bit'].displayFont).not.toBe(observations.modern.displayFont);
 });
