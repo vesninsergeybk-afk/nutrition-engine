@@ -652,6 +652,59 @@ function renderReferenceItems(container, items, kind) {
   return visibleItems.length;
 }
 
+function appendReference3DGallerySlide(sid) {
+  if (!structureReferenceIllustrations || sid == null || selectedExploreSid !== sid) return;
+
+  requestAnimationFrame(() => {
+    if (selectedExploreSid !== sid || !structureNames[sid]) return;
+    try {
+      // Capture the same spatial view the learner is using: selected muscle
+      // plus the currently visible bone landmarks.
+      renderer.render(scene, camera);
+      const src = renderer.domElement.toDataURL("image/png");
+      if (!src || src === "data:,") return;
+
+      structureReferenceIllustrations
+        .querySelector('[data-reference-3d="true"]')
+        ?.remove();
+
+      const row = document.createElement("div");
+      row.className = "structure-reference-source-item structure-reference-3d-slide";
+      row.dataset.reference3d = "true";
+
+      const title = document.createElement("strong");
+      title.textContent = "3D · мышца и костные ориентиры";
+
+      const figure = document.createElement("figure");
+      figure.className = "structure-reference-figure structure-reference-3d-figure";
+
+      const image = document.createElement("img");
+      image.src = src;
+      image.alt = "3D-вид: " + displayStructureName(sid) + " и окружающие костные ориентиры";
+
+      const caption = document.createElement("figcaption");
+      caption.textContent =
+        "Пространственное положение выбранной мышцы относительно окружающих костей. " +
+        "Ракурс соответствует текущему виду 3D-модели.";
+
+      figure.append(image, caption);
+      row.append(title, figure);
+      structureReferenceIllustrations.append(row);
+      structureReferenceIllustrations.hidden = false;
+      if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = false;
+      syncReferenceGalleryControls();
+
+      const count = structureReferenceIllustrations.querySelectorAll(
+        ".structure-reference-source-item"
+      ).length;
+      structureReferenceEl.dataset.referenceAtlasIllustrationCount = String(count);
+      canvas.dataset.selectedReferenceIllustration = "gallery-with-3d";
+    } catch (error) {
+      console.warn("3D reference gallery capture failed.", structureNames[sid], error);
+    }
+  });
+}
+
 function renderStructureReferencePrimaryArt(reference) {
   const illustration = reference?.primaryIllustration || null;
 
@@ -4842,6 +4895,7 @@ function selectExploreStructure(sid, hitStack = null) {
   // cards and depth relations are secondary and may fail independently.
   try {
     renderStructureReference(sid);
+    appendReference3DGallerySlide(sid);
   } catch (error) {
     console.warn("Atlas reference card failed.", structureNames[sid], error);
     hideStructureReference();
