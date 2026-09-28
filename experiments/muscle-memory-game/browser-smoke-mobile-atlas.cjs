@@ -18,7 +18,7 @@ const assert = require('node:assert/strict');
     if (msg.type() === 'error') errors.push('console: ' + msg.text());
   });
 
-  await page.goto('http://127.0.0.1:4173/?mode=explore&scope=shoulder', {
+  await page.goto('http://127.0.0.1:4173/?mode=explore&scope=all', {
     waitUntil: 'domcontentloaded',
   });
   await page.waitForFunction(
@@ -28,10 +28,36 @@ const assert = require('node:assert/strict');
   );
 
   assert.equal(await page.locator('#mode-explore').getAttribute('aria-pressed'), 'true');
-  assert.equal(await page.locator('#learning-region').inputValue(), 'shoulder');
-  assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'true');
-  assert.equal(await page.locator('#viewer').getAttribute('data-camera-scope'), 'regional');
-  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'xray');
+  assert.equal(await page.locator('#learning-region').inputValue(), 'all');
+  assert.equal(await page.locator('#viewer').getAttribute('data-region-isolation'), 'false');
+  assert.equal(await page.locator('#viewer').getAttribute('data-camera-scope'), 'full');
+  assert.equal(await page.locator('#viewer').getAttribute('data-bone-mode'), 'anatomical');
+
+  // Atlas information belongs below the model on mobile. It must never cover
+  // the touch surface before a training session starts.
+  const cardPlacement = await page.evaluate(() => {
+    const viewerWrap = document.querySelector('.viewer-wrap');
+    const panel = document.querySelector('.panel');
+    const card = document.querySelector('.question-card');
+    const canvas = document.querySelector('#viewer');
+    const rect = canvas.getBoundingClientRect();
+    const probe = document.elementFromPoint(
+      rect.left + rect.width * 0.5,
+      rect.top + rect.height * 0.72
+    );
+    return {
+      cardParentIsPanel: card?.parentElement === panel,
+      cardInsideViewer: card?.parentElement === viewerWrap,
+      taskDocked: document.body.classList.contains('task-docked'),
+      probeIsCanvas:
+        probe === canvas ||
+        probe?.closest?.('.comparison-pane-static') === canvas?.closest('.comparison-pane-static'),
+    };
+  });
+  assert.equal(cardPlacement.cardParentIsPanel, true, 'Atlas card is not below the model');
+  assert.equal(cardPlacement.cardInsideViewer, false, 'Atlas card still covers the viewer');
+  assert.equal(cardPlacement.taskDocked, false, 'Atlas incorrectly entered docked-task layout');
+  assert.equal(cardPlacement.probeIsCanvas, true, 'Lower mobile anatomy viewport is covered by HTML UI');
 
   // Mobile controls must not cover a large part of the anatomy workspace.
   for (const selector of ['#view-preset', '#focus-shoulder', '#focus-selected', '#focus-full']) {
@@ -86,6 +112,13 @@ const assert = require('node:assert/strict');
   await page.click('#display-panel-close');
   assert.equal(await page.locator('#display-panel').isHidden(), true);
 
+  // Switch to a region only after the whole-body touch contract has passed.
+  await page.selectOption('#learning-region', 'shoulder');
+  await page.waitForFunction(
+    () => document.querySelector('#viewer')?.dataset.cameraScope === 'regional',
+    null,
+    { timeout: 10000 }
+  );
   await page.selectOption('#view-preset', 'back');
   assert.equal(await page.locator('#viewer').getAttribute('data-camera-scope'), 'regional');
 
