@@ -8146,8 +8146,36 @@ function structureIdFromHit(hit) {
   return Math.round(structureId.getX(vertexIndex));
 }
 
+let lastCanvasSelectionAt = 0;
+let lastCanvasPointerType = null;
+
+function selectVisibleMuscleAtClientPoint(clientX, clientY, inputLabel = "pointer") {
+  if (!anatomyMesh || appMode !== "explore") return false;
+
+  const rect = renderer.domElement.getBoundingClientRect();
+  if (!rect.width || !rect.height) return false;
+
+  pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+
+  const muscleHits = raycaster.intersectObject(anatomyMesh, false);
+  const hit = muscleHits.find((candidateHit) => {
+    const sid = structureIdFromHit(candidateHit);
+    return sid != null && structureVisibility[sid] !== false;
+  });
+  if (!hit) return false;
+
+  const sid = structureIdFromHit(hit);
+  selectExploreStructure(sid, muscleHits);
+  canvas.dataset.lastSelectionInput = inputLabel;
+  lastCanvasSelectionAt = performance.now();
+  return true;
+}
+
 function onPointerDown(event) {
   if (activePointers.size === 0) tapBlocked = false;
+  lastCanvasPointerType = event.pointerType || null;
 
   activePointers.set(event.pointerId, {
     x: event.clientX,
@@ -8213,7 +8241,7 @@ function onPointerUp(event) {
   // sample a very small screen-space halo and prefer a visible muscle hit before
   // falling through to bones/support layers. This does not run after a drag.
   if (start.pointerType === "touch") {
-    const touchRadiusPx = 11;
+    const touchRadiusPx = 12;
     const touchOffsets = [
       [0, 0],
       [-touchRadiusPx, 0],
@@ -8221,23 +8249,16 @@ function onPointerUp(event) {
       [0, -touchRadiusPx],
       [0, touchRadiusPx],
     ];
-    let nearbyMuscleHit = null;
     for (const [dx, dy] of touchOffsets) {
-      pointer.x = ((event.clientX + dx - rect.left) / rect.width) * 2 - 1;
-      pointer.y = -((event.clientY + dy - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(pointer, camera);
-      const muscleHits = raycaster.intersectObject(anatomyMesh, false);
-      nearbyMuscleHit = muscleHits.find((hit) => {
-        const sid = structureIdFromHit(hit);
-        return sid != null && structureVisibility[sid] !== false;
-      });
-      if (nearbyMuscleHit) break;
-    }
-    if (nearbyMuscleHit) {
-      const sid = structureIdFromHit(nearbyMuscleHit);
-      selectExploreStructure(sid, [nearbyMuscleHit]);
-      canvas.dataset.lastSelectionInput = "touch";
-      return;
+      if (
+        selectVisibleMuscleAtClientPoint(
+          event.clientX + dx,
+          event.clientY + dy,
+          "touch"
+        )
+      ) {
+        return;
+      }
     }
 
     pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -10531,10 +10552,28 @@ window.addEventListener("resize", () => {
 });
 
 renderer.domElement.style.touchAction = "none";
-renderer.domElement.addEventListener("pointerdown", onPointerDown);
-renderer.domElement.addEventListener("pointermove", onPointerMove);
-renderer.domElement.addEventListener("pointerup", onPointerUp);
-renderer.domElement.addEventListener("pointercancel", onPointerCancel);
+
+// Capture phase makes the atlas tap recognizer independent of OrbitControls'
+// own pointer handlers on real mobile browsers.
+renderer.domElement.addEventListener("pointerdown", onPointerDown, { capture: true });
+renderer.domElement.addEventListener("pointermove", onPointerMove, { capture: true });
+renderer.domElement.addEventListener("pointerup", onPointerUp, { capture: true });
+renderer.domElement.addEventListener("pointercancel", onPointerCancel, { capture: true });
+
+// Some Android/WebView combinations still synthesize a click after a clean tap
+// even when pointerup is consumed/cancelled by gesture controls. Use that click
+// only as a coarse-pointer fallback and only if pointer handling did not already
+// select a structure.
+renderer.domElement.addEventListener("click", (event) => {
+  if (appMode !== "explore" || !anatomyMesh) return;
+  const coarsePointer = window.matchMedia?.("(pointer: coarse)")?.matches;
+  if (!coarsePointer && lastCanvasPointerType !== "touch") return;
+  if (performance.now() - lastCanvasSelectionAt < 280) return;
+
+  if (selectVisibleMuscleAtClientPoint(event.clientX, event.clientY, "touch-fallback")) {
+    event.preventDefault();
+  }
+});
 renderer.domElement.addEventListener("webglcontextlost", (event) => {
   event.preventDefault();
   loadingEl.classList.remove("is-hidden");
