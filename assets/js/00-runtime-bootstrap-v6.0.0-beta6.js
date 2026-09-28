@@ -653,7 +653,7 @@
       style.id = 'runtimeBootStatusStyle';
       style.textContent = [
         "#runtimeBootStatusOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(248,250,252,.86);backdrop-filter:blur(3px);z-index:9999;transition:opacity .34s ease,visibility .34s ease}",
-        "#runtimeBootStatusOverlay.hide{opacity:0;visibility:hidden;pointer-events:none}",
+        "#runtimeBootStatusOverlay.hide{opacity:0;visibility:hidden;pointer-events:none;transition:none}",
         "#runtimeBootStatus{width:min(780px,calc(100vw - 28px));border:3px solid #111;background:#fff;color:#111;border-radius:20px;box-shadow:0 18px 48px rgba(15,23,42,.18);padding:16px 16px 14px;font:600 13px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}",
         "#runtimeBootStatus[data-kind='error']{border-color:#7f1d1d;background:#fff1f2;color:#7f1d1d}",
         "#runtimeBootStatus .rbs-shell{display:grid;grid-template-columns:228px minmax(0,1fr);gap:18px;align-items:center}",
@@ -706,11 +706,13 @@
     }
     /* Late progress/status callbacks may still arrive after the loader has
        completed. Never let those callbacks re-expose the finished overlay. */
-    if (window.__RUNTIME_LOADER_CLOSED__ === true && LOADER_RUNTIME.kind !== 'error') {
+    if ((window.__RUNTIME_LOADER_CLOSED__ === true || window.__RUNTIME_LOADER_CLOSING__ === true) && LOADER_RUNTIME.kind !== 'error') {
       overlay.setAttribute('aria-hidden','true');
+      try { overlay.inert=true; } catch(_) { overlay.setAttribute('inert',''); }
       overlay.classList.add('hide');
     } else {
       overlay.removeAttribute('aria-hidden');
+      try { overlay.inert=false; } catch(_) { overlay.removeAttribute('inert'); }
       overlay.classList.remove('hide');
     }
     return document.getElementById('runtimeBootStatus');
@@ -802,6 +804,7 @@
       var overlay=document.getElementById('runtimeBootStatusOverlay');
       if (overlay) {
         overlay.setAttribute('aria-hidden','true');
+        try { overlay.inert=true; } catch(_) { overlay.setAttribute('inert',''); }
         overlay.classList.add('hide');
       }
       var visibleMs=Math.round(now()-startedAt);
