@@ -843,6 +843,57 @@ test('Release 1 restores semantic analysis context through ration, browser histo
 });
 
 
+test('Release 1 ignores stale delayed restores after rapid analysis navigation', async ({ page, loadApp }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadApp();
+  await waitForCheckpoint(page);
+  await waitForInterfacePass1(page);
+  await page.waitForFunction(() =>
+    window.NutritionNavigationAccessHotfix &&
+    window.NutritionAnalysisWorkspaceHF7 &&
+    window.State && window.DB && Array.isArray(window.DB.items) && window.DB.items.length > 10
+  );
+
+  await page.evaluate(() => {
+    const first = window.DB.items.find(p => p && p.key);
+    if (!first) throw new Error('No product available for rapid-route regression');
+    if (!window.State.get().length) window.State.add(first.key, 120);
+    window.NavigationShellV1.navigate('analysis/nutrients');
+  });
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'analysis/nutrients');
+  await page.waitForTimeout(250);
+
+  await page.evaluate(() => {
+    window.NavigationShellV1.navigate('ration');
+    window.NavigationShellV1.navigate('analysis/nutrients');
+    window.setTimeout(() => window.NavigationShellV1.navigate('analysis/hei'), 10);
+  });
+
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'analysis/hei');
+  await page.waitForTimeout(180);
+  await expect(page.locator('html')).toHaveAttribute('data-navigation-route', 'analysis/hei');
+  await expect(page.locator('#workspaceHeiPanel')).toBeVisible();
+
+  const loaderState = await page.evaluate(() => {
+    const overlay = document.getElementById('runtimeBootStatusOverlay');
+    if (!overlay) return { absent: true };
+    const style = getComputedStyle(overlay);
+    return {
+      absent: false,
+      ariaHidden: overlay.getAttribute('aria-hidden'),
+      inert: !!overlay.inert || overlay.hasAttribute('inert'),
+      visibility: style.visibility,
+      pointerEvents: style.pointerEvents
+    };
+  });
+  if (!loaderState.absent) {
+    expect(loaderState.ariaHidden).toBe('true');
+    expect(loaderState.inert).toBe(true);
+    expect(loaderState.visibility).toBe('hidden');
+    expect(loaderState.pointerEvents).toBe('none');
+  }
+});
+
 test('Release 2 UI foundation keeps shared primitives readable at 1440, 820 and 390px', async ({ page, loadApp }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await loadApp();
