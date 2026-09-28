@@ -483,6 +483,31 @@ export const REFERENCE_SOURCES = Object.freeze({
     rights: Object.freeze({ illustrations: "not-assumed" }),
   }),
 
+  "gray-1918-plate-414": Object.freeze({
+    title: "Gray's Anatomy — plate 414, superficial anterior forearm",
+    role: "Поверхностный слой передней группы предплечья",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Forearm_muscles_front_superficial.png",
+    rights: Object.freeze({ illustrations: "public-domain" }),
+  }),
+  "gray-1918-plate-415": Object.freeze({
+    title: "Gray's Anatomy — plate 415, deep anterior forearm",
+    role: "Глубокий слой передней группы предплечья",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Forearm_muscles_front_deep.png",
+    rights: Object.freeze({ illustrations: "public-domain" }),
+  }),
+  "gray-1918-plate-418": Object.freeze({
+    title: "Gray's Anatomy — plate 418, superficial posterior forearm",
+    role: "Поверхностный слой задней группы предплечья",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Forearm_muscles_back_superficial.png",
+    rights: Object.freeze({ illustrations: "public-domain" }),
+  }),
+  "gray-1918-plate-419": Object.freeze({
+    title: "Gray's Anatomy — plate 419, deep posterior forearm",
+    role: "Глубокий слой задней группы предплечья",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Forearm_muscles_back_deep.png",
+    rights: Object.freeze({ illustrations: "public-domain" }),
+  }),
+
   "gray-forearm-extensors-public-domain": Object.freeze({
     title: "Gray anatomy — forearm extensor muscles and tendons",
     role: "Проверенный кандидат для иллюстрации задней группы предплечья",
