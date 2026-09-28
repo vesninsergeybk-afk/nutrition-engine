@@ -9,6 +9,19 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+for (const sourceName of [
+  "Descending part of right trapezius muscle",
+  "Transverse part of left trapezius",
+  "Ascending part of trapezius muscle",
+]) {
+  const reference = muscleReferenceFor(sourceName);
+  assert(
+    reference?.id === "trapezius" && reference?.modelCoverage === "part",
+    sourceName + " must resolve to the parent trapezius reference card as a selected part"
+  );
+}
+
+
 const root = new URL("./", import.meta.url);
 const [html, app] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
