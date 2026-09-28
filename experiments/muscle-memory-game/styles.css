@@ -2746,3 +2746,15 @@ body:not(.motion-mode) .comparison-pane-static {
     transition: width .52s cubic-bezier(.16,.72,.24,1) !important;
   }
 }
+
+@media (max-width: 920px) {
+  .mobile-context-node-pending .mobile-context-node-dot {
+    opacity: .35;
+    transform: scale(.72);
+    transition: opacity .42s ease, transform .52s cubic-bezier(.16,.72,.24,1);
+  }
+  .mobile-context-node-pending.arriving .mobile-context-node-dot {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
