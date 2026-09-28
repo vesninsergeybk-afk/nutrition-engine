@@ -117,6 +117,34 @@ for (const expectedName of [
 
 console.log("Cross-source stable IDs: ok");
 
+for (const expectedName of [
+  "Мышца, отводящая мизинец кисти",
+  "Короткий сгибатель мизинца кисти",
+  "Мышца, противопоставляющая мизинец кисти",
+  "Ладонные межкостные мышцы кисти",
+  "Тыльные межкостные мышцы кисти",
+]) {
+  const z = zCatalog.find((item) => item.nameRu === expectedName);
+  const bp = bpCatalog.find((item) => item.nameRu === expectedName);
+  assert(z && bp, "Missing intrinsic-hand muscle across 3D sources: " + expectedName);
+  assert(z.id === bp.id, "Intrinsic-hand cross-source ID mismatch: " + expectedName);
+  assert(
+    z.sidsBySide?.right?.length >= 1 &&
+      z.sidsBySide?.left?.length >= 1 &&
+      bp.sidsBySide?.right?.length >= 1 &&
+      bp.sidsBySide?.left?.length >= 1,
+    "Intrinsic-hand bilateral meshes were not grouped correctly: " + expectedName
+  );
+}
+
+assert(
+  !zCatalog.some((item) => item.nameRu === "Короткая ладонная мышца") &&
+    !bpCatalog.some((item) => item.nameRu === "Короткая ладонная мышца"),
+  "Palmaris brevis must not be synthesized from a neighbouring 3D mesh when neither pinned source exposes it"
+);
+
+console.log("Intrinsic-hand cross-source mappings: ok; palmaris brevis remains 2D/reference-only");
+
 function scopeOverlap(scopeId) {
   const zScope = filterCatalogByRegion(zCatalog, scopeId);
   const bpScope = filterCatalogByRegion(bpCatalog, scopeId);
