@@ -113,6 +113,42 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-plate-395": Object.freeze({
+    title: "Gray's Anatomy, plate 395 — internal oblique",
+    year: 1918,
+    role: "Послойная иллюстрация внутренней косой мышцы живота",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray395.png",
+    rights: Object.freeze({ illustrations: "public-domain", note: "Wikimedia Commons указывает Public Domain для пластины Gray's Anatomy." }),
+  }),
+  "gray-1918-plate-397": Object.freeze({
+    title: "Gray's Anatomy, plate 397 — transversus abdominis",
+    year: 1918,
+    role: "Иллюстрация поперечной мышцы живота и глубокого слоя брюшной стенки",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Transversus_abdominis.png",
+    rights: Object.freeze({ illustrations: "public-domain", note: "Производная от Gray397; Wikimedia Commons указывает Public Domain." }),
+  }),
+  "gray-1918-plate-398": Object.freeze({
+    title: "Gray's Anatomy, plate 398 — rectus and deep abdominal wall",
+    year: 1918,
+    role: "Региональная схема прямой мышцы живота и глубоких структур передней брюшной стенки",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray398.png",
+    rights: Object.freeze({ illustrations: "public-domain", note: "Wikimedia Commons указывает Public Domain / PD-scan." }),
+  }),
+  "gerrish-1902-fig-294": Object.freeze({
+    title: "Gerrish's Text-book of Anatomy, fig. 294 — pectoralis major attachments",
+    year: 1902,
+    role: "Контур большой грудной мышцы и зоны её костных прикреплений",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gerrish%27s_Text-book_of_Anatomy_(1902)_-_Fig._294.png",
+    rights: Object.freeze({ illustrations: "public-domain", note: "Wikimedia Commons указывает Public Domain." }),
+  }),
+  "charpy-1894-diaphragm-attachments": Object.freeze({
+    title: "Traité d'anatomie humaine — diaphragm attachments",
+    year: 1894,
+    role: "Схема грудино-рёберных прикреплений диафрагмы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:DiaphragmAttachments.jpg",
+    rights: Object.freeze({ illustrations: "public-domain", note: "Wikimedia Commons указывает Public Domain." }),
+  }),
+
   "gray-1918-plate-392": Object.freeze({
     title: "Gray's Anatomy, plate 392 — external oblique / anterolateral trunk",
     year: 1918,
