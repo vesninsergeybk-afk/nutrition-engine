@@ -652,18 +652,24 @@ function renderReferenceItems(container, items, kind) {
   return visibleItems.length;
 }
 
+let reference3DViewerCleanup = null;
+
+function disposeReference3DViewer() {
+  reference3DViewerCleanup?.();
+  reference3DViewerCleanup = null;
+}
+
 function appendReference3DGallerySlide(sid) {
   if (!structureReferenceIllustrations || sid == null || selectedExploreSid !== sid) return;
 
   requestAnimationFrame(() => {
-    if (selectedExploreSid !== sid || !structureNames[sid]) return;
+    if (selectedExploreSid !== sid || !structureNames[sid] || !anatomyMesh || !skeletonMesh) return;
 
-    const muscleVisibilityBefore = [...structureVisibility];
-    const boneVisibilityBefore = [...boneVisibility];
-    const anatomyVisibleBefore = anatomyMesh?.visible;
-    const skeletonVisibleBefore = skeletonMesh?.visible;
-    const cameraPositionBefore = camera.position.clone();
-    const controlsTargetBefore = controls.target.clone();
+    disposeReference3DViewer();
+    structureReferenceIllustrations
+      .querySelector('[data-reference-3d="true"]')
+      ?.remove();
+
     const reference = muscleReferenceFor(structureNames[sid]);
     const target = learningTargetBySid.get(sid) || null;
     const muscleIds = [
@@ -672,84 +678,180 @@ function appendReference3DGallerySlide(sid) {
         sid,
         ...parentMuscleContextIds(sid, reference),
       ]),
-    ].filter((id) => structureNames[id]);
+    ].filter((id) => structureNames[id] && structureRanges[id]);
 
-    try {
-      // The reference slide is an anatomical preparation, not a screenshot of
-      // the Atlas: show the selected whole muscle on its skeletal landmarks.
-      if (anatomyMesh) anatomyMesh.visible = true;
-      writeVisibleStructures(muscleIds);
-      if (skeletonMesh) {
-        skeletonMesh.visible = true;
-        applySelectedMuscleBoneVisibility(muscleIds);
-      }
+    const contextBox = selectedMuscleBoneContextBox(muscleIds);
+    if (!muscleIds.length || contextBox.isEmpty()) return;
 
-      // Gallery framing must be local to the selected muscle. Reusing the Atlas
-      // camera makes small structures occupy only a tiny fraction of the slide.
-      const galleryBox = selectedMuscleBoneContextBox(muscleIds);
-      if (!galleryBox.isEmpty()) {
-        focusBox(galleryBox, 1.12, currentViewDirection());
-      }
-      renderer.render(scene, camera);
+    const row = document.createElement("div");
+    row.className = "structure-reference-source-item structure-reference-3d-slide";
+    row.dataset.reference3d = "true";
 
-      const src = renderer.domElement.toDataURL("image/png");
-      if (!src || src === "data:,") return;
+    const title = document.createElement("strong");
+    title.textContent = "3D · мышца на скелете";
 
-      structureReferenceIllustrations
-        .querySelector('[data-reference-3d="true"]')
-        ?.remove();
+    const figure = document.createElement("figure");
+    figure.className = "structure-reference-figure structure-reference-3d-figure structure-reference-3d-interactive";
 
-      const row = document.createElement("div");
-      row.className = "structure-reference-source-item structure-reference-3d-slide";
-      row.dataset.reference3d = "true";
+    const stage = document.createElement("div");
+    stage.className = "structure-reference-3d-stage";
+    const miniCanvas = document.createElement("canvas");
+    miniCanvas.className = "structure-reference-3d-canvas";
+    miniCanvas.setAttribute("aria-label", "Интерактивная 3D-модель: " + displayStructureName(sid) + " на скелете");
+    stage.append(miniCanvas);
 
-      const title = document.createElement("strong");
-      title.textContent = "3D · мышца на скелете";
+    const hint = document.createElement("span");
+    hint.className = "structure-reference-3d-hint";
+    hint.textContent = "Поверните пальцем · масштаб двумя пальцами";
+    stage.append(hint);
 
-      const figure = document.createElement("figure");
-      figure.className = "structure-reference-figure structure-reference-3d-figure";
+    const reset = document.createElement("button");
+    reset.type = "button";
+    reset.className = "structure-reference-3d-reset";
+    reset.textContent = "Сбросить ракурс";
+    stage.append(reset);
 
-      const image = document.createElement("img");
-      image.src = src;
-      image.alt = "3D-вид: " + displayStructureName(sid) + " на окружающих костях";
+    const caption = document.createElement("figcaption");
+    caption.textContent =
+      "Интерактивный вид выбранной мышцы на скелете: можно рассмотреть её пространственное положение, начало, прикрепление и костные ориентиры.";
 
-      const caption = document.createElement("figcaption");
-      caption.textContent =
-        "Выбранная мышца показана отдельно на скелете, чтобы были видны её пространственное положение, начало, прикрепление и костные ориентиры.";
+    figure.append(stage, caption);
+    row.append(title, figure);
+    structureReferenceIllustrations.append(row);
+    structureReferenceIllustrations.hidden = false;
+    if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = false;
+    syncReferenceGalleryControls();
 
-      figure.append(image, caption);
-      row.append(title, figure);
-      structureReferenceIllustrations.append(row);
-      structureReferenceIllustrations.hidden = false;
-      if (structureReferenceAtlasBlock) structureReferenceAtlasBlock.hidden = false;
-      syncReferenceGalleryControls();
+    const miniScene = new THREE.Scene();
+    miniScene.background = new THREE.Color(0xe7e4dc);
+    const miniCamera = new THREE.PerspectiveCamera(32, 1, 0.01, 10000);
+    const miniRenderer = new THREE.WebGLRenderer({
+      canvas: miniCanvas,
+      antialias: true,
+      alpha: false,
+      powerPreference: "low-power",
+    });
+    miniRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    miniRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
-      const count = structureReferenceIllustrations.querySelectorAll(
-        ".structure-reference-source-item"
-      ).length;
-      structureReferenceEl.dataset.referenceAtlasIllustrationCount = String(count);
-      canvas.dataset.selectedReferenceIllustration = "gallery-with-3d";
-    } catch (error) {
-      console.warn("3D reference gallery capture failed.", structureNames[sid], error);
-    } finally {
-      if (anatomyMesh) anatomyMesh.visible = anatomyVisibleBefore;
-      writeVisibleStructures(
-        muscleVisibilityBefore
-          .map((visible, id) => (visible ? id : null))
-          .filter((id) => id != null)
-      );
-      if (skeletonMesh) {
-        skeletonMesh.visible = skeletonVisibleBefore;
-        setAllBonesVisible(false);
-        boneVisibilityBefore.forEach((visible, boneId) => {
-          if (visible) setBoneVisible(boneId, true);
+    miniScene.add(new THREE.HemisphereLight(0xffffff, 0x8d877d, 2.25));
+    const key = new THREE.DirectionalLight(0xffffff, 2.2);
+    key.position.set(2.5, 3.5, 4);
+    miniScene.add(key);
+    const rim = new THREE.DirectionalLight(0xffffff, 1.1);
+    rim.position.set(-3, 1.5, -2.5);
+    miniScene.add(rim);
+
+    const modelGroup = new THREE.Group();
+    miniScene.add(modelGroup);
+    const disposableMeshes = [];
+
+    const muscleMaterial = new THREE.MeshStandardMaterial({
+      color: 0x245da8,
+      roughness: 0.48,
+      metalness: 0,
+      side: THREE.DoubleSide,
+    });
+    for (const muscleId of muscleIds) {
+      try {
+        const mesh = createMotionMesh(anatomyMesh, structureRanges[muscleId], {
+          material: muscleMaterial.clone(),
+          name: structureNames[muscleId],
+          kind: "reference-muscle",
         });
+        modelGroup.add(mesh);
+        disposableMeshes.push(mesh);
+      } catch (error) {
+        console.warn("Reference 3D muscle extraction failed.", structureNames[muscleId], error);
       }
-      camera.position.copy(cameraPositionBefore);
-      controls.target.copy(controlsTargetBefore);
-      controls.update();
-      renderer.render(scene, camera);
     }
+    muscleMaterial.dispose();
+
+    for (let boneId = 0; boneId < boneRanges.length; boneId += 1) {
+      if (!boneRanges[boneId]) continue;
+      const boneBox = boneWorldBox(boneId);
+      if (!contextBox.intersectsBox(boneBox)) continue;
+      try {
+        const mesh = createMotionMesh(skeletonMesh, boneRanges[boneId], {
+          material: motionBoneMaterial(),
+          name: boneNames[boneId] || "Кость",
+          kind: "reference-bone",
+        });
+        modelGroup.add(mesh);
+        disposableMeshes.push(mesh);
+      } catch (error) {
+        console.warn("Reference 3D bone extraction failed.", boneNames[boneId], error);
+      }
+    }
+
+    const modelBox = new THREE.Box3().setFromObject(modelGroup);
+    if (modelBox.isEmpty()) {
+      miniRenderer.dispose();
+      row.remove();
+      return;
+    }
+
+    const center = modelBox.getCenter(new THREE.Vector3());
+    const size = modelBox.getSize(new THREE.Vector3());
+    const radius = Math.max(size.x, size.y, size.z, 0.01);
+    const initialDirection = new THREE.Vector3(0.42, 0.12, 1).normalize();
+    const fitDistance = radius / (2 * Math.tan(THREE.MathUtils.degToRad(miniCamera.fov) / 2)) * 1.35;
+
+    const miniControls = new OrbitControls(miniCamera, miniCanvas);
+    miniControls.enableDamping = false;
+    miniControls.enablePan = false;
+    miniControls.rotateSpeed = 0.75;
+    miniControls.zoomSpeed = 0.8;
+    miniControls.minDistance = fitDistance * 0.42;
+    miniControls.maxDistance = fitDistance * 3.2;
+
+    const resetView = () => {
+      miniControls.target.copy(center);
+      miniCamera.position.copy(center).addScaledVector(initialDirection, fitDistance);
+      miniCamera.near = Math.max(fitDistance / 100, 0.001);
+      miniCamera.far = fitDistance * 20;
+      miniCamera.updateProjectionMatrix();
+      miniControls.update();
+    };
+
+    const renderMini = () => {
+      const width = Math.max(1, miniCanvas.clientWidth);
+      const height = Math.max(1, miniCanvas.clientHeight);
+      const ratio = miniRenderer.getPixelRatio();
+      if (
+        miniCanvas.width !== Math.floor(width * ratio) ||
+        miniCanvas.height !== Math.floor(height * ratio)
+      ) {
+        miniRenderer.setSize(width, height, false);
+        miniCamera.aspect = width / height;
+        miniCamera.updateProjectionMatrix();
+      }
+      miniRenderer.render(miniScene, miniCamera);
+    };
+
+    miniControls.addEventListener("change", renderMini);
+    reset.addEventListener("click", () => {
+      resetView();
+      renderMini();
+    });
+    const resizeObserver = new ResizeObserver(renderMini);
+    resizeObserver.observe(stage);
+    resetView();
+    renderMini();
+
+    reference3DViewerCleanup = () => {
+      resizeObserver.disconnect();
+      miniControls.removeEventListener("change", renderMini);
+      miniControls.dispose();
+      for (const mesh of disposableMeshes) disposeMotionMesh(mesh);
+      miniRenderer.dispose();
+    };
+
+    const count = structureReferenceIllustrations.querySelectorAll(
+      ".structure-reference-source-item"
+    ).length;
+    structureReferenceEl.dataset.referenceAtlasIllustrationCount = String(count);
+    canvas.dataset.selectedReferenceIllustration = "gallery-with-interactive-3d";
   });
 }
 
