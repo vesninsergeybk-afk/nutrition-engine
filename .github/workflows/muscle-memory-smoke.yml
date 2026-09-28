@@ -369,6 +369,45 @@ jobs:
           retention-days: 7
 
 
+  browser-mobile-atlas-targeted:
+    if: ${{ contains(github.event.head_commit.message, '[mobile-atlas-smoke]') }}
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run mobile Atlas checkpoint
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          timeout 6m node experiments/muscle-memory-game/browser-smoke-mobile-atlas.cjs
+
+      - name: Upload mobile Atlas screenshot
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: muscle-memory-mobile-atlas-targeted
+          path: /tmp/muscle-memory-mobile-atlas.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+
   browser-bodyparts:
     if: ${{ contains(github.event.head_commit.message, '[bodyparts-smoke]') }}
     needs: fast
