@@ -1,0 +1,116 @@
+name: External Food Family v15.1 Variant Gate
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "tools/patch_external_food_variants_v15_1.py"
+      - "tools/audit_external_food_variants_v15_1.py"
+      - ".github/workflows/external-food-family-v15-1-variant-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce-and-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reconstruct audited v15 tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/v15
+          cat tools/packed/v15/build_external_food_families_v15.py.gz.b64.part{1,2,3,4} | base64 -d | gzip -d > .tmp/v15/build_external_food_families_v15.py
+          cat tools/packed/v15/audit_external_food_families_v15.py.gz.b64 | base64 -d | gzip -d > .tmp/v15/audit_external_food_families_v15.py
+          echo "09174842b338645e94e23ab3bce9071abb2d364dd8c61ea119ebc5af9654e48f  .tmp/v15/build_external_food_families_v15.py" | sha256sum -c -
+          echo "02b6247fa58f38ef0855598c8126864bb26b564497e89184a7d2082f252e7a2f  .tmp/v15/audit_external_food_families_v15.py" | sha256sum -c -
+          echo "20d018ed5b425ecee60098ab733dc4da7453d8adf3af09b4d94712a55c31d590  tools/patch_external_food_variants_v15_1.py" | sha256sum -c -
+          echo "e91a67faa1669efb199536f9882a5e4d0ab64280df2055c5fd9f116c5fd0b41e  tools/audit_external_food_variants_v15_1.py" | sha256sum -c -
+
+      - name: Download official source datasets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/external-food-sources staging/external-food-sources
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/usda_foundation.zip "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_csv_2026-04-30.zip"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/usda_sr.zip "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/cnf.zip "https://open.canada.ca/data/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109/resource/019f2a90-e3a9-489d-b6e1-f74f4ba1d006/download/cnf_fcen_all-files-data_2026.zip"
+          curl -L --fail --retry 3 --retry-delay 2 -o .cache/external-food-sources/bls.zip "https://blsdb.de/assets/uploads/BLS_4_0_2025_DE.zip?token=XZB4-P2AQ-9DM5-IP40-W5Y9-87HT-FMQG-Q3HQ"
+
+      - name: Reproduce v15 family layer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet openpyxl
+          python3 tools/import_external_food_sources.py --repo . --usda-foundation .cache/external-food-sources/usda_foundation.zip --usda-sr .cache/external-food-sources/usda_sr.zip --cnf .cache/external-food-sources/cnf.zip --bls .cache/external-food-sources/bls.zip --out-dir staging/external-food-sources
+          python3 tools/filter_external_food_sources.py --input staging/external-food-sources/external_foods_staging.jsonl --out-dir staging/external-food-sources
+          python3 .tmp/v15/build_external_food_families_v15.py --input staging/external-food-sources/external_foods_core_generic.jsonl --out-dir staging/external-food-sources/v15
+          python3 .tmp/v15/audit_external_food_families_v15.py --input-core staging/external-food-sources/external_foods_core_generic.jsonl --members staging/external-food-sources/v15/external_food_family_members.jsonl --secondary staging/external-food-sources/v15/external_food_family_pass_secondary.jsonl --report staging/external-food-sources/v15/independent_semantic_audit_v15.json
+
+      - name: Apply v15.1 variant metadata patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/patch_external_food_variants_v15_1.py             --members staging/external-food-sources/v15/external_food_family_members.jsonl             --out staging/external-food-sources/v15/external_food_family_members_v15_1.jsonl
+
+      - name: Independent v15.1 variant audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/audit_external_food_variants_v15_1.py             --before staging/external-food-sources/v15/external_food_family_members.jsonl             --after staging/external-food-sources/v15/external_food_family_members_v15_1.jsonl             --report staging/external-food-sources/v15/variant_audit_v15_1.json
+          python3 .tmp/v15/audit_external_food_families_v15.py             --input-core staging/external-food-sources/external_foods_core_generic.jsonl             --members staging/external-food-sources/v15/external_food_family_members_v15_1.jsonl             --secondary staging/external-food-sources/v15/external_food_family_pass_secondary.jsonl             --report staging/external-food-sources/v15/independent_semantic_audit_v15_1.json
+
+      - name: v15.1 assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("staging/external-food-sources/v15")
+          r=json.loads((p/"external_food_family_report.json").read_text())
+          s=json.loads((p/"independent_semantic_audit_v15_1.json").read_text())
+          v=json.loads((p/"variant_audit_v15_1.json").read_text())
+          expected={"input_core_records":13764,"family_eligible_records":13680,"residual_secondary_removed_from_default":84,"navigation_families":6887,"identity_profiles":8541}
+          for k,val in expected.items():
+              assert r[k]==val,(k,r[k],val)
+          assert s["pass"] is True and s["errors"]==[]
+          assert v["pass"] is True and v["errors"]==[]
+          assert v["rows"]==13680
+          assert v["changed_rows"]==541
+          assert v["required_tag_counts"]=={"stewed":277,"toasted":85,"fresh":124,"poached":40,"blanched":9,"sauteed":6}
+          PY
+          echo "0bbf306a0ce67ff6e912ac1dc167b66d2806a5ad142fa194dbe471cc9d49810e  staging/external-food-sources/v15/external_food_family_members_v15_1.jsonl" | sha256sum -c -
+          echo "815fda26ba2e863097c245016cf59f78232bc9cbeffda0042f6f79d107dce348  staging/external-food-sources/v15/variant_audit_v15_1.json" | sha256sum -c -
+
+      - name: Publish summary
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          p=Path("staging/external-food-sources/v15")
+          v=json.loads((p/"variant_audit_v15_1.json").read_text())
+          print("## External food family v15.1 variant gate")
+          print("")
+          print("- Base family IDs/profiles unchanged: YES")
+          print(f"- Member rows: {v['rows']}")
+          print(f"- Variant metadata rows changed: {v['changed_rows']}")
+          print("- Semantic audit: PASS")
+          print("- Variant audit: PASS")
+          print("- Production main changed: NO")
+          PY
+
+      - name: Upload v15.1 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-family-v15-1-variant-audited
+          path: staging/external-food-sources/v15/
+          if-no-files-found: error
+          retention-days: 14
