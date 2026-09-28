@@ -2550,3 +2550,43 @@ body:not(.motion-mode) .comparison-pane-static {
     font-weight: 700;
   }
 }
+
+@media (max-width: 920px) {
+  .mobile-context-trail:not([hidden]) {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-height: 12px;
+    padding: 0 2px;
+  }
+  .mobile-context-step {
+    display: flex;
+    align-items: center;
+    flex: 1 1 0;
+  }
+  .mobile-context-step:last-child { flex: 0 0 auto; }
+  .mobile-context-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(27,27,29,.22);
+    transition: transform .18s ease, background .18s ease;
+  }
+  .mobile-context-step.active .mobile-context-dot {
+    transform: scale(1.55);
+    background: #245da8;
+  }
+  .mobile-context-line {
+    height: 2px;
+    flex: 1 1 auto;
+    margin: 0 4px;
+    border-radius: 999px;
+    background: rgba(36,93,168,.22);
+  }
+  .mobile-muscle-actions .mobile-back-context,
+  .mobile-muscle-actions .mobile-root-context {
+    flex: 1 1 auto;
+    text-align: center;
+    font-weight: 700;
+  }
+}
