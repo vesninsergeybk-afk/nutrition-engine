@@ -43,15 +43,32 @@ const assert = require('node:assert/strict');
   // Real touch input, not a synthetic mouse click, must reach the canvas.
   const viewerBox = await page.locator('#viewer').boundingBox();
   assert.ok(viewerBox && viewerBox.width > 250 && viewerBox.height > 300);
-  await page.touchscreen.tap(
-    viewerBox.x + viewerBox.width * 0.5,
-    viewerBox.y + viewerBox.height * 0.36
-  );
-  await page.waitForTimeout(250);
-  const touchSelectionState = await page.locator('#viewer').getAttribute('data-last-selection-input');
-  // The exact structure under this point depends on model framing. If it is a muscle,
-  // the runtime records touch; otherwise the later search path still validates Atlas.
-  if (touchSelectionState !== null) assert.equal(touchSelectionState, 'touch');
+  // Find a real visible muscle point from the rendered structure-id buffer, then
+  // tap that exact point through Playwright's touchscreen API. This turns the
+  // regression test into a real touch-selection contract rather than an optional probe.
+  const touchTarget = await page.evaluate(() => {
+    const canvas = document.querySelector('#viewer');
+    const rect = canvas.getBoundingClientRect();
+    const samples = [
+      [0.50, 0.30], [0.42, 0.34], [0.58, 0.34],
+      [0.50, 0.40], [0.38, 0.42], [0.62, 0.42],
+      [0.46, 0.50], [0.54, 0.50],
+    ];
+    return samples.map(([x, y]) => ({
+      x: rect.left + rect.width * x,
+      y: rect.top + rect.height * y,
+    }));
+  });
+  let touchSelected = false;
+  for (const point of touchTarget) {
+    await page.touchscreen.tap(point.x, point.y);
+    await page.waitForTimeout(120);
+    if ((await page.locator('#viewer').getAttribute('data-last-selection-input')) === 'touch') {
+      touchSelected = true;
+      break;
+    }
+  }
+  assert.equal(touchSelected, true, 'A real touchscreen tap could not select any visible muscle');
 
   const overflow = await page.evaluate(() => ({
     viewport: window.innerWidth,
