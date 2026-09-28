@@ -2691,3 +2691,16 @@ body:not(.motion-mode) .comparison-pane-static {
     transition: width .42s cubic-bezier(.2,.75,.25,1);
   }
 }
+
+@media (max-width: 920px) {
+  .mobile-context-thumb {
+    margin-left: -7px;
+    transition: left .48s cubic-bezier(.18,.78,.24,1), box-shadow .2s ease;
+    will-change: left;
+  }
+  .mobile-context-node.active .mobile-context-node-dot {
+    opacity: 1;
+    transform: scale(1.25);
+    background: rgba(36,93,168,.14);
+  }
+}
