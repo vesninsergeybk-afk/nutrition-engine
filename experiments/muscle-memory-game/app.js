@@ -302,6 +302,7 @@ const peelSurfaceLayerButton = document.querySelector("#peel-surface-layer");
 const undoHideButton = document.querySelector("#undo-hide");
 const showAllButton = document.querySelector("#show-all");
 const mobileMuscleCard = document.querySelector("#mobile-muscle-card");
+const mobileMuscleCardCopy = document.querySelector("#mobile-muscle-card-copy");
 const mobileMuscleKind = document.querySelector("#mobile-muscle-kind");
 const mobileMuscleName = document.querySelector("#mobile-muscle-name");
 const mobileHideMuscleButton = document.querySelector("#mobile-hide-muscle");
@@ -454,6 +455,7 @@ let availableTargets = [];
 let currentTarget = null;
 let selectedExploreSid = null;
 let mobileIsolationStack = [];
+let mobileContextVisualDepth = 0;
 
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
 
@@ -2880,19 +2882,36 @@ function renderMobileContextTrail() {
   if (!mobileContextTrail) return;
   const depth = mobileIsolationStack.length;
   mobileContextTrail.hidden = depth === 0;
-  mobileContextTrail.replaceChildren();
-  if (!depth) return;
+  if (!depth) {
+    mobileContextTrail.replaceChildren();
+    mobileContextVisualDepth = 0;
+    return;
+  }
 
-  const track = document.createElement("div");
-  track.className = "mobile-context-track";
-  track.style.setProperty("--context-depth", String(depth));
+  let track = mobileContextTrail.querySelector(".mobile-context-track");
+  let thumb = mobileContextTrail.querySelector(".mobile-context-thumb");
+  const previousDepth = mobileContextVisualDepth;
 
-  const rail = document.createElement("span");
-  rail.className = "mobile-context-rail";
-  const progress = document.createElement("span");
-  progress.className = "mobile-context-progress";
-  rail.append(progress);
-  track.append(rail);
+  if (!track) {
+    track = document.createElement("div");
+    track.className = "mobile-context-track";
+    const rail = document.createElement("span");
+    rail.className = "mobile-context-rail";
+    const progress = document.createElement("span");
+    progress.className = "mobile-context-progress";
+    rail.append(progress);
+    track.append(rail);
+    thumb = document.createElement("span");
+    thumb.className = "mobile-context-thumb";
+    thumb.setAttribute("aria-hidden", "true");
+    track.append(thumb);
+    mobileContextTrail.replaceChildren(track);
+  }
+
+  for (const node of [...track.querySelectorAll(".mobile-context-node")]) node.remove();
+  track.style.setProperty("--context-depth", String(Math.max(depth, 1)));
+  const visualStart = Math.min(previousDepth, depth);
+  track.style.setProperty("--context-active", String(visualStart));
 
   for (let index = 0; index <= depth; index += 1) {
     const step = document.createElement("button");
@@ -2900,43 +2919,47 @@ function renderMobileContextTrail() {
     step.className = "mobile-context-node" + (index === depth ? " active" : "");
     step.style.setProperty("--context-index", String(index));
     step.setAttribute("aria-label", index === depth ? `Текущий уровень ${index + 1}` : `Вернуться к уровню ${index + 1}`);
-    step.setAttribute("aria-current", index === depth ? "step" : "false");
-    if (index < depth) {
-      step.addEventListener("click", () => restoreMobileIsolationLevel(index));
-    } else {
-      step.disabled = true;
-    }
+    if (index < depth) step.addEventListener("click", () => restoreMobileIsolationLevel(index));
+    else step.disabled = true;
     const dot = document.createElement("span");
     dot.className = "mobile-context-node-dot";
     step.append(dot);
     track.append(step);
   }
 
-  const thumb = document.createElement("span");
-  thumb.className = "mobile-context-thumb";
-  thumb.setAttribute("aria-hidden", "true");
-  track.append(thumb);
-  mobileContextTrail.append(track);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      track.style.setProperty("--context-active", String(depth));
+      mobileContextVisualDepth = depth;
+    });
+  });
 }
 
 function syncMobileMuscleCard() {
   if (!mobileMuscleCard) return;
   const sid = selectedExploreSid;
-  const show = appMode === "explore" && sid != null && structureNames[sid];
-  mobileMuscleCard.hidden = !show;
-  if (!show) return;
+  const hasSelection = appMode === "explore" && sid != null && structureNames[sid];
+  const hasContext = appMode === "explore" && mobileIsolationStack.length > 0;
+  mobileMuscleCard.hidden = !(hasSelection || hasContext);
+  if (mobileMuscleCard.hidden) return;
 
-  const reference = muscleReferenceFor(structureNames[sid]);
-  mobileMuscleKind.textContent =
-    reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
-  mobileMuscleName.textContent = displayStructureName(sid);
-  mobileHideMuscleButton.disabled = structureVisibility[sid] === false;
-  mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
+  mobileMuscleCardCopy.hidden = !hasSelection;
+  mobileHideMuscleButton.hidden = !hasSelection;
+  mobileIsolateMuscleButton.hidden = !hasSelection;
 
-  const target = learningTargetBySid.get(sid) || null;
+  if (hasSelection) {
+    const reference = muscleReferenceFor(structureNames[sid]);
+    mobileMuscleKind.textContent =
+      reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
+    mobileMuscleName.textContent = displayStructureName(sid);
+    mobileHideMuscleButton.disabled = structureVisibility[sid] === false;
+    mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
+  }
+
+  const target = hasSelection ? learningTargetBySid.get(sid) || null : null;
   const regionId = target?.region || "";
   const canIsolateRegion =
-    regionId && regionId !== "all" &&
+    hasSelection && regionId && regionId !== "all" &&
     [...learningRegion.options].some((option) => option.value === regionId) &&
     !(regionIsolationActive() && selectedLearningRegion === regionId);
   mobileIsolateRegionButton.hidden = !canIsolateRegion;
@@ -2947,8 +2970,6 @@ function syncMobileMuscleCard() {
   const depth = mobileIsolationStack.length;
   mobileBackContextButton.hidden = depth === 0;
   mobileRootContextButton.hidden = depth < 2;
-  mobileHideMuscleButton.hidden = false;
-  mobileIsolateMuscleButton.hidden = false;
   renderMobileContextTrail();
 }
 
@@ -10744,7 +10765,9 @@ mobileIsolateRegionButton?.addEventListener("click", () => {
   learningRegion.value = regionId;
   regionIsolation.checked = true;
   applyLearningRegion();
-  applyRegionScene({ resetLayers: true, focus: true });
+  boneDisplayMode = "anatomical";
+  boneMode.value = "anatomical";
+  applyRegionScene({ resetLayers: false, focus: true });
   syncLearningAreaQuery();
   renderSearchResults(searchInput.value);
   syncMobileMuscleCard();
