@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "policy_version": "external-food-step4d-semantic-v15",
+  "step": "4D",
+  "status": "staging_only",
+  "invariant": "Resolve HEI/FPID/FNDDS semantic blockers only from a unique exact official identity match. No class proxy, fuzzy transfer, or state widening is allowed.",
+  "approved_exact_resolutions": {
+    "cheese swiss": {
+      "fpid": {
+        "code": "1040",
+        "description": "Cheese, swiss"
+      },
+      "remove_issues": [
+        "FPID_EXACT_NAME_AMBIGUOUS",
+        "HEI_EQUIVALENTS_UNRESOLVED"
+      ]
+    },
+    "cheese provolone": {
+      "fpid": {
+        "code": "1035",
+        "description": "Cheese, provolone"
+      },
+      "fndds": {
+        "fdc_id": "2705733",
+        "description": "Cheese, Provolone"
+      },
+      "remove_issues": [
+        "FNDDS_EXACT_NAME_AMBIGUOUS",
+        "FPID_EXACT_NAME_AMBIGUOUS",
+        "HEI_EQUIVALENTS_UNRESOLVED"
+      ]
+    }
+  },
+  "explicitly_forbidden_inference": [
+    "raw fish species -> another raw fish species",
+    "hard/soft cheese -> semisoft cheese",
+    "flour -> similar grain/flour subtype",
+    "dry legume -> cooked or other legume",
+    "coconut product -> another coconut product"
+  ]
+}
