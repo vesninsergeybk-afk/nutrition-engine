@@ -188,6 +188,42 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "asset-ready"
   },
   {
+    "id": "gray-410-deltoid-focused",
+    "sourceId": "gray-1918-plate-410",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["deltoid"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20deltoideus.png",
+    "altRu": "Дельтовидная мышца, выделенная на анатомической пластине плечевого пояса",
+    "captionRu": "Дельтовидная мышца, выделенная на основе Gray, plate 410. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-supraspinatus-focused",
+    "sourceId": "gray-1918-plate-410",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["supraspinatus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20supraspinatus.png",
+    "altRu": "Надостная мышца, выделенная на задней поверхности лопатки",
+    "captionRu": "Надостная мышца, выделенная на основе Gray, plate 410. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-410-infraspinatus-focused",
+    "sourceId": "gray-1918-plate-410",
+    "kind": "focused-plate",
+    "regionIds": ["back-shoulder", "upper-limb"],
+    "focusStructureIds": ["infraspinatus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray%20%E2%80%94%20musculus%20infraspinatus.png",
+    "altRu": "Подостная мышца, выделенная на задней поверхности лопатки",
+    "captionRu": "Подостная мышца, выделенная на основе Gray, plate 410. Public domain.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-412-posterior-shoulder",
     "sourceId": "gray-1918-plate-412",
     "kind": "regional-plate",
