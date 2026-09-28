@@ -1049,6 +1049,13 @@ function structureSideForDisplay(sourceName) {
   return null;
 }
 
+function structureSide(sourceName) {
+  const side = structureSideForDisplay(sourceName);
+  if (side === "справа") return "right";
+  if (side === "слева") return "left";
+  return "unknown";
+}
+
 function normalizeRussianSideLabel(nameRu, sourceName) {
   const side = structureSideForDisplay(sourceName);
   if (!side) return String(nameRu || "").trim();
