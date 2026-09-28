@@ -536,6 +536,21 @@ button:disabled {
   color: var(--muted);
 }
 
+.explore-start-hint {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.explore-start-hint strong {
+  color: var(--text);
+  font-weight: 760;
+}
+
 .learning-mode-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
