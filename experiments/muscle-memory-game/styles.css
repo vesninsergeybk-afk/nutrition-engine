@@ -885,6 +885,23 @@ button:disabled {
     left: 9px;
     right: 9px;
     gap: 5px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  /* Mobile Atlas keeps the model as the primary workspace. Camera shortcuts
+     remain available on larger screens; on touch screens they are redundant
+     with direct rotate/zoom gestures and otherwise cover the anatomy. */
+  body:not(.motion-mode) .viewer-tools #view-preset,
+  body:not(.motion-mode) .viewer-tools #focus-shoulder,
+  body:not(.motion-mode) .viewer-tools #focus-selected,
+  body:not(.motion-mode) .viewer-tools #focus-full {
+    display: none;
+  }
+
+  body:not(.motion-mode) .viewer-tools #toggle-skeleton,
+  body:not(.motion-mode) .viewer-tools #display-panel-toggle {
+    flex: 0 0 auto;
   }
 
   .viewer-tools button,
