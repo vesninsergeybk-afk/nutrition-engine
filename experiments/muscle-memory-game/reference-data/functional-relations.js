@@ -87,12 +87,94 @@ function displayName(id) {
   return structureById.get(id)?.structure?.names?.ru || id;
 }
 
+const CURATED_FUNCTIONAL_RELATIONS = Object.freeze({
+  "levator-ani": Object.freeze([
+    Object.freeze({
+      movementId: "pelvic-floor-support",
+      movementRu: "Поддержка и подъём тазового дна",
+      synergistIds: Object.freeze(["coccygeus"]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Coccygeus дополняет levator ani в составе тазовой диафрагмы; отдельную прямую мышцу-антагонист для этой опорной функции обычно не выделяют.",
+    }),
+  ]),
+  "puborectalis": Object.freeze([
+    Object.freeze({
+      movementId: "pelvic-floor-support",
+      movementRu: "Поддержка тазового дна",
+      synergistIds: Object.freeze(["pubococcygeus", "iliococcygeus", "coccygeus"]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Puborectalis является частью интегрированного комплекса levator ani; расслабление при дефекации не является действием отдельной мышцы-антагониста.",
+    }),
+    Object.freeze({
+      movementId: "anal-continence",
+      movementRu: "Поддержание анальной континенции",
+      synergistIds: Object.freeze(["external-anal-sphincter"]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Puborectalis поддерживает аноректальный угол и действует совместно со сфинктерным аппаратом; отдельную поперечнополосатую мышцу-антагонист здесь не выделяют.",
+    }),
+  ]),
+  "pubococcygeus": Object.freeze([
+    Object.freeze({
+      movementId: "pelvic-floor-support",
+      movementRu: "Поддержка и подъём тазового дна",
+      synergistIds: Object.freeze(["puborectalis", "iliococcygeus", "coccygeus"]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Pubococcygeus действует совместно с другими компонентами levator ani и coccygeus; прямой мышечный антагонист для общей опорной функции не выделяется.",
+    }),
+  ]),
+  "iliococcygeus": Object.freeze([
+    Object.freeze({
+      movementId: "pelvic-floor-support",
+      movementRu: "Поддержка и стабилизация тазового дна",
+      synergistIds: Object.freeze(["puborectalis", "pubococcygeus", "coccygeus"]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Iliococcygeus входит в интегрированный комплекс levator ani и совместно с coccygeus поддерживает тазовую диафрагму.",
+    }),
+  ]),
+  "coccygeus": Object.freeze([
+    Object.freeze({
+      movementId: "pelvic-floor-support",
+      movementRu: "Поддержка и подъём тазового дна",
+      synergistIds: Object.freeze(["puborectalis", "pubococcygeus", "iliococcygeus"]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Coccygeus функционально дополняет levator ani; для этой опорной функции отдельную прямую мышцу-антагонист обычно не выделяют.",
+    }),
+  ]),
+});
+
+function relatedItems(ids) {
+  return Object.freeze(
+    (ids || []).map(id =>
+      Object.freeze({
+        id,
+        nameRu: displayName(id),
+      })
+    )
+  );
+}
+
+function curatedFunctionalRelationsForStructure(structureId) {
+  return Object.freeze(
+    (CURATED_FUNCTIONAL_RELATIONS[structureId] || []).map(row =>
+      Object.freeze({
+        movementId: row.movementId,
+        movementRu: row.movementRu,
+        synergists: relatedItems(row.synergistIds),
+        antagonists: relatedItems(row.antagonistIds),
+        contextDependent: Object.freeze([]),
+        method: "curated-from-verified-pelvic-floor-function",
+        noteRu: row.noteRu,
+      })
+    )
+  );
+}
+
 export function functionalRelationsForStructure(structureId) {
   const current = structureById.get(structureId);
   if (!current) return Object.freeze([]);
 
   const movementIds = movementIdsFor(current.structure);
-  const rows = [];
+  const rows = [...curatedFunctionalRelationsForStructure(structureId)];
 
   for (const movementId of movementIds) {
     const movement = movementById.get(movementId);
@@ -126,22 +208,12 @@ export function functionalRelationsForStructure(structureId) {
       !contextDependentIds.length
     ) continue;
 
-    const related = ids =>
-      Object.freeze(
-        ids.map(id =>
-          Object.freeze({
-            id,
-            nameRu: displayName(id),
-          })
-        )
-      );
-
     rows.push(Object.freeze({
       movementId,
       movementRu: movement.labelRu,
-      synergists: related(synergistIds),
-      antagonists: related(antagonistIds),
-      contextDependent: related(contextDependentIds),
+      synergists: relatedItems(synergistIds),
+      antagonists: relatedItems(antagonistIds),
+      contextDependent: relatedItems(contextDependentIds),
       method: "derived-from-verified-actions",
       noteRu:
         "Связи показаны для указанного движения. Для мышц с функционально различающимися частями роль вынесена отдельно; она также меняется с положением сустава и задачей.",
