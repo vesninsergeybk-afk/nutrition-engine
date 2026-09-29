@@ -2521,6 +2521,9 @@ function paintStructure(sid, color) {
 }
 
 function restoreHighlights() {
+  canvas.dataset.answerRevealHighlight = "";
+  canvas.dataset.answerRevealHighlightIds = "";
+
   if (!anatomyMesh || !highlightedIds.size) return;
 
   for (const sid of highlightedIds) {
@@ -2528,6 +2531,40 @@ function restoreHighlights() {
   }
   anatomyMesh.geometry.getAttribute("color").needsUpdate = true;
   highlightedIds.clear();
+}
+
+function highlightAnswerInContext(ids) {
+  if (!anatomyMesh) return;
+
+  const targetIds = [...new Set(ids || [])].filter(
+    (sid) => sid != null && structureRanges[sid] && structureVisibility[sid] !== false
+  );
+  if (!targetIds.length) return;
+
+  const targetSet = new Set(targetIds);
+  const contextColor = new THREE.Color(0x8f8880);
+  const answerColor = new THREE.Color(0x12d5ee);
+
+  // Keep anatomical neighbours visible, but reduce their colour contrast so
+  // the revealed answer is immediately recognisable without isolating it.
+  for (let sid = 0; sid < structureNames.length; sid += 1) {
+    if (
+      targetSet.has(sid) ||
+      structureVisibility[sid] === false ||
+      !structureRanges[sid]
+    ) continue;
+    paintStructure(sid, contextColor);
+    highlightedIds.add(sid);
+  }
+
+  for (const sid of targetIds) {
+    paintStructure(sid, answerColor);
+    highlightedIds.add(sid);
+  }
+
+  anatomyMesh.geometry.getAttribute("color").needsUpdate = true;
+  canvas.dataset.answerRevealHighlight = "target-cyan-context-muted";
+  canvas.dataset.answerRevealHighlightIds = targetIds.join(",");
 }
 
 function highlightStructures(ids, kind = "answer") {
@@ -4829,8 +4866,9 @@ function revealAnswer() {
     currentTarget,
     revealIds.length ? revealIds : ids
   );
-  highlightStructures(ids, "answer");
-  focusedStructureIds = revealIds.length ? revealIds : ids;
+  const emphasizedIds = revealIds.length ? revealIds : ids;
+  highlightAnswerInContext(emphasizedIds);
+  focusedStructureIds = emphasizedIds;
   focusSelectedButton.disabled = false;
 
   if (item.skillId === "name") {
@@ -4842,7 +4880,7 @@ function revealAnswer() {
 
   feedbackEl.className = "feedback correct";
   feedbackEl.textContent =
-    `Ответ: «${currentTarget.nameRu}».` +
+    `Ответ: «${currentTarget.nameRu}». Нужная мышца выделена бирюзовым.` +
     (answerView.hidden
       ? " Перекрывающие наружные мышцы скрыты, ближайшее окружение оставлено."
       : " Мышца показана вместе с ближайшим анатомическим окружением.");
