@@ -2451,6 +2451,37 @@ body:not(.motion-mode) .comparison-pane-static {
   }
 }
 
+/* Mobile training follows the same rule as Atlas: the 3D model stays clear.
+   The task card is below the viewer; only the small tap-action bubble may overlay it. */
+@media (max-width: 920px) {
+  body.session-active:not(.motion-mode) .viewer-wrap {
+    min-height: 70dvh;
+  }
+
+  body.session-active:not(.motion-mode) .viewer-tools {
+    display: none;
+  }
+
+  body.session-active .panel .question-card {
+    position: static;
+    inset: auto;
+    max-height: none;
+    overflow: visible;
+    margin: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .quiz-muscle-actions {
+    min-width: 146px;
+    max-width: min(210px, calc(100% - 16px));
+  }
+
+  .quiz-muscle-actions-buttons button {
+    min-height: 42px;
+  }
+}
+
 /* Mobile Atlas: the information card must never cover the interactive anatomy. */
 @media (max-width: 920px) {
   body:not(.session-active) .panel .question-card,
@@ -2480,6 +2511,52 @@ body:not(.motion-mode) .comparison-pane-static {
 }
 
 /* Mobile Atlas quick card: immediate identification and layer actions stay with the 3D model. */
+/* Training tap actions: a compact choice attached to the muscle that was tapped. */
+.quiz-muscle-actions {
+  position: absolute;
+  z-index: 9;
+  display: grid;
+  gap: 7px;
+  min-width: 150px;
+  max-width: min(230px, calc(100% - 16px));
+  padding: 9px;
+  border: 1px solid rgba(27,27,29,.14);
+  border-radius: 13px;
+  background: rgba(255,255,255,.97);
+  box-shadow: 0 10px 30px rgba(27,27,29,.18);
+  backdrop-filter: blur(14px);
+  pointer-events: auto;
+}
+.quiz-muscle-actions[hidden] { display: none; }
+.quiz-muscle-actions > strong {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.25;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.quiz-muscle-actions-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.quiz-muscle-actions-buttons button {
+  min-height: 38px;
+  padding: 7px 9px;
+  border: 1px solid rgba(27,27,29,.13);
+  border-radius: 10px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+}
+#quiz-muscle-select {
+  background: #1b1b1d;
+  border-color: #1b1b1d;
+  color: #fff;
+}
+
 .mobile-muscle-card { display: none; }
 @media (max-width: 920px) {
   body:not(.session-active):not(.motion-mode) .mobile-muscle-card:not([hidden]) {
