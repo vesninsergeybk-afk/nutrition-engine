@@ -1242,6 +1242,42 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Тыльные межкостные мышцы кисти между пястными костями",
     "captionRu": "Тыльные межкостные мышцы кисти на основе рисунка Gray's Anatomy. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-psoas-major",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["psoas-major"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Psoas%20major%20muscle01.png",
+    "altRu": "Большая поясничная мышца выделена на костном контексте от поясничного отдела к малому вертелу",
+    "captionRu": "Anatomography / BodyParts3D: большая поясничная мышца. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-iliacus",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["iliacus"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Iliacus%20muscle01.png",
+    "altRu": "Подвздошная мышца выделена в подвздошной ямке и прослеживается к малому вертелу",
+    "captionRu": "Anatomography / BodyParts3D: подвздошная мышца. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-psoas-minor-highlight",
+    "sourceId": "gray-1918-psoas-minor-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["psoas-minor"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Musculus%20psoas%20minor.png",
+    "altRu": "Малая поясничная мышца выделена спереди от большой поясничной мышцы",
+    "captionRu": "Gray's Anatomy: малая поясничная мышца, вариабельная структура, которая у части людей отсутствует. Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
