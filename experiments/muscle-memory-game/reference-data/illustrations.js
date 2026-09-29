@@ -1458,6 +1458,42 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Промежуточная широкая мышца бедра показана после удаления прямой мышцы бедра между латеральной и медиальной широкими мышцами",
     "captionRu": "SEER Training: vastus intermedius показана после удаления rectus femoris; подпись изображения исправлена на Commons. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "gray-biceps-femoris-both-heads",
+    "sourceId": "commons-biceps-femoris-both-heads-2020",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["biceps-femoris"],
+    "rightsStatus": "cc-by-sa-4.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Grays%20anatomy%201918%20plate%20434%20biceps%20femoris%20muscle%20both%20heads%20marked.png",
+    "altRu": "Двуглавая мышца бедра на задней поверхности бедра: длинная и короткая головки выделены разными цветами",
+    "captionRu": "Gray's Anatomy, plate 434, переработка Fredrik x nilsson: обе головки biceps femoris выделены раздельно. CC BY-SA 4.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-semitendinosus-highlight",
+    "sourceId": "gray-1918-semitendinosus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["semitendinosus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Semitendinosus%20muscle.PNG",
+    "altRu": "Полусухожильная мышца выделена на заднемедиальной поверхности бедра",
+    "captionRu": "Gray's Anatomy: полусухожильная мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-semimembranosus-highlight",
+    "sourceId": "gray-1918-semimembranosus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["semimembranosus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Semimembranosus%20muscle.PNG",
+    "altRu": "Полуперепончатая мышца выделена глубже полусухожильной на заднемедиальной поверхности бедра",
+    "captionRu": "Gray's Anatomy: полуперепончатая мышца; актуальное выделение на Commons исправлено в 2024 году. Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
