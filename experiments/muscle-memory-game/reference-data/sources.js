@@ -413,6 +413,18 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "anatomography-adductor-minimus-2014": Object.freeze({
+    title: "Adductor minimus — rotating Anatomography view",
+    year: 2014,
+    role: "Отдельное пространственное изображение малой приводящей мышцы как верхней части приводящего комплекса",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Adductor_minimus.gif",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-2.1-jp",
+      attribution: "BodyParts3D / Anatomography, DBCLS",
+      note: "Wikimedia Commons указывает CC BY-SA 2.1 Japan и BodyParts3D/Anatomography как источник."
+    }),
+  }),
+
   "dr-jana-commons-2019": Object.freeze({
     title: "Insertion of subscapularis muscle — proximal humerus",
     year: 2019,
