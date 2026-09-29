@@ -73,6 +73,14 @@
           </div>
         </aside>
 
+        <div id="quiz-pick-actions" class="quiz-pick-actions" hidden role="group" aria-label="Действия с выбранной мышцей">
+          <strong id="quiz-pick-name">Мышца</strong>
+          <div class="quiz-pick-buttons">
+            <button id="quiz-pick-select" type="button" class="primary">Выбрать</button>
+            <button id="quiz-pick-hide" type="button">Скрыть</button>
+          </div>
+        </div>
+
         <div class="viewer-tools" aria-label="Управление моделью">
           <select id="view-preset" aria-label="Анатомический ракурс">
             <option value="threeQuarter">Вид: ¾</option>
@@ -452,6 +460,7 @@
         <div id="quiz-actions" class="actions" hidden>
           <button id="show-answer" type="button" disabled>Показать ответ</button>
           <button id="reveal-deeper" type="button" disabled hidden>Открыть глубже</button>
+          <button id="undo-quiz-hide" type="button" disabled hidden>Вернуть скрытую</button>
           <button id="next-question" type="button" class="primary" disabled>Следующая</button>
         </div>
 
