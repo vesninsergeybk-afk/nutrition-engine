@@ -87,6 +87,18 @@ assert(
   "Selected muscle parts must stay dark blue while the rest of the parent muscle is shown in light-blue context"
 );
 
+assert(
+  app.includes("function highlightAnswerInContext(ids)") &&
+    app.includes("answerRevealHighlight = \"target-cyan-context-muted\"") &&
+    app.includes("const answerColor = new THREE.Color(0x12d5ee)") &&
+    app.includes("const contextColor = new THREE.Color(0x8f8880)") &&
+    app.includes("highlightAnswerInContext(emphasizedIds)") &&
+    app.includes("Нужная мышца выделена бирюзовым"),
+  "Show-answer mode must visibly emphasise the target muscle while keeping muted anatomical context"
+);
+
+console.log("Quiz answer reveal emphasis: target cyan, context muted");
+
 console.log("Massage study layers: static contract ok");
 console.log("Skin: opt-in");
 console.log("Connective sublayers: 7");
