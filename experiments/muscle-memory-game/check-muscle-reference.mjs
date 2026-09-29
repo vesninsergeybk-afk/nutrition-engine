@@ -248,6 +248,75 @@ assert(
   "Local public-domain Gray 392 plate is not wired to the external oblique card"
 );
 
+const pelvicFloorCases = [
+  {
+    sourceName: "levator ani",
+    id: "levator-ani",
+    illustrationSourceIds: ["gray-1918-plate-404-levator-ani"],
+  },
+  {
+    sourceName: "puborectalis",
+    id: "puborectalis",
+    illustrationSourceIds: [
+      "blaus-pelvic-muscles-female-2017",
+      "commons-puborectalis-sling-2012",
+    ],
+  },
+  {
+    sourceName: "pubococcygeus",
+    id: "pubococcygeus",
+    illustrationSourceIds: ["blaus-pelvic-muscles-female-2017"],
+  },
+  {
+    sourceName: "iliococcygeus",
+    id: "iliococcygeus",
+    illustrationSourceIds: ["blaus-pelvic-muscles-female-2017"],
+  },
+  {
+    sourceName: "coccygeus",
+    id: "coccygeus",
+    illustrationSourceIds: ["gray-1918-plate-404-levator-ani"],
+  },
+];
+
+for (const item of pelvicFloorCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical caveat is missing");
+  assert(reference.functionalRelations?.length, item.id + ": synergist/antagonist section is empty");
+  for (const sourceId of item.illustrationSourceIds) {
+    assert(
+      reference.illustrations?.some(illustration => illustration.sourceId === sourceId),
+      item.id + ": expected exact/relevant illustration source is missing: " + sourceId
+    );
+  }
+}
+
+const puborectalisReference = muscleReferenceFor("puborectalis");
+assert(
+  puborectalisReference.functionalRelations.some(
+    row =>
+      row.movementId === "anal-continence" &&
+      row.synergists.some(item => item.id === "external-anal-sphincter")
+  ),
+  "Puborectalis must identify the external anal sphincter as a continence synergist"
+);
+assert(
+  pelvicFloorCases.every(item =>
+    muscleReferenceFor(item.sourceName).functionalRelations.every(
+      row => row.antagonists.length === 0 && /антагонист/i.test(row.noteRu || "")
+    )
+  ),
+  "Pelvic-floor support relations must explicitly avoid inventing direct muscle antagonists"
+);
+
+console.log("Pelvic-floor five-card completeness: facts + relations + illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
