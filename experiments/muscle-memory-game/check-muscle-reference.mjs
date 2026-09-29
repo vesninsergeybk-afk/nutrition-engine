@@ -49,6 +49,43 @@ for (const [sourceName, expectedId] of [
   assert(reference.sources?.length, expectedId + " lacks provenance");
 }
 
+for (const [sourceName, expectedId, expectedIllustrationIds] of [
+  ["levator ani", "levator-ani", ["gray-404-levator-coccygeus"]],
+  ["puborectalis", "puborectalis", ["blaus-female-pelvic-muscles", "puborectalis-sling-action"]],
+  ["pubococcygeus", "pubococcygeus", ["blaus-female-pelvic-muscles"]],
+  ["iliococcygeus", "iliococcygeus", ["blaus-female-pelvic-muscles"]],
+  ["coccygeus", "coccygeus", ["gray-404-levator-coccygeus"]],
+]) {
+  const reference = muscleReferenceFor(sourceName);
+  assert(reference?.id === expectedId, sourceName + ": wrong pelvic-floor reference card");
+  assert(reference.originRu && reference.insertionRu, expectedId + ": attachments are incomplete");
+  assert(reference.orientationRu, expectedId + ": fiber direction is missing");
+  assert(reference.actionsRu?.length, expectedId + ": actions are missing");
+  assert(reference.innervationRu, expectedId + ": innervation is missing");
+  assert(reference.landmarksRu?.length, expectedId + ": landmarks are missing");
+  assert(reference.relationsRu?.length, expectedId + ": topographic relations are missing");
+  assert(reference.sources?.length >= 2, expectedId + ": source provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, expectedId + ": functional/anatomical caveats are missing");
+  assert(reference.functionalRelations?.length, expectedId + ": synergist/antagonist section is missing");
+  for (const illustrationId of expectedIllustrationIds) {
+    assert(
+      reference.illustrations?.some(item => item.id === illustrationId && item.src),
+      expectedId + ": exact verified illustration is missing: " + illustrationId
+    );
+  }
+}
+
+const puborectalisCard = muscleReferenceFor("puborectalis");
+assert(
+  puborectalisCard.functionalRelations
+    .some(row =>
+      row.movementId === "anal-continence" &&
+      row.synergists.some(item => item.id === "external-anal-sphincter") &&
+      row.antagonists.length === 0
+    ),
+  "Puborectalis card must expose the verified continence synergy without inventing an antagonist"
+);
+
 const miology = muscleReferenceSource("miology-igma-2018");
 assert(miology?.year === 2018, "MIOL source metadata is incomplete");
 assert(
