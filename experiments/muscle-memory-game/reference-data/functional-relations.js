@@ -128,7 +128,7 @@ const CURATED_FUNCTIONAL_RELATIONS = Object.freeze({
       movementRu: "Поддержка и стабилизация тазового дна",
       synergistIds: Object.freeze(["puborectalis", "pubococcygeus", "coccygeus"]),
       antagonistIds: Object.freeze([]),
-      noteRu: "Iliococcygeus входит в интегрированный комплекс levator ani и совместно с coccygeus поддерживает тазовую диафрагму.",
+      noteRu: "Iliococcygeus входит в интегрированный комплекс levator ani и совместно с coccygeus поддерживает тазовую диафрагму; отдельную прямую мышцу-антагонист для этой опорной функции обычно не выделяют.",
     }),
   ]),
   "coccygeus": Object.freeze([
