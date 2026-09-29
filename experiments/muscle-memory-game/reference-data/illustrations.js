@@ -1494,6 +1494,78 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Полуперепончатая мышца выделена глубже полусухожильной на заднемедиальной поверхности бедра",
     "captionRu": "Gray's Anatomy: полуперепончатая мышца; актуальное выделение на Commons исправлено в 2024 году. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "berichard-adductor-longus",
+    "sourceId": "berichard-adductor-longus-2008",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["adductor-longus"],
+    "rightsStatus": "cc-by-sa-3.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle%20long%20adducteur.png",
+    "altRu": "Длинная приводящая мышца выделена на медиальной поверхности бедра",
+    "captionRu": "Berichard / Gray's Anatomy: длинная приводящая мышца. CC BY-SA 3.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "berichard-adductor-brevis",
+    "sourceId": "berichard-adductor-brevis-2008",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["adductor-brevis"],
+    "rightsStatus": "cc-by-sa-3.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle%20court%20adducteur.png",
+    "altRu": "Короткая приводящая мышца выделена глубже длинной приводящей в проксимальной медиальной части бедра",
+    "captionRu": "Berichard / Gray's Anatomy: короткая приводящая мышца. CC BY-SA 3.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "berichard-adductor-magnus",
+    "sourceId": "berichard-adductor-magnus-2008",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["adductor-magnus"],
+    "rightsStatus": "cc-by-sa-3.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle%20grand%20adducteur%20copie.png",
+    "altRu": "Большая приводящая мышца выделена как широкая глубокая мышца медиального отдела бедра",
+    "captionRu": "Berichard / Gray's Anatomy: большая приводящая мышца. CC BY-SA 3.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "berichard-gracilis",
+    "sourceId": "berichard-gracilis-2008",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["gracilis"],
+    "rightsStatus": "cc-by-sa-3.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Muscle%20gracile.png",
+    "altRu": "Тонкая мышца выделена как длинная поверхностная мышца вдоль медиальной поверхности бедра к гусиной лапке",
+    "captionRu": "Berichard / Gray's Anatomy: тонкая мышца. CC BY-SA 3.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-pectineus-highlight",
+    "sourceId": "gray-1918-pectineus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["pectineus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pectineus.png",
+    "altRu": "Гребенчатая мышца выделена в проксимальной переднемедиальной области бедра",
+    "captionRu": "Gray's Anatomy: гребенчатая мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-adductor-minimus",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["adductor-minimus"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Adductor%20minimus.gif",
+    "altRu": "Малая приводящая мышца показана отдельно как верхняя часть глубокой приводящей массы бедра",
+    "captionRu": "Anatomography / BodyParts3D: малая приводящая мышца. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
   }
 ]
 );
