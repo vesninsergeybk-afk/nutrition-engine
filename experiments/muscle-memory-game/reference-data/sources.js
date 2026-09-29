@@ -90,6 +90,30 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-gluteus-maximus-highlight": Object.freeze({
+    title: "Gray's Anatomy — gluteus maximus highlighted",
+    year: 1918,
+    role: "Отдельное изображение большой ягодичной мышцы, выделенной на пластине ягодичной области",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gluteus_maximus_muscle.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons отмечает файл и исходную пластину Gray's Anatomy как Public Domain."
+    }),
+  }),
+
+  "gray-1918-tensor-fasciae-latae-highlight": Object.freeze({
+    title: "Gray's Anatomy — tensor fasciae latae highlighted",
+    year: 1918,
+    role: "Отдельное изображение напрягателя широкой фасции, выделенного на пластине Gray's Anatomy",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Tensor_fasciae_latae.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
   "dr-jana-commons-2019": Object.freeze({
     title: "Insertion of subscapularis muscle — proximal humerus",
     year: 2019,
