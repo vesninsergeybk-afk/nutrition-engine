@@ -41,6 +41,14 @@ const assert = require('node:assert/strict');
     );
   }
 
+  async function bestEffortScreenshot(path) {
+    try {
+      await page.screenshot({ path, fullPage: true, timeout: 15000 });
+    } catch (error) {
+      console.warn('[reference-smoke] screenshot skipped:', path, error.message);
+    }
+  }
+
   console.log('[reference-smoke] trapezius part -> parent muscle');
   await search('трапециевидная');
   let trapeziusPart = page.locator('.search-result').filter({
@@ -62,7 +70,7 @@ const assert = require('node:assert/strict');
     assert.match(await page.locator('#structure-reference-context').innerText(), /Это часть:.*трапециевид/i);
     assert.ok(Number(await page.locator('#viewer').getAttribute('data-selected-parent-context-count')) >= 1);
   }
-  await page.screenshot({ path: '/tmp/muscle-memory-reference-trapezius.png', fullPage: true });
+  await bestEffortScreenshot('/tmp/muscle-memory-reference-trapezius.png');
 
   console.log('[reference-smoke] infraspinatus -> Gray 412');
   await search('подостная');
@@ -76,7 +84,7 @@ const assert = require('node:assert/strict');
     await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
     /gray412-shoulder\.png$/
   );
-  await page.screenshot({ path: '/tmp/muscle-memory-reference-infraspinatus.png', fullPage: true });
+  await bestEffortScreenshot('/tmp/muscle-memory-reference-infraspinatus.png');
 
   console.log('[reference-smoke] latissimus -> exact course art; no stale Gray 412');
   await search('широчайшая');
@@ -90,7 +98,7 @@ const assert = require('node:assert/strict');
   );
   assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), false);
   assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), true);
-  await page.screenshot({ path: '/tmp/muscle-memory-reference-latissimus.png', fullPage: true });
+  await bestEffortScreenshot('/tmp/muscle-memory-reference-latissimus.png');
 
   console.log('[reference-smoke] external oblique -> local Gray 392');
   await search('external oblique');
@@ -104,7 +112,7 @@ const assert = require('node:assert/strict');
     await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
     /gray392-external-oblique\.png$/
   );
-  await page.screenshot({ path: '/tmp/muscle-memory-reference-external-oblique.png', fullPage: true });
+  await bestEffortScreenshot('/tmp/muscle-memory-reference-external-oblique.png');
 
   console.log('[reference-smoke] puborectalis -> exact labeled art + continence synergy');
   await search('puborectalis');
@@ -132,7 +140,7 @@ const assert = require('node:assert/strict');
     await page.locator('#structure-reference-functional').innerText(),
     /антагонист/i
   );
-  await page.screenshot({ path: '/tmp/muscle-memory-reference-puborectalis.png', fullPage: true });
+  await bestEffortScreenshot('/tmp/muscle-memory-reference-puborectalis.png');
 
   console.log('[reference-smoke] levator ani -> Gray 404 + curated pelvic-floor relation');
   await search('levator ani');
@@ -151,7 +159,7 @@ const assert = require('node:assert/strict');
     await page.locator('#structure-reference-functional').innerText(),
     /Копчиковая мышца/i
   );
-  await page.screenshot({ path: '/tmp/muscle-memory-reference-levator-ani.png', fullPage: true });
+  await bestEffortScreenshot('/tmp/muscle-memory-reference-levator-ani.png');
 
   assert.equal(errors.length, 0, errors.join(' || '));
   console.log('[reference-smoke] six representative reference cards ok');
