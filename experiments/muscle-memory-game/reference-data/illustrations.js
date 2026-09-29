@@ -659,6 +659,54 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "asset-ready"
   },
   {
+    "id": "manzini-puboanal-3d",
+    "sourceId": "manzini-2021-puboanal-3d",
+    "kind": "focused-3d-segmentation",
+    "regionIds": [
+      "pelvic-floor"
+    ],
+    "focusStructureIds": [
+      "pubo-analis"
+    ],
+    "rightsStatus": "cc-by-4.0",
+    "assetPath": "https://media.springernature.com/full/springer-static/image/art%3A10.1186%2Fs13244-021-01037-y/MediaObjects/13244_2021_1037_Fig4_HTML.png",
+    "altRu": "3D-сегментация levator ani: puboanal muscle выделена отдельным цветом среди других подчастей тазового дна",
+    "captionRu": "Manzini et al., 2021, Figure 4: puboanal muscle показана как отдельная сегментированная подчасть levator ani. CC BY 4.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "toldt-deep-transverse-perineal-historical",
+    "sourceId": "toldt-1903-deep-transverse-perineal",
+    "kind": "historical-regional-plate",
+    "regionIds": [
+      "pelvic-floor"
+    ],
+    "focusStructureIds": [
+      "deep-transverse-perineal"
+    ],
+    "rightsStatus": "no-known-copyright-restrictions",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/An_atlas_of_human_anatomy_for_students_and_physicians_(1903)_(14596813859).jpg",
+    "altRu": "Историческая пластина мужской промежности, где musculus transversus perinei profundus показана в классической модели",
+    "captionRu": "Toldt, 1903: классическое изображение глубокой поперечной мышцы промежности. Использовать как историческую модель, а не как подтверждение современной морфологии.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "muro-2025-deep-perineal-smooth-muscle",
+    "sourceId": "pmc-deep-transverse-perineal-2025",
+    "kind": "evidence-diagram",
+    "regionIds": [
+      "pelvic-floor"
+    ],
+    "focusStructureIds": [
+      "deep-transverse-perineal"
+    ],
+    "rightsStatus": "cc-by-4.0",
+    "assetPath": "https://media.springernature.com/lw685/springer-static/image/art%3A10.1038%2Fs41598-025-09585-9/MediaObjects/41598_2025_9585_Fig7_HTML.png",
+    "altRu": "Современная схема глубокого промежностного пространства: гладкомышечная пластинка расположена глубже промежностной мембраны и непрерывна со стенкой прямой кишки, а у женщин также со стенкой влагалища",
+    "captionRu": "Muro et al., 2025, Figure 7: современная схема структуры, которую авторы рассматривают как вероятное соответствие традиционно описываемой DTP; показан гладкомышечный, а не самостоятельный поперечнополосатый компонент. CC BY 4.0.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-960-larynx",
     "sourceId": "gray-1918-plate-960-larynx",
     "kind": "regional-plate",
