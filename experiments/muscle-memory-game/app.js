@@ -4332,6 +4332,7 @@ function prepareSessionItem() {
   pendingNavigationSid = null;
   canvas.dataset.findNavigationActions = "0";
   canvas.dataset.findSelectionState = "search";
+  canvas.dataset.quizLastHiddenSid = "";
   canvas.dataset.nameTargetVisible = "";
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
@@ -4828,6 +4829,7 @@ function hideQuizMuscleCandidate() {
   hiddenStack.push(sid);
   setStructureVisible(sid, false);
   restoreHighlights();
+  canvas.dataset.quizLastHiddenSid = String(sid);
 
   currentItemNavigationActions += 1;
   canvas.dataset.findNavigationActions = String(currentItemNavigationActions);
@@ -4913,6 +4915,9 @@ function chooseQuiz(sid, hitStack = null, { explicitAnswer = false } = {}) {
     return;
   }
 
+  if (explicitAnswer && classification === FIND_SELECTION_KINDS.navigation) {
+    canvas.dataset.findSelectionState = "wrong";
+  }
   recordFindMistake(sid);
   highlightStructures([sid], "wrong");
   feedbackEl.className = "feedback wrong";
