@@ -277,6 +277,19 @@ const pelvicFloorCases = [
     id: "coccygeus",
     illustrationSourceIds: ["gray-1918-plate-404-levator-ani"],
   },
+  {
+    sourceName: "puboanalis",
+    id: "pubo-analis",
+    illustrationSourceIds: ["manzini-2021-puboanal-3d"],
+  },
+  {
+    sourceName: "deep transverse perineal muscle",
+    id: "deep-transverse-perineal",
+    illustrationSourceIds: [
+      "toldt-1903-deep-transverse-perineal",
+      "pmc-deep-transverse-perineal-2025",
+    ],
+  },
 ];
 
 for (const item of pelvicFloorCases) {
@@ -306,6 +319,26 @@ assert(
   ),
   "Puborectalis must identify the external anal sphincter as a continence synergist"
 );
+const puboanalisReference = muscleReferenceFor("puboanalis");
+assert(
+  puboanalisReference?.parentStructureId === "pubococcygeus" &&
+    puboanalisReference.functionalRelations.some(
+      row =>
+        row.movementId === "anorectal-support" &&
+        row.synergists.some(item => item.id === "puborectalis")
+    ),
+  "Puboanalis must remain an explicit pubococcygeus part with a cautious anorectal-support relation"
+);
+
+const deepTransverseReference = muscleReferenceFor("deep transverse perineal muscle");
+assert(
+  deepTransverseReference?.verificationStatus === "anatomically-contested" &&
+    deepTransverseReference.functionalRelations.length === 1 &&
+    deepTransverseReference.functionalRelations[0].synergists.length === 0 &&
+    deepTransverseReference.functionalRelations[0].antagonists.length === 0 &&
+    /спорн|пересматрива/i.test(deepTransverseReference.functionalRelations[0].noteRu || ""),
+  "Deep transverse perineal card must preserve the contested anatomy and avoid invented functional partners"
+);
 assert(
   pelvicFloorCases.every(item =>
     muscleReferenceFor(item.sourceName).functionalRelations.every(
@@ -315,7 +348,7 @@ assert(
   "Pelvic-floor support relations must explicitly avoid inventing direct muscle antagonists"
 );
 
-console.log("Pelvic-floor five-card completeness: facts + relations + illustrations ok");
+console.log("Pelvic-floor seven-card completeness: facts + relations + illustrations ok");
 
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
