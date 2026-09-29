@@ -61,6 +61,15 @@ const assert = require('node:assert/strict');
       .evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
   }
 
+  async function visibleFunctionalText() {
+    const details = page.locator('#structure-reference-functional-details');
+    assert.equal(await details.isHidden(), false);
+    if (!(await details.getAttribute('open'))) {
+      await details.locator('summary').click();
+    }
+    return page.locator('#structure-reference-functional').innerText();
+  }
+
   console.log('[smoke:pelvic-reference] puborectalis');
   await openCard('puborectalis', 'puborectalis');
   let srcs = await gallerySources();
@@ -84,7 +93,7 @@ const assert = require('node:assert/strict');
     'Pubococcygeus labeled anatomical image is missing'
   );
   assert.match(
-    await page.locator('#structure-reference-functional').innerText(),
+    await visibleFunctionalText(),
     /Лобково-прямокишечная|Подвздошно-копчиковая|Копчиковая/i
   );
 
@@ -96,7 +105,7 @@ const assert = require('node:assert/strict');
     'Iliococcygeus labeled anatomical image is missing'
   );
   assert.match(
-    await page.locator('#structure-reference-functional').innerText(),
+    await visibleFunctionalText(),
     /Лобково-прямокишечная|Лобково-копчиковая|Копчиковая/i
   );
 
@@ -108,7 +117,7 @@ const assert = require('node:assert/strict');
     'Coccygeus Gray 404 image is missing'
   );
   assert.match(
-    await page.locator('#structure-reference-functional').innerText(),
+    await visibleFunctionalText(),
     /Лобково-прямокишечная|Лобково-копчиковая|Подвздошно-копчиковая/i
   );
 
