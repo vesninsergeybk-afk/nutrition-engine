@@ -89,15 +89,17 @@ assert(
 
 assert(
   app.includes("function highlightAnswerInContext(ids)") &&
-    app.includes("answerRevealHighlight = \"target-cyan-context-muted\"") &&
+    app.includes("answerRevealHighlight = \"target-cyan-overlay-context-muted\"") &&
     app.includes("const answerColor = new THREE.Color(0x12d5ee)") &&
     app.includes("const contextColor = new THREE.Color(0x8f8880)") &&
+    app.includes("new THREE.MeshBasicMaterial({") &&
+    app.includes('kind: "answer-highlight"') &&
     app.includes("highlightAnswerInContext(emphasizedIds)") &&
     app.includes("Нужная мышца выделена бирюзовым"),
-  "Show-answer mode must visibly emphasise the target muscle while keeping muted anatomical context"
+  "Show-answer mode must visibly emphasise the target muscle with an unlit overlay while keeping muted anatomical context"
 );
 
-console.log("Quiz answer reveal emphasis: target cyan, context muted");
+console.log("Quiz answer reveal emphasis: target cyan overlay, context muted");
 
 console.log("Massage study layers: static contract ok");
 console.log("Skin: opt-in");
