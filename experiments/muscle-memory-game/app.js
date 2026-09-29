@@ -441,6 +441,7 @@ let structureRanges = [];
 let structureVisibility = [];
 let baseColors = [];
 let highlightedIds = new Set();
+let answerRevealOverlayMeshes = [];
 let bodyPartsSurfaceGuardHiddenIds = new Set();
 let bodySize = new THREE.Vector3(1, 1, 1);
 
@@ -2522,9 +2523,19 @@ function paintStructure(sid, color) {
   }
 }
 
+function clearAnswerRevealOverlay() {
+  for (const mesh of answerRevealOverlayMeshes) {
+    mesh.removeFromParent();
+    disposeMotionMesh(mesh);
+  }
+  answerRevealOverlayMeshes = [];
+  canvas.dataset.answerRevealOverlayCount = "0";
+}
+
 function restoreHighlights() {
   canvas.dataset.answerRevealHighlight = "";
   canvas.dataset.answerRevealHighlightIds = "";
+  clearAnswerRevealOverlay();
 
   if (!anatomyMesh || !highlightedIds.size) return;
 
@@ -2565,8 +2576,47 @@ function highlightAnswerInContext(ids) {
   }
 
   anatomyMesh.geometry.getAttribute("color").needsUpdate = true;
-  canvas.dataset.answerRevealHighlight = "target-cyan-context-muted";
+
+  // Vertex colour alone is easy to lose under the scene lighting on a small
+  // mobile display. Add an unlit surface overlay for the answer itself. It
+  // still uses depth testing, so bones and retained anatomical context can
+  // correctly occlude it instead of creating an x-ray effect.
+  clearAnswerRevealOverlay();
+  const overlayMaterial = new THREE.MeshBasicMaterial({
+    color: 0x00e5ff,
+    transparent: true,
+    opacity: 0.96,
+    depthTest: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+    toneMapped: false,
+  });
+
+  for (const sid of targetIds) {
+    try {
+      const overlay = createMotionMesh(anatomyMesh, structureRanges[sid], {
+        material: overlayMaterial.clone(),
+        name: "answer-highlight:" + (structureNames[sid] || sid),
+        kind: "answer-highlight",
+      });
+      overlay.renderOrder = 20;
+      overlay.frustumCulled = false;
+      overlay.userData.sourceSid = sid;
+      overlay.raycast = () => {};
+      modelGroup.add(overlay);
+      answerRevealOverlayMeshes.push(overlay);
+    } catch (error) {
+      console.warn("Answer highlight overlay failed.", structureNames[sid], error);
+    }
+  }
+  overlayMaterial.dispose();
+
+  canvas.dataset.answerRevealHighlight = "target-cyan-overlay-context-muted";
   canvas.dataset.answerRevealHighlightIds = targetIds.join(",");
+  canvas.dataset.answerRevealOverlayCount = String(answerRevealOverlayMeshes.length);
 }
 
 function highlightStructures(ids, kind = "answer") {
@@ -9707,6 +9757,7 @@ function resetLoadedModel() {
   structureVisibility = [];
   baseColors = [];
   highlightedIds = new Set();
+  answerRevealOverlayMeshes = [];
   bodyPartsSurfaceGuardHiddenIds = new Set();
   bodySize.set(1, 1, 1);
 
