@@ -133,7 +133,7 @@ assert(
 assert(
   app.includes('canvas.dataset.quizLastHiddenSid = String(sid)') &&
     app.includes('currentItemNavigationActions += 1') &&
-    app.includes('"Это действие не засчитывается как ошибка."'),
+    app.includes("Это действие не засчитывается как ошибка."),
   "Hiding a covering muscle in Training must be recorded as navigation, not as an answer error"
 );
 assert(
