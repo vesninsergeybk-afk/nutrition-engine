@@ -784,6 +784,98 @@ for (const reference of [semitendinosusReference, semimembranosusReference]) {
 
 console.log("Hamstring three-card completeness: facts + relations + exact illustrations ok");
 
+const medialThighCases = [
+  { sourceName: "adductor longus", id: "adductor-longus", illustrationLocator: "berichard-adductor-longus" },
+  { sourceName: "adductor brevis", id: "adductor-brevis", illustrationLocator: "berichard-adductor-brevis" },
+  { sourceName: "adductor magnus", id: "adductor-magnus", illustrationLocator: "berichard-adductor-magnus" },
+  { sourceName: "gracilis", id: "gracilis", illustrationLocator: "berichard-gracilis" },
+  { sourceName: "pectineus", id: "pectineus", illustrationLocator: "gray-pectineus-highlight" },
+  { sourceName: "adductor minimus", id: "adductor-minimus", illustrationLocator: "anatomography-adductor-minimus" },
+];
+
+for (const item of medialThighCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact muscle illustration is missing"
+  );
+}
+
+const adductorLongusReference = muscleReferenceFor("adductor longus");
+const adductorBrevisReference = muscleReferenceFor("adductor brevis");
+const adductorMagnusReference = muscleReferenceFor("adductor magnus");
+const gracilisReference = muscleReferenceFor("gracilis");
+const pectineusReference = muscleReferenceFor("pectineus");
+const adductorMinimusReference = muscleReferenceFor("adductor minimus");
+
+for (const reference of [
+  adductorLongusReference,
+  adductorBrevisReference,
+  adductorMagnusReference,
+  gracilisReference,
+  pectineusReference,
+  adductorMinimusReference,
+]) {
+  const adduction = reference.functionalRelations.find(row => row.movementId === "hip-adduction");
+  assert(adduction, reference.id + ": hip-adduction relation is missing");
+  assert(
+    adduction.synergists.some(item =>
+      ["adductor-longus", "adductor-brevis", "adductor-magnus", "gracilis", "pectineus", "adductor-minimus"].includes(item.id)
+    ),
+    reference.id + ": medial-thigh adduction synergists are missing"
+  );
+  assert(
+    adduction.antagonists.some(item => item.id === "gluteus-medius") &&
+      adduction.antagonists.some(item => item.id === "gluteus-minimus"),
+    reference.id + ": verified hip-abduction antagonists are missing"
+  );
+}
+
+for (const reference of [adductorLongusReference, adductorBrevisReference, pectineusReference, adductorMinimusReference]) {
+  assert(
+    reference.functionalRelations.some(
+      row =>
+        row.movementId === "hip-flexion" &&
+        row.synergists.some(item => item.id === "psoas-major") &&
+        row.antagonists.some(item => item.id === "gluteus-maximus")
+    ),
+    reference.id + ": cautious hip-flexion relation is missing"
+  );
+}
+
+assert(
+  adductorMagnusReference.functionalRelations.some(row => row.movementId === "hip-flexion") &&
+    adductorMagnusReference.functionalRelations.some(row => row.movementId === "hip-extension") &&
+    adductorMagnusReference.sourceNotesRu.some(note => /разным частям|разные части|приводящ.*задн/i.test(note)),
+  "Adductor magnus must preserve distinct flexor and extensor roles of its parts"
+);
+
+assert(
+  gracilisReference.functionalRelations.some(
+    row =>
+      row.movementId === "knee-flexion" &&
+      row.synergists.some(item => item.id === "semitendinosus") &&
+      row.antagonists.some(item => item.id === "rectus-femoris")
+  ),
+  "Gracilis must retain its two-joint knee-flexion relation"
+);
+
+assert(
+  adductorMinimusReference.kind === "variable-muscle-part" &&
+    adductorMinimusReference.sourceNotesRu.some(note => /верхн.*adductor magnus|верхн.*отдел.*adductor magnus/i.test(note)),
+  "Adductor minimus must remain explicitly marked as a variable subdivision of adductor magnus"
+);
+
+console.log("Medial-thigh six-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
