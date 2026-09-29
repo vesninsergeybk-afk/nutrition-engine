@@ -715,6 +715,75 @@ assert(
 
 console.log("Anterior-thigh five-card completeness: facts + relations + exact illustrations ok");
 
+const hamstringCases = [
+  { sourceName: "biceps femoris", id: "biceps-femoris", illustrationLocator: "gray-biceps-femoris-both-heads" },
+  { sourceName: "semitendinosus", id: "semitendinosus", illustrationLocator: "gray-semitendinosus-highlight" },
+  { sourceName: "semimembranosus", id: "semimembranosus", illustrationLocator: "gray-semimembranosus-highlight" },
+];
+
+for (const item of hamstringCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact muscle illustration is missing"
+  );
+}
+
+const bicepsFemorisReference = muscleReferenceFor("biceps femoris");
+const semitendinosusReference = muscleReferenceFor("semitendinosus");
+const semimembranosusReference = muscleReferenceFor("semimembranosus");
+
+for (const reference of [bicepsFemorisReference, semitendinosusReference, semimembranosusReference]) {
+  const kneeFlexion = reference.functionalRelations.find(row => row.movementId === "knee-flexion");
+  assert(kneeFlexion, reference.id + ": knee-flexion relation is missing");
+  assert(
+    kneeFlexion.synergists.some(item =>
+      ["biceps-femoris", "semitendinosus", "semimembranosus"].includes(item.id)
+    ),
+    reference.id + ": hamstring knee-flexion synergists are missing"
+  );
+  assert(
+    kneeFlexion.antagonists.some(item => item.id === "rectus-femoris") &&
+      kneeFlexion.antagonists.some(item => item.id === "vastus-lateralis"),
+    reference.id + ": quadriceps antagonists are missing"
+  );
+}
+
+assert(
+  bicepsFemorisReference.sourceNotesRu.some(note => /только длинная головка/i.test(note)),
+  "Biceps femoris must explicitly limit hip extension to the long head"
+);
+assert(
+  bicepsFemorisReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-extension" &&
+      row.synergists.some(item => item.id === "gluteus-maximus") &&
+      row.antagonists.some(item => item.id === "psoas-major")
+  ),
+  "Biceps femoris long-head hip-extension relation is missing"
+);
+for (const reference of [semitendinosusReference, semimembranosusReference]) {
+  assert(
+    reference.functionalRelations.some(
+      row =>
+        row.movementId === "hip-extension" &&
+        row.synergists.some(item => item.id === "gluteus-maximus") &&
+        row.antagonists.some(item => item.id === "psoas-major")
+    ),
+    reference.id + ": hip-extension synergists/antagonists are missing"
+  );
+}
+
+console.log("Hamstring three-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
