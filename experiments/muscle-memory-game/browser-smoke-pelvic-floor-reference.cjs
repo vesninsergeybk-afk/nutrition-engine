@@ -64,10 +64,14 @@ const assert = require('node:assert/strict');
   async function visibleFunctionalText() {
     const details = page.locator('#structure-reference-functional-details');
     assert.equal(await details.isHidden(), false);
-    if (!(await details.getAttribute('open'))) {
-      await details.locator('summary').click();
-    }
-    return page.locator('#structure-reference-functional').innerText();
+    await details.evaluate(element => { element.open = false; });
+    await details.locator('summary').click();
+    assert.equal(
+      await details.evaluate(element => element.open),
+      true,
+      'Functional relations section did not open'
+    );
+    return (await page.locator('#structure-reference-functional').textContent()) || '';
   }
 
   console.log('[smoke:pelvic-reference] puborectalis');
