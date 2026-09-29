@@ -517,6 +517,116 @@ assert(
 
 console.log("Gluteal four-card completeness: facts + relations + exact illustrations ok");
 
+const deepGlutealCases = [
+  {
+    sourceName: "piriformis",
+    id: "piriformis",
+    illustrationLocator: "gray-piriformis-highlight",
+  },
+  {
+    sourceName: "obturator internus",
+    id: "obturator-internus",
+    illustrationLocator: "gray-obturator-internus-highlight",
+  },
+  {
+    sourceName: "obturator externus",
+    id: "obturator-externus",
+    illustrationLocator: "gray-obturator-externus-highlight",
+  },
+  {
+    sourceName: "quadratus femoris",
+    id: "quadratus-femoris",
+    illustrationLocator: "gray-quadratus-femoris-highlight",
+  },
+  {
+    sourceName: "gemellus superior",
+    id: "gemellus-superior",
+    illustrationLocator: "gray-gemellus-superior-highlight",
+  },
+  {
+    sourceName: "gemellus inferior",
+    id: "gemellus-inferior",
+    illustrationLocator: "gray-gemellus-inferior-highlight",
+  },
+];
+
+for (const item of deepGlutealCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": positional/functional note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact highlighted muscle illustration is missing"
+  );
+}
+
+const piriformisReference = muscleReferenceFor("piriformis");
+const obturatorInternusReference = muscleReferenceFor("obturator internus");
+const obturatorExternusReference = muscleReferenceFor("obturator externus");
+const quadratusFemorisReference = muscleReferenceFor("quadratus femoris");
+const gemellusSuperiorReference = muscleReferenceFor("gemellus superior");
+const gemellusInferiorReference = muscleReferenceFor("gemellus inferior");
+
+const externalRotationRow = reference =>
+  reference.functionalRelations.find(row => row.movementId === "hip-external-rotation");
+const abductionRow = reference =>
+  reference.functionalRelations.find(row => row.movementId === "hip-abduction");
+const adductionRow = reference =>
+  reference.functionalRelations.find(row => row.movementId === "hip-adduction");
+
+assert(
+  externalRotationRow(piriformisReference)?.synergists.some(item => item.id === "obturator-internus") &&
+    externalRotationRow(piriformisReference)?.antagonists.length,
+  "Piriformis must have verified external-rotation synergists and antagonists"
+);
+assert(
+  abductionRow(piriformisReference)?.synergists.some(item => item.id === "gemellus-superior") &&
+    abductionRow(piriformisReference)?.antagonists.length,
+  "Piriformis must have flexed-hip abduction partners and antagonists"
+);
+assert(
+  externalRotationRow(obturatorInternusReference)?.synergists.some(item => item.id === "gemellus-superior") &&
+    externalRotationRow(obturatorInternusReference)?.synergists.some(item => item.id === "gemellus-inferior"),
+  "Obturator internus must remain functionally linked to both gemelli in external rotation"
+);
+assert(
+  abductionRow(obturatorInternusReference)?.synergists.some(item => item.id === "gemellus-superior") &&
+    abductionRow(obturatorInternusReference)?.synergists.some(item => item.id === "gemellus-inferior"),
+  "Obturator internus and both gemelli must share flexed-hip abduction"
+);
+assert(
+  externalRotationRow(obturatorExternusReference)?.synergists.some(item => item.id === "quadratus-femoris") &&
+    externalRotationRow(obturatorExternusReference)?.antagonists.length,
+  "Obturator externus must have verified external-rotation partners and antagonists"
+);
+assert(
+  adductionRow(obturatorExternusReference)?.synergists.some(item => item.id === "quadratus-femoris"),
+  "Obturator externus must retain its position-dependent adduction relation"
+);
+assert(
+  externalRotationRow(quadratusFemorisReference)?.synergists.some(item => item.id === "obturator-externus") &&
+    adductionRow(quadratusFemorisReference)?.synergists.some(item => item.id === "obturator-externus"),
+  "Quadratus femoris must share external rotation and adduction with obturator externus"
+);
+assert(
+  externalRotationRow(gemellusSuperiorReference)?.synergists.some(item => item.id === "obturator-internus") &&
+    abductionRow(gemellusSuperiorReference)?.synergists.some(item => item.id === "gemellus-inferior"),
+  "Gemellus superior must retain its obturator-internus complex relations"
+);
+assert(
+  externalRotationRow(gemellusInferiorReference)?.synergists.some(item => item.id === "obturator-internus") &&
+    abductionRow(gemellusInferiorReference)?.synergists.some(item => item.id === "gemellus-superior"),
+  "Gemellus inferior must retain its obturator-internus complex relations"
+);
+
+console.log("Deep-gluteal six-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
