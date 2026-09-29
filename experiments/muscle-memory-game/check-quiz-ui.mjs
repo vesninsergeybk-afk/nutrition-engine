@@ -199,5 +199,18 @@ assert(
   "Show-answer flow must reset and expose its contextual reveal state for each learning item"
 );
 
+assert(
+  app.includes("function clearAnswerRevealOverlay()") &&
+    app.includes("new THREE.MeshBasicMaterial({") &&
+    app.includes("kind: \"answer-highlight\"") &&
+    app.includes("depthTest: true") &&
+    app.includes("depthWrite: false") &&
+    app.includes('canvas.dataset.answerRevealOverlayCount = String(answerRevealOverlayMeshes.length)') &&
+    app.includes("clearAnswerRevealOverlay();"),
+  "Show answer must add an unlit depth-tested overlay to the revealed muscle and remove it with normal highlight cleanup"
+);
+
+console.log("Answer reveal emphasis: visible cyan overlay + deterministic cleanup");
+
 console.log("Answer reveal contract: moderate oblique focus + occluder removal + preserved context");
 
