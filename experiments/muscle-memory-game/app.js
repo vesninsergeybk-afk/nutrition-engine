@@ -4333,6 +4333,10 @@ function prepareSessionItem() {
   canvas.dataset.findNavigationActions = "0";
   canvas.dataset.findSelectionState = "search";
   canvas.dataset.quizLastHiddenSid = "";
+  canvas.dataset.answerRevealHidden = "";
+  canvas.dataset.answerRevealView = "";
+  canvas.dataset.answerRevealPadding = "";
+  canvas.dataset.answerRevealTargetIds = "";
   canvas.dataset.nameTargetVisible = "";
   canvas.dataset.nameTargetPresentation = "";
   canvas.dataset.nameOccludersHidden = "";
@@ -4668,6 +4672,109 @@ function recordFindMistake(sid) {
 }
 
 
+function answerRevealDirectionForBox(box) {
+  const best = bestViewDirectionForBox(box);
+  const direction = (best?.direction || currentViewDirection()).clone();
+  const body = worldBodyBox();
+  const center = box.getCenter(new THREE.Vector3());
+  const bodyCenter = body.isEmpty()
+    ? new THREE.Vector3()
+    : body.getCenter(new THREE.Vector3());
+  const yawSign = center.x >= bodyCenter.x ? 1 : -1;
+
+  // Keep the answer readable as anatomy, not as a flat head-on close-up.
+  direction.applyAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    THREE.MathUtils.degToRad(16 * yawSign)
+  );
+  direction.y += 0.08;
+
+  return {
+    direction: direction.normalize(),
+    label: (best?.label || "current") + "-oblique",
+  };
+}
+
+function revealQuizAnswerInContext(target, ids) {
+  const targetIds = [...new Set(ids || [])].filter(
+    (sid) => sid != null && structureNames[sid]
+  );
+  if (!target || !anatomyMesh || !targetIds.length) {
+    return { hidden: 0, view: "none" };
+  }
+
+  const targetSet = new Set(targetIds);
+  const hidden = new Set();
+  const hideStructure = (sid) => {
+    if (
+      sid == null ||
+      targetSet.has(sid) ||
+      structureVisibility[sid] === false
+    ) return;
+    hiddenStack.push(sid);
+    setStructureVisible(sid, false);
+    hidden.add(sid);
+  };
+
+  // First remove only anatomically verified superficial covers for the chosen
+  // side. Same-depth neighbours remain visible as useful local context.
+  for (const sid of targetIds) {
+    for (const coverSid of verifiedCoveringStructureIds(sid)) {
+      hideStructure(coverSid);
+    }
+  }
+
+  const box = boxForStructures(targetIds);
+  let view = "current";
+  if (!box.isEmpty()) {
+    const answerView = answerRevealDirectionForBox(box);
+    view = answerView.label;
+    // A larger padding than the ordinary "focus selected" action keeps nearby
+    // anatomy in frame instead of pushing the muscle into the camera.
+    focusBox(box, 2.1, answerView.direction);
+  }
+
+  // From the actual answer camera, remove any remaining muscle that lies
+  // directly between the camera and the target surface. Do not isolate the
+  // target: structures that do not occlude it stay visible.
+  const targetPoint = nearestTargetPointToCamera(targetIds);
+  if (targetPoint) {
+    const direction = targetPoint.clone().sub(camera.position);
+    if (direction.lengthSq() > 1e-10) {
+      raycaster.set(camera.position, direction.normalize());
+      const hits = raycaster.intersectObject(anatomyMesh, false);
+      const rayOccluders = [];
+      let reachesTarget = false;
+
+      for (const hit of hits) {
+        const sid = structureIdFromHit(hit);
+        if (sid == null || structureVisibility[sid] === false) continue;
+        if (targetSet.has(sid)) {
+          reachesTarget = true;
+          break;
+        }
+        if (!rayOccluders.includes(sid)) rayOccluders.push(sid);
+      }
+
+      if (reachesTarget) {
+        for (const sid of rayOccluders) hideStructure(sid);
+      }
+    }
+  }
+
+  applyBodyPartsSurfaceConflictGuards();
+  for (const sid of targetIds) setStructureVisible(sid, true);
+
+  canvas.dataset.answerRevealHidden = String(hidden.size);
+  canvas.dataset.answerRevealView = view;
+  canvas.dataset.answerRevealPadding = "2.1";
+  canvas.dataset.answerRevealTargetIds = targetIds.join(",");
+  updateLayerButtons();
+
+  return { hidden: hidden.size, view };
+}
+
+
 function revealAnswer() {
   if (!currentTarget || appMode !== "quiz" || locked || !learningSession) return;
   if (learningSession.mode === "exam") return;
@@ -4714,8 +4821,16 @@ function revealAnswer() {
     item.skillId === "name"
       ? recognitionStructureIds(currentTarget, learningSession.index)
       : targetStructureIds(currentTarget);
+  const revealIds = recognitionStructureIds(
+    currentTarget,
+    learningSession.index
+  );
+  const answerView = revealQuizAnswerInContext(
+    currentTarget,
+    revealIds.length ? revealIds : ids
+  );
   highlightStructures(ids, "answer");
-  focusedStructureIds = ids;
+  focusedStructureIds = revealIds.length ? revealIds : ids;
   focusSelectedButton.disabled = false;
 
   if (item.skillId === "name") {
@@ -4726,7 +4841,11 @@ function revealAnswer() {
   }
 
   feedbackEl.className = "feedback correct";
-  feedbackEl.textContent = `Ответ: «${currentTarget.nameRu}».`;
+  feedbackEl.textContent =
+    `Ответ: «${currentTarget.nameRu}».` +
+    (answerView.hidden
+      ? " Перекрывающие наружные мышцы скрыты, ближайшее окружение оставлено."
+      : " Мышца показана вместе с ближайшим анатомическим окружением.");
 
   wrong += 1;
   wrongEl.textContent = String(wrong);
