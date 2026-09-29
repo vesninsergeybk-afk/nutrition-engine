@@ -1326,6 +1326,78 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Напрягатель широкой фасции выделен на переднелатеральной поверхности таза и проксимального бедра",
     "captionRu": "Изображение на основе Gray's Anatomy: напрягатель широкой фасции. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "gray-piriformis-highlight",
+    "sourceId": "gray-1918-piriformis-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["piriformis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Piriformis%20muscle.PNG",
+    "altRu": "Грушевидная мышца выделена в глубокой ягодичной области между крестцом и большим вертелом",
+    "captionRu": "Gray's Anatomy: грушевидная мышца выделена среди глубоких мышц ягодичной области. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-obturator-internus-highlight",
+    "sourceId": "gray-1918-obturator-internus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["obturator-internus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Obturator%20internus%20muscle.png",
+    "altRu": "Внутренняя запирательная мышца выделена с сухожилием, огибающим область малого седалищного отверстия",
+    "captionRu": "Gray's Anatomy: внутренняя запирательная мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-obturator-externus-highlight",
+    "sourceId": "gray-1918-obturator-externus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["obturator-externus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Obturator%20externus.png",
+    "altRu": "Наружная запирательная мышца выделена на наружной поверхности запирательной мембраны и прослеживается к вертельной ямке",
+    "captionRu": "Gray's Anatomy: наружная запирательная мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-quadratus-femoris-highlight",
+    "sourceId": "gray-1918-quadratus-femoris-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["quadratus-femoris"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Quadratus%20femoris%20muscle.PNG",
+    "altRu": "Квадратная мышца бедра выделена между седалищным бугром и межвертельным гребнем",
+    "captionRu": "Gray's Anatomy: квадратная мышца бедра. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-gemellus-superior-highlight",
+    "sourceId": "gray-1918-gemellus-superior-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["gemellus-superior"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gemellus%20superior%20muscle.PNG",
+    "altRu": "Верхняя близнецовая мышца выделена над сухожилием внутренней запирательной мышцы",
+    "captionRu": "Gray's Anatomy: верхняя близнецовая мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-gemellus-inferior-highlight",
+    "sourceId": "gray-1918-gemellus-inferior-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["gemellus-inferior"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Inferior%20gemellus%20muscle.PNG",
+    "altRu": "Нижняя близнецовая мышца выделена под сухожилием внутренней запирательной мышцы",
+    "captionRu": "Gray's Anatomy: нижняя близнецовая мышца. Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
