@@ -1010,6 +1010,14 @@ function renderFunctionalRelations(reference) {
       "Роль зависит от части мышцы или положения",
       relation.contextDependent
     );
+
+    if (relation.noteRu) {
+      const note = document.createElement("p");
+      note.className = "structure-reference-functional-row-note";
+      note.textContent = relation.noteRu;
+      row.append(note);
+    }
+
     structureReferenceFunctional.append(row);
   }
 }
