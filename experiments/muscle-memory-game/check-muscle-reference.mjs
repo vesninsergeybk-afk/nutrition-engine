@@ -941,6 +941,76 @@ for (const [reference, partnerId] of [
 
 console.log("Lateral-leg two-card completeness: facts + relations + exact illustrations ok");
 
+const posteriorCalfCases = [
+  { sourceName: "gastrocnemius", id: "gastrocnemius", illustrationLocator: "sobotta-gastrocnemius" },
+  { sourceName: "soleus", id: "soleus", illustrationLocator: "anatomography-soleus-posterior" },
+  { sourceName: "plantaris", id: "plantaris", illustrationLocator: "gray-plantaris-highlight" },
+];
+
+for (const item of posteriorCalfCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact muscle illustration is missing"
+  );
+}
+
+const gastrocnemiusReference = muscleReferenceFor("gastrocnemius");
+const soleusReference = muscleReferenceFor("soleus");
+const plantarisReference = muscleReferenceFor("plantaris");
+
+for (const [reference, requiredPartner] of [
+  [gastrocnemiusReference, "soleus"],
+  [soleusReference, "gastrocnemius"],
+]) {
+  const plantarflexion = reference.functionalRelations.find(
+    row => row.movementId === "ankle-plantarflexion"
+  );
+  assert(plantarflexion, reference.id + ": ankle plantarflexion relation is missing");
+  assert(
+    plantarflexion.synergists.some(item => item.id === requiredPartner),
+    reference.id + ": triceps-surae plantarflexion partner is missing"
+  );
+  assert(
+    plantarflexion.antagonists.some(item => item.id === "tibialis-anterior"),
+    reference.id + ": dorsiflexor antagonist is missing"
+  );
+}
+
+assert(
+  gastrocnemiusReference.functionalRelations.some(
+    row =>
+      row.movementId === "knee-flexion" &&
+      row.synergists.some(item => item.id === "biceps-femoris") &&
+      row.antagonists.some(item => item.id === "rectus-femoris")
+  ),
+  "Gastrocnemius must retain its secondary knee-flexion relation"
+);
+assert(
+  !soleusReference.functionalRelations.some(row => row.movementId === "knee-flexion"),
+  "Soleus must not inherit gastrocnemius knee-flexion function"
+);
+assert(
+  plantarisReference.functionalRelations.some(row => row.movementId === "ankle-plantarflexion") &&
+    plantarisReference.functionalRelations.some(row => row.movementId === "knee-flexion"),
+  "Plantaris must retain both weak plantarflexion and knee-flexion relations"
+);
+assert(
+  plantarisReference.sourceNotesRu.some(note => /вариабельн|может отсутствовать/i.test(note)) &&
+    plantarisReference.sourceNotesRu.some(note => /небольш|малознач|не следует.*силов/i.test(note)),
+  "Plantaris must remain explicitly variable and mechanically minor"
+);
+
+console.log("Posterior-calf three-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
