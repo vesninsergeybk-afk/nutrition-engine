@@ -245,6 +245,42 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "commons-biceps-femoris-both-heads-2020": Object.freeze({
+    title: "Gray's Anatomy plate 434 — biceps femoris, both heads highlighted",
+    year: 2020,
+    role: "Отдельное изображение двуглавой мышцы бедра с раздельным выделением длинной и короткой головок",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Grays_anatomy_1918_plate_434_biceps_femoris_muscle_both_heads_marked.png",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-4.0",
+      attribution: "Fredrik x nilsson / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает CC BY-SA 4.0; обе головки biceps femoris выделены разными цветами."
+    }),
+  }),
+
+  "gray-1918-semitendinosus-highlight": Object.freeze({
+    title: "Gray's Anatomy — semitendinosus highlighted",
+    year: 1918,
+    role: "Отдельное изображение полусухожильной мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Semitendinosus_muscle.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain."
+    }),
+  }),
+
+  "gray-1918-semimembranosus-highlight": Object.freeze({
+    title: "Gray's Anatomy — semimembranosus highlighted",
+    year: 1918,
+    role: "Отдельное изображение полуперепончатой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Semimembranosus_muscle.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain; в 2024 году выделение мышцы на файле было исправлено."
+    }),
+  }),
+
   "dr-jana-commons-2019": Object.freeze({
     title: "Insertion of subscapularis muscle — proximal humerus",
     year: 2019,
