@@ -350,6 +350,78 @@ assert(
 
 console.log("Pelvic-floor seven-card completeness: facts + relations + illustrations ok");
 
+const iliopsoasCases = [
+  {
+    sourceName: "psoas major",
+    id: "psoas-major",
+    illustrationLocator: "anatomography-psoas-major",
+  },
+  {
+    sourceName: "iliacus",
+    id: "iliacus",
+    illustrationLocator: "anatomography-iliacus",
+  },
+  {
+    sourceName: "psoas minor",
+    id: "psoas-minor",
+    illustrationLocator: "gray-psoas-minor-highlight",
+  },
+];
+
+for (const item of iliopsoasCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact muscle illustration is missing"
+  );
+}
+
+const psoasMajorReference = muscleReferenceFor("psoas major");
+const iliacusReference = muscleReferenceFor("iliacus");
+const psoasMinorReference = muscleReferenceFor("psoas minor");
+
+assert(
+  psoasMajorReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-flexion" &&
+      row.synergists.some(item => item.id === "iliacus") &&
+      row.antagonists.some(item => item.id === "gluteus-maximus")
+  ),
+  "Psoas major must identify iliacus as a hip-flexion synergist and gluteus maximus as an antagonist"
+);
+assert(
+  iliacusReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-flexion" &&
+      row.synergists.some(item => item.id === "psoas-major") &&
+      row.antagonists.some(item => item.id === "gluteus-maximus")
+  ),
+  "Iliacus must identify psoas major as a hip-flexion synergist and gluteus maximus as an antagonist"
+);
+assert(
+  psoasMinorReference.functionalRelations.some(
+    row =>
+      row.movementId === "trunk-flexion" &&
+      row.synergists.some(item => item.id === "rectus-abdominis") &&
+      row.antagonists.some(item => item.id === "erector-spinae")
+  ),
+  "Psoas minor must be linked to lumbar/trunk flexion with abdominal synergists and spinal-extensor antagonists"
+);
+assert(
+  !psoasMinorReference.functionalRelations.some(row => row.movementId === "hip-flexion"),
+  "Psoas minor must not be presented as a hip-flexion synergist"
+);
+
+console.log("Iliopsoas three-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
