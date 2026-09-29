@@ -1398,6 +1398,66 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Нижняя близнецовая мышца выделена под сухожилием внутренней запирательной мышцы",
     "captionRu": "Gray's Anatomy: нижняя близнецовая мышца. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "gray-sartorius-highlight",
+    "sourceId": "gray-1918-sartorius-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["sartorius"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Sartorius%20muscle.png",
+    "altRu": "Портняжная мышца выделена на передней поверхности бедра от передней верхней подвздошной ости к медиальной поверхности голени",
+    "captionRu": "Gray's Anatomy: портняжная мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-rectus-femoris-highlight",
+    "sourceId": "gray-1918-rectus-femoris-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["rectus-femoris"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Rectus%20femoris.png",
+    "altRu": "Прямая мышца бедра выделена в составе четырёхглавой мышцы на передней поверхности бедра",
+    "captionRu": "Gray's Anatomy: прямая мышца бедра. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-vastus-lateralis-highlight",
+    "sourceId": "gray-1918-vastus-lateralis-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["vastus-lateralis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vastus%20lateralis%20muscle.png",
+    "altRu": "Латеральная широкая мышца бедра выделена на наружной части переднелатеральной поверхности бедра",
+    "captionRu": "Gray's Anatomy: латеральная широкая мышца бедра. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-vastus-medialis-highlight",
+    "sourceId": "gray-1918-vastus-medialis-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["vastus-medialis"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Vastus%20medialis%20muscle.png",
+    "altRu": "Медиальная широкая мышца бедра выделена на внутренней части переднемедиальной поверхности бедра",
+    "captionRu": "Gray's Anatomy: медиальная широкая мышца бедра. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "seer-vastus-intermedius-exposed",
+    "sourceId": "seer-vastus-intermedius-public-domain",
+    "kind": "exposed-anatomy-plate",
+    "regionIds": ["thigh"],
+    "focusStructureIds": ["vastus-intermedius"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Illu%20lower%20extremity%20muscles.jpg",
+    "altRu": "Промежуточная широкая мышца бедра показана после удаления прямой мышцы бедра между латеральной и медиальной широкими мышцами",
+    "captionRu": "SEER Training: vastus intermedius показана после удаления rectus femoris; подпись изображения исправлена на Commons. Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
