@@ -74,6 +74,30 @@ const assert = require('node:assert/strict');
     return (await page.locator('#structure-reference-functional').textContent()) || '';
   }
 
+  console.log('[smoke:pelvic-reference] levator ani reference-only group');
+  const levatorAniDiagnostic = await page.evaluate(async () => {
+    const module = await import('./muscle-reference-data.js');
+    const reference = module.muscleReferenceFor('levator ani');
+    return {
+      id: reference?.id || null,
+      originRu: reference?.originRu || '',
+      insertionRu: reference?.insertionRu || '',
+      actionsCount: reference?.actionsRu?.length || 0,
+      innervationRu: reference?.innervationRu || '',
+      functionalCount: reference?.functionalRelations?.length || 0,
+      illustrationSources: (reference?.illustrations || []).map(item => item.sourceId),
+    };
+  });
+  assert.equal(levatorAniDiagnostic.id, 'levator-ani');
+  assert.ok(levatorAniDiagnostic.originRu && levatorAniDiagnostic.insertionRu);
+  assert.ok(levatorAniDiagnostic.actionsCount > 0);
+  assert.ok(levatorAniDiagnostic.innervationRu);
+  assert.ok(levatorAniDiagnostic.functionalCount > 0);
+  assert.ok(
+    levatorAniDiagnostic.illustrationSources.includes('gray-1918-plate-404-levator-ani'),
+    'Levator ani Gray 404 image is missing'
+  );
+
   console.log('[smoke:pelvic-reference] puborectalis');
   await openCard('puborectalis', 'puborectalis');
 
