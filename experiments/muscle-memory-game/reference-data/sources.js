@@ -186,6 +186,65 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-sartorius-highlight": Object.freeze({
+    title: "Gray's Anatomy — sartorius highlighted",
+    year: 1918,
+    role: "Отдельное изображение портняжной мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Sartorius_muscle.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
+  "gray-1918-rectus-femoris-highlight": Object.freeze({
+    title: "Gray's Anatomy — rectus femoris highlighted",
+    year: 1918,
+    role: "Отдельное изображение прямой мышцы бедра",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Rectus_femoris.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
+  "gray-1918-vastus-lateralis-highlight": Object.freeze({
+    title: "Gray's Anatomy — vastus lateralis highlighted",
+    year: 1918,
+    role: "Отдельное изображение латеральной широкой мышцы бедра",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Vastus_lateralis_muscle.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
+  "gray-1918-vastus-medialis-highlight": Object.freeze({
+    title: "Gray's Anatomy — vastus medialis highlighted",
+    year: 1918,
+    role: "Отдельное изображение медиальной широкой мышцы бедра",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Vastus_medialis_muscle.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
+  "seer-vastus-intermedius-public-domain": Object.freeze({
+    title: "Lower-extremity muscles — vastus intermedius exposed after rectus femoris removal",
+    role: "Анатомическая иллюстрация промежуточной широкой мышцы бедра после удаления прямой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Illu_lower_extremity_muscles.jpg",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "SEER Training / U.S. Federal Government, via Wikimedia Commons",
+      note: "Wikimedia Commons отмечает файл Public Domain Mark и отдельно указывает, что исправленная версия показывает vastus intermedius после удаления rectus femoris."
+    }),
+  }),
+
   "dr-jana-commons-2019": Object.freeze({
     title: "Insertion of subscapularis muscle — proximal humerus",
     year: 2019,
