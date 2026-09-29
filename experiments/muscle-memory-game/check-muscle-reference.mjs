@@ -876,6 +876,71 @@ assert(
 
 console.log("Medial-thigh six-card completeness: facts + relations + exact illustrations ok");
 
+const lateralLegCases = [
+  {
+    sourceName: "fibularis longus",
+    id: "fibularis-longus",
+    illustrationLocator: "anatomography-fibularis-longus",
+  },
+  {
+    sourceName: "fibularis brevis",
+    id: "fibularis-brevis",
+    illustrationLocator: "anatomography-fibularis-brevis",
+  },
+];
+
+for (const item of lateralLegCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact muscle illustration is missing"
+  );
+}
+
+const fibularisLongusReference = muscleReferenceFor("fibularis longus");
+const fibularisBrevisReference = muscleReferenceFor("fibularis brevis");
+
+for (const [reference, partnerId] of [
+  [fibularisLongusReference, "fibularis-brevis"],
+  [fibularisBrevisReference, "fibularis-longus"],
+]) {
+  const eversion = reference.functionalRelations.find(row => row.movementId === "foot-eversion");
+  assert(eversion, reference.id + ": foot-eversion relation is missing");
+  assert(
+    eversion.synergists.some(item => item.id === partnerId),
+    reference.id + ": fibularis eversion partner is missing"
+  );
+  assert(
+    eversion.antagonists.some(item => item.id === "tibialis-anterior") &&
+      eversion.antagonists.some(item => item.id === "tibialis-posterior"),
+    reference.id + ": verified inversion antagonists are missing"
+  );
+
+  const plantarflexion = reference.functionalRelations.find(
+    row => row.movementId === "ankle-plantarflexion"
+  );
+  assert(plantarflexion, reference.id + ": plantarflexion relation is missing");
+  assert(
+    plantarflexion.synergists.some(item => item.id === "gastrocnemius") &&
+      plantarflexion.synergists.some(item => item.id === "soleus"),
+    reference.id + ": major plantarflexion synergists are missing"
+  );
+  assert(
+    plantarflexion.antagonists.some(item => item.id === "tibialis-anterior"),
+    reference.id + ": dorsiflexion antagonist is missing"
+  );
+}
+
+console.log("Lateral-leg two-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
