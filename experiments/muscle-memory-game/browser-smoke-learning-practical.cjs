@@ -113,30 +113,51 @@ const assert = require('node:assert/strict');
   await page.click('#mode-explore');
   await page.click('#mode-quiz');
 
-  // Mobile training becomes a task sheet attached to the 3D viewer.
+  // Mobile training keeps the 3D model unobstructed. The task card stays
+  // in the ordinary panel below the viewer instead of becoming an overlay.
   await page.setViewportSize({ width: 412, height: 915 });
   await page.click('[data-learning-mode="name"]');
   await page.click('#start-learning-session');
   assert.equal(await page.locator('#learning-controls').isHidden(), true);
   assert.equal(await page.locator('.name-choice').count(), 4);
   assert.equal(await page.locator('#viewer').getAttribute('data-name-target-visible'), 'true');
-  assert.equal(
-    await page.locator('.question-card').evaluate(el => el.parentElement?.classList.contains('viewer-wrap')),
-    true
-  );
+  const mobileTrainingLayout = await page.evaluate(() => {
+    const panel = document.querySelector('.panel');
+    const viewerWrap = document.querySelector('.viewer-wrap');
+    const card = document.querySelector('.question-card');
+    const tools = document.querySelector('.viewer-tools');
+    const canvas = document.querySelector('#viewer');
+    const rect = canvas.getBoundingClientRect();
+    const probe = document.elementFromPoint(
+      rect.left + rect.width * 0.5,
+      rect.top + rect.height * 0.76
+    );
+    return {
+      cardParentIsPanel: card?.parentElement === panel,
+      cardInsideViewer: card?.parentElement === viewerWrap,
+      taskDocked: document.body.classList.contains('task-docked'),
+      toolsDisplay: tools ? getComputedStyle(tools).display : '',
+      probeIsCanvas:
+        probe === canvas ||
+        probe?.closest?.('.comparison-pane-static') === canvas?.closest('.comparison-pane-static'),
+    };
+  });
+  assert.equal(mobileTrainingLayout.cardParentIsPanel, true);
+  assert.equal(mobileTrainingLayout.cardInsideViewer, false);
+  assert.equal(mobileTrainingLayout.taskDocked, false);
+  assert.equal(mobileTrainingLayout.toolsDisplay, 'none');
+  assert.equal(mobileTrainingLayout.probeIsCanvas, true);
   assert.equal(await page.locator('#score').isHidden(), true);
-  assert.equal(await page.locator('.topbar').isHidden(), true);
   assert.equal(await page.locator('.attribution').isHidden(), true);
   assert.match(await page.locator('#session-progress').innerText(), /1 из 5/i);
   await page.screenshot({ path: '/tmp/muscle-memory-learning-mobile-name.png', fullPage: true });
 
-  // Active mobile training intentionally hides the top bar. Exit the
-  // session first, then switch to the atlas through the visible mode control.
   await page.click('#exit-learning-session');
-  assert.equal(await page.locator('.topbar').isVisible(), true);
   await page.click('#mode-explore');
   assert.equal(
-    await page.locator('.question-card').evaluate(el => el.parentElement?.classList.contains('viewer-wrap')),
+    await page.locator('.question-card').evaluate(
+      el => el.parentElement?.classList.contains('panel')
+    ),
     true
   );
   assert.equal(await page.locator('#explore-controls').isVisible(), true);
