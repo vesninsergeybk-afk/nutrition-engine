@@ -89,7 +89,11 @@ const assert = require('node:assert/strict');
 
   const firstSid = await openTapAction();
   assert.ok(firstSid, 'Touching a visible muscle did not open choose/hide actions');
-  assert.ok((await page.locator('#quiz-muscle-actions-name').innerText()).trim());
+  assert.equal(
+    (await page.locator('#quiz-muscle-actions-name').innerText()).trim(),
+    'Эта мышца',
+    'Find-mode action bubble must not reveal the tapped muscle name before answer commitment'
+  );
   assert.equal(await page.locator('#quiz-muscle-select').isVisible(), true);
   assert.equal(await page.locator('#quiz-muscle-hide').isVisible(), true);
 
@@ -107,6 +111,25 @@ const assert = require('node:assert/strict');
     navigationBeforeHide + 1
   );
   assert.match(await page.locator('#feedback').innerText(), /не засчитывается как ошибка/i);
+  assert.doesNotMatch(
+    await page.locator('#feedback').innerText(),
+    /«[^»]+»/,
+    'Layer navigation must not reveal the identity of a hidden muscle'
+  );
+  assert.equal(await page.locator('#undo-quiz-hide').isVisible(), true);
+
+  await page.click('#undo-quiz-hide');
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-quiz-last-restored-sid'),
+    firstSid
+  );
+  assert.equal(await page.locator('#undo-quiz-hide').isHidden(), true);
+  assert.match(await page.locator('#feedback').innerText(), /возвращена/i);
+
+  const rehideSid = await openTapAction();
+  assert.ok(rehideSid, 'Could not select a muscle again after undoing layer navigation');
+  await page.click('#quiz-muscle-hide');
+  assert.equal(await page.locator('#undo-quiz-hide').isVisible(), true);
 
   const secondSid = await openTapAction();
   assert.ok(secondSid, 'Could not reach another muscle after hiding the first layer');
@@ -117,6 +140,29 @@ const assert = require('node:assert/strict');
     /^(correct|wrong)$/,
     'Explicit Select must be graded as an answer, not interpreted as layer navigation'
   );
+
+  if (await page.locator('#next-question').isEnabled()) {
+    await page.click('#next-question');
+  }
+
+  const revealCandidateSid = await openTapAction();
+  assert.ok(revealCandidateSid, 'Could not open a muscle action before answer reveal');
+  assert.equal(await page.locator('#quiz-muscle-actions').isVisible(), true);
+  await page.click('#show-answer');
+  assert.equal(
+    await page.locator('#quiz-muscle-actions').isHidden(),
+    true,
+    'Show answer must close a stale choose/hide bubble'
+  );
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-answer-reveal-highlight'),
+    'target-cyan-context-muted'
+  );
+  assert.ok(
+    (await page.locator('#viewer').getAttribute('data-answer-reveal-highlight-ids') || '').length > 0,
+    'Show answer did not mark target highlight ids'
+  );
+  assert.equal(await page.locator('#viewer').getAttribute('data-answer-reveal-padding'), '2.1');
 
   await page.screenshot({
     path: '/tmp/muscle-memory-mobile-training.png',
