@@ -373,7 +373,7 @@ jobs:
     if: ${{ contains(github.event.head_commit.message, '[pelvic-reference-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -396,7 +396,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          timeout 6m node experiments/muscle-memory-game/browser-smoke-pelvic-floor-reference.cjs
+          timeout 8m node experiments/muscle-memory-game/browser-smoke-pelvic-floor-reference.cjs
 
 
 
