@@ -627,6 +627,94 @@ assert(
 
 console.log("Deep-gluteal six-card completeness: facts + relations + exact illustrations ok");
 
+const anteriorThighCases = [
+  { sourceName: "sartorius", id: "sartorius", illustrationLocator: "gray-sartorius-highlight" },
+  { sourceName: "rectus femoris", id: "rectus-femoris", illustrationLocator: "gray-rectus-femoris-highlight" },
+  { sourceName: "vastus lateralis", id: "vastus-lateralis", illustrationLocator: "gray-vastus-lateralis-highlight" },
+  { sourceName: "vastus medialis", id: "vastus-medialis", illustrationLocator: "gray-vastus-medialis-highlight" },
+  { sourceName: "vastus intermedius", id: "vastus-intermedius", illustrationLocator: "seer-vastus-intermedius-exposed" },
+];
+
+for (const item of anteriorThighCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact muscle illustration is missing"
+  );
+}
+
+const sartoriusReference = muscleReferenceFor("sartorius");
+const rectusFemorisReference = muscleReferenceFor("rectus femoris");
+const vastusLateralisReference = muscleReferenceFor("vastus lateralis");
+const vastusMedialisReference = muscleReferenceFor("vastus medialis");
+const vastusIntermediusReference = muscleReferenceFor("vastus intermedius");
+
+assert(
+  sartoriusReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-abduction" &&
+      row.synergists.some(item => item.id === "gluteus-medius") &&
+      row.antagonists.some(item => item.id === "adductor-longus")
+  ),
+  "Sartorius must retain hip-abduction synergists and adductor antagonists"
+);
+assert(
+  sartoriusReference.functionalRelations.some(
+    row =>
+      row.movementId === "knee-flexion" &&
+      row.synergists.some(item => item.id === "biceps-femoris") &&
+      row.antagonists.some(item => item.id === "rectus-femoris")
+  ),
+  "Sartorius must retain knee-flexion synergists and quadriceps antagonists"
+);
+assert(
+  rectusFemorisReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-flexion" &&
+      row.synergists.some(item => item.id === "psoas-major") &&
+      row.antagonists.some(item => item.id === "gluteus-maximus")
+  ),
+  "Rectus femoris must retain verified hip-flexion relations"
+);
+
+for (const reference of [
+  rectusFemorisReference,
+  vastusLateralisReference,
+  vastusMedialisReference,
+  vastusIntermediusReference,
+]) {
+  const row = reference.functionalRelations.find(item => item.movementId === "knee-extension");
+  assert(row, reference.id + ": knee-extension relation is missing");
+  assert(
+    row.synergists.filter(item =>
+      ["rectus-femoris", "vastus-lateralis", "vastus-medialis", "vastus-intermedius"].includes(item.id)
+    ).length >= 3,
+    reference.id + ": quadriceps heads are not grouped as knee-extension synergists"
+  );
+  assert(
+    row.antagonists.some(item => item.id === "biceps-femoris") &&
+      row.antagonists.some(item => item.id === "semitendinosus"),
+    reference.id + ": hamstring antagonists are missing"
+  );
+}
+
+assert(
+  !vastusLateralisReference.functionalRelations.some(row => row.movementId === "hip-flexion") &&
+    !vastusMedialisReference.functionalRelations.some(row => row.movementId === "hip-flexion") &&
+    !vastusIntermediusReference.functionalRelations.some(row => row.movementId === "hip-flexion"),
+  "The three vasti must not inherit rectus femoris hip-flexion function"
+);
+
+console.log("Anterior-thigh five-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
