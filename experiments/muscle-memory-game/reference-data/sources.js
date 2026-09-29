@@ -91,6 +91,54 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-tibialis-anterior-highlight": Object.freeze({
+    title: "Gray's Anatomy — tibialis anterior highlighted",
+    year: 1918,
+    role: "Отдельное изображение передней большеберцовой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Tibialis_anterior_2.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain."
+    }),
+  }),
+
+  "gray-1918-extensor-digitorum-longus-highlight": Object.freeze({
+    title: "Gray's Anatomy — extensor digitorum longus highlighted",
+    year: 1918,
+    role: "Отдельное изображение длинного разгибателя пальцев стопы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Extensor_digitorum_longus.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain."
+    }),
+  }),
+
+  "gray-1918-extensor-hallucis-longus-highlight": Object.freeze({
+    title: "Gray's Anatomy — extensor hallucis longus highlighted",
+    year: 1918,
+    role: "Отдельное изображение длинного разгибателя большого пальца стопы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Extensor_hallucis_longus.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain."
+    }),
+  }),
+
+  "gray-1918-fibularis-tertius-highlight": Object.freeze({
+    title: "Gray's Anatomy — fibularis tertius highlighted",
+    year: 1918,
+    role: "Отдельное изображение третьей малоберцовой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Peroneus_tertius.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain."
+    }),
+  }),
+
   "gray-1918-plantaris-highlight": Object.freeze({
     title: "Gray's Anatomy, plate 438 — plantaris highlighted",
     year: 1918,
