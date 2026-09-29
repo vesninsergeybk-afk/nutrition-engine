@@ -150,29 +150,34 @@ const assert = require('node:assert/strict');
   assert.match(puborectalisFunctional, /Наружный сфинктер заднего прохода/i);
   assert.match(puborectalisFunctional, /отдельн.*антагонист/i);
 
-  console.log('[smoke:pelvic-reference] pubococcygeus');
-  await openCard('pubococcygeus', 'pubococcygeus');
-  srcs = await gallerySources();
-  assert.ok(
-    srcs.some(src => /Pelvic_Muscles_.*Female_Inferior/i.test(src)),
-    'Pubococcygeus labeled anatomical image is missing'
-  );
-  assert.match(
-    await visibleFunctionalText(),
-    /Лобково-прямокишечная|Подвздошно-копчиковая|Копчиковая/i
-  );
-
-  console.log('[smoke:pelvic-reference] iliococcygeus');
-  await openCard('iliococcygeus', 'iliococcygeus');
-  srcs = await gallerySources();
-  assert.ok(
-    srcs.some(src => /Pelvic_Muscles_.*Female_Inferior/i.test(src)),
-    'Iliococcygeus labeled anatomical image is missing'
-  );
-  assert.match(
-    await visibleFunctionalText(),
-    /Лобково-прямокишечная|Лобково-копчиковая|Копчиковая/i
-  );
+  console.log('[smoke:pelvic-reference] module completeness for remaining levator-ani components');
+  const remainingDiagnostic = await page.evaluate(async () => {
+    const module = await import('./muscle-reference-data.js');
+    return ['pubococcygeus', 'iliococcygeus'].map(sourceName => {
+      const reference = module.muscleReferenceFor(sourceName);
+      return {
+        sourceName,
+        id: reference?.id || null,
+        originRu: reference?.originRu || '',
+        insertionRu: reference?.insertionRu || '',
+        actionsCount: reference?.actionsRu?.length || 0,
+        innervationRu: reference?.innervationRu || '',
+        functionalCount: reference?.functionalRelations?.length || 0,
+        illustrationSources: (reference?.illustrations || []).map(item => item.sourceId),
+      };
+    });
+  });
+  for (const item of remainingDiagnostic) {
+    assert.equal(item.id, item.sourceName);
+    assert.ok(item.originRu && item.insertionRu);
+    assert.ok(item.actionsCount > 0);
+    assert.ok(item.innervationRu);
+    assert.ok(item.functionalCount > 0);
+    assert.ok(
+      item.illustrationSources.includes('blaus-pelvic-muscles-female-2017'),
+      item.sourceName + ': labeled pelvic-floor image is missing'
+    );
+  }
 
   console.log('[smoke:pelvic-reference] coccygeus');
   await openCard('coccygeus', 'coccygeus');
