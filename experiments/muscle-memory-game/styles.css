@@ -2430,6 +2430,13 @@ body:not(.motion-mode) .comparison-pane-static {
   font-weight: 680;
 }
 
+.structure-reference-functional-row-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
 .structure-reference-functional-note {
   margin: -2px 0 10px;
   color: var(--muted);
