@@ -146,3 +146,38 @@ assert(
 );
 
 console.log("Quiz mobile interaction contract: clear viewer + choose/hide contextual action");
+
+const answerRevealStart = app.indexOf("function revealQuizAnswerInContext");
+const answerRevealEnd = app.indexOf("\n\nfunction revealAnswer", answerRevealStart);
+const answerRevealBlock =
+  answerRevealStart >= 0 && answerRevealEnd > answerRevealStart
+    ? app.slice(answerRevealStart, answerRevealEnd)
+    : "";
+
+assert(
+  answerRevealBlock &&
+    answerRevealBlock.includes("verifiedCoveringStructureIds(sid)") &&
+    answerRevealBlock.includes("raycaster.intersectObject(anatomyMesh, false)") &&
+    answerRevealBlock.includes("focusBox(box, 2.1, answerView.direction)") &&
+    answerRevealBlock.includes("applyBodyPartsSurfaceConflictGuards()") &&
+    answerRevealBlock.includes("setStructureVisible(sid, true)") &&
+    !answerRevealBlock.includes("setVisibleStructures(targetIds)"),
+  "Answer reveal must keep anatomical context: hide only covers/occluders, keep the target visible, and avoid full isolation"
+);
+assert(
+  app.includes("function answerRevealDirectionForBox") &&
+    app.includes('label: (best?.label || "current") + "-oblique"') &&
+    app.includes("THREE.MathUtils.degToRad(16 * yawSign)") &&
+    app.includes('canvas.dataset.answerRevealPadding = "2.1"'),
+  "Show-answer camera must use a moderately padded oblique view instead of a tight head-on close-up"
+);
+assert(
+  app.includes("revealQuizAnswerInContext(") &&
+    app.includes('canvas.dataset.answerRevealHidden = ""') &&
+    app.includes('canvas.dataset.answerRevealTargetIds = ""') &&
+    app.includes("Перекрывающие наружные мышцы скрыты, ближайшее окружение оставлено."),
+  "Show-answer flow must reset and expose its contextual reveal state for each learning item"
+);
+
+console.log("Answer reveal contract: moderate oblique focus + occluder removal + preserved context");
+
