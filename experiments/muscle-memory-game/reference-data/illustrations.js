@@ -1566,6 +1566,30 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Малая приводящая мышца показана отдельно как верхняя часть глубокой приводящей массы бедра",
     "captionRu": "Anatomography / BodyParts3D: малая приводящая мышца. CC BY-SA 2.1 Japan.",
     "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-fibularis-longus",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["fibularis-longus"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Inferior%20view%20fibularis%20longus%20muscle%20-%20anterior.png",
+    "altRu": "Длинная малоберцовая мышца выделена на латеральной поверхности голени; сухожилие проходит позади латеральной лодыжки",
+    "captionRu": "Anatomography / BodyParts3D: длинная малоберцовая мышца. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-fibularis-brevis",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["fibularis-brevis"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Fibularis%20brevis%20muscle%20-%20anterior%20view.png",
+    "altRu": "Короткая малоберцовая мышца выделена в дистальной латеральной части голени и прослеживается к основанию пятой плюсневой кости",
+    "captionRu": "Anatomography / BodyParts3D: короткая малоберцовая мышца. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
   }
 ]
 );
