@@ -608,6 +608,57 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "status": "asset-ready"
   },
   {
+    "id": "gray-404-levator-coccygeus",
+    "sourceId": "gray-1918-plate-404-levator-ani",
+    "kind": "regional-plate",
+    "regionIds": [
+      "pelvic-floor"
+    ],
+    "focusStructureIds": [
+      "levator-ani",
+      "coccygeus"
+    ],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray404.png",
+    "altRu": "Внутренний вид левой половины тазового дна: levator ani и расположенная кзади coccygeus подписаны на пластине",
+    "captionRu": "Gray's Anatomy, plate 404: levator ani изнутри; coccygeus показана и подписана кзади от комплекса. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "blaus-female-pelvic-muscles",
+    "sourceId": "blaus-pelvic-muscles-female-2017",
+    "kind": "labeled-regional-plate",
+    "regionIds": [
+      "pelvic-floor"
+    ],
+    "focusStructureIds": [
+      "puborectalis",
+      "pubococcygeus",
+      "iliococcygeus"
+    ],
+    "rightsStatus": "cc-by-sa-4.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Pelvic_Muscles_(Female_Inferior).png",
+    "altRu": "Нижний вид женского тазового дна с отдельными подписями puborectalis, pubococcygeus и iliococcygeus",
+    "captionRu": "BruceBlaus: нижний вид тазового дна; puborectalis, pubococcygeus и iliococcygeus подписаны непосредственно на изображении. CC BY-SA 4.0.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "puborectalis-sling-action",
+    "sourceId": "commons-puborectalis-sling-2012",
+    "kind": "focused-functional-diagram",
+    "regionIds": [
+      "pelvic-floor"
+    ],
+    "focusStructureIds": [
+      "puborectalis"
+    ],
+    "rightsStatus": "cc-by-sa-3.0",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/(155)_Stylized_depiction_of_action_of_puborectalis_sling.png",
+    "altRu": "Схема U-образной петли puborectalis вокруг аноректального перехода и формируемого ею аноректального угла",
+    "captionRu": "Функциональная схема puborectalis: петля вокруг аноректального перехода и её роль в формировании аноректального угла. CC BY-SA 3.0.",
+    "status": "asset-ready"
+  },
+  {
     "id": "gray-960-larynx",
     "sourceId": "gray-1918-plate-960-larynx",
     "kind": "regional-plate",
