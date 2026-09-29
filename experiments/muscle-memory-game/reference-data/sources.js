@@ -281,6 +281,66 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "berichard-adductor-longus-2008": Object.freeze({
+    title: "Adductor longus — Gray-derived anatomical plate",
+    year: 2008,
+    role: "Отдельное изображение длинной приводящей мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Muscle_long_adducteur.png",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-3.0",
+      attribution: "Berichard / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons предлагает CC BY-SA 3.0 среди доступных лицензий."
+    }),
+  }),
+
+  "berichard-adductor-brevis-2008": Object.freeze({
+    title: "Adductor brevis — Gray-derived anatomical plate",
+    year: 2008,
+    role: "Отдельное изображение короткой приводящей мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Muscle_court_adducteur.png",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-3.0",
+      attribution: "Berichard / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons предлагает CC BY-SA 3.0 среди доступных лицензий."
+    }),
+  }),
+
+  "berichard-adductor-magnus-2008": Object.freeze({
+    title: "Adductor magnus — Gray-derived anatomical plate",
+    year: 2008,
+    role: "Отдельное изображение большой приводящей мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Muscle_grand_adducteur_copie.png",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-3.0",
+      attribution: "Berichard / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons предлагает CC BY-SA 3.0 среди доступных лицензий."
+    }),
+  }),
+
+  "berichard-gracilis-2008": Object.freeze({
+    title: "Gracilis — Gray-derived anatomical plate",
+    year: 2008,
+    role: "Отдельное изображение тонкой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Muscle_gracile.png",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-3.0",
+      attribution: "Berichard / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons предлагает CC BY-SA 3.0 среди доступных лицензий."
+    }),
+  }),
+
+  "gray-1918-pectineus-highlight": Object.freeze({
+    title: "Gray's Anatomy — pectineus highlighted",
+    year: 1918,
+    role: "Отдельное изображение гребенчатой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Pectineus.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Uwe Gille / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain."
+    }),
+  }),
+
   "dr-jana-commons-2019": Object.freeze({
     title: "Insertion of subscapularis muscle — proximal humerus",
     year: 2019,
