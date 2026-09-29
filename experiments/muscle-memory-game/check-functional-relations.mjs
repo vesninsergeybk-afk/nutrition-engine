@@ -25,6 +25,37 @@ assert(
   "Functional movement vocabulary is unexpectedly small"
 );
 
+for (const [structureId, expectedMovementId] of [
+  ["levator-ani", "pelvic-floor-support"],
+  ["puborectalis", "anal-continence"],
+  ["pubococcygeus", "pelvic-floor-support"],
+  ["iliococcygeus", "pelvic-floor-support"],
+  ["coccygeus", "pelvic-floor-support"],
+]) {
+  const rows = functionalRelationsForStructure(structureId);
+  assert(rows.length > 0, structureId + ": pelvic-floor functional relations are missing");
+  assert(
+    rows.some(row => row.movementId === expectedMovementId),
+    structureId + ": expected pelvic-floor relation is missing"
+  );
+  assert(
+    rows.some(row => row.method === "curated-from-verified-pelvic-floor-function"),
+    structureId + ": pelvic-floor relations must remain explicitly curated"
+  );
+}
+
+const puborectalisContinence = functionalRelationsForStructure("puborectalis")
+  .find(row => row.movementId === "anal-continence");
+assert(
+  puborectalisContinence?.synergists?.some(item => item.id === "external-anal-sphincter"),
+  "Puborectalis continence relation must include the external anal sphincter as a verified synergist"
+);
+assert(
+  puborectalisContinence?.antagonists?.length === 0 &&
+    /антагонист/i.test(puborectalisContinence?.noteRu || ""),
+  "Puborectalis card must not invent a direct antagonist and must explain why"
+);
+
 for (const structure of structures) {
   const rows = functionalRelationsForStructure(structure.id);
   for (const row of rows) {
