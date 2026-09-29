@@ -106,8 +106,55 @@ const assert = require('node:assert/strict');
   );
   await page.screenshot({ path: '/tmp/muscle-memory-reference-external-oblique.png', fullPage: true });
 
+  console.log('[reference-smoke] puborectalis -> exact labeled art + continence synergy');
+  await search('puborectalis');
+  const puborectalis = page.locator('.search-result').filter({ hasText: /Лобково-прямокишечн/i }).first();
+  assert.equal(await puborectalis.count(), 1);
+  await puborectalis.click();
+  await assertCard('puborectalis');
+  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
+  assert.ok(
+    Number(await page.locator('#structure-reference').getAttribute('data-reference-atlas-illustration-count')) >= 2
+  );
+  const puborectalisImageSources = await page.locator('#structure-reference-illustrations img')
+    .evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
+  assert.ok(
+    puborectalisImageSources.some(src => /Pelvic_Muscles_.*Female_Inferior/i.test(src)) &&
+      puborectalisImageSources.some(src => /Stylized_depiction_of_action_of_puborectalis_sling/i.test(src)),
+    'Puborectalis must show both the labeled anatomical plate and focused sling diagram'
+  );
+  assert.equal(await page.locator('#structure-reference-functional-details').isHidden(), false);
+  assert.match(
+    await page.locator('#structure-reference-functional').innerText(),
+    /Наружный сфинктер заднего прохода/i
+  );
+  assert.match(
+    await page.locator('#structure-reference-functional').innerText(),
+    /антагонист/i
+  );
+  await page.screenshot({ path: '/tmp/muscle-memory-reference-puborectalis.png', fullPage: true });
+
+  console.log('[reference-smoke] levator ani -> Gray 404 + curated pelvic-floor relation');
+  await search('levator ani');
+  const levator = page.locator('.search-result').filter({ hasText: /поднимающая задний проход/i }).first();
+  assert.equal(await levator.count(), 1);
+  await levator.click();
+  await assertCard('levator-ani');
+  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
+  const levatorImageSources = await page.locator('#structure-reference-illustrations img')
+    .evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
+  assert.ok(
+    levatorImageSources.some(src => /Gray404\.png/i.test(src)),
+    'Levator ani must show the verified Gray 404 plate'
+  );
+  assert.match(
+    await page.locator('#structure-reference-functional').innerText(),
+    /Копчиковая мышца/i
+  );
+  await page.screenshot({ path: '/tmp/muscle-memory-reference-levator-ani.png', fullPage: true });
+
   assert.equal(errors.length, 0, errors.join(' || '));
-  console.log('[reference-smoke] four representative reference cards ok');
+  console.log('[reference-smoke] six representative reference cards ok');
   await browser.close();
 })().catch(error => {
   console.error(error);
