@@ -998,10 +998,24 @@ assert(
   !soleusReference.functionalRelations.some(row => row.movementId === "knee-flexion"),
   "Soleus must not inherit gastrocnemius knee-flexion function"
 );
+const plantarisPlantarflexion = plantarisReference.functionalRelations.find(
+  row => row.movementId === "ankle-plantarflexion"
+);
+const plantarisKneeFlexion = plantarisReference.functionalRelations.find(
+  row => row.movementId === "knee-flexion"
+);
 assert(
-  plantarisReference.functionalRelations.some(row => row.movementId === "ankle-plantarflexion") &&
-    plantarisReference.functionalRelations.some(row => row.movementId === "knee-flexion"),
-  "Plantaris must retain both weak plantarflexion and knee-flexion relations"
+  plantarisPlantarflexion &&
+    plantarisPlantarflexion.synergists.some(item => item.id === "gastrocnemius") &&
+    plantarisPlantarflexion.synergists.some(item => item.id === "soleus") &&
+    plantarisPlantarflexion.antagonists.some(item => item.id === "tibialis-anterior"),
+  "Plantaris plantarflexion must retain triceps-surae partners and dorsiflexor antagonists"
+);
+assert(
+  plantarisKneeFlexion &&
+    plantarisKneeFlexion.synergists.some(item => item.id === "biceps-femoris") &&
+    plantarisKneeFlexion.antagonists.some(item => item.id === "rectus-femoris"),
+  "Plantaris weak knee-flexion relation must retain hamstring partners and quadriceps antagonists"
 );
 assert(
   plantarisReference.sourceNotesRu.some(note => /вариабельн|может отсутствовать/i.test(note)) &&
