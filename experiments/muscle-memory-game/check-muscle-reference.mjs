@@ -69,7 +69,7 @@ for (const [sourceName, expectedId, expectedIllustrationIds] of [
   assert(reference.functionalRelations?.length, expectedId + ": synergist/antagonist section is missing");
   for (const illustrationId of expectedIllustrationIds) {
     assert(
-      reference.illustrations?.some(item => item.id === illustrationId && item.src),
+      reference.illustrations?.some(item => item.locator === illustrationId && item.src),
       expectedId + ": exact verified illustration is missing: " + illustrationId
     );
   }
