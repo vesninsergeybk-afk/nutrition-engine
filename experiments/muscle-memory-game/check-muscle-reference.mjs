@@ -422,6 +422,101 @@ assert(
 
 console.log("Iliopsoas three-card completeness: facts + relations + exact illustrations ok");
 
+const glutealCases = [
+  {
+    sourceName: "gluteus maximus",
+    id: "gluteus-maximus",
+    illustrationLocator: "gray-gluteus-maximus-highlight",
+  },
+  {
+    sourceName: "gluteus medius",
+    id: "gluteus-medius",
+    illustrationLocator: "anatomography-gluteus-medius",
+  },
+  {
+    sourceName: "gluteus minimus",
+    id: "gluteus-minimus",
+    illustrationLocator: "anatomography-gluteus-minimus",
+  },
+  {
+    sourceName: "tensor fasciae latae",
+    id: "tensor-fasciae-latae",
+    illustrationLocator: "gray-tensor-fasciae-latae-highlight",
+  },
+];
+
+for (const item of glutealCases) {
+  const reference = muscleReferenceFor(item.sourceName);
+  assert(reference?.id === item.id, item.id + ": canonical reference did not resolve");
+  assert(reference.originRu, item.id + ": origin is missing");
+  assert(reference.insertionRu, item.id + ": insertion is missing");
+  assert(reference.actionsRu?.length, item.id + ": actions are missing");
+  assert(reference.innervationRu, item.id + ": innervation is missing");
+  assert(reference.sources?.length >= 2, item.id + ": verification provenance is incomplete");
+  assert(reference.sourceNotesRu?.length, item.id + ": functional/anatomical note is missing");
+  assert(reference.functionalRelations?.length, item.id + ": functional relations are empty");
+  assert(
+    reference.illustrations?.some(illustration => illustration.locator === item.illustrationLocator),
+    item.id + ": exact muscle illustration is missing"
+  );
+}
+
+const gluteusMaximusReference = muscleReferenceFor("gluteus maximus");
+const gluteusMediusReference = muscleReferenceFor("gluteus medius");
+const gluteusMinimusReference = muscleReferenceFor("gluteus minimus");
+const tensorFasciaeLataeReference = muscleReferenceFor("tensor fasciae latae");
+
+assert(
+  gluteusMaximusReference.illustrations.every(item => Boolean(item.src)),
+  "Gluteus maximus gallery still contains a placeholder illustration without an asset"
+);
+assert(
+  gluteusMaximusReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-extension" &&
+      row.antagonists.some(item => item.id === "psoas-major")
+  ),
+  "Gluteus maximus hip extension must oppose verified hip flexors"
+);
+assert(
+  gluteusMediusReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-abduction" &&
+      row.synergists.some(item => item.id === "gluteus-minimus") &&
+      row.synergists.some(item => item.id === "tensor-fasciae-latae")
+  ),
+  "Gluteus medius must identify gluteus minimus and TFL as hip-abduction synergists"
+);
+assert(
+  gluteusMinimusReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-abduction" &&
+      row.synergists.some(item => item.id === "gluteus-medius") &&
+      row.synergists.some(item => item.id === "tensor-fasciae-latae")
+  ),
+  "Gluteus minimus must identify gluteus medius and TFL as hip-abduction synergists"
+);
+assert(
+  tensorFasciaeLataeReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-flexion" &&
+      row.synergists.some(item => item.id === "psoas-major") &&
+      row.antagonists.some(item => item.id === "gluteus-maximus")
+  ),
+  "TFL must participate in verified hip-flexion relations"
+);
+assert(
+  tensorFasciaeLataeReference.functionalRelations.some(
+    row =>
+      row.movementId === "hip-abduction" &&
+      row.synergists.some(item => item.id === "gluteus-medius") &&
+      row.synergists.some(item => item.id === "gluteus-minimus")
+  ),
+  "TFL must participate in verified hip-abduction relations"
+);
+
+console.log("Gluteal four-card completeness: facts + relations + exact illustrations ok");
+
 const gray392Bytes = await readFile(
   new URL("assets/reference/gray392-external-oblique.png", root)
 );
