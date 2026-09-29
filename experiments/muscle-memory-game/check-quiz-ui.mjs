@@ -1,9 +1,10 @@
 import { readFile } from "node:fs/promises";
 
 const root = new URL("./", import.meta.url);
-const [html, app, engine, specimens, session] = await Promise.all([
+const [html, app, styles, engine, specimens, session] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("app.js", root), "utf8"),
+  readFile(new URL("styles.css", root), "utf8"),
   readFile(new URL("learning-engine.js", root), "utf8"),
   readFile(new URL("virtual-specimens.js", root), "utf8"),
   readFile(new URL("learning-session.js", root), "utf8"),
@@ -118,3 +119,30 @@ assert(
     app.includes('focusSelectedButton.addEventListener("click", () => focusSelectedStructures())'),
   "Area selection must control isolation directly and camera buttons must not receive MouseEvent as navigation arguments"
 );
+
+
+assert(
+  html.includes('id="quiz-muscle-actions"') &&
+    html.includes('id="quiz-muscle-select"') &&
+    html.includes('id="quiz-muscle-hide"') &&
+    app.includes("function openQuizMuscleActions") &&
+    app.includes("function hideQuizMuscleCandidate") &&
+    app.includes("chooseQuiz(sid, hitStack, { explicitAnswer: true })"),
+  "Find-mode muscle taps must open an explicit choose-or-hide action instead of submitting immediately"
+);
+assert(
+  app.includes('canvas.dataset.quizLastHiddenSid = String(sid)') &&
+    app.includes('currentItemNavigationActions += 1') &&
+    app.includes('"Это действие не засчитывается как ошибка."'),
+  "Hiding a covering muscle in Training must be recorded as navigation, not as an answer error"
+);
+assert(
+  app.includes('panelEl.prepend(questionCardEl)') &&
+    app.includes('document.body.classList.remove("task-docked")') &&
+    !app.includes('viewerWrap.appendChild(questionCardEl)') &&
+    styles.includes('body.session-active:not(.motion-mode) .viewer-tools') &&
+    styles.includes('body.session-active .panel .question-card'),
+  "Mobile Training must keep the task card and controls off the anatomy canvas"
+);
+
+console.log("Quiz mobile interaction contract: clear viewer + choose/hide contextual action");
