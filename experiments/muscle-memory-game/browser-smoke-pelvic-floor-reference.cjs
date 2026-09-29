@@ -144,7 +144,7 @@ const assert = require('node:assert/strict');
     srcs.some(src => /Stylized_depiction_of_action_of_puborectalis_sling/i.test(src)),
     'Puborectalis focused sling diagram is missing'
   );
-  const puborectalisFunctional = await page.locator('#structure-reference-functional').innerText();
+  const puborectalisFunctional = await visibleFunctionalText();
   assert.match(puborectalisFunctional, /Наружный сфинктер заднего прохода/i);
   assert.match(puborectalisFunctional, /отдельн.*антагонист/i);
 
