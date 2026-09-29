@@ -869,7 +869,7 @@ assert(
 );
 
 assert(
-  adductorMinimusReference.kind === "variable-muscle-part" &&
+  adductorMinimusReference.verificationStatus === "cross-checked-variable-subdivision" &&
     adductorMinimusReference.sourceNotesRu.some(note => /верхн.*adductor magnus|верхн.*отдел.*adductor magnus/i.test(note)),
   "Adductor minimus must remain explicitly marked as a variable subdivision of adductor magnus"
 );
