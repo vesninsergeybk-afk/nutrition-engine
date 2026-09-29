@@ -707,6 +707,41 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-plate-404-levator-ani": Object.freeze({
+    title: "Gray's Anatomy, plate 404 — left levator ani from within",
+    year: 1918,
+    role: "Внутренний вид levator ani с отчётливо обозначенной coccygeus",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray404.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain / PD-scan; оригинал опубликован в Gray's Anatomy."
+    }),
+  }),
+
+  "blaus-pelvic-muscles-female-2017": Object.freeze({
+    title: "Pelvic Muscles (Female Inferior)",
+    year: 2017,
+    role: "Нижний вид женского тазового дна с отдельными подписями puborectalis, pubococcygeus и iliococcygeus",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Pelvic_Muscles_(Female_Inferior).png",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-4.0",
+      attribution: "BruceBlaus / Wikimedia Commons",
+      note: "Страница файла Wikimedia Commons указывает Creative Commons Attribution-ShareAlike 4.0 International."
+    }),
+  }),
+
+  "commons-puborectalis-sling-2012": Object.freeze({
+    title: "Stylized depiction of action of puborectalis sling",
+    year: 2012,
+    role: "Функциональная схема puborectalis и формируемого ею аноректального угла",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:(155)_Stylized_depiction_of_action_of_puborectalis_sling.png",
+    rights: Object.freeze({
+      illustrations: "cc-by-sa-3.0",
+      attribution: "Lesion / Wikimedia Commons",
+      note: "Страница файла Wikimedia Commons допускает повторное использование по CC BY-SA 3.0 (также доступна GFDL)."
+    }),
+  }),
+
   "gray-1918-plate-960-larynx": Object.freeze({
     title: "Gray's Anatomy, plate 960 — intrinsic muscles of the larynx",
     year: 1918,
