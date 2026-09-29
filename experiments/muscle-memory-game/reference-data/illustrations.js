@@ -1278,6 +1278,54 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Малая поясничная мышца выделена спереди от большой поясничной мышцы",
     "captionRu": "Gray's Anatomy: малая поясничная мышца, вариабельная структура, которая у части людей отсутствует. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "gray-gluteus-maximus-highlight",
+    "sourceId": "gray-1918-gluteus-maximus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["gluteus-maximus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gluteus%20maximus%20muscle.PNG",
+    "altRu": "Большая ягодичная мышца выделена на задней поверхности таза и бедра",
+    "captionRu": "Изображение на основе Gray's Anatomy: большая ягодичная мышца выделена среди мышц ягодичной области. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-gluteus-medius",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["gluteus-medius"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gluteus%20medius%20muscle01.png",
+    "altRu": "Средняя ягодичная мышца выделена на латеральной поверхности таза с прикреплением к большому вертелу",
+    "captionRu": "Anatomography / BodyParts3D: средняя ягодичная мышца. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-gluteus-minimus",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["gluteus-minimus"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gluteus%20minimus%20muscle01.png",
+    "altRu": "Малая ягодичная мышца выделена глубоко на латеральной поверхности таза с прикреплением к большому вертелу",
+    "captionRu": "Anatomography / BodyParts3D: малая ягодичная мышца. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-tensor-fasciae-latae-highlight",
+    "sourceId": "gray-1918-tensor-fasciae-latae-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["pelvis-gluteal"],
+    "focusStructureIds": ["tensor-fasciae-latae"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Tensor%20fasciae%20latae.png",
+    "altRu": "Напрягатель широкой фасции выделен на переднелатеральной поверхности таза и проксимального бедра",
+    "captionRu": "Изображение на основе Gray's Anatomy: напрягатель широкой фасции. Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
