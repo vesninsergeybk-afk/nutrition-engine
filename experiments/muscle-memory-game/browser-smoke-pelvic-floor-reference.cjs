@@ -71,7 +71,9 @@ const assert = require('node:assert/strict');
       true,
       'Functional relations section did not open'
     );
-    return (await page.locator('#structure-reference-functional').textContent()) || '';
+    return (await page.locator('#structure-reference-functional').evaluate(
+      element => element.textContent || ''
+    )) || '';
   }
 
   console.log('[smoke:pelvic-reference] levator ani reference-only group');
