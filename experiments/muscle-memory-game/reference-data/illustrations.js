@@ -1626,6 +1626,54 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Подошвенная мышца выделена на задней поверхности голени: небольшое проксимальное брюшко и длинное тонкое сухожилие",
     "captionRu": "Gray's Anatomy, plate 438: подошвенная мышца. Public domain.",
     "status": "asset-ready"
+  },
+  {
+    "id": "gray-tibialis-anterior-highlight",
+    "sourceId": "gray-1918-tibialis-anterior-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["tibialis-anterior"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Tibialis%20anterior%202.png",
+    "altRu": "Передняя большеберцовая мышца выделена на переднелатеральной поверхности голени и прослеживается к медиальному краю стопы",
+    "captionRu": "Gray's Anatomy: передняя большеберцовая мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-extensor-digitorum-longus-highlight",
+    "sourceId": "gray-1918-extensor-digitorum-longus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["extensor-digitorum-longus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Extensor%20digitorum%20longus.png",
+    "altRu": "Длинный разгибатель пальцев выделен в переднем компартменте голени с сухожилиями к II–V пальцам",
+    "captionRu": "Gray's Anatomy: длинный разгибатель пальцев стопы. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-extensor-hallucis-longus-highlight",
+    "sourceId": "gray-1918-extensor-hallucis-longus-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["extensor-hallucis-longus"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Extensor%20hallucis%20longus.png",
+    "altRu": "Длинный разгибатель большого пальца стопы выделен глубже в переднем компартменте голени с сухожилием к большому пальцу",
+    "captionRu": "Gray's Anatomy: длинный разгибатель большого пальца стопы. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-fibularis-tertius-highlight",
+    "sourceId": "gray-1918-fibularis-tertius-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["fibularis-tertius"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Peroneus%20tertius.png",
+    "altRu": "Третья малоберцовая мышца выделена в дистальной части переднего компартмента голени и прослеживается к латеральному краю стопы",
+    "captionRu": "Gray's Anatomy: третья малоберцовая мышца (fibularis tertius). Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
