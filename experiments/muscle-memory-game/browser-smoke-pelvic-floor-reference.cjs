@@ -76,6 +76,41 @@ const assert = require('node:assert/strict');
 
   console.log('[smoke:pelvic-reference] puborectalis');
   await openCard('puborectalis', 'puborectalis');
+
+  const puborectalisModuleDiagnostic = await page.evaluate(async () => {
+    const module = await import('./muscle-reference-data.js');
+    const reference = module.muscleReferenceFor('Left puborectalis');
+    return {
+      id: reference?.id || null,
+      functionalRelations: (reference?.functionalRelations || []).map(row => ({
+        movementId: row.movementId,
+        movementRu: row.movementRu,
+        synergists: (row.synergists || []).map(item => item.nameRu),
+        antagonists: (row.antagonists || []).map(item => item.nameRu),
+        noteRu: row.noteRu || '',
+      })),
+    };
+  });
+  const puborectalisDomDiagnostic = await page.locator('#structure-reference-functional-details')
+    .evaluate(details => ({
+      hidden: details.hidden,
+      open: details.open,
+      functionalHtml: details.querySelector('#structure-reference-functional')?.innerHTML || '',
+      functionalText: details.querySelector('#structure-reference-functional')?.textContent || '',
+      childCount: details.querySelector('#structure-reference-functional')?.children.length || 0,
+    }));
+  console.log('[smoke:pelvic-reference] module diagnostic', JSON.stringify(puborectalisModuleDiagnostic));
+  console.log('[smoke:pelvic-reference] DOM diagnostic', JSON.stringify(puborectalisDomDiagnostic));
+
+  assert.equal(puborectalisModuleDiagnostic.id, 'puborectalis');
+  assert.ok(
+    puborectalisModuleDiagnostic.functionalRelations.some(
+      row => row.movementId === 'anal-continence' &&
+        row.synergists.some(name => /Наружный сфинктер заднего прохода/i.test(name))
+    ),
+    'Browser module lost puborectalis continence synergy'
+  );
+
   let srcs = await gallerySources();
   assert.ok(
     srcs.some(src => /Pelvic_Muscles_.*Female_Inferior/i.test(src)),
