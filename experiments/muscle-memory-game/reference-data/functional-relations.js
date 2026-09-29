@@ -140,6 +140,24 @@ const CURATED_FUNCTIONAL_RELATIONS = Object.freeze({
       noteRu: "Coccygeus функционально дополняет levator ani; для этой опорной функции отдельную прямую мышцу-антагонист обычно не выделяют.",
     }),
   ]),
+  "pubo-analis": Object.freeze([
+    Object.freeze({
+      movementId: "anorectal-support",
+      movementRu: "Аноректальная поддержка",
+      synergistIds: Object.freeze(["puborectalis"]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Puboanalis и puborectalis участвуют в общей аноректальной поддержке как разные подчасти levator ani; это функциональное сотрудничество, а не простая пара агонист–антагонист. Отдельную прямую мышцу-антагонист для puboanalis не выделяют.",
+    }),
+  ]),
+  "deep-transverse-perineal": Object.freeze([
+    Object.freeze({
+      movementId: "deep-perineal-support",
+      movementRu: "Предполагаемая поддержка урогенитального треугольника",
+      synergistIds: Object.freeze([]),
+      antagonistIds: Object.freeze([]),
+      noteRu: "Для спорной структуры, традиционно называемой deep transverse perineal muscle, достоверные прямые синергисты и антагонисты не установлены. Современные данные пересматривают саму её тканевую природу и самостоятельность.",
+    }),
+  ]),
 });
 
 function relatedItems(ids) {
