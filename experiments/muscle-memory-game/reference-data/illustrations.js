@@ -1590,6 +1590,42 @@ export const REFERENCE_ILLUSTRATIONS = Object.freeze(
     "altRu": "Короткая малоберцовая мышца выделена в дистальной латеральной части голени и прослеживается к основанию пятой плюсневой кости",
     "captionRu": "Anatomography / BodyParts3D: короткая малоберцовая мышца. CC BY-SA 2.1 Japan.",
     "status": "asset-ready"
+  },
+  {
+    "id": "sobotta-gastrocnemius",
+    "sourceId": "sobotta-1909-gastrocnemius",
+    "kind": "focused-plate",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["gastrocnemius"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Sobo%201909%20303%20-%20Gastrocnemius%20muscle.png",
+    "altRu": "Икроножная мышца на задней поверхности голени с двумя головками и переходом к пяточному сухожилию",
+    "captionRu": "Sobotta, 1909: икроножная мышца. Public domain.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "anatomography-soleus-posterior",
+    "sourceId": "anatomography-commons-2012",
+    "kind": "focused-3d-view",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["soleus"],
+    "rightsStatus": "cc-by-sa-2.1-jp",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Soleus%20muscle%20-%20posterior%20view.png",
+    "altRu": "Камбаловидная мышца выделена на задней поверхности голени глубже икроножной мышцы",
+    "captionRu": "Anatomography / BodyParts3D: камбаловидная мышца, вид сзади. CC BY-SA 2.1 Japan.",
+    "status": "asset-ready"
+  },
+  {
+    "id": "gray-plantaris-highlight",
+    "sourceId": "gray-1918-plantaris-highlight",
+    "kind": "focused-plate",
+    "regionIds": ["leg-foot"],
+    "focusStructureIds": ["plantaris"],
+    "rightsStatus": "public-domain",
+    "assetPath": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gray438-Musculus%20plantaris.png",
+    "altRu": "Подошвенная мышца выделена на задней поверхности голени: небольшое проксимальное брюшко и длинное тонкое сухожилие",
+    "captionRu": "Gray's Anatomy, plate 438: подошвенная мышца. Public domain.",
+    "status": "asset-ready"
   }
 ]
 );
