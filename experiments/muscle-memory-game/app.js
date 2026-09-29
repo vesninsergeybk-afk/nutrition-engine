@@ -304,6 +304,10 @@ const showNearestMuscleButton = document.querySelector("#show-nearest-muscle");
 const peelSurfaceLayerButton = document.querySelector("#peel-surface-layer");
 const undoHideButton = document.querySelector("#undo-hide");
 const showAllButton = document.querySelector("#show-all");
+const quizMuscleActions = document.querySelector("#quiz-muscle-actions");
+const quizMuscleActionsName = document.querySelector("#quiz-muscle-actions-name");
+const quizMuscleSelectButton = document.querySelector("#quiz-muscle-select");
+const quizMuscleHideButton = document.querySelector("#quiz-muscle-hide");
 const mobileMuscleCard = document.querySelector("#mobile-muscle-card");
 const mobileMuscleCardCopy = document.querySelector("#mobile-muscle-card-copy");
 const mobileMuscleKind = document.querySelector("#mobile-muscle-kind");
@@ -451,6 +455,7 @@ let learningSession = null;
 let currentItemWrongAttempts = 0;
 let currentItemNavigationActions = 0;
 let pendingNavigationSid = null;
+let pendingQuizMuscleAction = null;
 let sessionSummaryShown = false;
 let examTimerId = null;
 let examDeadline = 0;
@@ -1234,20 +1239,14 @@ function renderSourceOnlyMotionState(selectedName, selectedUnits = []) {
 }
 
 function syncQuestionCardPlacement() {
-  // In Atlas mode the model must remain an unobstructed touch target.
-  // Only an active mobile training session may dock its task card over the viewer.
-  const shouldDock =
-    mobileTaskMedia.matches &&
-    appMode === "quiz" &&
-    document.body.classList.contains("session-active");
-
-  if (shouldDock) {
-    if (questionCardEl.parentElement !== viewerWrap) viewerWrap.appendChild(questionCardEl);
-  } else if (questionCardEl.parentElement !== panelEl) {
+  // The anatomy canvas stays unobstructed on every mobile workspace, including
+  // an active training session. The task card belongs below the model in the
+  // ordinary panel; only the small contextual muscle action bubble may appear
+  // temporarily over the canvas after a deliberate tap.
+  if (questionCardEl.parentElement !== panelEl) {
     panelEl.prepend(questionCardEl);
   }
-
-  document.body.classList.toggle("task-docked", shouldDock);
+  document.body.classList.remove("task-docked");
 }
 let isolated = false;
 const hiddenStack = [];
@@ -4322,6 +4321,7 @@ function prepareSessionItem() {
     return;
   }
 
+  closeQuizMuscleActions();
   restoreHighlights();
   showAllStructures();
   locked = false;
@@ -4749,7 +4749,99 @@ function revealAnswer() {
   });
 }
 
-function chooseQuiz(sid, hitStack = null) {
+function closeQuizMuscleActions({ restore = false } = {}) {
+  if (quizMuscleActions) quizMuscleActions.hidden = true;
+  if (canvas) canvas.dataset.quizActionCandidateSid = "";
+  pendingQuizMuscleAction = null;
+  if (restore) restoreHighlights();
+}
+
+function positionQuizMuscleActions(clientX, clientY) {
+  if (!quizMuscleActions || quizMuscleActions.hidden) return;
+  const wrapRect = viewerWrap.getBoundingClientRect();
+  const menuWidth = quizMuscleActions.offsetWidth || 160;
+  const menuHeight = quizMuscleActions.offsetHeight || 78;
+  const margin = 8;
+  const x = clientX - wrapRect.left;
+  const y = clientY - wrapRect.top;
+
+  const left = Math.min(
+    Math.max(x + 12, margin),
+    Math.max(margin, wrapRect.width - menuWidth - margin)
+  );
+  const below = y + 12;
+  const top =
+    below + menuHeight + margin <= wrapRect.height
+      ? below
+      : Math.max(margin, y - menuHeight - 12);
+
+  quizMuscleActions.style.left = left + "px";
+  quizMuscleActions.style.top = top + "px";
+}
+
+function openQuizMuscleActions(sid, hitStack, clientX, clientY) {
+  if (
+    appMode !== "quiz" ||
+    !learningSession ||
+    locked ||
+    sid == null ||
+    structureVisibility[sid] === false ||
+    !structureNames[sid]
+  ) return false;
+
+  const item = currentSessionItem(learningSession);
+  if (!item || item.skillId !== "find") return false;
+
+  restoreHighlights();
+  highlightStructures([sid], "navigation");
+  pendingQuizMuscleAction = { sid, hitStack };
+  canvas.dataset.quizActionCandidateSid = String(sid);
+
+  if (quizMuscleActionsName) {
+    quizMuscleActionsName.textContent = displayStructureName(sid);
+  }
+  if (quizMuscleActions) {
+    quizMuscleActions.hidden = false;
+    positionQuizMuscleActions(clientX, clientY);
+  }
+  return true;
+}
+
+function chooseQuizMuscleCandidate() {
+  const action = pendingQuizMuscleAction;
+  if (!action) return;
+  const { sid, hitStack } = action;
+  closeQuizMuscleActions();
+  chooseQuiz(sid, hitStack, { explicitAnswer: true });
+}
+
+function hideQuizMuscleCandidate() {
+  const action = pendingQuizMuscleAction;
+  if (
+    !action ||
+    appMode !== "quiz" ||
+    locked ||
+    structureVisibility[action.sid] === false
+  ) return;
+
+  const sid = action.sid;
+  hiddenStack.push(sid);
+  setStructureVisible(sid, false);
+  restoreHighlights();
+
+  currentItemNavigationActions += 1;
+  canvas.dataset.findNavigationActions = String(currentItemNavigationActions);
+  canvas.dataset.findSelectionState = "search";
+
+  feedbackEl.className = "feedback navigation";
+  feedbackEl.textContent =
+    `«${displayStructureName(sid)}» скрыта. Теперь можно выбрать мышцу, лежащую глубже. Это действие не засчитывается как ошибка.`;
+
+  closeQuizMuscleActions();
+  updateLayerButtons();
+}
+
+function chooseQuiz(sid, hitStack = null, { explicitAnswer = false } = {}) {
   if (!currentTarget || locked || sid == null || !structureNames[sid] || !learningSession) return;
 
   const item = currentSessionItem(learningSession);
@@ -4809,7 +4901,7 @@ function chooseQuiz(sid, hitStack = null) {
     return;
   }
 
-  if (classification === FIND_SELECTION_KINDS.navigation) {
+  if (classification === FIND_SELECTION_KINDS.navigation && !explicitAnswer) {
     pendingNavigationSid = sid;
     highlightStructures([sid], "navigation");
     feedbackEl.className = "feedback navigation";
@@ -8352,6 +8444,7 @@ function setMode(mode) {
       : null;
 
   appMode = mode;
+  closeQuizMuscleActions({ restore: true });
   clearDeeperStructures();
   restoreStudyHighlight();
   restoreHighlights();
@@ -8711,6 +8804,7 @@ function selectVisibleMuscleNearClientPoint(
 function onPointerDown(event) {
   if (activePointers.size === 0) tapBlocked = false;
   lastCanvasPointerType = event.pointerType || null;
+  if (appMode === "quiz") closeQuizMuscleActions({ restore: true });
 
   activePointers.set(event.pointerId, {
     x: event.clientX,
@@ -8771,10 +8865,16 @@ function onPointerUp(event) {
     for (const hit of hits) {
       const candidate = structureIdFromHit(hit);
       if (candidate != null && structureVisibility[candidate] !== false) {
-        chooseQuiz(candidate, hits);
+        openQuizMuscleActions(
+          candidate,
+          hits,
+          event.clientX,
+          event.clientY
+        );
         return;
       }
     }
+    closeQuizMuscleActions({ restore: true });
     return;
   }
 
@@ -11007,6 +11107,8 @@ motionAtlasReturnButton?.addEventListener("click", () => setMode("explore"));
 nextButton.addEventListener("click", nextSessionStep);
 answerButton.addEventListener("click", revealAnswer);
 revealDeeperButton.addEventListener("click", revealDeeperAfterMistake);
+quizMuscleSelectButton?.addEventListener("click", chooseQuizMuscleCandidate);
+quizMuscleHideButton?.addEventListener("click", hideQuizMuscleCandidate);
 
 searchInput.addEventListener("input", () => renderSearchResults(searchInput.value));
 searchInput.addEventListener("keydown", (event) => {
