@@ -167,6 +167,16 @@ const assert = require('node:assert/strict');
     'Show answer did not create a visible target overlay'
   );
   assert.equal(await page.locator('#viewer').getAttribute('data-answer-reveal-padding'), '2.1');
+  assert.match(
+    await page.locator('#feedback').innerText(),
+    /выделена бирюзовым/i,
+    'Show answer feedback must explain how the target is highlighted'
+  );
+  assert.match(
+    await page.locator('#viewer').getAttribute('data-answer-reveal-view') || '',
+    /^(front|back|left|right|current)$/,
+    'Show answer must record a controlled anatomical view'
+  );
 
   await page.screenshot({
     path: '/tmp/muscle-memory-mobile-training.png',
