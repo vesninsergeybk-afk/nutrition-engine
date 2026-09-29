@@ -86,6 +86,21 @@ assert(
   "Puborectalis card must expose the verified continence synergy without inventing an antagonist"
 );
 
+for (const sourceName of [
+  "Left puborectalis",
+  "Right puborectalis",
+  "Left pubococcygeus",
+  "Left iliococcygeus",
+  "Left coccygeus",
+]) {
+  const reference = muscleReferenceFor(sourceName);
+  assert(reference, sourceName + ": BodyParts source name lost its reference card");
+  assert(
+    reference.functionalRelations?.length > 0,
+    sourceName + ": BodyParts source name lost curated pelvic-floor functional relations"
+  );
+}
+
 const miology = muscleReferenceSource("miology-igma-2018");
 assert(miology?.year === 2018, "MIOL source metadata is incomplete");
 assert(
