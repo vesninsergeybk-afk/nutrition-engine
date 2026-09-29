@@ -156,11 +156,15 @@ const assert = require('node:assert/strict');
   );
   assert.equal(
     await page.locator('#viewer').getAttribute('data-answer-reveal-highlight'),
-    'target-cyan-context-muted'
+    'target-cyan-overlay-context-muted'
   );
   assert.ok(
     (await page.locator('#viewer').getAttribute('data-answer-reveal-highlight-ids') || '').length > 0,
     'Show answer did not mark target highlight ids'
+  );
+  assert.ok(
+    Number(await page.locator('#viewer').getAttribute('data-answer-reveal-overlay-count')) > 0,
+    'Show answer did not create a visible target overlay'
   );
   assert.equal(await page.locator('#viewer').getAttribute('data-answer-reveal-padding'), '2.1');
 
