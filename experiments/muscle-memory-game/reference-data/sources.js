@@ -742,6 +742,30 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "manzini-2021-puboanal-3d": Object.freeze({
+    title: "Appearance of the levator ani muscle subdivisions on 3D transperineal ultrasound — Figure 4",
+    year: 2021,
+    role: "Современная 3D-сегментация levator ani, где puboanal muscle выделена как отдельная подчасть",
+    sourcePage: "https://link.springer.com/article/10.1186/s13244-021-01037-y/figures/4",
+    rights: Object.freeze({
+      illustrations: "cc-by-4.0",
+      attribution: "Manzini C, van den Noort F, Grob ATM et al., Insights into Imaging (2021)",
+      note: "Статья и изображения опубликованы по Creative Commons Attribution 4.0 International."
+    }),
+  }),
+
+  "toldt-1903-deep-transverse-perineal": Object.freeze({
+    title: "Toldt, An Atlas of Human Anatomy — plate 915, male perineum",
+    year: 1903,
+    role: "Историческая пластина классической модели musculus transversus perinei profundus",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:An_atlas_of_human_anatomy_for_students_and_physicians_(1903)_(14596813859).jpg",
+    rights: Object.freeze({
+      illustrations: "no-known-copyright-restrictions",
+      attribution: "Internet Archive Book Images / Wikimedia Commons",
+      note: "Wikimedia Commons указывает No known copyright restrictions; пластина используется только как историческое описание классической концепции."
+    }),
+  }),
+
   "gray-1918-plate-960-larynx": Object.freeze({
     title: "Gray's Anatomy, plate 960 — intrinsic muscles of the larynx",
     year: 1918,
@@ -908,7 +932,12 @@ export const REFERENCE_SOURCES = Object.freeze({
     year: 2025,
     role: "Современная морфологическая проверка спорного тканевого состава и самостоятельности глубокой поперечной мышцы промежности",
     url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC12229694/",
-    rights: Object.freeze({ illustrations: "not-assumed" }),
+    sourcePage: "https://www.nature.com/articles/s41598-025-09585-9",
+    rights: Object.freeze({
+      illustrations: "cc-by-4.0",
+      attribution: "Muro S, Chang L, Tharnmanularp S et al., Scientific Reports (2025)",
+      note: "Открытая статья и её собственные изображения опубликованы по Creative Commons Attribution 4.0 International."
+    }),
   }),
 
   "pmc-female-perineal-membrane": Object.freeze({
