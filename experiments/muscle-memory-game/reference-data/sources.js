@@ -114,6 +114,78 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-piriformis-highlight": Object.freeze({
+    title: "Gray's Anatomy — piriformis highlighted",
+    year: 1918,
+    role: "Отдельное изображение грушевидной мышцы на пластине глубокой ягодичной области",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Piriformis_muscle.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons отмечает файл как Public Domain."
+    }),
+  }),
+
+  "gray-1918-obturator-internus-highlight": Object.freeze({
+    title: "Gray's Anatomy — obturator internus highlighted",
+    year: 1918,
+    role: "Отдельное изображение внутренней запирательной мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Obturator_internus_muscle.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
+  "gray-1918-obturator-externus-highlight": Object.freeze({
+    title: "Gray's Anatomy — obturator externus highlighted",
+    year: 1918,
+    role: "Отдельное изображение наружной запирательной мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Obturator_externus.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
+  "gray-1918-quadratus-femoris-highlight": Object.freeze({
+    title: "Gray's Anatomy — quadratus femoris highlighted",
+    year: 1918,
+    role: "Отдельное изображение квадратной мышцы бедра",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Quadratus_femoris_muscle.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons отмечает файл как свободный от известных ограничений; исходная пластина Gray's Anatomy находится в общественном достоянии."
+    }),
+  }),
+
+  "gray-1918-gemellus-superior-highlight": Object.freeze({
+    title: "Gray's Anatomy — gemellus superior highlighted",
+    year: 1918,
+    role: "Отдельное изображение верхней близнецовой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gemellus_superior_muscle.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons отмечает файл как Public Domain."
+    }),
+  }),
+
+  "gray-1918-gemellus-inferior-highlight": Object.freeze({
+    title: "Gray's Anatomy — gemellus inferior highlighted",
+    year: 1918,
+    role: "Отдельное изображение нижней близнецовой мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Inferior_gemellus_muscle.PNG",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Mikael Häggström / derivative of Gray's Anatomy",
+      note: "Wikimedia Commons отмечает файл как Public Domain."
+    }),
+  }),
+
   "dr-jana-commons-2019": Object.freeze({
     title: "Insertion of subscapularis muscle — proximal humerus",
     year: 2019,
