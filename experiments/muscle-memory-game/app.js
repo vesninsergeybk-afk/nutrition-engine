@@ -210,6 +210,7 @@ const sessionProgressEl = document.querySelector("#session-progress");
 const exitLearningSessionButton = document.querySelector("#exit-learning-session");
 const nameChoicesEl = document.querySelector("#name-choices");
 const revealDeeperButton = document.querySelector("#reveal-deeper");
+const undoQuizHideButton = document.querySelector("#undo-quiz-hide");
 const boneMode = document.querySelector("#bone-mode");
 const toggleSkeletonButton = document.querySelector("#toggle-skeleton");
 const boneOpacity = document.querySelector("#bone-opacity");
@@ -456,6 +457,7 @@ let currentItemWrongAttempts = 0;
 let currentItemNavigationActions = 0;
 let pendingNavigationSid = null;
 let pendingQuizMuscleAction = null;
+const quizManualHiddenStack = [];
 let sessionSummaryShown = false;
 let examTimerId = null;
 let examDeadline = 0;
@@ -3943,6 +3945,11 @@ function resetLearningSessionUi(message = "Выберите режим и нач
   clearExamTaskMetadata();
   learningSession = null;
   sessionSummaryShown = false;
+  quizManualHiddenStack.length = 0;
+  if (undoQuizHideButton) {
+    undoQuizHideButton.hidden = true;
+    undoQuizHideButton.disabled = true;
+  }
   document.body.classList.remove("session-active");
   currentTarget = null;
   currentItemWrongAttempts = 0;
@@ -4281,6 +4288,7 @@ function completeExamFailure({
   if (!item) return;
 
   clearExamTimer();
+  closeQuizMuscleActions();
   wrong += 1;
   currentItemWrongAttempts = 1;
   wrongEl.textContent = String(wrong);
@@ -4361,6 +4369,11 @@ function prepareSessionItem() {
   closeQuizMuscleActions();
   restoreHighlights();
   showAllStructures();
+  quizManualHiddenStack.length = 0;
+  if (undoQuizHideButton) {
+    undoQuizHideButton.hidden = true;
+    undoQuizHideButton.disabled = true;
+  }
   locked = false;
   currentTarget = item.target;
   canvas.dataset.learningCurrentTargetId = currentTarget.id;
@@ -4575,6 +4588,10 @@ function completeCurrentSessionItem(result) {
   renderProgressPanel();
   renderSessionProgress();
 
+  if (undoQuizHideButton) {
+    undoQuizHideButton.hidden = true;
+    undoQuizHideButton.disabled = true;
+  }
   answerButton.hidden = true;
   quizActions.hidden = false;
   quizActions.classList.add("next-only");
@@ -4594,6 +4611,12 @@ function finishLearningSession() {
   renderProgressPanel();
   sessionSummaryShown = true;
   locked = true;
+  closeQuizMuscleActions();
+  quizManualHiddenStack.length = 0;
+  if (undoQuizHideButton) {
+    undoQuizHideButton.hidden = true;
+    undoQuizHideButton.disabled = true;
+  }
   currentTarget = null;
   canvas.dataset.learningCurrentTargetId = "";
   canvas.dataset.learningCurrentSkill = "";
@@ -4816,6 +4839,7 @@ function revealAnswer() {
   if (!currentTarget || appMode !== "quiz" || locked || !learningSession) return;
   if (learningSession.mode === "exam") return;
 
+  closeQuizMuscleActions();
   const item = currentSessionItem(learningSession);
   if (!item) return;
 
@@ -4956,7 +4980,15 @@ function openQuizMuscleActions(sid, hitStack, clientX, clientY) {
   canvas.dataset.quizActionCandidateSid = String(sid);
 
   if (quizMuscleActionsName) {
-    quizMuscleActionsName.textContent = displayStructureName(sid);
+    // Do not reveal the identity of a tapped muscle before the learner commits
+    // to "Выбрать". The temporary highlight + spatially attached bubble are
+    // enough to make the action target unambiguous.
+    quizMuscleActionsName.textContent = "Эта мышца";
+  }
+  if (quizMuscleHideButton) {
+    const examMode = learningSession.mode === "exam";
+    quizMuscleHideButton.hidden = examMode;
+    quizMuscleHideButton.disabled = examMode;
   }
   if (quizMuscleActions) {
     quizMuscleActions.hidden = false;
@@ -4979,11 +5011,13 @@ function hideQuizMuscleCandidate() {
     !action ||
     appMode !== "quiz" ||
     locked ||
+    learningSession?.mode === "exam" ||
     structureVisibility[action.sid] === false
   ) return;
 
   const sid = action.sid;
   hiddenStack.push(sid);
+  quizManualHiddenStack.push(sid);
   setStructureVisible(sid, false);
   restoreHighlights();
   canvas.dataset.quizLastHiddenSid = String(sid);
@@ -4994,9 +5028,48 @@ function hideQuizMuscleCandidate() {
 
   feedbackEl.className = "feedback navigation";
   feedbackEl.textContent =
-    `«${displayStructureName(sid)}» скрыта. Теперь можно выбрать мышцу, лежащую глубже. Это действие не засчитывается как ошибка.`;
+    "Мышца скрыта. Теперь можно выбрать структуру, лежащую глубже. Это действие не засчитывается как ошибка.";
+
+  if (undoQuizHideButton) {
+    undoQuizHideButton.hidden = false;
+    undoQuizHideButton.disabled = false;
+  }
 
   closeQuizMuscleActions();
+  updateLayerButtons();
+}
+
+function undoQuizHiddenMuscle() {
+  if (
+    appMode !== "quiz" ||
+    !learningSession ||
+    locked ||
+    learningSession.mode === "exam" ||
+    !quizManualHiddenStack.length
+  ) return;
+
+  const sid = quizManualHiddenStack.pop();
+  for (let i = hiddenStack.length - 1; i >= 0; i -= 1) {
+    if (hiddenStack[i] === sid) {
+      hiddenStack.splice(i, 1);
+      break;
+    }
+  }
+
+  setStructureVisible(sid, true);
+  applyBodyPartsSurfaceConflictGuards();
+  restoreHighlights();
+  canvas.dataset.quizLastRestoredSid = String(sid);
+
+  feedbackEl.className = "feedback navigation";
+  feedbackEl.textContent =
+    "Последняя скрытая мышца возвращена. Можно продолжить поиск.";
+
+  if (undoQuizHideButton) {
+    const hasMore = quizManualHiddenStack.length > 0;
+    undoQuizHideButton.hidden = !hasMore;
+    undoQuizHideButton.disabled = !hasMore;
+  }
   updateLayerButtons();
 }
 
@@ -11269,6 +11342,7 @@ motionAtlasReturnButton?.addEventListener("click", () => setMode("explore"));
 nextButton.addEventListener("click", nextSessionStep);
 answerButton.addEventListener("click", revealAnswer);
 revealDeeperButton.addEventListener("click", revealDeeperAfterMistake);
+undoQuizHideButton?.addEventListener("click", undoQuizHiddenMuscle);
 quizMuscleSelectButton?.addEventListener("click", chooseQuizMuscleCandidate);
 quizMuscleHideButton?.addEventListener("click", hideQuizMuscleCandidate);
 
