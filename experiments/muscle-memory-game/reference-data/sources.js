@@ -79,6 +79,30 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "sobotta-1909-gastrocnemius": Object.freeze({
+    title: "Sobotta's Atlas — gastrocnemius muscle",
+    year: 1909,
+    role: "Отдельная анатомическая пластина икроножной мышцы",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Sobo_1909_303_-_Gastrocnemius_muscle.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Johannes Sobotta / Wikimedia Commons",
+      note: "Wikimedia Commons указывает Public Domain / PD-scan для пластинки атласа Sobotta 1909."
+    }),
+  }),
+
+  "gray-1918-plantaris-highlight": Object.freeze({
+    title: "Gray's Anatomy, plate 438 — plantaris highlighted",
+    year: 1918,
+    role: "Отдельная пластина подошвенной мышцы на задней поверхности голени",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Gray438-Musculus_plantaris.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      attribution: "Henry Vandyke Carter / Gray's Anatomy",
+      note: "Wikimedia Commons указывает Public Domain / PD-old для изображения на основе Gray's Anatomy."
+    }),
+  }),
+
   "gray-1918-psoas-minor-highlight": Object.freeze({
     title: "Gray's Anatomy — psoas minor highlighted",
     year: 1918,
