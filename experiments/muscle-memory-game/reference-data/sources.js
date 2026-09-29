@@ -79,6 +79,17 @@ export const REFERENCE_SOURCES = Object.freeze({
     }),
   }),
 
+  "gray-1918-psoas-minor-highlight": Object.freeze({
+    title: "Gray's Anatomy — psoas minor highlighted",
+    year: 1918,
+    role: "Отдельное изображение малой поясничной мышцы, выделенной на пластине Gray's Anatomy",
+    sourcePage: "https://commons.wikimedia.org/wiki/File:Musculus_psoas_minor.png",
+    rights: Object.freeze({
+      illustrations: "public-domain",
+      note: "Wikimedia Commons указывает Public Domain / PD-scan для изображения на основе 20-го издания Gray's Anatomy."
+    }),
+  }),
+
   "dr-jana-commons-2019": Object.freeze({
     title: "Insertion of subscapularis muscle — proximal humerus",
     year: 2019,
