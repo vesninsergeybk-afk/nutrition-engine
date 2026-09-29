@@ -136,6 +136,26 @@ assert(
     app.includes("Это действие не засчитывается как ошибка."),
   "Hiding a covering muscle in Training must be recorded as navigation, not as an answer error"
 );
+
+assert(
+  html.includes('id="undo-quiz-hide"') &&
+    app.includes("const quizManualHiddenStack = []") &&
+    app.includes("function undoQuizHiddenMuscle") &&
+    app.includes('undoQuizHideButton?.addEventListener("click", undoQuizHiddenMuscle)'),
+  "Training layer navigation must be reversible so an accidental hide cannot strand the learner"
+);
+assert(
+  app.includes('quizMuscleActionsName.textContent = "Эта мышца"') &&
+    app.includes('quizMuscleHideButton.hidden = examMode') &&
+    app.includes('learningSession?.mode === "exam"'),
+  "Find-mode actions must not reveal muscle identity before commitment, and Control must not allow free layer hiding"
+);
+assert(
+  app.includes("function revealAnswer()") &&
+    app.includes("closeQuizMuscleActions();") &&
+    app.includes('canvas.dataset.quizLastRestoredSid = String(sid)'),
+  "Answer reveal and undo must clear stale contextual actions and expose deterministic state for browser checks"
+);
 assert(
   app.includes('panelEl.prepend(questionCardEl)') &&
     app.includes('document.body.classList.remove("task-docked")') &&
