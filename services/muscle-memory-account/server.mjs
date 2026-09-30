@@ -30,14 +30,20 @@ if (!DATABASE_URL) throw new Error("DATABASE_URL is required");
 const pool = new Pool({ connectionString: DATABASE_URL });
 await pool.query(await readFile(new URL("./schema.sql", import.meta.url), "utf8"));
 
-const mailer = SMTP.host && SMTP.user && SMTP.pass && SMTP.from
-  ? nodemailer.createTransport({
-      host: SMTP.host,
-      port: SMTP.port,
-      secure: SMTP.secure,
-      auth: { user: SMTP.user, pass: SMTP.pass },
-    })
-  : null;
+const testMailTransport =
+  process.env.NODE_ENV === "test" &&
+  String(process.env.SMTP_JSON_TRANSPORT || "").toLowerCase() === "true";
+
+const mailer = testMailTransport
+  ? nodemailer.createTransport({ jsonTransport: true })
+  : SMTP.host && SMTP.user && SMTP.pass && SMTP.from
+    ? nodemailer.createTransport({
+        host: SMTP.host,
+        port: SMTP.port,
+        secure: SMTP.secure,
+        auth: { user: SMTP.user, pass: SMTP.pass },
+      })
+    : null;
 
 const legalReady =
   Boolean(OPERATOR.name && OPERATOR.address && OPERATOR.email && CONSENT_VERSION) &&
@@ -243,7 +249,7 @@ async function makeSession(userId) {
 async function sendReset(email, token) {
   const url = PUBLIC_APP_URL + "/?reset=" + encodeURIComponent(token) + "#account";
   await mailer.sendMail({
-    from: SMTP.from,
+    from: SMTP.from || "test@localhost",
     to: email,
     subject: "Восстановление доступа к Muscle Memory",
     text:
