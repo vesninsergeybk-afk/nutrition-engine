@@ -4,7 +4,12 @@ const TOKEN_KEY = "muscle-memory-account-token-v1";
 function apiBase() {
   const explicit = document.querySelector('meta[name="muscle-memory-api-base"]')?.content?.trim();
   if (explicit) return explicit.replace(/\/$/, "");
-  if (/\.pages\.dev$/i.test(location.hostname)) return "";
+  if (
+    /\.pages\.dev$/i.test(location.hostname) ||
+    /^(localhost|127\.0\.0\.1|\[::1\])$/i.test(location.hostname)
+  ) {
+    return "";
+  }
   return location.origin.replace(/\/$/, "");
 }
 const clone = (value) => value == null ? value : JSON.parse(JSON.stringify(value));
