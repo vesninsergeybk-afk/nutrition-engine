@@ -107,6 +107,11 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   const consentLink=document.querySelector("#account-consent-link");
   const privacyLink=document.querySelector("#account-privacy-link");
   const resetToken=new URLSearchParams(location.search).get("reset")||"";
+  if(resetToken){
+    const cleanUrl=new URL(location.href);
+    cleanUrl.searchParams.delete("reset");
+    history.replaceState({}, "", cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+  }
   let config={enabled:false}, user=null, revision=0;
   let token=localStorage.getItem(TOKEN_KEY)||"";
   let pendingRegistration=null;
