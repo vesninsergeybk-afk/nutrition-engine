@@ -2,10 +2,11 @@ const BASE = process.env.ACCOUNT_TEST_BASE || "http://127.0.0.1:18080";
 const ORIGIN = process.env.ACCOUNT_TEST_ORIGIN || "http://127.0.0.1:19090";
 const CONSENT_VERSION = process.env.PRIVACY_CONSENT_VERSION || "test-v1";
 
-async function request(path, { method = "GET", token = "", body } = {}) {
+async function request(path, { method = "GET", token = "", cookie = "", body, raw = false } = {}) {
   const headers = { Origin: ORIGIN };
   if (body !== undefined) headers["content-type"] = "application/json";
   if (token) headers.authorization = "Bearer " + token;
+  if (cookie) headers.cookie = cookie;
 
   const response = await fetch(BASE + path, {
     method,
@@ -22,6 +23,14 @@ async function request(path, { method = "GET", token = "", body } = {}) {
     throw new Error(
       method + " " + path + " -> " + response.status + " " + JSON.stringify(payload)
     );
+  }
+
+  if (raw) {
+    return {
+      payload,
+      headers: Object.fromEntries(response.headers.entries()),
+      status: response.status,
+    };
   }
 
   return payload;
@@ -50,8 +59,9 @@ const username = "ci_user_" + Date.now();
 const email = username + "@example.test";
 const password = "long-test-password-123";
 
-const registered = await request("/api/account/register", {
+const registrationResponse = await request("/api/account/register", {
   method: "POST",
+  raw: true,
   body: {
     username,
     email,
@@ -60,15 +70,32 @@ const registered = await request("/api/account/register", {
     consentVersion: CONSENT_VERSION,
   },
 });
+const registered = registrationResponse.payload;
 
 if (registered.user?.username !== username || !registered.token) {
   throw new Error("Registration did not return a usable account");
 }
 
+const setCookie = registrationResponse.headers["set-cookie"] || "";
+if (
+  !/mm_session=/.test(setCookie) ||
+  !/HttpOnly/i.test(setCookie) ||
+  !/Secure/i.test(setCookie) ||
+  !/SameSite=Lax/i.test(setCookie)
+) {
+  throw new Error("Registration did not set a protected browser session cookie");
+}
+
+const sessionCookie = setCookie.split(";")[0];
+const cookieMe = await request("/api/account/me", { cookie: sessionCookie });
+if (cookieMe.user?.email !== email) {
+  throw new Error("Protected browser session cookie did not authenticate");
+}
+
 const token = registered.token;
 
 const me = await request("/api/account/me", { token });
-if (me.user?.email !== email) throw new Error("Authenticated profile mismatch");
+if (me.user?.email !== email) throw new Error("Bearer compatibility profile mismatch");
 
 const initial = await request("/api/progress", { token });
 if (Number(initial.revision) !== 0) {
