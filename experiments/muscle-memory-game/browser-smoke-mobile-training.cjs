@@ -166,7 +166,15 @@ const assert = require('node:assert/strict');
     Number(await page.locator('#viewer').getAttribute('data-answer-reveal-overlay-count')) > 0,
     'Show answer did not create a visible target overlay'
   );
-  assert.equal(await page.locator('#viewer').getAttribute('data-answer-reveal-padding'), '2.1');
+  assert.equal(await page.locator('#viewer').getAttribute('data-answer-reveal-padding'), '2.75');
+  assert.ok(
+    Number(await page.locator('#viewer').getAttribute('data-answer-reveal-sample-count')) >= 2,
+    'Show answer must inspect more than one target-surface point for occlusion'
+  );
+  assert.ok(
+    Number(await page.locator('#viewer').getAttribute('data-answer-reveal-reached-samples')) >= 1,
+    'Show answer multi-ray visibility probe did not reach the target'
+  );
   assert.match(
     await page.locator('#feedback').innerText(),
     /выделена бирюзовым/i,
@@ -176,6 +184,42 @@ const assert = require('node:assert/strict');
     await page.locator('#viewer').getAttribute('data-answer-reveal-view') || '',
     /^(front|back|left|right|current)-oblique$/,
     'Show answer must record a controlled anatomical view'
+  );
+
+  const highlightIdsBeforeDrag =
+    await page.locator('#viewer').getAttribute('data-answer-reveal-highlight-ids');
+  const overlayCountBeforeDrag =
+    Number(await page.locator('#viewer').getAttribute('data-answer-reveal-overlay-count'));
+
+  const canvasBox = await page.locator('#viewer').boundingBox();
+  assert.ok(canvasBox, 'Viewer bounding box is unavailable before answer-inspection drag');
+  await page.mouse.move(
+    canvasBox.x + canvasBox.width * 0.62,
+    canvasBox.y + canvasBox.height * 0.42
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    canvasBox.x + canvasBox.width * 0.42,
+    canvasBox.y + canvasBox.height * 0.48,
+    { steps: 8 }
+  );
+  await page.mouse.up();
+  await page.waitForTimeout(250);
+
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-answer-reveal-highlight'),
+    'target-cyan-overlay-context-muted',
+    'Rotating the revealed answer cleared its highlight state'
+  );
+  assert.equal(
+    await page.locator('#viewer').getAttribute('data-answer-reveal-highlight-ids'),
+    highlightIdsBeforeDrag,
+    'Rotating the model changed the revealed target ids'
+  );
+  assert.equal(
+    Number(await page.locator('#viewer').getAttribute('data-answer-reveal-overlay-count')),
+    overlayCountBeforeDrag,
+    'Rotating the model removed the persistent answer overlay'
   );
 
   await page.screenshot({
