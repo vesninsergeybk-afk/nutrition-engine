@@ -177,19 +177,21 @@ const answerRevealBlock =
 assert(
   answerRevealBlock &&
     answerRevealBlock.includes("verifiedCoveringStructureIds(sid)") &&
-    answerRevealBlock.includes("raycaster.intersectObject(anatomyMesh, false)") &&
-    answerRevealBlock.includes("focusBox(box, 2.1, answerView.direction)") &&
+    answerRevealBlock.includes("answerTargetSamplePoints(targetIds, 9)") &&
+    answerRevealBlock.includes("answerOccludersFromCamera(targetIds, answerSamples)") &&
+    answerRevealBlock.includes("focusBox(box, 2.75, answerView.direction)") &&
     answerRevealBlock.includes("applyBodyPartsSurfaceConflictGuards()") &&
     answerRevealBlock.includes("setStructureVisible(sid, true)") &&
     !answerRevealBlock.includes("setVisibleStructures(targetIds)"),
-  "Answer reveal must keep anatomical context: hide only covers/occluders, keep the target visible, and avoid full isolation"
+  "Answer reveal must keep anatomical context: hide verified/multi-ray occluders, keep the target visible, and avoid full isolation"
 );
 assert(
   app.includes("function answerRevealDirectionForBox") &&
     app.includes('label: (best?.label || "current") + "-oblique"') &&
     app.includes("THREE.MathUtils.degToRad(16 * yawSign)") &&
-    app.includes('canvas.dataset.answerRevealPadding = "2.1"'),
-  "Show-answer camera must use a moderately padded oblique view instead of a tight head-on close-up"
+    app.includes('canvas.dataset.answerRevealPadding = "2.75"') &&
+    app.includes('canvas.dataset.answerRevealSampleCount'),
+  "Show-answer camera must use a wider padded oblique view and expose multi-sample occlusion state"
 );
 assert(
   app.includes("revealQuizAnswerInContext(") &&
