@@ -21,4 +21,5 @@ assert.equal(isZAnatomyMuscleSourceName("Infraspinatus muscle.l"), true);
 assert.equal(isZAnatomyMuscleSourceName("Semitendinosus muscle.r"), true);
 assert.match(structureSearchText("External abdominal oblique muscle.l"), /external oblique/);
 assert.match(structureSearchText("Internal abdominal oblique muscle.r"), /internal oblique/);
+assert.match(structureSearchText("Superficial part of left masseter"), /superficial part of masseter/);
 console.log("GLTF anatomy names: raw owning node + multi-primitive groups + guarded fallback ok");

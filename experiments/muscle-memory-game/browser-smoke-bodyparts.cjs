@@ -4,7 +4,9 @@ const assert = require('node:assert/strict');
 (async () => {
     console.log('[smoke:bodyparts] start');
   const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  // Keep the full desktop CSS viewport while bounding software-WebGL pixel
+  // work in CI. Geometry, interaction coordinates and assertions stay exact.
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 0.75 });
   const errors = [];
 
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));

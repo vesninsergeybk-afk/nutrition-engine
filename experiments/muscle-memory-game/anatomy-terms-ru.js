@@ -122,7 +122,7 @@ export function structureTerm(sourceName) {
 
 export function structureSearchText(sourceName) {
   const term = structureTerm(sourceName);
-  const shortSource = term.source.replace(/\babdominal\b/gi, " ").replace(/\s+/g, " ");
+  const shortSource = term.source.replace(/\b(?:abdominal|right|left)\b/gi, " ").replace(/\s+/g, " ");
   return [term.nameRu, term.latin, term.source, shortSource, ...term.aliases]
     .filter(Boolean)
     .join(" ")

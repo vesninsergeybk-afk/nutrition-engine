@@ -277,7 +277,7 @@ jobs:
     if: ${{ contains(github.event.head_commit.message, '[atlas-context-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 21
     strategy:
       fail-fast: false
       matrix:
@@ -306,7 +306,11 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          timeout 7m node experiments/muscle-memory-game/browser-smoke-${{ matrix.phase }}.cjs
+          CHECKPOINT_BUDGET=7m
+          if [[ '${{ matrix.phase }}' == 'bodyparts' ]]; then
+            CHECKPOINT_BUDGET=18m
+          fi
+          timeout "$CHECKPOINT_BUDGET" node experiments/muscle-memory-game/browser-smoke-${{ matrix.phase }}.cjs
 
       - name: Upload Atlas context screenshots
         if: ${{ always() }}
