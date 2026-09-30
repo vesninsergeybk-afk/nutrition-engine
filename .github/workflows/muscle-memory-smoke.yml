@@ -5,8 +5,10 @@ on:
     branches:
       - feature/muscle-memory-mvp
       - release/static-atlas-v1
+      - feature/muscle-memory-account-sync
     paths:
       - experiments/muscle-memory-game/**
+      - services/muscle-memory-account/**
       - .github/workflows/muscle-memory-smoke.yml
   workflow_dispatch:
 
@@ -39,6 +41,8 @@ jobs:
       - name: Syntax check
         run: |
           node --check experiments/muscle-memory-game/app.js
+          node --check experiments/muscle-memory-game/account-client.js
+          node --check services/muscle-memory-account/server.mjs
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/quality-lab.js
           node --check experiments/muscle-memory-game/bodyparts4-classification.js
