@@ -64,6 +64,9 @@ if (!index.includes('name="email" type="email"')) {
 if (!accountClient.includes('/\\.pages\\.dev$/i.test(location.hostname)')) {
   errors.push("account client: Cloudflare Pages registration safety gate is missing");
 }
+if (!accountClient.includes('localhost|127\\.0\\.0\\.1')) {
+  errors.push("account client: local static-preview safety gate is missing");
+}
 if (!accountClient.includes('"/api/account/register"')) {
   errors.push("account client: registration endpoint is not wired");
 }
