@@ -318,7 +318,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     msg("Вы вышли. Прогресс аккаунта остаётся в облаке; локальная рабочая копия очищена.");
   });
   document.querySelector("#account-delete")?.addEventListener("click",async()=>{
-    if(!confirm("Удалить аккаунт и весь облачный прогресс? Локальную копию на этом устройстве это не удалит."))return;
+    if(!confirm("Удалить аккаунт, облачный прогресс и локальную рабочую копию на этом устройстве? Это действие нельзя отменить."))return;
     try{
       await request("/api/account",{method:"DELETE",body:"{}"});
       clearSession();
