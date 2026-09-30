@@ -39,6 +39,7 @@ for (const id of [
   "account-dialog",
   "account-login-form",
   "account-register-form",
+  "account-consent-form",
   "account-recovery-form",
   "account-reset-form",
   "account-consent-link",
@@ -49,8 +50,13 @@ for (const id of [
   if (!htmlIds(index).has(id)) errors.push("account/progress UI: missing #" + id);
 }
 
-if (!index.includes('name="consent" type="checkbox" required')) {
-  errors.push("account UI: explicit required personal-data consent is missing");
+const registerFormMatch = index.match(/<form id="account-register-form"[\s\S]*?<\/form>/);
+const consentFormMatch = index.match(/<form id="account-consent-form"[\s\S]*?<\/form>/);
+if (!consentFormMatch?.[0]?.includes('name="consent" type="checkbox" required')) {
+  errors.push("account UI: separate explicit personal-data consent form is missing");
+}
+if (registerFormMatch?.[0]?.includes('name="consent"')) {
+  errors.push("account UI: consent must not be embedded in the registration form");
 }
 if (!index.includes('name="email" type="email"')) {
   errors.push("account UI: recovery email field is missing");
