@@ -140,6 +140,7 @@ function sendHtml(res, status, body) {
     "content-type": "text/html; charset=utf-8",
     "cache-control": "no-store",
     "x-content-type-options": "nosniff",
+    "referrer-policy": "no-referrer",
     "content-security-policy":
       "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
   });
@@ -254,7 +255,7 @@ async function makeSession(userId) {
 }
 
 async function sendReset(email, token) {
-  const url = PUBLIC_APP_URL + "/?reset=" + encodeURIComponent(token) + "#account";
+  const url = PUBLIC_APP_URL + "/#reset=" + encodeURIComponent(token);
   await mailer.sendMail({
     from: SMTP.from || "test@localhost",
     to: email,
@@ -441,6 +442,13 @@ const server = http.createServer(async (req, res) => {
         await client.query("DELETE FROM mm_sessions WHERE user_id=$1", [reset.user_id]);
         await client.query("COMMIT");
         return sendJson(res, 200, { ok: true }, origin);
+      } catch (error) {
+        try {
+          await client.query("ROLLBACK");
+        } catch (rollbackError) {
+          console.error("Password reset rollback failed", rollbackError);
+        }
+        throw error;
       } finally {
         client.release();
       }
@@ -527,10 +535,12 @@ const server = http.createServer(async (req, res) => {
 });
 
 setInterval(() => {
-  void pool.query("DELETE FROM mm_sessions WHERE expires_at<=now()");
-  void pool.query(
-    "DELETE FROM mm_password_resets WHERE expires_at<=now() OR used_at IS NOT NULL"
-  );
+  void pool
+    .query("DELETE FROM mm_sessions WHERE expires_at<=now()")
+    .catch(error => console.error("Session cleanup failed", error));
+  void pool
+    .query("DELETE FROM mm_password_resets WHERE expires_at<=now() OR used_at IS NOT NULL")
+    .catch(error => console.error("Password reset cleanup failed", error));
 }, 3_600_000).unref();
 
 server.listen(PORT, () => {
