@@ -102,7 +102,7 @@ function privacyHtml() {
     "<h2>4. Действия</h2><p>Сбор, запись, систематизация, накопление, хранение, уточнение, извлечение, использование, блокирование и удаление.</p>" +
     "<h2>5. Локализация</h2><p>Первичная база аккаунтов и учебного прогресса граждан Российской Федерации размещается на территории Российской Федерации. До включения регистрации все необходимые runtime-ассеты тренажёра также должны обслуживаться из утверждённой production-инфраструктуры, чтобы загрузка анатомических моделей не зависела от внешних CDN и зарубежных репозиториев.</p>" +
     "<h2>6. Срок</h2><p>До удаления аккаунта пользователем, отзыва согласия либо прекращения работы сервиса, если более длительное хранение не требуется по закону.</p>" +
-    "<h2>7. Защита</h2><p>Пароли хэшируются, сессии используют случайные токены, публичное соединение должно работать по HTTPS, доступ к базе ограничивается.</p>" +
+    "<h2>7. Защита</h2><p>Пароли хэшируются, сессии используют случайные токены в защищённых HttpOnly/Secure cookie, публичное соединение должно работать по HTTPS, доступ к базе ограничивается.</p>" +
     "<h2>8. Права пользователя</h2><p>Пользователь может запросить сведения о данных, их уточнение или удаление и отозвать согласие. Аккаунт и облачный прогресс можно удалить в интерфейсе либо обратиться по адресу " +
     escapeHtml(OPERATOR.email || "") + ".</p>" +
     "<h2>9. Основание</h2><p>Федеральный закон №152-ФЗ «О персональных данных» и отдельное согласие пользователя в случаях, когда согласие требуется.</p>"
@@ -120,15 +120,17 @@ function consentHtml() {
   );
 }
 
-function sendJson(res, status, payload, origin = "") {
+function sendJson(res, status, payload, origin = "", extraHeaders = {}) {
   const headers = {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
     "x-content-type-options": "nosniff",
     "referrer-policy": "no-referrer",
+    ...extraHeaders,
   };
   if (origin && APP_ORIGINS.has(origin)) {
     headers["access-control-allow-origin"] = origin;
+    headers["access-control-allow-credentials"] = "true";
     headers.vary = "Origin";
   }
   res.writeHead(status, headers);
@@ -206,10 +208,56 @@ function tokenHash(token) {
 function newToken() {
   return randomBytes(32).toString("base64url");
 }
+const SESSION_COOKIE = "mm_session";
+
 function bearer(req) {
   const value = String(req.headers.authorization || "");
   return value.startsWith("Bearer ") ? value.slice(7).trim() : "";
 }
+
+function cookieValue(req, name) {
+  const header = String(req.headers.cookie || "");
+  for (const part of header.split(";")) {
+    const [rawName, ...rest] = part.trim().split("=");
+    if (rawName === name) {
+      try {
+        return decodeURIComponent(rest.join("="));
+      } catch {
+        return rest.join("=");
+      }
+    }
+  }
+  return "";
+}
+
+function sessionToken(req) {
+  return bearer(req) || cookieValue(req, SESSION_COOKIE);
+}
+
+function sessionCookie(token, expiresAt) {
+  const expires = new Date(expiresAt);
+  const maxAge = Math.max(0, Math.floor((expires.getTime() - Date.now()) / 1000));
+  return [
+    SESSION_COOKIE + "=" + encodeURIComponent(token),
+    "Path=/",
+    "HttpOnly",
+    "Secure",
+    "SameSite=Lax",
+    "Max-Age=" + maxAge,
+  ].join("; ");
+}
+
+function clearSessionCookie() {
+  return [
+    SESSION_COOKIE + "=",
+    "Path=/",
+    "HttpOnly",
+    "Secure",
+    "SameSite=Lax",
+    "Max-Age=0",
+  ].join("; ");
+}
+
 function validStore(store) {
   return Boolean(
     store &&
@@ -235,7 +283,7 @@ function requestKey(req, suffix) {
 }
 
 async function userFromRequest(req) {
-  const token = bearer(req);
+  const token = sessionToken(req);
   if (!token) return null;
   const result = await pool.query(
     "SELECT u.id,u.username,u.email FROM mm_sessions s JOIN mm_users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>now()",
@@ -277,6 +325,7 @@ const server = http.createServer(async (req, res) => {
       "access-control-allow-origin": origin,
       "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
       "access-control-allow-headers": "content-type,authorization",
+      "access-control-allow-credentials": "true",
       "access-control-max-age": "600",
       vary: "Origin",
     });
@@ -353,7 +402,13 @@ const server = http.createServer(async (req, res) => {
         await client.query("INSERT INTO mm_progress(user_id) VALUES($1)", [id]);
         await client.query("COMMIT");
         const session = await makeSession(id);
-        return sendJson(res, 201, { user: { id, username, email }, ...session }, origin);
+        return sendJson(
+          res,
+          201,
+          { user: { id, username, email }, ...session },
+          origin,
+          { "set-cookie": sessionCookie(session.token, session.expiresAt) }
+        );
       } catch (error) {
         await client.query("ROLLBACK");
         if (error?.code === "23505") {
@@ -381,10 +436,16 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 401, { error: "invalid-credentials" }, origin);
       }
       const session = await makeSession(user.id);
-      return sendJson(res, 200, {
-        user: { id: user.id, username: user.username, email: user.email },
-        ...session,
-      }, origin);
+      return sendJson(
+        res,
+        200,
+        {
+          user: { id: user.id, username: user.username, email: user.email },
+          ...session,
+        },
+        origin,
+        { "set-cookie": sessionCookie(session.token, session.expiresAt) }
+      );
     }
 
     if (req.method === "POST" && path === "/api/account/request-password-reset") {
@@ -441,7 +502,13 @@ const server = http.createServer(async (req, res) => {
         );
         await client.query("DELETE FROM mm_sessions WHERE user_id=$1", [reset.user_id]);
         await client.query("COMMIT");
-        return sendJson(res, 200, { ok: true }, origin);
+        return sendJson(
+          res,
+          200,
+          { ok: true },
+          origin,
+          { "set-cookie": clearSessionCookie() }
+        );
       } catch (error) {
         try {
           await client.query("ROLLBACK");
@@ -455,11 +522,17 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === "POST" && path === "/api/account/logout") {
-      const token = bearer(req);
+      const token = sessionToken(req);
       if (token) {
         await pool.query("DELETE FROM mm_sessions WHERE token_hash=$1", [tokenHash(token)]);
       }
-      return sendJson(res, 200, { ok: true }, origin);
+      return sendJson(
+        res,
+        200,
+        { ok: true },
+        origin,
+        { "set-cookie": clearSessionCookie() }
+      );
     }
 
     const user = await userFromRequest(req);
@@ -485,7 +558,13 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "DELETE" && path === "/api/account") {
       await pool.query("DELETE FROM mm_users WHERE id=$1", [user.id]);
-      return sendJson(res, 200, { ok: true }, origin);
+      return sendJson(
+        res,
+        200,
+        { ok: true },
+        origin,
+        { "set-cookie": clearSessionCookie() }
+      );
     }
     if (req.method === "GET" && path === "/api/progress") {
       const result = await pool.query(
