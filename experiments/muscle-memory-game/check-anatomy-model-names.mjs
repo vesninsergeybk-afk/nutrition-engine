@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { originalAnatomyName, isZAnatomyMuscleSourceName } from "./anatomy-model-names.js";
+import { originalAnatomyName, isZAnatomyMuscleSourceName, stripRussianSideLabel } from "./anatomy-model-names.js";
 import { muscleReferenceFor } from "./muscle-reference-data.js";
 import { structureSearchText } from "./anatomy-terms-ru.js";
 
@@ -22,4 +22,8 @@ assert.equal(isZAnatomyMuscleSourceName("Semitendinosus muscle.r"), true);
 assert.match(structureSearchText("External abdominal oblique muscle.l"), /external oblique/);
 assert.match(structureSearchText("Internal abdominal oblique muscle.r"), /internal oblique/);
 assert.match(structureSearchText("Superficial part of left masseter"), /superficial part of masseter/);
+assert.equal(stripRussianSideLabel("Поверхностная часть правой жевательной мышцы (справа)"), "Поверхностная часть жевательной мышцы");
+assert.equal(stripRussianSideLabel("Ключичная часть левой дельтовидной мышцы"), "Ключичная часть дельтовидной мышцы");
+assert.equal(stripRussianSideLabel("Мышца, поднимающая левую лопатку"), "Мышца, поднимающая лопатку");
+assert.equal(stripRussianSideLabel("Леватор"), "Леватор");
 console.log("GLTF anatomy names: raw owning node + multi-primitive groups + guarded fallback ok");

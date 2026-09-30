@@ -1,4 +1,4 @@
-import { originalAnatomyName, isZAnatomyMuscleSourceName } from "./anatomy-model-names.js";
+import { originalAnatomyName, isZAnatomyMuscleSourceName, stripRussianSideLabel } from "./anatomy-model-names.js";
 import { createReferenceUI } from "./reference-ui.js";
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
@@ -1350,16 +1350,7 @@ function normalizeRussianSideLabel(nameRu, sourceName) {
   const side = structureSideForDisplay(sourceName);
   if (!side) return String(nameRu || "").trim();
 
-  const base = String(nameRu || "")
-    .replace(/\s*\((?:справа|слева)\)\s*$/iu, "")
-    .replace(/^(?:правая|левая)\s+/iu, "")
-    .replace(
-      /\b(?:прав(?:ой|ую|ого|ому|ым|ом)|лев(?:ой|ую|ого|ому|ым|ом))\b/giu,
-      ""
-    )
-    .replace(/\s+/g, " ")
-    .replace(/\s+([,.;:])/g, "$1")
-    .trim();
+  const base = stripRussianSideLabel(nameRu);
 
   return base ? base + " (" + side + ")" : String(nameRu || "").trim();
 }

@@ -21,3 +21,15 @@ export function originalAnatomyName(object, parser) {
 export function isZAnatomyMuscleSourceName(name) {
   return !/fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium|bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|iliopectineal arch|common tendinous ring/i.test(String(name || ""));
 }
+
+export function stripRussianSideLabel(nameRu) {
+  return String(nameRu || "")
+    .replace(/\s*\((?:справа|слева)\)\s*$/iu, "")
+    .replace(/^(?:правая|левая)\s+/iu, "")
+    // JavaScript \b only recognizes ASCII word boundaries. Russian side
+    // qualifiers inside a part name need Unicode letter boundaries.
+    .replace(/(?<![\p{L}\p{N}])(?:прав(?:ой|ую|ого|ому|ым|ом)|лев(?:ой|ую|ого|ому|ым|ом))(?![\p{L}\p{N}])/giu, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
+    .trim();
+}
