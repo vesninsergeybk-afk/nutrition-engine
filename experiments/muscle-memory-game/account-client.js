@@ -102,7 +102,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   const resetToken=new URLSearchParams(location.search).get("reset")||"";
   let config={enabled:false}, user=null, revision=0;
   let token=localStorage.getItem(TOKEN_KEY)||"";
-  let syncTimer=0, syncing=false, suppress=false;
+  let syncTimer=0, syncing=false;
 
   const msg=(text,kind="")=>{message.textContent=text||"";message.dataset.kind=kind;};
   const setButton=()=>{
@@ -147,7 +147,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
       if(e.status===409&&e.payload?.latest){
         const latest=e.payload.latest;
         const merged=mergeLearningStores(getStore?.()||loadLocal(),latest.store);
-        revision=Number(latest.revision)||0;suppress=true;
+        revision=Number(latest.revision)||0;
         onStoreMerged(saveLocal(merged));syncing=false;return syncNow();
       }
       if(e.status===401){clearSession();msg(errorText("authentication-required"),"error");}
@@ -161,7 +161,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   async function pullMerge(){
     const remote=await request("/api/progress");revision=Number(remote.revision)||0;
     const merged=mergeLearningStores(getStore?.()||loadLocal(),remote.store);
-    suppress=true;onStoreMerged(saveLocal(merged));await syncNow();
+    onStoreMerged(saveLocal(merged));await syncNow();
   }
   async function restore(){
     if(!token||!config.enabled)return;
@@ -206,6 +206,21 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     catch(err){msg(errorText(err.code),"error");}
   });
   document.querySelector("#account-sync-now")?.addEventListener("click",()=>void pullMerge());
+  document.querySelector("#account-export")?.addEventListener("click",async()=>{
+    try{
+      const payload=await request("/api/account/export");
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement("a");
+      link.href=url;
+      link.download="muscle-memory-data.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      msg("Выгрузка подготовлена.","success");
+    }catch(err){msg(errorText(err.code),"error");}
+  });
   document.querySelector("#account-logout")?.addEventListener("click",async()=>{try{await request("/api/account/logout",{method:"POST",body:"{}"});}catch{}clearSession();panel("login");msg("Вы вышли. Локальный прогресс сохранён.");});
   document.querySelector("#account-delete")?.addEventListener("click",async()=>{
     if(!confirm("Удалить аккаунт и весь облачный прогресс? Локальную копию на этом устройстве это не удалит."))return;
@@ -214,7 +229,6 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   });
 
   window.addEventListener("muscle-memory:store-saved",()=>{
-    if(suppress){suppress=false;return;}
     if(user)scheduleSync();
   });
 
