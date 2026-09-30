@@ -1,5 +1,6 @@
 import { originalAnatomyName, isZAnatomyMuscleSourceName, stripRussianSideLabel } from "./anatomy-model-names.js";
 import { createReferenceUI } from "./reference-ui.js";
+import { initAccountClient } from "./account-client.js";
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -201,6 +202,12 @@ const regionIsolationField = document.querySelector("#region-isolation-field");
 const learningSummaryEl = document.querySelector("#learning-summary");
 const sourceCoverageNoteEl = document.querySelector("#source-coverage-note");
 const todayLearningSessionButton = document.querySelector("#today-learning-session");
+const overallProgressEl = document.querySelector("#overall-progress");
+const overallProgressValueEl = document.querySelector("#overall-progress-value");
+const overallProgressNoteEl = document.querySelector("#overall-progress-note");
+const overallProgressBarEl = document.querySelector("#overall-progress-bar");
+const reviewAllMistakesButton = document.querySelector("#review-all-mistakes");
+const accountButton = document.querySelector("#account-button");
 const learningProgressEl = document.querySelector("#learning-progress");
 const learningProgressContentEl = document.querySelector("#learning-progress-content");
 const learningSessionMode = document.querySelector("#learning-session-mode");
@@ -474,6 +481,27 @@ let mobileContextVisualDepth = 0;
 let mobileContextAnimating = false;
 
 const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
+
+const accountClient = initAccountClient({
+  button: accountButton,
+  getStore: () => learningStore,
+  onStoreMerged: (mergedStore) => {
+    if (!mergedStore || mergedStore.version !== 1) return;
+    learningStore = mergedStore;
+
+    if (learningCatalog.length) {
+      migrateLearningStoreAliases(learningStore, learningCatalog);
+      availableTargets = filterCatalogByRegion(
+        learningCatalog,
+        selectedLearningRegion
+      );
+      syncLearningModeButtons();
+      updateLearningSummary();
+      updateTodayAction();
+      renderProgressPanel();
+    }
+  },
+});
 
 function setDisplayPanelOpen(open) {
   const next = Boolean(open);
@@ -3925,8 +3953,72 @@ function compareConfusionTargets(target, chosen, skillId) {
   updateLayerButtons();
 }
 
+function renderOverallProgress() {
+  if (!overallProgressEl || !overallProgressValueEl || !overallProgressBarEl) return;
+
+  const total = learningCatalog.length;
+  let seen = 0;
+
+  for (const target of learningCatalog) {
+    const find = learningStore.records?.[target.id + "::find"] || {};
+    const name = learningStore.records?.[target.id + "::name"] || {};
+    if (
+      (Number(find.attempts) || 0) > 0 ||
+      (Number(find.reviewCount) || 0) > 0 ||
+      (Number(name.attempts) || 0) > 0 ||
+      (Number(name.reviewCount) || 0) > 0
+    ) {
+      seen += 1;
+    }
+  }
+
+  const mistakes = mistakeTargets(learningStore, learningCatalog).length;
+  const due = buildTodayQueue(learningStore, learningCatalog, {
+    now: Date.now(),
+    limit: 1000,
+  }).length;
+  const hasProgress = seen > 0 || mistakes > 0 || due > 0;
+
+  overallProgressEl.hidden = appMode !== "quiz" || !hasProgress;
+
+  if (!hasProgress) {
+    overallProgressValueEl.textContent = total
+      ? `0 из ${total} мышц`
+      : "Прогресс появится после загрузки модели";
+    overallProgressBarEl.style.width = "0%";
+    if (overallProgressNoteEl) {
+      overallProgressNoteEl.textContent =
+        "Начните тренировку, чтобы появился персональный прогресс.";
+    }
+    if (reviewAllMistakesButton) reviewAllMistakesButton.hidden = true;
+    return;
+  }
+
+  overallProgressValueEl.textContent = `Изучали ${seen} из ${total} мышц`;
+  overallProgressBarEl.style.width =
+    (total ? Math.min(100, Math.round((seen / total) * 100)) : 0) + "%";
+
+  const notes = [];
+  if (due) notes.push(`к повторению сегодня: ${due}`);
+  if (mistakes) notes.push(`ошибок для разбора: ${mistakes}`);
+  if (overallProgressNoteEl) {
+    overallProgressNoteEl.textContent =
+      notes.length ? notes.join(" · ") : "На сегодня обязательных повторений нет.";
+  }
+
+  if (reviewAllMistakesButton) {
+    reviewAllMistakesButton.hidden = mistakes === 0;
+    reviewAllMistakesButton.textContent =
+      mistakes === 1
+        ? "Повторить 1 ошибку"
+        : `Повторить ошибки · ${mistakes}`;
+  }
+}
+
 function renderProgressPanel() {
   if (!learningProgressEl || !learningProgressContentEl) return;
+
+  renderOverallProgress();
 
   const now = Date.now();
   const area = currentAreaProgress(learningStore, availableTargets, now);
@@ -11456,6 +11548,15 @@ for (const button of learningModeButtons) {
 
 startLearningSessionButton.addEventListener("click", () => startLearningSession());
 todayLearningSessionButton.addEventListener("click", () => startLearningSession("today"));
+reviewAllMistakesButton?.addEventListener("click", () => {
+  setMode("quiz");
+  selectedLearningRegion = "all";
+  learningRegion.value = "all";
+  regionIsolation.checked = false;
+  applyLearningRegion();
+  setLearningMode("mistakes", { reset: false });
+  startLearningSession();
+});
 exitLearningSessionButton.addEventListener("click", () => {
   resetLearningSessionUi("Выберите учебный блок и способ тренировки.");
   focusLearningRegion();
