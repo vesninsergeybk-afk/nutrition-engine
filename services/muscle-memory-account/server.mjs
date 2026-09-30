@@ -210,11 +210,6 @@ function newToken() {
 }
 const SESSION_COOKIE = "mm_session";
 
-function bearer(req) {
-  const value = String(req.headers.authorization || "");
-  return value.startsWith("Bearer ") ? value.slice(7).trim() : "";
-}
-
 function cookieValue(req, name) {
   const header = String(req.headers.cookie || "");
   for (const part of header.split(";")) {
@@ -231,7 +226,7 @@ function cookieValue(req, name) {
 }
 
 function sessionToken(req) {
-  return bearer(req) || cookieValue(req, SESSION_COOKIE);
+  return cookieValue(req, SESSION_COOKIE);
 }
 
 function sessionCookie(token, expiresAt) {
@@ -324,7 +319,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       "access-control-allow-origin": origin,
       "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
-      "access-control-allow-headers": "content-type,authorization",
+      "access-control-allow-headers": "content-type",
       "access-control-allow-credentials": "true",
       "access-control-max-age": "600",
       vary: "Origin",
@@ -405,7 +400,7 @@ const server = http.createServer(async (req, res) => {
         return sendJson(
           res,
           201,
-          { user: { id, username, email }, ...session },
+          { user: { id, username, email }, expiresAt: session.expiresAt },
           origin,
           { "set-cookie": sessionCookie(session.token, session.expiresAt) }
         );
@@ -441,7 +436,7 @@ const server = http.createServer(async (req, res) => {
         200,
         {
           user: { id: user.id, username: user.username, email: user.email },
-          ...session,
+          expiresAt: session.expiresAt,
         },
         origin,
         { "set-cookie": sessionCookie(session.token, session.expiresAt) }
