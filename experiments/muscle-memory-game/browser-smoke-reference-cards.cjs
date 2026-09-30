@@ -115,6 +115,18 @@ const assert = require('node:assert/strict');
   );
   await bestEffortScreenshot('/tmp/muscle-memory-reference-external-oblique.png');
 
+  // The pinned Z GLB has no puborectalis or levator ani muscle mesh. Verify
+  // these canonical cards on the model that actually includes them.
+  await page.click('#display-panel-toggle');
+  await page.selectOption('#model-source', 'bodyparts4');
+  await page.waitForFunction(
+    () => document.querySelector('#loading')?.classList.contains('is-hidden') &&
+      document.querySelector('#viewer')?.dataset.modelSource === 'bodyparts4',
+    null,
+    { timeout: 150000 }
+  );
+  await page.click('#display-panel-close');
+
   console.log('[reference-smoke] puborectalis -> exact labeled art + continence synergy');
   await search('puborectalis');
   const puborectalis = page.locator('.search-result').filter({ hasText: /Лобково-прямокишечн/i }).first();
@@ -145,25 +157,28 @@ const assert = require('node:assert/strict');
   );
   await bestEffortScreenshot('/tmp/muscle-memory-reference-puborectalis.png');
 
-  console.log('[reference-smoke] levator ani -> Gray 404 + curated pelvic-floor relation');
-  await search('levator ani');
-  const levator = page.locator('.search-result').filter({ hasText: /поднимающая задний проход/i }).first();
-  assert.equal(await levator.count(), 1);
-  await levator.click();
-  await assertCard('levator-ani');
+  // BodyParts exposes the levator ani components separately, not a whole
+  // levator ani mesh. The canonical whole-complex card is checked in the
+  // data suite; use actual coccygeus geometry to verify this shared plate.
+  console.log('[reference-smoke] coccygeus -> Gray 404 + curated pelvic-floor relation');
+  await search('coccygeus');
+  const coccygeus = page.locator('.search-result').filter({ hasText: /^Копчиковая мышца/i }).first();
+  assert.equal(await coccygeus.count(), 1);
+  await coccygeus.click();
+  await assertCard('coccygeus');
   assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
   const levatorImageSources = await page.locator('#structure-reference-illustrations img')
     .evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
   assert.ok(
     levatorImageSources.some(src => /Gray404\.png/i.test(src)),
-    'Levator ani must show the verified Gray 404 plate'
+    'Coccygeus must show the verified Gray 404 plate'
   );
   await page.click('#reference-tab-movement');
   assert.match(
     await page.locator('#structure-reference-functional').innerText(),
-    /Копчиковая мышца/i
+    /Лобково-прямокишечная мышца/i
   );
-  await bestEffortScreenshot('/tmp/muscle-memory-reference-levator-ani.png');
+  await bestEffortScreenshot('/tmp/muscle-memory-reference-coccygeus.png');
 
   assert.equal(errors.length, 0, errors.join(' || '));
   console.log('[reference-smoke] six representative reference cards ok');

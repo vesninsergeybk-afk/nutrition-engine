@@ -71,7 +71,9 @@ jobs:
             );
 
             const status = await page.locator('#fullbody-status').innerText();
-            assert.match(status, /618/);
+            // The pinned atlas and current anatomical classification contain
+            // 620 structures. Keep the expected count tied to that dataset.
+            assert.match(status, /^Загружено 620 мышечных и костных структур,/);
 
             await page.fill('#fullbody-search', 'дельтовидная');
             await page.waitForSelector('.search-result', { timeout: 15000 });
