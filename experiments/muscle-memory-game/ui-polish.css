@@ -181,6 +181,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
 .account-button[data-state="online"] { color: #16654b; border-color: #b9d9cb; background: #f4fbf7; }
 .account-button[data-state="ready"] { color: var(--accent); border-color: #c5d5e9; }
 .account-button[data-state="local"] { color: #657185; background: #f7f8fa; }
+.account-button-mobile { display: none; width: 100%; margin: 0 0 10px; }
 
 .overall-progress {
   display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px 14px; align-items: center;
@@ -251,6 +252,16 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
   .overall-progress { grid-template-columns: 1fr; }
   .review-all-mistakes { width: 100%; }
   .account-shell { padding: 18px; }
+}
+
+@media (max-width: 620px) {
+  #account-button { display: none; }
+  .account-button-mobile {
+    display: block;
+    max-width: none;
+    min-height: 42px;
+    margin-bottom: 2px;
+  }
 }
 
 .account-consent-document {
