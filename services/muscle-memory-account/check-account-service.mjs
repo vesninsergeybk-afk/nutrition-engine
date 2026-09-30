@@ -192,7 +192,7 @@ if (exported.consents[0].consent_version !== CONSENT_VERSION) {
   throw new Error("Consent record version mismatch");
 }
 
-await request("/api/account", { method: "DELETE", token, body: {} });
+await request("/api/account", { method: "DELETE", cookie: sessionCookie, body: {} });
 
 let deleted = false;
 try {
