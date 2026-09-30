@@ -298,6 +298,7 @@ const assert = require('node:assert/strict');
     ['extensor digitorum brevis', /Короткий разгибатель пальцев стопы/i],
   ];
   for (const [query, expected] of translationCases) {
+    console.log('[smoke:bodyparts] translated search:', query);
     await page.fill('#structure-search', query);
     await page.waitForFunction(
       () => document.querySelectorAll('.search-result').length > 0,

@@ -122,7 +122,8 @@ export function structureTerm(sourceName) {
 
 export function structureSearchText(sourceName) {
   const term = structureTerm(sourceName);
-  return [term.nameRu, term.latin, term.source, ...term.aliases]
+  const shortSource = term.source.replace(/\babdominal\b/gi, " ").replace(/\s+/g, " ");
+  return [term.nameRu, term.latin, term.source, shortSource, ...term.aliases]
     .filter(Boolean)
     .join(" ")
     .toLocaleLowerCase("ru-RU");

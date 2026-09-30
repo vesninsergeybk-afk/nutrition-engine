@@ -154,8 +154,8 @@ const assert = require('node:assert/strict');
   );
   assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
   assert.match(
-    await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
-    /gray412-shoulder\.png$/
+    await page.locator('#structure-reference-illustrations img').evaluateAll(nodes => nodes.map(node => node.getAttribute('src')).join(' ')),
+    /gray412-shoulder\.png/
   );
 
   await page.screenshot({

@@ -14,3 +14,10 @@ export function originalAnatomyName(object, parser) {
   }
   return object?.userData?.name || String(object?.name || "").replace(/_/g, " ");
 }
+
+// The pinned muscular GLB also contains connective and joint structures.
+// A name containing "infraspinatus muscle" may belong to its bursa; it must
+// not be presented as a muscle result. Geometry is retained in the scene.
+export function isZAnatomyMuscleSourceName(name) {
+  return !/fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium|bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|iliopectineal arch|common tendinous ring/i.test(String(name || ""));
+}

@@ -1,4 +1,4 @@
-import { originalAnatomyName } from "./anatomy-model-names.js";
+import { originalAnatomyName, isZAnatomyMuscleSourceName } from "./anatomy-model-names.js";
 import { createReferenceUI } from "./reference-ui.js";
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
@@ -8979,6 +8979,10 @@ function renderSearchResults(query) {
 
   for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
     if (activeSidSet && !activeSidSet.has(sid)) continue;
+    // The Z muscle GLB also contains bursae and tendinous structures whose
+    // names mention a muscle. Classify the source so a bursa cannot
+    // impersonate that muscle in search and open an empty muscle card.
+    if (currentModelSource === "z-anatomy" && !isZAnatomyMuscleSourceName(structureNames[sid])) continue;
 
     if (structureSearchText(structureNames[sid]).includes(q)) {
       matches.push({ kind: "muscle", id: sid });
@@ -10889,7 +10893,6 @@ async function loadZAnatomyModel() {
   try {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(MUSCLE_MODEL_URL);
-
 
     gltf.scene.updateMatrixWorld(true);
 

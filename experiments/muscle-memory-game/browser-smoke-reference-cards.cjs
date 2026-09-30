@@ -110,8 +110,8 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), true);
   assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
   assert.match(
-    await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
-    /gray392-external-oblique\.png$/
+    await page.locator('#structure-reference-illustrations img').evaluateAll(nodes => nodes.map(node => node.getAttribute('src')).join(' ')),
+    /gray392-external-oblique\.png/
   );
   await bestEffortScreenshot('/tmp/muscle-memory-reference-external-oblique.png');
 

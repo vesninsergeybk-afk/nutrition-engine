@@ -258,6 +258,7 @@ const assert = require('node:assert/strict');
   // session must ask a real deeper-relation question, accept the correct
   // relation, finish independently of find/name mistakes, and not pollute
   // the spaced-repetition records.
+  console.log('[smoke:learning-core] topography');
   assert.equal(
     await page.locator('[data-learning-mode="topography"]').isDisabled(),
     false

@@ -220,7 +220,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[atlas-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
-    timeout-minutes: 16
+    timeout-minutes: 21
     strategy:
       fail-fast: false
       matrix:
@@ -254,7 +254,13 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          timeout 13m node experiments/muscle-memory-game/browser-smoke-${{ matrix.phase }}.cjs
+          # The long learning and two-model journeys render dense anatomy on
+          # software WebGL. Preserve every assertion and allow them to finish.
+          CHECKPOINT_BUDGET=13m
+          if [[ '${{ matrix.phase }}' == 'learning-core' || '${{ matrix.phase }}' == 'bodyparts' ]]; then
+            CHECKPOINT_BUDGET=18m
+          fi
+          timeout "$CHECKPOINT_BUDGET" node experiments/muscle-memory-game/browser-smoke-${{ matrix.phase }}.cjs
 
       - name: Upload screenshots
         if: ${{ always() }}
