@@ -174,7 +174,7 @@ const assert = require('node:assert/strict');
   );
   assert.match(
     await page.locator('#viewer').getAttribute('data-answer-reveal-view') || '',
-    /^(front|back|left|right|current)$/,
+    /^(front|back|left|right|current)-oblique$/,
     'Show answer must record a controlled anatomical view'
   );
 
