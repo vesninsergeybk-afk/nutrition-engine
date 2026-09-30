@@ -1,5 +1,4 @@
 const STORE_KEY = "muscle-memory-learning-v1";
-const TOKEN_KEY = "muscle-memory-account-token-v1";
 
 function apiBase() {
   const explicit = document.querySelector('meta[name="muscle-memory-api-base"]')?.content?.trim();
@@ -117,7 +116,6 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     history.replaceState({}, "", cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
   }
   let config={enabled:false}, user=null, revision=0;
-  let token=localStorage.getItem(TOKEN_KEY)||"";
   let pendingRegistration=null;
   let syncTimer=0, syncing=false;
 
@@ -146,25 +144,29 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   };
   async function request(path,options={}) {
     const headers={"content-type":"application/json",...(options.headers||{})};
-    if(token)headers.authorization="Bearer "+token;
-    const response=await fetch(base+path,{...options,headers,cache:"no-store"});
+    const response=await fetch(base+path,{
+      ...options,
+      headers,
+      cache:"no-store",
+      credentials:"include",
+    });
     let payload={};try{payload=await response.json();}catch{}
     if(!response.ok){const e=new Error(payload.error||"request-failed");e.code=payload.error||"request-failed";e.status=response.status;e.payload=payload;throw e;}
     return payload;
   }
   function clearSession(){
-    token="";user=null;revision=0;localStorage.removeItem(TOKEN_KEY);
+    user=null;revision=0;
     profile.hidden=true;auth.hidden=!config.enabled;setButton();onStateChange({user:null,synced:false});
   }
   function applySession(payload){
-    token=payload.token;user=payload.user;localStorage.setItem(TOKEN_KEY,token);
+    user=payload.user;
     auth.hidden=true;offline.hidden=true;profile.hidden=false;
     document.querySelector("#account-username").textContent=user.username;
     document.querySelector("#account-email").textContent=user.email;
     setButton();onStateChange({user,synced:false});
   }
   async function syncNow(){
-    if(!user||!token||!config.enabled||syncing)return;
+    if(!user||!config.enabled||syncing)return;
     syncing=true;syncState.textContent="Сохраняю прогресс…";
     try{
       const local=getStore?.()||loadLocal();
@@ -191,7 +193,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     onStoreMerged(saveLocal(merged));await syncNow();
   }
   async function restore(){
-    if(!token||!config.enabled)return;
+    if(!config.enabled)return;
     try{const out=await request("/api/account/me");user=out.user;profile.hidden=false;auth.hidden=true;
       document.querySelector("#account-username").textContent=user.username;document.querySelector("#account-email").textContent=user.email;setButton();await pullMerge();
     }catch{clearSession();}
