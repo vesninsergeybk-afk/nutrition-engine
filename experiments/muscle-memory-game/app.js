@@ -1842,6 +1842,92 @@ function nearestTargetPointToCamera(ids) {
   return found ? best : null;
 }
 
+function answerTargetSamplePoints(ids, maxPoints = 9) {
+  if (!anatomyMesh || !ids?.length) return [];
+
+  anatomyMesh.updateMatrixWorld(true);
+  const position = anatomyMesh.geometry.getAttribute("position");
+  const candidates = [];
+  const point = new THREE.Vector3();
+
+  for (const sid of ids) {
+    const range = structureRanges[sid];
+    if (!range) continue;
+
+    const stride = Math.max(1, Math.floor(range.count / 900));
+    for (let i = range.start; i < range.start + range.count; i += stride) {
+      point.fromBufferAttribute(position, i).applyMatrix4(anatomyMesh.matrixWorld);
+      if (!pointWithinRegionalClip(point)) continue;
+      candidates.push({
+        point: point.clone(),
+        cameraDistance: point.distanceToSquared(camera.position),
+      });
+    }
+  }
+
+  if (!candidates.length) return [];
+
+  candidates.sort((a, b) => a.cameraDistance - b.cameraDistance);
+  const pool = candidates.slice(0, Math.min(candidates.length, 240));
+  const selected = [pool[0].point.clone()];
+
+  while (selected.length < Math.min(maxPoints, pool.length)) {
+    let bestPoint = null;
+    let bestSpread = -1;
+
+    for (const candidate of pool) {
+      const spread = Math.min(
+        ...selected.map(item => item.distanceToSquared(candidate.point))
+      );
+      if (spread > bestSpread) {
+        bestSpread = spread;
+        bestPoint = candidate.point;
+      }
+    }
+
+    if (!bestPoint || bestSpread <= 1e-10) break;
+    selected.push(bestPoint.clone());
+  }
+
+  return selected;
+}
+
+function answerOccludersFromCamera(targetIds, samplePoints) {
+  if (!anatomyMesh || !targetIds?.length || !samplePoints?.length) {
+    return { ids: [], reached: 0 };
+  }
+
+  const targetSet = new Set(targetIds);
+  const occluders = new Set();
+  let reached = 0;
+
+  for (const targetPoint of samplePoints) {
+    const direction = targetPoint.clone().sub(camera.position);
+    if (direction.lengthSq() < 1e-10) continue;
+
+    raycaster.set(camera.position, direction.normalize());
+    const hits = raycaster.intersectObject(anatomyMesh, false);
+    const beforeTarget = [];
+    let reachesTarget = false;
+
+    for (const hit of hits) {
+      const sid = structureIdFromHit(hit);
+      if (sid == null || structureVisibility[sid] === false) continue;
+      if (targetSet.has(sid)) {
+        reachesTarget = true;
+        break;
+      }
+      if (!beforeTarget.includes(sid)) beforeTarget.push(sid);
+    }
+
+    if (!reachesTarget) continue;
+    reached += 1;
+    for (const sid of beforeTarget) occluders.add(sid);
+  }
+
+  return { ids: [...occluders], reached };
+}
+
 function firstVisibleStructureOnRay(point) {
   if (!anatomyMesh || !point) return null;
 
@@ -4436,6 +4522,8 @@ function prepareSessionItem() {
   canvas.dataset.answerRevealHidden = "";
   canvas.dataset.answerRevealView = "";
   canvas.dataset.answerRevealPadding = "";
+  canvas.dataset.answerRevealSampleCount = "";
+  canvas.dataset.answerRevealReachedSamples = "";
   canvas.dataset.answerRevealTargetIds = "";
   canvas.dataset.nameTargetVisible = "";
   canvas.dataset.nameTargetPresentation = "";
@@ -4839,45 +4927,28 @@ function revealQuizAnswerInContext(target, ids) {
   if (!box.isEmpty()) {
     const answerView = answerRevealDirectionForBox(box);
     view = answerView.label;
-    // A larger padding than the ordinary "focus selected" action keeps nearby
-    // anatomy in frame instead of pushing the muscle into the camera.
-    focusBox(box, 2.1, answerView.direction);
+    // Keep the answer comfortably inside a wider anatomical field. The learner
+    // should see the muscle and its neighbours, not a full-screen close-up.
+    focusBox(box, 2.75, answerView.direction);
   }
 
-  // From the actual answer camera, remove any remaining muscle that lies
-  // directly between the camera and the target surface. Do not isolate the
-  // target: structures that do not occlude it stay visible.
-  const targetPoint = nearestTargetPointToCamera(targetIds);
-  if (targetPoint) {
-    const direction = targetPoint.clone().sub(camera.position);
-    if (direction.lengthSq() > 1e-10) {
-      raycaster.set(camera.position, direction.normalize());
-      const hits = raycaster.intersectObject(anatomyMesh, false);
-      const rayOccluders = [];
-      let reachesTarget = false;
-
-      for (const hit of hits) {
-        const sid = structureIdFromHit(hit);
-        if (sid == null || structureVisibility[sid] === false) continue;
-        if (targetSet.has(sid)) {
-          reachesTarget = true;
-          break;
-        }
-        if (!rayOccluders.includes(sid)) rayOccluders.push(sid);
-      }
-
-      if (reachesTarget) {
-        for (const sid of rayOccluders) hideStructure(sid);
-      }
-    }
-  }
+  // One center ray is not enough for broad/deep muscles: a superficial layer
+  // can cover one end of the target while another end is already exposed.
+  // Probe several spatially separated points on the camera-facing target
+  // surface and hide only structures that are actually in front of those
+  // points. Same-depth neighbours remain as useful anatomical context.
+  const answerSamples = answerTargetSamplePoints(targetIds, 9);
+  const rayOcclusion = answerOccludersFromCamera(targetIds, answerSamples);
+  for (const sid of rayOcclusion.ids) hideStructure(sid);
 
   applyBodyPartsSurfaceConflictGuards();
   for (const sid of targetIds) setStructureVisible(sid, true);
 
   canvas.dataset.answerRevealHidden = String(hidden.size);
   canvas.dataset.answerRevealView = view;
-  canvas.dataset.answerRevealPadding = "2.1";
+  canvas.dataset.answerRevealPadding = "2.75";
+  canvas.dataset.answerRevealSampleCount = String(answerSamples.length);
+  canvas.dataset.answerRevealReachedSamples = String(rayOcclusion.reached);
   canvas.dataset.answerRevealTargetIds = targetIds.join(",");
   updateLayerButtons();
 
@@ -9089,7 +9160,11 @@ function selectVisibleMuscleNearClientPoint(
 function onPointerDown(event) {
   if (activePointers.size === 0) tapBlocked = false;
   lastCanvasPointerType = event.pointerType || null;
-  if (appMode === "quiz") closeQuizMuscleActions({ restore: true });
+  if (appMode === "quiz") {
+    // After "Показать ответ" the session is locked until "Следующая". A touch
+    // used only to rotate/zoom the model must not clear the revealed answer.
+    closeQuizMuscleActions({ restore: !locked });
+  }
 
   activePointers.set(event.pointerId, {
     x: event.clientX,
