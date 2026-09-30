@@ -263,6 +263,7 @@ jobs:
           DATA_OPERATOR_EMAIL: operator@example.test
           PRIVACY_CONSENT_VERSION: test-v1
           CROSS_BORDER_TRANSFER: "false"
+          RUNTIME_ASSETS_LOCALIZED: "true"
           SMTP_JSON_TRANSPORT: "true"
           SMTP_FROM: test@example.test
           ACCOUNT_TEST_BASE: http://127.0.0.1:18080
