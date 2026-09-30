@@ -24,6 +24,8 @@ const SMTP = {
 };
 const SESSION_DAYS = Math.max(1, Number(process.env.SESSION_DAYS || 30));
 const CROSS_BORDER_TRANSFER = String(process.env.CROSS_BORDER_TRANSFER || "false").toLowerCase() === "true";
+const RUNTIME_ASSETS_LOCALIZED =
+  String(process.env.RUNTIME_ASSETS_LOCALIZED || "false").toLowerCase() === "true";
 
 if (!DATABASE_URL) throw new Error("DATABASE_URL is required");
 
@@ -52,7 +54,8 @@ const accountReady =
   legalReady &&
   Boolean(mailer) &&
   Boolean(PUBLIC_APP_URL) &&
-  APP_ORIGINS.size > 0;
+  APP_ORIGINS.size > 0 &&
+  RUNTIME_ASSETS_LOCALIZED;
 
 function escapeHtml(value) {
   return String(value || "")
@@ -97,7 +100,7 @@ function privacyHtml() {
     "<p>Пароль в открытом виде не сохраняется. Для аккаунта не запрашиваются паспортные, платёжные, медицинские или биометрические данные.</p>" +
     "<h2>3. Цели</h2><p>Создание и защита аккаунта, восстановление доступа, синхронизация учебного прогресса между устройствами, показ общей статистики и повторение ошибок.</p>" +
     "<h2>4. Действия</h2><p>Сбор, запись, систематизация, накопление, хранение, уточнение, извлечение, использование, блокирование и удаление.</p>" +
-    "<h2>5. Локализация</h2><p>Первичная база аккаунтов и учебного прогресса граждан Российской Федерации размещается на территории Российской Федерации. Трансграничная передача в данной production-конфигурации не осуществляется.</p>" +
+    "<h2>5. Локализация</h2><p>Первичная база аккаунтов и учебного прогресса граждан Российской Федерации размещается на территории Российской Федерации. До включения регистрации все необходимые runtime-ассеты тренажёра также должны обслуживаться из утверждённой production-инфраструктуры, чтобы загрузка анатомических моделей не зависела от внешних CDN и зарубежных репозиториев.</p>" +
     "<h2>6. Срок</h2><p>До удаления аккаунта пользователем, отзыва согласия либо прекращения работы сервиса, если более длительное хранение не требуется по закону.</p>" +
     "<h2>7. Защита</h2><p>Пароли хэшируются, сессии используют случайные токены, публичное соединение должно работать по HTTPS, доступ к базе ограничивается.</p>" +
     "<h2>8. Права пользователя</h2><p>Пользователь может запросить сведения о данных, их уточнение или удаление и отозвать согласие. Аккаунт и облачный прогресс можно удалить в интерфейсе либо обратиться по адресу " +
@@ -289,7 +292,11 @@ const server = http.createServer(async (req, res) => {
 
   try {
     if (req.method === "GET" && path === "/health") {
-      return sendJson(res, 200, { ok: true, accountReady });
+      return sendJson(res, 200, {
+        ok: true,
+        accountReady,
+        runtimeAssetsLocalized: RUNTIME_ASSETS_LOCALIZED,
+      });
     }
     if (req.method === "GET" && path === "/api/account/config") {
       return sendJson(res, 200, {
@@ -298,7 +305,12 @@ const server = http.createServer(async (req, res) => {
         privacyUrl: "/legal/privacy",
         consentUrl: "/legal/consent",
         recoveryEnabled: Boolean(mailer),
-        reason: accountReady ? null : "server-not-ready",
+        runtimeAssetsLocalized: RUNTIME_ASSETS_LOCALIZED,
+        reason: accountReady
+          ? null
+          : !RUNTIME_ASSETS_LOCALIZED
+            ? "runtime-assets-not-localized"
+            : "server-not-ready",
       }, origin);
     }
     if (req.method === "GET" && path === "/legal/privacy") {
