@@ -106,10 +106,14 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   const syncState=document.querySelector("#account-sync-state");
   const consentLink=document.querySelector("#account-consent-link");
   const privacyLink=document.querySelector("#account-privacy-link");
-  const resetToken=new URLSearchParams(location.search).get("reset")||"";
+  const queryResetToken=new URLSearchParams(location.search).get("reset")||"";
+  const hashText=location.hash.replace(/^#/, "");
+  const hashResetToken=new URLSearchParams(hashText).get("reset")||"";
+  const resetToken=queryResetToken||hashResetToken;
   if(resetToken){
     const cleanUrl=new URL(location.href);
     cleanUrl.searchParams.delete("reset");
+    if(hashResetToken) cleanUrl.hash="";
     history.replaceState({}, "", cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
   }
   let config={enabled:false}, user=null, revision=0;
