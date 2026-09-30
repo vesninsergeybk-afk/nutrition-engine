@@ -1,4 +1,5 @@
 const STORE_KEY = "muscle-memory-learning-v1";
+const OWNER_KEY = "muscle-memory-learning-owner-v1";
 
 function apiBase() {
   const explicit = document.querySelector('meta[name="muscle-memory-api-base"]')?.content?.trim();
@@ -65,6 +66,9 @@ export function mergeLearningStores(localStore, remoteStore) {
   };
 }
 
+function emptyLearningStore() {
+  return { version: 1, updatedAt: 0, records: {}, confusions: {}, sessions: [] };
+}
 function loadLocal() {
   try { const x=JSON.parse(localStorage.getItem(STORE_KEY)||"null"); return x?.version===1?x:null; }
   catch { return null; }
@@ -158,6 +162,13 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     user=null;revision=0;
     profile.hidden=true;auth.hidden=!config.enabled;setButton();onStateChange({user:null,synced:false});
   }
+
+  function clearLocalWorkspace() {
+    localStorage.removeItem(STORE_KEY);
+    localStorage.removeItem(OWNER_KEY);
+    const empty=emptyLearningStore();
+    onStoreMerged(empty);
+  }
   function applySession(payload){
     user=payload.user;
     auth.hidden=true;offline.hidden=true;profile.hidden=false;
@@ -188,9 +199,17 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     syncTimer=setTimeout(()=>void syncNow(),900);
   }
   async function pullMerge(){
-    const remote=await request("/api/progress");revision=Number(remote.revision)||0;
-    const merged=mergeLearningStores(getStore?.()||loadLocal(),remote.store);
-    onStoreMerged(saveLocal(merged));await syncNow();
+    const remote=await request("/api/progress");
+    revision=Number(remote.revision)||0;
+
+    const owner=localStorage.getItem(OWNER_KEY)||"";
+    const sameOwner=!owner || owner===user?.id;
+    const local=sameOwner ? (getStore?.()||loadLocal()) : null;
+    const merged=mergeLearningStores(local,remote.store);
+
+    onStoreMerged(saveLocal(merged));
+    if(user?.id) localStorage.setItem(OWNER_KEY,user.id);
+    await syncNow();
   }
   async function restore(){
     if(!config.enabled)return;
@@ -290,10 +309,23 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
       msg("Выгрузка подготовлена.","success");
     }catch(err){msg(errorText(err.code),"error");}
   });
-  document.querySelector("#account-logout")?.addEventListener("click",async()=>{try{await request("/api/account/logout",{method:"POST",body:"{}"});}catch{}clearSession();panel("login");msg("Вы вышли. Локальный прогресс сохранён.");});
+  document.querySelector("#account-logout")?.addEventListener("click",async()=>{
+    try{await syncNow();}catch{}
+    try{await request("/api/account/logout",{method:"POST",body:"{}"});}catch{}
+    clearSession();
+    clearLocalWorkspace();
+    panel("login");
+    msg("Вы вышли. Прогресс аккаунта остаётся в облаке; локальная рабочая копия очищена.");
+  });
   document.querySelector("#account-delete")?.addEventListener("click",async()=>{
     if(!confirm("Удалить аккаунт и весь облачный прогресс? Локальную копию на этом устройстве это не удалит."))return;
-    try{await request("/api/account",{method:"DELETE",body:"{}"});clearSession();panel("login");msg("Аккаунт и облачный прогресс удалены.","success");}
+    try{
+      await request("/api/account",{method:"DELETE",body:"{}"});
+      clearSession();
+      clearLocalWorkspace();
+      panel("login");
+      msg("Аккаунт, облачный прогресс и локальная рабочая копия удалены.","success");
+    }
     catch(err){msg(errorText(err.code),"error");}
   });
 
