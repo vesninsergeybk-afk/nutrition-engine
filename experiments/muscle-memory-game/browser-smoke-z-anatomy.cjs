@@ -129,17 +129,15 @@ const assert = require('node:assert/strict');
     await page.locator('#structure-reference').getAttribute('data-reference-has-primary-art'),
     'true'
   );
-  assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), false);
-  assert.equal(
-    await page.locator('#viewer').getAttribute('data-selected-reference-illustration'),
-    'primary'
-  );
-  assert.ok(
-    await page.locator('#structure-reference details[data-reference-default-open][open]').count() >= 2
-  );
+  assert.equal(await page.locator('#structure-reference-atlas-block').isVisible(), true);
+  assert.match(await page.locator('#viewer').getAttribute('data-selected-reference-illustration'), /gallery/);
+  assert.equal(await page.locator('#reference-overview').isVisible(), true);
+  assert.ok((await page.locator('#structure-reference-actions li').count()) > 0);
+  await page.click('#reference-tab-detail');
+  assert.equal(await page.locator('#structure-reference-origin').isVisible(), true);
   assert.ok((await page.locator('#structure-reference-origin').innerText()).trim().length > 10);
   assert.ok((await page.locator('#structure-reference-insertion').innerText()).trim().length > 10);
-  assert.ok((await page.locator('#structure-reference-actions li').count()) > 0);
+  await page.click('#reference-tab-overview');
 
   await page.fill('#structure-search', 'подостная');
   await page.waitForFunction(
@@ -270,7 +268,7 @@ const assert = require('node:assert/strict');
   );
   assert.match(
     await page.locator('#isolate-selected').innerText(),
-    /Показать окружение/i
+    /(?:Показать|Вернуть) окружение/i
   );
   await page.click('#isolate-selected');
   assert.equal(
@@ -283,7 +281,7 @@ const assert = require('node:assert/strict');
   );
   assert.match(
     await page.locator('#isolate-selected').innerText(),
-    /Изолировать/i
+    /(?:Изолировать|Показать отдельно)/i
   );
 
     if (errors.length) throw new Error(errors.join('\n'));

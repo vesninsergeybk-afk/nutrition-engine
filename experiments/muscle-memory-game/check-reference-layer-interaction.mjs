@@ -86,3 +86,5 @@ assert(
 console.log(
   "Z-Anatomy safety landmarks: Russian labels + click + search + focus contract ok"
 );
+
+assert(referenceStructureTerm("Axillary_nerve.l", "nervous").specific, "GLTF-sanitized nerve names must remain searchable and selectable");

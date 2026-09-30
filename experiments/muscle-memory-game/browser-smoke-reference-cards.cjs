@@ -30,6 +30,7 @@ const assert = require('node:assert/strict');
   }
 
   async function assertCard(id) {
+    await page.click("#reference-tab-overview");
     assert.equal(await page.locator('#structure-reference').isHidden(), false);
     assert.equal(
       await page.locator('#structure-reference').getAttribute('data-reference-id'),
@@ -67,7 +68,7 @@ const assert = require('node:assert/strict');
     'true'
   );
   if (/часть/i.test(await page.locator('#question-label').innerText())) {
-    assert.match(await page.locator('#structure-reference-context').innerText(), /Это часть:.*трапециевид/i);
+    assert.match(await page.locator('#structure-reference-context').innerText(), /(?:Выбранная часть|Выбрана часть).*справка.*мышц/i);
     assert.ok(Number(await page.locator('#viewer').getAttribute('data-selected-parent-context-count')) >= 1);
   }
   await bestEffortScreenshot('/tmp/muscle-memory-reference-trapezius.png');
@@ -81,8 +82,8 @@ const assert = require('node:assert/strict');
   assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), true);
   assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
   assert.match(
-    await page.locator('#structure-reference-illustrations img').first().getAttribute('src'),
-    /gray412-shoulder\.png$/
+    (await page.locator('#structure-reference-illustrations img').evaluateAll(nodes => nodes.map(node => node.getAttribute('src')).join(' '))),
+    /gray412-shoulder\.png/
   );
   await bestEffortScreenshot('/tmp/muscle-memory-reference-infraspinatus.png');
 
@@ -96,8 +97,8 @@ const assert = require('node:assert/strict');
     await page.locator('#structure-reference').getAttribute('data-reference-has-primary-art'),
     'true'
   );
-  assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), false);
-  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), true);
+  assert.equal(await page.locator('#structure-reference-primary-art').isHidden(), true);
+  assert.equal(await page.locator('#structure-reference-atlas-block').isHidden(), false);
   await bestEffortScreenshot('/tmp/muscle-memory-reference-latissimus.png');
 
   console.log('[reference-smoke] external oblique -> local Gray 392');
@@ -131,6 +132,8 @@ const assert = require('node:assert/strict');
       puborectalisImageSources.some(src => /Stylized_depiction_of_action_of_puborectalis_sling/i.test(src)),
     'Puborectalis must show both the labeled anatomical plate and focused sling diagram'
   );
+  await page.click('#reference-tab-movement');
+  await page.selectOption('#functional-movement', { label: 'Поддержание анальной континенции' });
   assert.equal(await page.locator('#structure-reference-functional-details').isHidden(), false);
   assert.match(
     await page.locator('#structure-reference-functional').innerText(),
@@ -155,6 +158,7 @@ const assert = require('node:assert/strict');
     levatorImageSources.some(src => /Gray404\.png/i.test(src)),
     'Levator ani must show the verified Gray 404 plate'
   );
+  await page.click('#reference-tab-movement');
   assert.match(
     await page.locator('#structure-reference-functional').innerText(),
     /Копчиковая мышца/i

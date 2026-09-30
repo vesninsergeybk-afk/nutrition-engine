@@ -123,7 +123,7 @@ const EXACT = Object.freeze({
 function splitSide(value) {
   const source = String(value || "").trim();
   let side = "";
-  let core = source
+  let core = source.replace(/_/g, " ")
     .replace(/\.(?:l|r)$/i, (match) => {
       side = match.toLocaleLowerCase("en-US") === ".l" ? "left" : "right";
       return "";

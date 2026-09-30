@@ -118,6 +118,7 @@ jobs:
           node --check experiments/muscle-memory-game/browser-smoke-z-anatomy.cjs
           node --check experiments/muscle-memory-game/browser-smoke-reference-cards.cjs
           node --check experiments/muscle-memory-game/browser-smoke-bodyparts.cjs
+          node --check experiments/muscle-memory-game/anatomy-model-names.js
           node --check experiments/muscle-memory-game/reference-ui.js
           node --check experiments/muscle-memory-game/reference-data/functional-parts.js
           node --check experiments/muscle-memory-game/browser-smoke-reference-ui.cjs
@@ -173,6 +174,7 @@ jobs:
           node experiments/muscle-memory-game/check-z-anatomy-ru.mjs
           node experiments/muscle-memory-game/check-bodyparts-ru.mjs
           node experiments/muscle-memory-game/check-support-terms-ru.mjs
+          node experiments/muscle-memory-game/check-anatomy-model-names.mjs
           node experiments/muscle-memory-game/check-reference-layer-interaction.mjs
           node experiments/muscle-memory-game/check-learning-engine.mjs
           node experiments/muscle-memory-game/check-learning-session.mjs

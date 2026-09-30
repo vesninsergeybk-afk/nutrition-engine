@@ -1,3 +1,4 @@
+import { originalAnatomyName } from "./anatomy-model-names.js";
 import { createReferenceUI } from "./reference-ui.js";
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
@@ -10159,14 +10160,7 @@ async function loadReferenceLayer(layerKey) {
 
       // Reference layers keep their own part IDs. They never share bone state.
       const referenceId = vertexCounts.length;
-      sourceNames.push(
-        String(
-          child.name ||
-            child.userData?.name ||
-            child.parent?.name ||
-            referenceLayerNameRu(layerKey)
-        ).trim()
-      );
+      sourceNames.push(originalAnatomyName(child, gltf.parser) || referenceLayerNameRu(layerKey));
       const geometry = cleanSkeletonGeometry(
         child.geometry,
         child.matrixWorld,
@@ -10239,6 +10233,7 @@ function setReferenceLayerAvailability(available) {
   if (!available) {
     for (const mesh of referenceMeshes.values()) mesh.visible = false;
     updateReferenceLayerDataset();
+    renderSearchResults(searchInput.value);
   }
 }
 
@@ -10258,6 +10253,7 @@ async function handleReferenceLayerChange(input) {
   if (mesh && input.checked && currentModelSource === "z-anatomy") {
     mesh.visible = applyReferenceRegionVisibility(mesh) > 0;
     updateReferenceLayerDataset();
+    renderSearchResults(searchInput.value);
   }
 }
 
@@ -10850,7 +10846,7 @@ async function loadSkeletonLayer(loader) {
         boneId
       );
 
-      boneNames.push(child.name || `Кость ${boneId + 1}`);
+      boneNames.push(originalAnatomyName(child, gltf.parser) || `Кость ${boneId + 1}`);
       vertexCounts.push(geometry.getAttribute("position").count);
       boneLocalBounds.push(geometry.boundingBox?.clone() || null);
       geometries.push(geometry);
@@ -10894,15 +10890,6 @@ async function loadZAnatomyModel() {
     const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(MUSCLE_MODEL_URL);
 
-    const json = gltf.parser.json;
-    const assoc = gltf.parser.associations;
-    const originalName = (obj) => {
-      const a = assoc.get(obj);
-      if (a && a.nodes !== undefined && json.nodes?.[a.nodes]) {
-        return json.nodes[a.nodes].name || obj.name;
-      }
-      return obj.name;
-    };
 
     gltf.scene.updateMatrixWorld(true);
 
@@ -10912,7 +10899,7 @@ async function loadZAnatomyModel() {
     gltf.scene.traverse((child) => {
       if (!child.isMesh) return;
 
-      const name = originalName(child) || `Структура ${structureNames.length}`;
+      const name = originalAnatomyName(child, gltf.parser) || `Структура ${structureNames.length}`;
       if (COVER_RE.test(name)) return;
 
       const sid = structureNames.length;
