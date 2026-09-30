@@ -118,6 +118,9 @@ jobs:
           node --check experiments/muscle-memory-game/browser-smoke-z-anatomy.cjs
           node --check experiments/muscle-memory-game/browser-smoke-reference-cards.cjs
           node --check experiments/muscle-memory-game/browser-smoke-bodyparts.cjs
+          node --check experiments/muscle-memory-game/reference-ui.js
+          node --check experiments/muscle-memory-game/reference-data/functional-parts.js
+          node --check experiments/muscle-memory-game/browser-smoke-reference-ui.cjs
           node --check experiments/muscle-memory-game/browser-smoke-mobile-atlas.cjs
           node --check experiments/muscle-memory-game/browser-smoke-mobile-training.cjs
           node --check experiments/muscle-memory-game/browser-smoke-motion.cjs
@@ -225,6 +228,8 @@ jobs:
           - z-anatomy
           - bodyparts
           - mobile-atlas
+          - mobile-training
+          - reference-ui
 
     steps:
       - uses: actions/checkout@v4

@@ -13,6 +13,7 @@ import {
   referenceIllustrationsForStructure,
 } from "./reference-data/illustrations.js";
 import { courseArtPrimaryForStructure } from "./reference-data/course-art.js";
+import { functionalPartsForStructure, functionalPartForModelName } from "./reference-data/functional-parts.js";
 import { functionalRelationsForStructure } from "./reference-data/functional-relations.js";
 import { structureTerm } from "./anatomy-terms-ru.js";
 
@@ -68,11 +69,12 @@ function zAnatomyReferenceAlias(sourceName) {
     /\b(descending|transverse|ascending)\s+part\s+of\s+(?:(right|left)\s+)?trapezius(?:\s+muscle)?\b/i
   );
   if (trapeziusPart) {
+    const verifiedPart = functionalPartForModelName("trapezius", sourceName);
     const partLabel = {
-      descending: "Нисходящая часть трапециевидной мышцы",
-      transverse: "Поперечная часть трапециевидной мышцы",
-      ascending: "Восходящая часть трапециевидной мышцы",
-    }[trapeziusPart[1].toLocaleLowerCase("en-US")];
+      upper: "Нисходящая часть трапециевидной мышцы",
+      middle: "Поперечная часть трапециевидной мышцы",
+      lower: "Восходящая часть трапециевидной мышцы",
+    }[verifiedPart];
 
     return Object.freeze({
       referenceId: "trapezius",
@@ -279,6 +281,8 @@ function candidateCard(candidate, mapping = null) {
     studyCueRu: card.sections.studyCue,
     sourceNotesRu: Object.freeze(candidate.structure.sourceNotesRu || []),
     functionalRelations: functionalRelationsForStructure(candidate.structure.id),
+    functionalParts: functionalPartsForStructure(candidate.structure.id),
+    selectedFunctionalPartId: functionalPartForModelName(candidate.structure.id, mapping?.labelRu || ""),
     sources: card.sections.sources,
     illustrations: Object.freeze(illustrations),
     primaryIllustration,

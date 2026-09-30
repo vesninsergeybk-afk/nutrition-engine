@@ -13,8 +13,8 @@ const app = await readFile(new URL("app.js", import.meta.url), "utf8");
 
 assert(
   html.includes("<title>Анатомический тренажёр Сергея Веснина</title>") &&
-    html.includes("<h1>Анатомический тренажёр</h1>") &&
-    html.includes('<span class="brand-author">Сергей Веснин</span>'),
+    html.includes("<h1>Анатомический тренажёр ") &&
+    html.includes('<span class="brand-author">Сергея Веснина</span></h1>'),
   "Product title/heading mismatch"
 );
 assert(

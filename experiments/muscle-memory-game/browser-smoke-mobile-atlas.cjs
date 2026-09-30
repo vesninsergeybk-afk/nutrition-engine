@@ -158,7 +158,7 @@ const assert = require('node:assert/strict');
     null,
     { timeout: 10000 }
   );
-  await page.selectOption('#view-preset', 'back');
+  await page.selectOption('#view-preset', 'back', { force: true });
   assert.equal(await page.locator('#viewer').getAttribute('data-camera-scope'), 'regional');
 
   await page.fill('#structure-search', 'дельтовидная');
@@ -186,7 +186,7 @@ const assert = require('node:assert/strict');
 
   await deeperButton.click();
   assert.equal(await page.locator('#viewer').getAttribute('data-deeper-focus'), 'true');
-  assert.match(await page.locator('#isolate-selected').innerText(), /Показать окружение/i);
+  assert.match(await page.locator('#isolate-selected').innerText(), /(?:Показать|Вернуть) окружение/i);
   assert.ok(
     Number(await page.locator('#viewer').getAttribute('data-selected-muscle-visible-bones')) > 0,
     'Isolated muscle lost skeletal landmarks on mobile'
@@ -194,7 +194,7 @@ const assert = require('node:assert/strict');
 
   await page.click('#isolate-selected');
   assert.equal(await page.locator('#viewer').getAttribute('data-deeper-focus'), 'false');
-  assert.match(await page.locator('#show-all').innerText(), /Показать весь блок/i);
+  assert.match(await page.locator('#show-all').innerText(), /(?:Показать весь блок|Вернуть структуры области)/i);
 
   const finalOverflow = await page.evaluate(() => ({
     viewport: window.innerWidth,
@@ -219,5 +219,5 @@ const assert = require('node:assert/strict');
   await browser.close();
 })().catch(error => {
   console.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });

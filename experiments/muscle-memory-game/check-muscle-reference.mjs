@@ -188,8 +188,10 @@ assert(
 );
 assert(
   html.includes('id="structure-reference-heading">Справка по структуре</strong>') &&
-    (html.match(/data-reference-default-open/g) || []).length >= 2 &&
-    app.includes("function openDefaultStructureReferenceDetails()") &&
+    html.includes('id="reference-overview"') &&
+    html.includes('id="reference-movement"') &&
+    html.includes('id="reference-detail"') &&
+    !html.includes("data-reference-default-open") &&
     app.includes('structureReferenceHeading.textContent = "Справка по мышце"'),
   "Reference card must surface the key muscle facts without requiring the learner to discover collapsed sections"
 );

@@ -1,3 +1,5 @@
+import { createReferenceUI } from "./reference-ui.js";
+import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -321,13 +323,13 @@ const mobileRootContextButton = document.querySelector("#mobile-root-context");
 const mobileContextTrail = document.querySelector("#mobile-context-trail");
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xdedbd4);
+scene.background = new THREE.Color(0xe7e9ed);
 
 const modelGroup = new THREE.Group();
 scene.add(modelGroup);
 
 const motionScene = new THREE.Scene();
-motionScene.background = new THREE.Color(0xdedbd4);
+motionScene.background = new THREE.Color(0xe7e9ed);
 const motionModelGroup = new THREE.Group();
 motionScene.add(motionModelGroup);
 
@@ -499,6 +501,7 @@ function clearStructureReferencePrimaryArt() {
 }
 
 function hideStructureReference() {
+  referenceUI.clearGroup();
   if (structureReferenceEl) {
     structureReferenceEl.hidden = true;
     structureReferenceEl.dataset.referenceId = "";
@@ -981,53 +984,75 @@ function openDefaultStructureReferenceDetails() {
   }
 }
 
-function renderFunctionalRelations(reference) {
-  if (!structureReferenceFunctional || !structureReferenceFunctionalDetails) return;
+let functionalGroupActive = false;
+let functionalModelIndex = null;
+let functionalModelIndexMesh = null;
 
-  structureReferenceFunctional.replaceChildren();
-  const relations = reference?.functionalRelations || [];
-  structureReferenceFunctionalDetails.hidden = relations.length === 0;
-
-  for (const relation of relations) {
-    const row = document.createElement("section");
-    row.className = "structure-reference-functional-row";
-
-    const movement = document.createElement("strong");
-    movement.textContent = relation.movementRu;
-    row.append(movement);
-
-    const appendGroup = (label, items) => {
-      if (!items?.length) return;
-      const line = document.createElement("div");
-      line.className = "structure-reference-functional-group";
-
-      const heading = document.createElement("span");
-      heading.className = "structure-reference-functional-label";
-      heading.textContent = label;
-
-      const names = document.createElement("span");
-      names.textContent = items.map((item) => item.nameRu).join(", ");
-
-      line.append(heading, names);
-      row.append(line);
-    };
-
-    appendGroup("Синергисты", relation.synergists);
-    appendGroup("Антагонисты в этом движении", relation.antagonists);
-    appendGroup(
-      "Роль зависит от части мышцы или положения",
-      relation.contextDependent
-    );
-
-    if (relation.noteRu) {
-      const note = document.createElement("p");
-      note.className = "structure-reference-functional-row-note";
-      note.textContent = relation.noteRu;
-      row.append(note);
-    }
-
-    structureReferenceFunctional.append(row);
+function functionalModelIds(item) {
+  if (functionalModelIndexMesh !== anatomyMesh || !functionalModelIndex) {
+    functionalModelIndex = new Map();
+    functionalModelIndexMesh = anatomyMesh;
+    structureNames.forEach((name, sid) => {
+      const ref = muscleReferenceFor(name);
+      if (!ref || ref.ambiguous) return;
+      if (!functionalModelIndex.has(ref.id)) functionalModelIndex.set(ref.id, []);
+      functionalModelIndex.get(ref.id).push(sid);
+    });
   }
+  const side = selectedExploreSid == null ? null : structureSide(structureNames[selectedExploreSid]);
+  return (functionalModelIndex.get(item.id) || []).filter(sid => {
+    const candidateSide = structureSide(structureNames[sid]);
+    if (side && side !== "unknown" && candidateSide && candidateSide !== "unknown" && candidateSide !== side) return false;
+    // A whole-muscle mesh must never masquerade as one functional part.
+    return !item.partId || functionalPartForModelName(item.id, structureNames[sid]) === item.partId;
+  });
+}
+
+function clearFunctionalGroup() {
+  if (!functionalGroupActive) return;
+  functionalGroupActive = false;
+  restoreHighlights();
+  if (selectedExploreSid != null) {
+    const ref = muscleReferenceFor(structureNames[selectedExploreSid]);
+    highlightStructures(parentMuscleContextIds(selectedExploreSid, ref), "parentContext");
+    highlightStructures([selectedExploreSid], "selected");
+  }
+  canvas.dataset.functionalGroupRole = "";
+  canvas.dataset.functionalGroupIds = "";
+  canvas.dataset.functionalGroupNames = "";
+  canvas.dataset.functionalSubjectNames = "";
+}
+
+const referenceUI = createReferenceUI(structureReferenceEl, {
+  onClearGroup: clearFunctionalGroup,
+  onSelectItem(item) {
+    if (appMode !== "explore") return "Выбор связанных мышц доступен в режиме «Атлас».";
+    const ids = functionalModelIds(item);
+    if (!ids.length) return "Для этой мышцы или части нет отдельной геометрии в текущей модели. Её анатомическая роль указана в справке.";
+    selectExploreStructure(ids.find(sid => structureVisibility[sid] !== false) ?? ids[0]);
+    return "";
+  },
+  onShowGroup(items, role, subject) {
+    if (appMode !== "explore") return { shown: false, message: "Выделение групп доступно в режиме «Атлас»." };
+    const mapped = items.map(item => ({ item, ids: functionalModelIds(item) }));
+    const ids = [...new Set(mapped.flatMap(entry => entry.ids))].filter(sid => structureVisibility[sid] !== false);
+    const missing = mapped.filter(entry => !entry.ids.length).length;
+    if (!ids.length) return { shown: false, message: "Участники скрыты или не представлены отдельными структурами в текущей модели. Откройте нужный слой или выберите другую модель." };
+    restoreHighlights();
+    highlightStructures(ids, role === "synergists" ? "synergist" : "antagonist");
+    const subjectIds = functionalModelIds(subject).filter(sid => structureVisibility[sid] !== false);
+    highlightStructures(subjectIds, "selected");
+    functionalGroupActive = true;
+    canvas.dataset.functionalGroupRole = role;
+    canvas.dataset.functionalGroupIds = ids.join(",");
+    canvas.dataset.functionalGroupNames = ids.map(sid => structureNames[sid]).join(" | ");
+    canvas.dataset.functionalSubjectNames = subjectIds.map(sid => structureNames[sid]).join(" | ");
+    return { shown: true, message: `Синий — изучаемая мышца; ${role === "synergists" ? "бирюзовый — синергисты" : "оранжевый — антагонисты"}. Выделено структур: ${ids.length}. Покрывающие слои сохраняются.${missing ? ` Без отдельной геометрии: ${missing}.` : ""}` };
+  },
+});
+
+function renderFunctionalRelations(reference, sourceName) {
+  referenceUI.render(reference, sourceName);
 }
 
 function renderStructureReference(sid) {
@@ -1058,11 +1083,16 @@ function renderStructureReference(sid) {
   // Do not render a separate hero card or a transient duplicate here.
 
   if (structureReferenceContext) {
+    const selectedPart = reference?.functionalParts?.find(part =>
+      part.id === functionalPartForModelName(reference.id, sourceName)
+    );
     const contextText =
       reference?.modelCoverage === "group"
         ? "Рассматривается в составе: " + reference.titleRu + "."
         : reference?.modelCoverage === "part"
-          ? "Это часть: " + reference.titleRu + "."
+          ? selectedPart
+            ? "Выбранная часть: " + selectedPart.nameRu.toLocaleLowerCase("ru-RU") + ". Подробная справка описывает мышцу целиком."
+            : "Выбрана часть мышцы. Подробная справка описывает " + reference.titleRu.toLocaleLowerCase("ru-RU") + " целиком."
           : "";
     structureReferenceContext.textContent = contextText;
     structureReferenceContext.hidden = !contextText;
@@ -1113,7 +1143,7 @@ function renderStructureReference(sid) {
     structureReferenceInsertion.textContent = reference.insertionRu || "—";
 
     renderReferenceList(structureReferenceActions, reference.actionsRu);
-    renderFunctionalRelations(reference);
+    renderFunctionalRelations(reference, sourceName);
 
     const cue = reference.studyCueRu || "";
     structureReferenceStudyCue.hidden = !cue;
@@ -2619,6 +2649,11 @@ function clearAnswerRevealOverlay() {
 }
 
 function restoreHighlights() {
+  functionalGroupActive = false;
+  canvas.dataset.functionalGroupRole = "";
+  canvas.dataset.functionalGroupIds = "";
+  canvas.dataset.functionalGroupNames = "";
+  canvas.dataset.functionalSubjectNames = "";
   canvas.dataset.answerRevealHighlight = "";
   canvas.dataset.answerRevealHighlightIds = "";
   clearAnswerRevealOverlay();
@@ -2714,6 +2749,8 @@ function highlightStructures(ids, kind = "answer") {
     navigation: 0x9a6b18,
     selected: 0x245da8,
     parentContext: 0x8fc9e8,
+    synergist: 0x168a86,
+    antagonist: 0xb75a21,
   };
   const color = new THREE.Color(colors[kind] || colors.answer);
 

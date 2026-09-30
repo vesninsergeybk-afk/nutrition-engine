@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Анатомический тренажёр Сергея Веснина</title>
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./ui-polish.css" />
   <script type="importmap">
     {
       "imports": {
@@ -19,8 +20,7 @@
     <section class="stage">
       <div class="topbar">
         <div class="brand">
-          <h1>Анатомический тренажёр</h1>
-          <span class="brand-author">Сергей Веснин</span>
+          <h1>Анатомический тренажёр <span class="brand-author">Сергея Веснина</span></h1>
         </div>
 
         <div class="topbar-tools">
@@ -232,6 +232,17 @@
           </label>
         </div>
 
+        <div id="explore-controls" class="explore-controls">
+          <label class="search-field">
+            <span>Поиск по названию</span>
+            <input id="structure-search" type="search" autocomplete="off" placeholder="Название мышцы…" />
+          </label>
+          <div id="search-results" class="search-results" aria-live="polite"></div>
+          <div id="restore-view-actions" class="restore-view-actions" hidden>
+            <button id="show-all" type="button">Вернуть структуры области</button>
+          </div>
+        </div>
+
         <div id="learning-controls" class="learning-controls" hidden>
           <div class="learning-mode-field">
             <span>Как тренируемся</span>
@@ -295,12 +306,50 @@
             <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
           </div>
         </div>
-        <section id="structure-reference" class="structure-reference" hidden aria-live="polite">
+        <section id="structure-reference" class="structure-reference" hidden aria-label="Справка по выбранной мышце">
           <div class="structure-reference-head">
             <strong id="structure-reference-heading">Справка по структуре</strong>
             <span id="structure-reference-latin"></span>
           </div>
+          <dl class="structure-reference-grid">
+            <div>
+              <dt>Область</dt>
+              <dd id="structure-reference-region">—</dd>
+            </div>
+            <div>
+              <dt>Тип</dt>
+              <dd id="structure-reference-type">—</dd>
+            </div>
+            <div>
+              <dt>Слой</dt>
+              <dd id="structure-reference-depth">—</dd>
+            </div>
+          </dl>
 
+          <div id="structure-reference-badges" class="structure-reference-badges" hidden></div>
+          <p id="structure-reference-context" class="structure-reference-context" hidden></p>
+
+          <div id="structure-reference-ambiguity" class="structure-reference-ambiguity" hidden>
+            <strong id="structure-reference-ambiguity-label">Нужно уточнение</strong>
+            <p id="structure-reference-ambiguity-note"></p>
+            <ul id="structure-reference-ambiguity-candidates"></ul>
+          </div>
+
+          <div id="structure-reference-facts" class="structure-reference-facts" hidden>
+            <div class="reference-tabs" role="tablist" aria-label="Раздел справки">
+              <button id="reference-tab-overview" type="button" role="tab" aria-controls="reference-overview" aria-selected="true" tabindex="0" data-reference-tab="overview">Обзор</button>
+              <button id="reference-tab-movement" type="button" role="tab" aria-controls="reference-movement" aria-selected="false" tabindex="-1" data-reference-tab="movement">Движения</button>
+              <button id="reference-tab-detail" type="button" role="tab" aria-controls="reference-detail" aria-selected="false" tabindex="-1" data-reference-tab="detail">Подробно</button>
+            </div>
+            <div id="reference-overview" class="reference-tab-panel" role="tabpanel" aria-labelledby="reference-tab-overview" tabindex="0">
+              <section class="reference-section reference-function">
+                <h3>Что делает мышца</h3>
+                <ul id="structure-reference-actions"></ul>
+              </section>
+              <div id="structure-reference-study-cue" class="reference-study-cue" hidden>
+                <strong>Ориентир для изучения</strong>
+                <span id="structure-reference-study-cue-text"></span>
+              </div>
           <figure id="structure-reference-primary-art" class="structure-reference-primary-art" hidden>
             <div
               id="structure-reference-primary-art-image"
@@ -328,118 +377,47 @@
             </div>
           </div>
 
-          <dl class="structure-reference-grid">
-            <div>
-              <dt>Область</dt>
-              <dd id="structure-reference-region">—</dd>
             </div>
-            <div>
-              <dt>Тип</dt>
-              <dd id="structure-reference-type">—</dd>
+            <div id="reference-movement" class="reference-tab-panel" role="tabpanel" aria-labelledby="reference-tab-movement" tabindex="0" hidden>
+              <section id="structure-reference-functional-details" class="reference-section" hidden>
+                <h3>Участники движения</h3>
+                <p class="reference-intro">Выберите движение: кто помогает мышце и кто действует в противоположном направлении.</p>
+                <label id="functional-part-field" class="reference-select-field" hidden>
+                  <span>Часть мышцы</span>
+                  <select id="functional-part" aria-label="Часть мышцы для сравнения"></select>
+                </label>
+                <label class="reference-select-field">
+                  <span>Движение</span>
+                  <select id="functional-movement" aria-label="Движение для сравнения мышц"></select>
+                </label>
+                <div id="functional-role" class="functional-role" role="group" aria-label="Роль мышц в движении">
+                  <button type="button" data-functional-role="synergists" aria-pressed="true">Синергисты</button>
+                  <button type="button" data-functional-role="antagonists" aria-pressed="false">Антагонисты</button>
+                </div>
+                <div id="structure-reference-functional" class="structure-reference-functional"></div>
+                <button id="functional-show-group" class="functional-show-group" type="button" aria-pressed="false">Выделить на модели</button>
+                <p id="functional-model-status" class="functional-model-status" role="status"></p>
+              </section>
+              <p id="functional-unavailable" class="reference-intro" hidden>В этой карточке пока не описаны связи для конкретных движений. Основные функции приведены в обзоре.</p>
             </div>
-            <div>
-              <dt>Слой</dt>
-              <dd id="structure-reference-depth">—</dd>
+            <div id="reference-detail" class="reference-tab-panel" role="tabpanel" aria-labelledby="reference-tab-detail" tabindex="0" hidden>
+              <section class="reference-section">
+                <h3>Начало и прикрепление</h3>
+                <div class="structure-reference-fact"><strong>Начало</strong><span id="structure-reference-origin"></span></div>
+                <div class="structure-reference-fact"><strong>Прикрепление</strong><span id="structure-reference-insertion"></span></div>
+                <div id="structure-reference-orientation-row" class="structure-reference-fact"><strong>Направление волокон</strong><span id="structure-reference-orientation"></span></div>
+              </section>
+              <section class="reference-section">
+                <h3>Топография</h3>
+                <div id="structure-reference-landmarks-row" class="structure-reference-fact"><strong>Костные и поверхностные ориентиры</strong><ul id="structure-reference-landmarks"></ul></div>
+                <div id="structure-reference-relations-row" class="structure-reference-fact"><strong>Соседние структуры и слой</strong><ul id="structure-reference-relations"></ul></div>
+              </section>
+              <section id="structure-reference-innervation-details" class="reference-section"><h3>Иннервация</h3><p id="structure-reference-innervation"></p></section>
+              <section id="structure-reference-notes-details" class="reference-section" hidden><h3>Что учитывать</h3><ul id="structure-reference-notes"></ul></section>
+              <section class="reference-section"><h3>Источники</h3><div id="structure-reference-sources" class="structure-reference-source-list"></div></section>
             </div>
-          </dl>
-
-          <div id="structure-reference-badges" class="structure-reference-badges" hidden></div>
-          <p id="structure-reference-context" class="structure-reference-context" hidden></p>
-
-          <div id="structure-reference-ambiguity" class="structure-reference-ambiguity" hidden>
-            <strong id="structure-reference-ambiguity-label">Нужно уточнение</strong>
-            <p id="structure-reference-ambiguity-note"></p>
-            <ul id="structure-reference-ambiguity-candidates"></ul>
           </div>
-
-          <div id="structure-reference-facts" class="structure-reference-facts" hidden>
-            <details class="structure-reference-details" data-reference-default-open>
-              <summary>Функция</summary>
-              <div class="structure-reference-details-body">
-                <div class="structure-reference-fact">
-                  <ul id="structure-reference-actions"></ul>
-                </div>
-              </div>
-            </details>
-
-            <details id="structure-reference-functional-details" class="structure-reference-details" hidden>
-              <summary>Синергисты и антагонисты</summary>
-              <div id="structure-reference-functional" class="structure-reference-functional"></div>
-              <p class="structure-reference-functional-note">
-                Связи относятся к конкретному движению. Одна и та же мышца может выступать синергистом или антагонистом в разных двигательных задачах.
-              </p>
-            </details>
-
-            <details class="structure-reference-details" data-reference-default-open>
-              <summary>Начало, прикрепление и направление волокон</summary>
-              <div class="structure-reference-details-body">
-                <div class="structure-reference-fact">
-                  <strong>Начало</strong>
-                  <span id="structure-reference-origin"></span>
-                </div>
-                <div class="structure-reference-fact">
-                  <strong>Прикрепление</strong>
-                  <span id="structure-reference-insertion"></span>
-                </div>
-                <div id="structure-reference-orientation-row" class="structure-reference-fact">
-                  <strong>Направление волокон</strong>
-                  <span id="structure-reference-orientation"></span>
-                </div>
-              </div>
-            </details>
-
-            <details class="structure-reference-details">
-              <summary>Топография и ориентиры</summary>
-              <div class="structure-reference-details-body">
-                <div id="structure-reference-landmarks-row" class="structure-reference-fact">
-                  <strong>Костные и поверхностные ориентиры</strong>
-                  <ul id="structure-reference-landmarks"></ul>
-                </div>
-                <div id="structure-reference-relations-row" class="structure-reference-fact">
-                  <strong>Соседние структуры и слой</strong>
-                  <ul id="structure-reference-relations"></ul>
-                </div>
-              </div>
-            </details>
-
-            <details id="structure-reference-innervation-details" class="structure-reference-details">
-              <summary>Иннервация</summary>
-              <div class="structure-reference-details-body">
-                <div class="structure-reference-fact">
-                  <span id="structure-reference-innervation"></span>
-                </div>
-              </div>
-            </details>
-
-            <details id="structure-reference-study-cue" class="structure-reference-details" hidden>
-              <summary>Ориентир для изучения</summary>
-              <div class="structure-reference-details-body">
-                <div class="structure-reference-fact">
-                  <span id="structure-reference-study-cue-text"></span>
-                </div>
-              </div>
-            </details>
-
-            <details id="structure-reference-notes-details" class="structure-reference-details" hidden>
-              <summary>Вариабельность и примечания</summary>
-              <div class="structure-reference-details-body">
-                <div class="structure-reference-fact">
-                  <ul id="structure-reference-notes"></ul>
-                </div>
-              </div>
-            </details>
-
-            <details class="structure-reference-details structure-reference-sources-details">
-              <summary>Источники</summary>
-              <div class="structure-reference-media">
-                <div id="structure-reference-sources" class="structure-reference-source-list"></div>
-              </div>
-            </details>
-          </div>
-
-          <span id="structure-reference-empty" class="structure-reference-empty">
-            Для выбранной структуры пока нет проверенной справочной карточки.
-          </span>
+          <span id="structure-reference-empty" class="structure-reference-empty">Для выбранной структуры пока нет проверенной справочной карточки.</span>
         </section>
         <section id="deeper-structures" class="deeper-structures" hidden aria-live="polite">
           <div class="deeper-structures-head">
@@ -457,17 +435,7 @@
           <button id="next-question" type="button" class="primary" disabled>Следующая</button>
         </div>
 
-        <div id="explore-controls" class="explore-controls">
-          <p class="explore-start-hint"><strong>Выберите структуру на 3D-модели</strong><span>или найдите её по названию</span></p>
-          <label class="search-field">
-            <span>Поиск по названию</span>
-            <input id="structure-search" type="search" autocomplete="off" placeholder="Например: дельтовидная, трапециевидная, бицепс" />
-          </label>
-          <div id="search-results" class="search-results" aria-live="polite"></div>
-          <div id="restore-view-actions" class="restore-view-actions" hidden>
-            <button id="show-all" type="button">Вернуть структуры области</button>
-          </div>
-        </div>
+
       </section>
 
       <details id="debug-panel" class="debug" hidden>

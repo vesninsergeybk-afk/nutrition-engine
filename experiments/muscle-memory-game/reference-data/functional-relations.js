@@ -1,4 +1,5 @@
 import { REFERENCE_REGIONS } from "./regions/index.js";
+import { functionalPartsForStructure } from "./functional-parts.js";
 
 const MOVEMENTS = Object.freeze([
   Object.freeze({ id:"shoulder-flexion", labelRu:"Сгибание плеча", opposite:"shoulder-extension", patterns:[/сгиба(?:ет|ют) плечо(?! назад)/i,/сгибание плеча/i,/передн(?:ее|его) сгибан/i] }),
@@ -61,25 +62,48 @@ for (const region of REFERENCE_REGIONS) {
   }
 }
 
-function actionText(structure) {
-  return (structure.anatomy?.actionsRu || []).join(" ");
-}
+// Match inflected Russian nouns as well as verbs. Work on one fact at a
+// time so a rotation in one sentence cannot borrow a joint from another.
+const ACTION_FORMS = Object.freeze({
+  "shoulder-flexion": /сгибани[еяию] плеча/i,
+  "shoulder-extension": /разгибани[еяию] плеча|разгибать плечо/i,
+  "shoulder-abduction": /отведени[еяию] плеча/i,
+  "shoulder-adduction": /приведени[еяию] плеча/i,
+  "shoulder-external-rotation": /наружн\S* враща(?:ет|ют) плечо/i,
+  "shoulder-internal-rotation": /внутренн\S* враща(?:ет|ют) плечо/i,
+  "scapula-protraction": /тянет лопатку впер[её]д/i,
+  "scapula-depression": /тянет лопатку впер[её]д и вниз/i,
+  "elbow-flexion": /сгибани[еяию] предплечья|сгибани[еяию] в локтевом суставе/i,
+  "elbow-extension": /разгибани[еяию] предплечья|разгибани[еяию] в локтевом суставе/i,
+  "wrist-flexion": /сгибани[еяию] кисти/i,
+  "wrist-extension": /разгибани[еяию] кисти/i,
+  "hip-flexion": /сгибани[еяию] бедра/i,
+  "hip-extension": /разгибани[еяию] бедра/i,
+  "hip-abduction": /отведени[еяию] бедра/i,
+  "hip-adduction": /приведени[еяию] бедра/i,
+  "knee-flexion": /сгибани[еяию] колена|сгибани[еяию] голени/i,
+  "knee-extension": /разгибани[еяию] колена|разгибани[еяию] голени/i,
+});
 
 function movementIdsFor(structure) {
-  const text = actionText(structure);
-  const ids = [];
-  for (const movement of MOVEMENTS) {
-    if (movement.patterns.some(pattern => pattern.test(text))) ids.push(movement.id);
-  }
-  return ids;
+  const facts = structure.anatomy?.actionsRu || [];
+  return MOVEMENTS.filter(movement => facts.some(text =>
+    movement.patterns.some(pattern => pattern.test(text)) || ACTION_FORMS[movement.id]?.test(text)
+  )).map(movement => movement.id);
 }
 
 const membership = new Map();
+const functionalUnits = new Map();
 for (const item of structures) {
-  const ids = movementIdsFor(item.structure);
-  for (const movementId of ids) {
-    if (!membership.has(movementId)) membership.set(movementId, []);
-    membership.get(movementId).push(item.structure.id);
+  const parts = functionalPartsForStructure(item.structure.id);
+  const units = parts.length ? parts : [{ id: null, movementIds: movementIdsFor(item.structure) }];
+  for (const part of units) {
+    const key = part.id ? `${item.structure.id}::${part.id}` : item.structure.id;
+    functionalUnits.set(key, { structureId: item.structure.id, part });
+    for (const movementId of part.movementIds) {
+      if (!membership.has(movementId)) membership.set(movementId, []);
+      membership.get(movementId).push(key);
+    }
   }
 }
 
@@ -161,14 +185,16 @@ const CURATED_FUNCTIONAL_RELATIONS = Object.freeze({
 });
 
 function relatedItems(ids) {
-  return Object.freeze(
-    (ids || []).map(id =>
-      Object.freeze({
-        id,
-        nameRu: displayName(id),
-      })
-    )
-  );
+  return Object.freeze((ids || []).map(key => {
+    const unit = functionalUnits.get(key);
+    const id = unit?.structureId || key;
+    const part = unit?.part;
+    return Object.freeze({
+      id,
+      ...(part?.id ? { partId: part.id } : {}),
+      nameRu: part?.id ? `${displayName(id)} · ${part.nameRu.toLocaleLowerCase("ru-RU")}` : displayName(id),
+    });
+  }));
 }
 
 function curatedFunctionalRelationsForStructure(structureId) {
@@ -190,54 +216,35 @@ function curatedFunctionalRelationsForStructure(structureId) {
 export function functionalRelationsForStructure(structureId) {
   const current = structureById.get(structureId);
   if (!current) return Object.freeze([]);
-
-  const movementIds = movementIdsFor(current.structure);
+  const parts = functionalPartsForStructure(structureId);
+  const subjects = parts.length ? parts : [{ id: null, movementIds: movementIdsFor(current.structure) }];
   const rows = [...curatedFunctionalRelationsForStructure(structureId)];
 
-  for (const movementId of movementIds) {
-    const movement = movementById.get(movementId);
-    if (!movement) continue;
-
-    const rawSynergistIds = (membership.get(movementId) || [])
-      .filter(id => id !== structureId);
-    const rawAntagonistIds = movement.opposite
-      ? (membership.get(movement.opposite) || []).filter(id => id !== structureId)
-      : [];
-
-    // Whole-muscle cards can legitimately contain actions of different parts.
-    // Example: anterior deltoid contributes to internal rotation, while the
-    // posterior part contributes to external rotation. Such a structure must
-    // not be presented as both a synergist and antagonist in the same row.
-    const antagonistSet = new Set(rawAntagonistIds);
-    const contextDependentIds = rawSynergistIds.filter(id =>
-      antagonistSet.has(id)
-    );
-    const contextDependentSet = new Set(contextDependentIds);
-    const synergistIds = rawSynergistIds.filter(
-      id => !contextDependentSet.has(id)
-    );
-    const antagonistIds = rawAntagonistIds.filter(
-      id => !contextDependentSet.has(id)
-    );
-
-    if (
-      !synergistIds.length &&
-      !antagonistIds.length &&
-      !contextDependentIds.length
-    ) continue;
-
-    rows.push(Object.freeze({
-      movementId,
-      movementRu: movement.labelRu,
-      synergists: relatedItems(synergistIds),
-      antagonists: relatedItems(antagonistIds),
-      contextDependent: relatedItems(contextDependentIds),
-      method: "derived-from-verified-actions",
-      noteRu:
-        "Связи показаны для указанного движения. Для мышц с функционально различающимися частями роль вынесена отдельно; она также меняется с положением сустава и задачей.",
-    }));
+  for (const subject of subjects) {
+    const subjectKey = subject.id ? `${structureId}::${subject.id}` : structureId;
+    for (const movementId of subject.movementIds) {
+      const movement = movementById.get(movementId);
+      if (!movement) continue;
+      const rawSynergists = (membership.get(movementId) || []).filter(key => key !== subjectKey);
+      const rawAntagonists = (membership.get(movement.opposite) || []).filter(key => key !== subjectKey);
+      const opposites = new Set(rawAntagonists);
+      const contextDependent = rawSynergists.filter(key => opposites.has(key));
+      const context = new Set(contextDependent);
+      // A multi-action whole muscle stays conditional until its parts have
+      // been reviewed. Never assign its two opposed actions to one fixed role.
+      rows.push(Object.freeze({
+        movementId,
+        movementRu: movement.labelRu,
+        ...(subject.id ? { subjectPartId: subject.id, subjectPartRu: subject.nameRu } : {}),
+        synergists: relatedItems(rawSynergists.filter(key => !context.has(key))),
+        antagonists: relatedItems(rawAntagonists.filter(key => !context.has(key))),
+        contextDependent: relatedItems(contextDependent),
+        method: subject.id ? "curated-functional-parts" : "derived-from-verified-actions",
+        noteRu: subject.noteRu || "Связи сопоставлены по действиям из проверенных карточек. Вклад мышц зависит от положения сустава, фиксации и задачи; список не является моделью распределения усилий.",
+        ...(structureId === "trapezius" ? { sourceUrl: "https://pmc.ncbi.nlm.nih.gov/articles/PMC6849087/", sourceTitle: "Camargo, Neumann, 2019 · функция частей трапециевидной мышцы" } : {}),
+      }));
+    }
   }
-
   return Object.freeze(rows);
 }
 
