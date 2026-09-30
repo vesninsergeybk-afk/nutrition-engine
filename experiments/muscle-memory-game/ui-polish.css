@@ -171,3 +171,103 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+
+/* Account + persistent progress */
+.account-button {
+  min-height: 38px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: #fff; color: #42516a; font-size: 12px; font-weight: 650; white-space: nowrap;
+}
+.account-button[data-state="online"] { color: #16654b; border-color: #b9d9cb; background: #f4fbf7; }
+.account-button[data-state="ready"] { color: var(--accent); border-color: #c5d5e9; }
+.account-button[data-state="local"] { color: #657185; background: #f7f8fa; }
+.account-button-mobile { display: none; width: 100%; margin: 0 0 10px; }
+
+.overall-progress {
+  display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px 14px; align-items: center;
+  margin: 12px 0 14px; padding: 13px 14px; border: 1px solid #dfe5ed; border-radius: 12px; background: #f8fafc;
+}
+.overall-progress[hidden] { display: none; }
+.overall-progress-copy { display: grid; gap: 2px; min-width: 0; }
+.overall-progress-copy > span { font-size: 11px; color: #6b7789; font-weight: 650; }
+.overall-progress-copy > strong { font-size: 14px; color: var(--ink); }
+.overall-progress-copy > small { font-size: 11px; line-height: 1.45; color: #6b7789; }
+.overall-progress-track {
+  grid-column: 1 / -1; height: 5px; overflow: hidden; border-radius: 99px; background: #e2e7ee;
+}
+.overall-progress-track > span {
+  display: block; width: 0; height: 100%; border-radius: inherit; background: #477aaa; transition: width .2s ease;
+}
+.review-all-mistakes {
+  min-height: 36px; padding: 7px 10px; border: 1px solid #d7c6b5; border-radius: 9px;
+  background: #fffaf5; color: #85572e; font-size: 12px; font-weight: 650;
+}
+
+.account-dialog {
+  width: min(520px, calc(100vw - 28px)); max-height: min(760px, calc(100dvh - 28px));
+  padding: 0; border: 0; border-radius: 18px; box-shadow: 0 24px 80px rgba(25,40,60,.24);
+  color: var(--ink); background: #fff;
+}
+.account-dialog::backdrop { background: rgba(26,35,49,.42); backdrop-filter: blur(2px); }
+.account-shell { display: grid; gap: 18px; padding: 22px; overflow-y: auto; max-height: inherit; box-sizing: border-box; }
+.account-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+.account-head h2 { margin: 2px 0 0; font-size: 24px; line-height: 1.2; }
+.account-kicker { font-size: 11px; font-weight: 750; letter-spacing: .05em; text-transform: uppercase; color: #6b7789; }
+.account-close {
+  width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 10px;
+  background: #f7f9fb; color: #5d697a; font-size: 24px;
+}
+.account-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 4px; border-radius: 11px; background: #eef2f6; }
+.account-tabs button { min-height: 40px; border: 0; border-radius: 8px; background: transparent; color: #657185; font-weight: 650; }
+.account-tabs button[aria-selected="true"] { color: var(--accent); background: #fff; box-shadow: 0 1px 4px rgba(25,45,70,.08); }
+.account-form, .account-profile { display: grid; gap: 12px; }
+.account-form[hidden], .account-profile[hidden], .account-auth[hidden], .account-offline[hidden] { display: none; }
+.account-form label:not(.account-consent) { display: grid; gap: 5px; }
+.account-form label > span { font-size: 12px; color: #5f6c7e; font-weight: 650; }
+.account-form input[type="text"], .account-form input[type="email"], .account-form input[type="password"], .account-form input:not([type]) {
+  width: 100%; min-height: 44px; box-sizing: border-box; padding: 10px 12px;
+  border: 1px solid #cbd3de; border-radius: 10px; background: #fff; color: var(--ink);
+}
+.account-consent { display: flex; gap: 9px; align-items: flex-start; line-height: 1.45; }
+.account-consent input { margin-top: 3px; }
+.account-consent span, .account-legal-note, .account-offline p, .account-form > p { margin: 0; font-size: 12px; line-height: 1.55; color: #5f6c7e; }
+.account-consent a, .account-legal-note a, .account-secondary-link { color: var(--accent); text-underline-offset: 2px; }
+.account-primary, .account-secondary, .account-danger {
+  min-height: 44px; padding: 10px 13px; border-radius: 10px; font-weight: 650;
+}
+.account-primary { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+.account-secondary { border: 1px solid var(--line); background: #fff; color: #536176; }
+.account-danger { border: 1px solid #e1c2c7; background: #fff8f9; color: #922d3e; }
+.account-link-button { min-height: 34px; border: 0; background: transparent; color: var(--accent); text-align: left; padding: 4px 0; }
+.account-offline { padding: 14px; border: 1px solid #dfe5ed; border-radius: 12px; background: #f7f9fb; }
+.account-offline strong { display: block; margin-bottom: 5px; }
+.account-user { display: grid; gap: 2px; padding: 12px 14px; border-radius: 11px; background: #f4f7fa; }
+.account-user span, .account-sync-state { font-size: 12px; color: #637083; }
+.account-message { min-height: 18px; margin: 0; font-size: 12px; line-height: 1.5; color: #5f6c7e; }
+.account-message[data-kind="error"] { color: #922d3e; }
+.account-message[data-kind="success"] { color: #1b7149; }
+
+@media (max-width: 920px) {
+  .account-button { min-height: 40px; padding: 7px 9px; max-width: 145px; overflow: hidden; text-overflow: ellipsis; }
+  .overall-progress { grid-template-columns: 1fr; }
+  .review-all-mistakes { width: 100%; }
+  .account-shell { padding: 18px; }
+}
+
+@media (max-width: 620px) {
+  #account-button { display: none; }
+  .account-button-mobile {
+    display: block;
+    max-width: none;
+    min-height: 42px;
+    margin-bottom: 2px;
+  }
+}
+
+.account-consent-document {
+  display: grid; gap: 7px; padding: 13px 14px; border: 1px solid #dfe5ed;
+  border-radius: 11px; background: #f7f9fb;
+}
+.account-consent-document strong { font-size: 14px; color: var(--ink); }
+.account-consent-document p { margin: 0; font-size: 12px; line-height: 1.55; color: #5f6c7e; }
+.account-consent-document a { width: fit-content; color: var(--accent); font-size: 12px; font-weight: 650; text-underline-offset: 2px; }

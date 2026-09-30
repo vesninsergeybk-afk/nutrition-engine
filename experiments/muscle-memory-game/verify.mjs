@@ -5,6 +5,7 @@ const root = path.dirname(new URL(import.meta.url).pathname);
 
 const read = (name) => fs.readFileSync(path.join(root, name), "utf8");
 const app = read("app.js");
+const accountClient = read("account-client.js");
 const index = read("index.html");
 const qualityApp = read("quality-lab.js");
 const qualityHtml = read("quality-lab.html");
@@ -30,7 +31,69 @@ function checkDom(js, html, label) {
 }
 
 checkDom(app, index, "main");
+checkDom(accountClient, index, "account-client");
 checkDom(qualityApp, qualityHtml, "quality-lab");
+
+for (const id of [
+  "account-button",
+  "account-dialog",
+  "account-login-form",
+  "account-register-form",
+  "account-consent-form",
+  "account-recovery-form",
+  "account-reset-form",
+  "account-consent-link",
+  "account-privacy-link",
+  "overall-progress",
+  "review-all-mistakes",
+]) {
+  if (!htmlIds(index).has(id)) errors.push("account/progress UI: missing #" + id);
+}
+
+const registerFormMatch = index.match(/<form id="account-register-form"[\s\S]*?<\/form>/);
+const consentFormMatch = index.match(/<form id="account-consent-form"[\s\S]*?<\/form>/);
+if (!consentFormMatch?.[0]?.includes('name="consent" type="checkbox" required')) {
+  errors.push("account UI: separate explicit personal-data consent form is missing");
+}
+if (registerFormMatch?.[0]?.includes('name="consent"')) {
+  errors.push("account UI: consent must not be embedded in the registration form");
+}
+if (!index.includes('name="email" type="email"')) {
+  errors.push("account UI: recovery email field is missing");
+}
+if (!accountClient.includes('/\\.pages\\.dev$/i.test(location.hostname)')) {
+  errors.push("account client: Cloudflare Pages registration safety gate is missing");
+}
+if (!accountClient.includes('localhost|127\\.0\\.0\\.1')) {
+  errors.push("account client: local static-preview safety gate is missing");
+}
+if (!accountClient.includes('"/api/account/register"')) {
+  errors.push("account client: registration endpoint is not wired");
+}
+if (!accountClient.includes('"/api/account/request-password-reset"')) {
+  errors.push("account client: password recovery endpoint is not wired");
+}
+if (!accountClient.includes('credentials:"include"')) {
+  errors.push("account client: protected cookie credentials are not enabled");
+}
+if (/TOKEN_KEY|muscle-memory-account-token-v1/.test(accountClient)) {
+  errors.push("account client: browser session token must not be persisted in localStorage");
+}
+if (!accountClient.includes('muscle-memory-learning-owner-v1')) {
+  errors.push("account client: local progress owner marker is missing");
+}
+if (!accountClient.includes('owner===user?.id')) {
+  errors.push("account client: cross-account progress isolation is missing");
+}
+if (!accountClient.includes('clearLocalWorkspace')) {
+  errors.push("account client: explicit logout/delete must clear the active local workspace");
+}
+if (!app.includes('reviewAllMistakesButton')) {
+  errors.push("main app: global mistake-review action is not wired");
+}
+if (!app.includes('renderOverallProgress')) {
+  errors.push("main app: overall progress surface is not wired");
+}
 
 for (const [label, source] of [
   ["main app", app],

@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="muscle-memory-api-base" content="" />
   <title>Анатомический тренажёр Сергея Веснина</title>
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./ui-polish.css" />
@@ -29,6 +31,8 @@
             <button id="mode-motion" type="button" aria-pressed="false" hidden disabled aria-hidden="true" tabindex="-1">Движение</button>
             <button id="mode-quiz" type="button" aria-pressed="false">Тренировка</button>
           </div>
+
+          <button id="account-button" class="account-button" type="button" data-state="local">Прогресс на устройстве</button>
 
           <div id="score" class="score" aria-live="polite" hidden>
             <span>Верно: <strong id="score-correct">0</strong></span>
@@ -239,6 +243,7 @@
     </section>
 
     <aside class="panel">
+      <button id="account-button-mobile" class="account-button account-button-mobile" type="button" data-state="local">Прогресс на устройстве</button>
       <section class="question-card">
         <div id="scope-controls" class="scope-controls">
           <label class="learning-field scope-field">
@@ -308,6 +313,15 @@
         <button id="today-learning-session" class="today-start" type="button" hidden disabled>
           Повторить сегодня
         </button>
+        <section id="overall-progress" class="overall-progress" hidden aria-label="Общий учебный прогресс">
+          <div class="overall-progress-copy">
+            <span>Общий прогресс</span>
+            <strong id="overall-progress-value">0 из 0 мышц</strong>
+            <small id="overall-progress-note">Начните тренировку, чтобы появился персональный прогресс.</small>
+          </div>
+          <div class="overall-progress-track" aria-hidden="true"><span id="overall-progress-bar"></span></div>
+          <button id="review-all-mistakes" class="review-all-mistakes" type="button" hidden>Повторить ошибки</button>
+        </section>
         <details id="learning-progress" class="learning-progress" hidden>
           <summary>Прогресс</summary>
           <div id="learning-progress-content" class="learning-progress-content"></div>
@@ -473,6 +487,77 @@
       </p>
     </aside>
   </main>
+
+  <dialog id="account-dialog" class="account-dialog" aria-labelledby="account-title">
+    <div class="account-shell">
+      <div class="account-head">
+        <div><span class="account-kicker">Muscle Memory</span><h2 id="account-title">Сохранить прогресс</h2></div>
+        <button id="account-close" class="account-close" type="button" aria-label="Закрыть">×</button>
+      </div>
+
+      <div id="account-offline" class="account-offline" hidden>
+        <strong>Сейчас прогресс хранится на этом устройстве.</strong>
+        <p>Облачная регистрация включается только на production-сервере с российской базой персональных данных.</p>
+      </div>
+
+      <section id="account-auth" class="account-auth" hidden>
+        <div class="account-tabs" role="tablist" aria-label="Аккаунт">
+          <button type="button" data-account-tab="login" aria-selected="true">Войти</button>
+          <button type="button" data-account-tab="register" aria-selected="false">Создать аккаунт</button>
+        </div>
+        <form id="account-login-form" class="account-form">
+          <label><span>Имя пользователя или email</span><input name="identifier" autocomplete="username" required /></label>
+          <label><span>Пароль</span><input name="password" type="password" autocomplete="current-password" required /></label>
+          <button class="account-primary" type="submit">Войти и загрузить прогресс</button>
+          <button id="account-forgot" class="account-link-button" type="button">Забыли пароль?</button>
+        </form>
+        <form id="account-register-form" class="account-form" hidden>
+          <label><span>Имя пользователя</span><input name="username" minlength="3" maxlength="32" autocomplete="username" required /></label>
+          <label><span>Email для восстановления доступа</span><input name="email" type="email" autocomplete="email" required /></label>
+          <label><span>Пароль</span><input name="password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required /></label>
+          <label><span>Повторите пароль</span><input name="passwordConfirm" type="password" minlength="10" maxlength="128" autocomplete="new-password" required /></label>
+          <p class="account-legal-note">Как и зачем используются данные, описано в <a id="account-privacy-link" target="_blank" rel="noopener">политике обработки персональных данных</a>.</p>
+          <button class="account-primary" type="submit">Продолжить</button>
+        </form>
+
+        <form id="account-consent-form" class="account-form account-consent-step" hidden>
+          <div class="account-consent-document">
+            <strong>Согласие на обработку персональных данных</strong>
+            <p>Согласие оформляется отдельным действием. Перед подтверждением откройте и прочитайте его текст.</p>
+            <a id="account-consent-link" target="_blank" rel="noopener">Открыть полный текст согласия</a>
+          </div>
+          <label class="account-consent">
+            <input name="consent" type="checkbox" required />
+            <span>Я прочитал(а) текст и даю согласие на обработку указанных в нём персональных данных.</span>
+          </label>
+          <button class="account-primary" type="submit">Даю согласие и создаю аккаунт</button>
+          <button class="account-link-button" type="button" data-back-register>Вернуться к данным аккаунта</button>
+        </form>
+        <form id="account-recovery-form" class="account-form" hidden>
+          <p>Укажите email аккаунта. На него придёт ссылка для смены пароля.</p>
+          <label><span>Email</span><input name="email" type="email" autocomplete="email" required /></label>
+          <button class="account-primary" type="submit">Отправить ссылку</button>
+          <button class="account-link-button" type="button" data-back-login>Вернуться ко входу</button>
+        </form>
+        <form id="account-reset-form" class="account-form" hidden>
+          <p>Задайте новый пароль.</p>
+          <label><span>Новый пароль</span><input name="password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required /></label>
+          <label><span>Повторите пароль</span><input name="passwordConfirm" type="password" minlength="10" maxlength="128" autocomplete="new-password" required /></label>
+          <button class="account-primary" type="submit">Сохранить новый пароль</button>
+        </form>
+      </section>
+
+      <section id="account-profile" class="account-profile" hidden>
+        <div class="account-user"><strong id="account-username"></strong><span id="account-email"></span></div>
+        <div id="account-sync-state" class="account-sync-state">Прогресс синхронизирован.</div>
+        <button id="account-sync-now" class="account-primary" type="button">Синхронизировать сейчас</button>
+        <button id="account-export" class="account-secondary account-export" type="button">Выгрузить мои данные</button>
+        <button id="account-logout" class="account-secondary" type="button">Выйти</button>
+        <button id="account-delete" class="account-danger" type="button">Удалить аккаунт и облачный прогресс</button>
+      </section>
+      <p id="account-message" class="account-message" role="status"></p>
+    </div>
+  </dialog>
 
   <script type="module" src="./app.js"></script>
 </body>

@@ -5,8 +5,10 @@ on:
     branches:
       - feature/muscle-memory-mvp
       - release/static-atlas-v1
+      - feature/muscle-memory-account-sync
     paths:
       - experiments/muscle-memory-game/**
+      - services/muscle-memory-account/**
       - .github/workflows/muscle-memory-smoke.yml
   workflow_dispatch:
 
@@ -39,6 +41,9 @@ jobs:
       - name: Syntax check
         run: |
           node --check experiments/muscle-memory-game/app.js
+          node --check experiments/muscle-memory-game/account-client.js
+          node --check experiments/muscle-memory-game/check-account-client.mjs
+          node --check services/muscle-memory-account/server.mjs
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/quality-lab.js
           node --check experiments/muscle-memory-game/bodyparts4-classification.js
@@ -215,6 +220,59 @@ jobs:
           node experiments/muscle-memory-game/check-anatomical-depth.mjs
           node experiments/muscle-memory-game/check-region-depth.mjs
           node experiments/muscle-memory-game/check-deeper-links.mjs
+          node experiments/muscle-memory-game/check-account-client.mjs
+
+  account-backend:
+    needs: fast
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: muscle_memory_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d muscle_memory_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install account service dependencies
+        run: npm install --prefix services/muscle-memory-account --no-audit --no-fund
+
+      - name: Account lifecycle and progress persistence
+        env:
+          NODE_ENV: test
+          PORT: 18080
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/muscle_memory_test
+          PUBLIC_APP_URL: http://127.0.0.1:19090
+          APP_ORIGINS: http://127.0.0.1:19090
+          DATA_OPERATOR_FULL_NAME: Test Operator
+          DATA_OPERATOR_ADDRESS: Russia
+          DATA_OPERATOR_EMAIL: operator@example.test
+          PRIVACY_CONSENT_VERSION: test-v1
+          CROSS_BORDER_TRANSFER: "false"
+          RUNTIME_ASSETS_LOCALIZED: "true"
+          SMTP_JSON_TRANSPORT: "true"
+          SMTP_FROM: test@example.test
+          ACCOUNT_TEST_BASE: http://127.0.0.1:18080
+          ACCOUNT_TEST_ORIGIN: http://127.0.0.1:19090
+        run: |
+          node services/muscle-memory-account/server.mjs > /tmp/mm-account.log 2>&1 &
+          service_pid=$!
+          trap 'status=$?; cat /tmp/mm-account.log; kill "$service_pid" 2>/dev/null || true; exit "$status"' EXIT
+          node services/muscle-memory-account/check-account-service.mjs
 
   browser:
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[atlas-smoke]') }}
@@ -574,8 +632,10 @@ jobs:
           retention-days: 7
 
 
+  # Motion is intentionally excluded from the static Atlas full-smoke while
+  # MOTION_UI_ENABLED=false. Run it explicitly when Motion work is active.
   browser-motion:
-    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') }}
+    if: ${{ contains(github.event.head_commit.message, '[motion-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
     timeout-minutes: 12
