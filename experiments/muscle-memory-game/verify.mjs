@@ -79,6 +79,15 @@ if (!accountClient.includes('credentials:"include"')) {
 if (/TOKEN_KEY|muscle-memory-account-token-v1/.test(accountClient)) {
   errors.push("account client: browser session token must not be persisted in localStorage");
 }
+if (!accountClient.includes('muscle-memory-learning-owner-v1')) {
+  errors.push("account client: local progress owner marker is missing");
+}
+if (!accountClient.includes('owner===user?.id')) {
+  errors.push("account client: cross-account progress isolation is missing");
+}
+if (!accountClient.includes('clearLocalWorkspace')) {
+  errors.push("account client: explicit logout/delete must clear the active local workspace");
+}
 if (!app.includes('reviewAllMistakesButton')) {
   errors.push("main app: global mistake-review action is not wired");
 }
