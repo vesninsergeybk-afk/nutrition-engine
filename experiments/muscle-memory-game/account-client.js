@@ -1,5 +1,6 @@
 const STORE_KEY = "muscle-memory-learning-v1";
 const OWNER_KEY = "muscle-memory-learning-owner-v1";
+const SYNC_BASE_KEY = "muscle-memory-learning-sync-base-v1";
 
 function apiBase() {
   const explicit = document.querySelector('meta[name="muscle-memory-api-base"]')?.content?.trim();
@@ -29,6 +30,120 @@ function mergeRecord(a,b) {
     reviewCount: Math.max(Number(a.reviewCount)||0,Number(b.reviewCount)||0),
     lapses: Math.max(Number(a.lapses)||0,Number(b.lapses)||0),
     lastReviewedAt: Math.max(Number(a.lastReviewedAt)||0,Number(b.lastReviewedAt)||0),
+  };
+}
+
+
+const ADDITIVE_RECORD_FIELDS = Object.freeze([
+  "attempts",
+  "correct",
+  "wrong",
+  "reviewCount",
+  "lapses",
+]);
+
+function numeric(value) {
+  return Math.max(0, Number(value) || 0);
+}
+
+function mergeRecordFromBaseline(local, remote, baseline) {
+  if (!local) return clone(remote) || {};
+  if (!remote) return clone(local) || {};
+
+  const localTime = recordTime(local);
+  const remoteTime = recordTime(remote);
+  const latest = localTime > remoteTime ? local : remoteTime > localTime ? remote : local;
+
+  const merged = { ...clone(latest) };
+  for (const field of ADDITIVE_RECORD_FIELDS) {
+    const localDelta = Math.max(0, numeric(local[field]) - numeric(baseline?.[field]));
+    merged[field] = numeric(remote[field]) + localDelta;
+  }
+
+  merged.lastSeen = Math.max(numeric(local.lastSeen), numeric(remote.lastSeen));
+  merged.lastReviewedAt = Math.max(
+    numeric(local.lastReviewedAt),
+    numeric(remote.lastReviewedAt)
+  );
+
+  if (localTime === remoteTime) {
+    merged.reviewDebt = Math.max(numeric(local.reviewDebt), numeric(remote.reviewDebt));
+  }
+
+  return merged;
+}
+
+function mergeConfusionFromBaseline(local, remote, baseline) {
+  if (!local) return clone(remote);
+  if (!remote) return clone(local);
+  const localDelta = Math.max(
+    0,
+    numeric(local.count) - numeric(baseline?.count)
+  );
+  return {
+    ...(numeric(local.lastSeen) > numeric(remote.lastSeen) ? clone(local) : clone(remote)),
+    count: numeric(remote.count) + localDelta,
+    lastSeen: Math.max(numeric(local.lastSeen), numeric(remote.lastSeen)),
+  };
+}
+
+export function mergeLearningStoresFromBaseline(localStore, remoteStore, baselineStore) {
+  const local = localStore?.version === 1 ? localStore : emptyLearningStore();
+  const remote = remoteStore?.version === 1 ? remoteStore : emptyLearningStore();
+  const baseline = baselineStore?.version === 1 ? baselineStore : emptyLearningStore();
+
+  const records = {};
+  for (const key of new Set([
+    ...Object.keys(local.records || {}),
+    ...Object.keys(remote.records || {}),
+    ...Object.keys(baseline.records || {}),
+  ])) {
+    const localRecord = local.records?.[key];
+    const remoteRecord = remote.records?.[key];
+    if (!localRecord && !remoteRecord) continue;
+    records[key] = mergeRecordFromBaseline(
+      localRecord,
+      remoteRecord,
+      baseline.records?.[key]
+    );
+  }
+
+  const confusions = {};
+  for (const key of new Set([
+    ...Object.keys(local.confusions || {}),
+    ...Object.keys(remote.confusions || {}),
+    ...Object.keys(baseline.confusions || {}),
+  ])) {
+    const localEntry = local.confusions?.[key];
+    const remoteEntry = remote.confusions?.[key];
+    if (!localEntry && !remoteEntry) continue;
+    confusions[key] = mergeConfusionFromBaseline(
+      localEntry,
+      remoteEntry,
+      baseline.confusions?.[key]
+    );
+  }
+
+  const sessionMap = new Map();
+  for (const entry of [...(remote.sessions || []), ...(local.sessions || [])]) {
+    if (!entry) continue;
+    const id =
+      entry.sessionId ||
+      [entry.startedAt || 0, entry.completedAt || 0, entry.mode || "", entry.region || ""].join(":");
+    const previous = sessionMap.get(id);
+    if (!previous || Number(entry.completedAt) >= Number(previous.completedAt)) {
+      sessionMap.set(id, clone(entry));
+    }
+  }
+
+  return {
+    version: 1,
+    updatedAt: Math.max(numeric(local.updatedAt), numeric(remote.updatedAt)),
+    records,
+    confusions,
+    sessions: [...sessionMap.values()]
+      .sort((a,b)=>Number(a.completedAt)-Number(b.completedAt))
+      .slice(-100),
   };
 }
 
@@ -78,6 +193,19 @@ function saveLocal(store) {
     const x=clone(store); x.updatedAt=Date.now();
     localStorage.setItem(STORE_KEY,JSON.stringify(x)); return x;
   } catch { return store; }
+}
+function loadSyncBase() {
+  try {
+    const x=JSON.parse(localStorage.getItem(SYNC_BASE_KEY)||"null");
+    return x?.version===1 ? x : null;
+  } catch {
+    return null;
+  }
+}
+function saveSyncBase(store) {
+  try {
+    localStorage.setItem(SYNC_BASE_KEY, JSON.stringify(clone(store)));
+  } catch {}
 }
 function errorText(code) {
   return ({
@@ -166,6 +294,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   function clearLocalWorkspace() {
     localStorage.removeItem(STORE_KEY);
     localStorage.removeItem(OWNER_KEY);
+    localStorage.removeItem(SYNC_BASE_KEY);
     const empty=emptyLearningStore();
     onStoreMerged(empty);
   }
@@ -182,13 +311,23 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     try{
       const local=getStore?.()||loadLocal();
       const out=await request("/api/progress",{method:"PUT",body:JSON.stringify({revision,store:local})});
-      revision=Number(out.revision)||revision+1;syncState.textContent="Прогресс синхронизирован.";onStateChange({user,synced:true});
+      revision=Number(out.revision)||revision+1;
+      saveSyncBase(local);
+      syncState.textContent="Прогресс синхронизирован.";
+      onStateChange({user,synced:true});
     }catch(e){
       if(e.status===409&&e.payload?.latest){
         const latest=e.payload.latest;
-        const merged=mergeLearningStores(getStore?.()||loadLocal(),latest.store);
+        const local=getStore?.()||loadLocal();
+        const baseline=loadSyncBase();
+        const merged=baseline
+          ? mergeLearningStoresFromBaseline(local,latest.store,baseline)
+          : mergeLearningStores(local,latest.store);
         revision=Number(latest.revision)||0;
-        onStoreMerged(saveLocal(merged));syncing=false;return syncNow();
+        onStoreMerged(saveLocal(merged));
+        saveSyncBase(latest.store || emptyLearningStore());
+        syncing=false;
+        return syncNow();
       }
       if(e.status===401){clearSession();msg(errorText("authentication-required"),"error");}
       else syncState.textContent="Нет связи с облаком. Локальный прогресс сохранён.";
@@ -203,12 +342,31 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     revision=Number(remote.revision)||0;
 
     const owner=localStorage.getItem(OWNER_KEY)||"";
-    const sameOwner=!owner || owner===user?.id;
-    const local=sameOwner ? (getStore?.()||loadLocal()) : null;
-    const merged=mergeLearningStores(local,remote.store);
+    const currentLocal=getStore?.()||loadLocal();
+    const baseline=loadSyncBase();
+
+    let merged;
+    if(!owner){
+      // First account claim: anonymous work is independent of cloud history,
+      // so its additive counters must be added rather than compared by max().
+      merged=mergeLearningStoresFromBaseline(
+        currentLocal,
+        remote.store,
+        emptyLearningStore()
+      );
+    }else if(owner===user?.id && baseline){
+      merged=mergeLearningStoresFromBaseline(currentLocal,remote.store,baseline);
+    }else if(owner===user?.id){
+      // Safe fallback for an older local cache that has no recorded sync base.
+      merged=mergeLearningStores(currentLocal,remote.store);
+    }else{
+      // Another account used this device. Never merge its local work.
+      merged=mergeLearningStores(null,remote.store);
+    }
 
     onStoreMerged(saveLocal(merged));
     if(user?.id) localStorage.setItem(OWNER_KEY,user.id);
+    saveSyncBase(remote.store || emptyLearningStore());
     await syncNow();
   }
   async function restore(){
