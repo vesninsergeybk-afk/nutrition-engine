@@ -94,6 +94,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   const message=document.querySelector("#account-message");
   const login=document.querySelector("#account-login-form");
   const register=document.querySelector("#account-register-form");
+  const consent=document.querySelector("#account-consent-form");
   const recovery=document.querySelector("#account-recovery-form");
   const reset=document.querySelector("#account-reset-form");
   const syncState=document.querySelector("#account-sync-state");
@@ -102,6 +103,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   const resetToken=new URLSearchParams(location.search).get("reset")||"";
   let config={enabled:false}, user=null, revision=0;
   let token=localStorage.getItem(TOKEN_KEY)||"";
+  let pendingRegistration=null;
   let syncTimer=0, syncing=false;
 
   const msg=(text,kind="")=>{message.textContent=text||"";message.dataset.kind=kind;};
@@ -112,8 +114,11 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     button.dataset.state=user?"online":"ready";
   };
   const panel=(name)=>{
-    login.hidden=name!=="login";register.hidden=name!=="register";
-    recovery.hidden=name!=="recovery";reset.hidden=name!=="reset";
+    login.hidden=name!=="login";
+    register.hidden=name!=="register";
+    consent.hidden=name!=="consent";
+    recovery.hidden=name!=="recovery";
+    reset.hidden=name!=="reset";
     document.querySelectorAll("[data-account-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.accountTab===name)));
     msg("");
   };
@@ -182,17 +187,57 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
   document.querySelectorAll("[data-account-tab]").forEach(b=>b.addEventListener("click",()=>panel(b.dataset.accountTab)));
   document.querySelector("#account-forgot")?.addEventListener("click",()=>panel("recovery"));
   document.querySelectorAll("[data-back-login]").forEach(b=>b.addEventListener("click",()=>panel("login")));
+  document.querySelectorAll("[data-back-register]").forEach(b=>b.addEventListener("click",()=>panel("register")));
 
   login?.addEventListener("submit",async e=>{
     e.preventDefault();const d=new FormData(login);
     try{const out=await request("/api/account/login",{method:"POST",body:JSON.stringify({identifier:d.get("identifier"),password:d.get("password")})});applySession(out);await pullMerge();msg("Готово. Локальный и облачный прогресс объединены.","success");}
     catch(err){msg(errorText(err.code),"error");}
   });
-  register?.addEventListener("submit",async e=>{
-    e.preventDefault();const d=new FormData(register);
-    if(d.get("password")!==d.get("passwordConfirm"))return msg("Пароли не совпадают.","error");
-    try{const out=await request("/api/account/register",{method:"POST",body:JSON.stringify({username:d.get("username"),email:d.get("email"),password:d.get("password"),consentAccepted:d.get("consent")==="on",consentVersion:config.consentVersion})});applySession(out);await pullMerge();msg("Аккаунт создан. Текущий прогресс сохранён.","success");}
-    catch(err){msg(errorText(err.code),"error");}
+  register?.addEventListener("submit",e=>{
+    e.preventDefault();
+    const d=new FormData(register);
+    if(d.get("password")!==d.get("passwordConfirm")){
+      msg("Пароли не совпадают.","error");
+      return;
+    }
+    pendingRegistration={
+      username:d.get("username"),
+      email:d.get("email"),
+      password:d.get("password"),
+    };
+    consent.reset();
+    panel("consent");
+  });
+
+  consent?.addEventListener("submit",async e=>{
+    e.preventDefault();
+    if(!pendingRegistration){
+      panel("register");
+      msg("Сначала заполните данные аккаунта.","error");
+      return;
+    }
+    const d=new FormData(consent);
+    if(d.get("consent")!=="on"){
+      msg("Для продолжения нужно отдельно подтвердить согласие.","error");
+      return;
+    }
+    try{
+      const out=await request("/api/account/register",{
+        method:"POST",
+        body:JSON.stringify({
+          ...pendingRegistration,
+          consentAccepted:true,
+          consentVersion:config.consentVersion,
+        })
+      });
+      pendingRegistration=null;
+      applySession(out);
+      await pullMerge();
+      msg("Аккаунт создан. Текущий прогресс сохранён.","success");
+    }catch(err){
+      msg(errorText(err.code),"error");
+    }
   });
   recovery?.addEventListener("submit",async e=>{
     e.preventDefault();const d=new FormData(recovery);
