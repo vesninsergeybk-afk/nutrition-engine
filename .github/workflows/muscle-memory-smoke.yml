@@ -629,8 +629,10 @@ jobs:
           retention-days: 7
 
 
+  # Motion is intentionally excluded from the static Atlas full-smoke while
+  # MOTION_UI_ENABLED=false. Run it explicitly when Motion work is active.
   browser-motion:
-    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[full-smoke]') || contains(github.event.head_commit.message, '[motion-smoke]') }}
+    if: ${{ contains(github.event.head_commit.message, '[motion-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
     timeout-minutes: 12
