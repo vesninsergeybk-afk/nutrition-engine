@@ -42,6 +42,7 @@ jobs:
         run: |
           node --check experiments/muscle-memory-game/app.js
           node --check experiments/muscle-memory-game/account-client.js
+          node --check experiments/muscle-memory-game/check-account-client.mjs
           node --check services/muscle-memory-account/server.mjs
           node --check experiments/muscle-memory-game/anatomy-terms-ru.js
           node --check experiments/muscle-memory-game/quality-lab.js
@@ -219,6 +220,7 @@ jobs:
           node experiments/muscle-memory-game/check-anatomical-depth.mjs
           node experiments/muscle-memory-game/check-region-depth.mjs
           node experiments/muscle-memory-game/check-deeper-links.mjs
+          node experiments/muscle-memory-game/check-account-client.mjs
 
   account-backend:
     needs: fast
