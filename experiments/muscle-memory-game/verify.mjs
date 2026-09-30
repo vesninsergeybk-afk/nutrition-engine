@@ -73,6 +73,12 @@ if (!accountClient.includes('"/api/account/register"')) {
 if (!accountClient.includes('"/api/account/request-password-reset"')) {
   errors.push("account client: password recovery endpoint is not wired");
 }
+if (!accountClient.includes('credentials:"include"')) {
+  errors.push("account client: protected cookie credentials are not enabled");
+}
+if (/TOKEN_KEY|muscle-memory-account-token-v1/.test(accountClient)) {
+  errors.push("account client: browser session token must not be persisted in localStorage");
+}
 if (!app.includes('reviewAllMistakesButton')) {
   errors.push("main app: global mistake-review action is not wired");
 }
