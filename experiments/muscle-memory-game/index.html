@@ -514,9 +514,22 @@
           <label><span>Email для восстановления доступа</span><input name="email" type="email" autocomplete="email" required /></label>
           <label><span>Пароль</span><input name="password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required /></label>
           <label><span>Повторите пароль</span><input name="passwordConfirm" type="password" minlength="10" maxlength="128" autocomplete="new-password" required /></label>
-          <label class="account-consent"><input name="consent" type="checkbox" required /><span>Даю отдельное <a id="account-consent-link" target="_blank" rel="noopener">согласие на обработку персональных данных</a>.</span></label>
           <p class="account-legal-note">Как и зачем используются данные, описано в <a id="account-privacy-link" target="_blank" rel="noopener">политике обработки персональных данных</a>.</p>
-          <button class="account-primary" type="submit">Создать аккаунт и сохранить прогресс</button>
+          <button class="account-primary" type="submit">Продолжить</button>
+        </form>
+
+        <form id="account-consent-form" class="account-form account-consent-step" hidden>
+          <div class="account-consent-document">
+            <strong>Согласие на обработку персональных данных</strong>
+            <p>Согласие оформляется отдельным действием. Перед подтверждением откройте и прочитайте его текст.</p>
+            <a id="account-consent-link" target="_blank" rel="noopener">Открыть полный текст согласия</a>
+          </div>
+          <label class="account-consent">
+            <input name="consent" type="checkbox" required />
+            <span>Я прочитал(а) текст и даю согласие на обработку указанных в нём персональных данных.</span>
+          </label>
+          <button class="account-primary" type="submit">Даю согласие и создаю аккаунт</button>
+          <button class="account-link-button" type="button" data-back-register>Вернуться к данным аккаунта</button>
         </form>
         <form id="account-recovery-form" class="account-form" hidden>
           <p>Укажите email аккаунта. На него придёт ссылка для смены пароля.</p>
