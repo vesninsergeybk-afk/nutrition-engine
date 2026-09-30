@@ -48,7 +48,11 @@ const mailer = testMailTransport
 const legalReady =
   Boolean(OPERATOR.name && OPERATOR.address && OPERATOR.email && CONSENT_VERSION) &&
   !CROSS_BORDER_TRANSFER;
-const accountReady = legalReady && Boolean(mailer) && Boolean(PUBLIC_APP_URL);
+const accountReady =
+  legalReady &&
+  Boolean(mailer) &&
+  Boolean(PUBLIC_APP_URL) &&
+  APP_ORIGINS.size > 0;
 
 function escapeHtml(value) {
   return String(value || "")
