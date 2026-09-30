@@ -138,6 +138,12 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
     border-color: var(--line); background: #fff; backdrop-filter: none; border-radius: 14px; padding: 12px;
   }
   .mobile-muscle-actions button { min-height: 44px; }
+  .mobile-muscle-card-copy { order: 1; }
+  .mobile-muscle-card .atlas-relations { order: 2; }
+  .mobile-muscle-actions { order: 3; }
+  body:not(.session-active):not(.motion-mode) .stage:has(.mobile-muscle-card:not([hidden])) .viewer-wrap {
+    flex: none; height: max(260px, calc(100dvh - 256px)); min-height: max(260px, calc(100dvh - 256px));
+  }
   .mobile-muscle-card:has(.atlas-relations[data-open="true"]) .mobile-muscle-actions { display: none; }
   body:not(.session-active):not(.motion-mode) .mobile-muscle-card:has(.atlas-relations[data-open="true"]) {
     display: flex; flex-direction: column; max-height: max(240px, calc(58dvh - 148px));
