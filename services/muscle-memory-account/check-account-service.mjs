@@ -2,10 +2,9 @@ const BASE = process.env.ACCOUNT_TEST_BASE || "http://127.0.0.1:18080";
 const ORIGIN = process.env.ACCOUNT_TEST_ORIGIN || "http://127.0.0.1:19090";
 const CONSENT_VERSION = process.env.PRIVACY_CONSENT_VERSION || "test-v1";
 
-async function request(path, { method = "GET", token = "", cookie = "", body, raw = false } = {}) {
+async function request(path, { method = "GET", cookie = "", body, raw = false } = {}) {
   const headers = { Origin: ORIGIN };
   if (body !== undefined) headers["content-type"] = "application/json";
-  if (token) headers.authorization = "Bearer " + token;
   if (cookie) headers.cookie = cookie;
 
   const response = await fetch(BASE + path, {
@@ -72,8 +71,11 @@ const registrationResponse = await request("/api/account/register", {
 });
 const registered = registrationResponse.payload;
 
-if (registered.user?.username !== username || !registered.token) {
+if (registered.user?.username !== username || !registered.expiresAt) {
   throw new Error("Registration did not return a usable account");
+}
+if ("token" in registered) {
+  throw new Error("Browser response must not expose the session token");
 }
 
 const setCookie = registrationResponse.headers["set-cookie"] || "";
@@ -92,12 +94,7 @@ if (cookieMe.user?.email !== email) {
   throw new Error("Protected browser session cookie did not authenticate");
 }
 
-const token = registered.token;
-
-const me = await request("/api/account/me", { token });
-if (me.user?.email !== email) throw new Error("Bearer compatibility profile mismatch");
-
-const initial = await request("/api/progress", { token });
+const initial = await request("/api/progress", { cookie: sessionCookie });
 if (Number(initial.revision) !== 0) {
   throw new Error("Fresh progress must start at revision 0");
 }
@@ -139,12 +136,12 @@ const store = {
 
 const saved = await request("/api/progress", {
   method: "PUT",
-  token,
+  cookie: sessionCookie,
   body: { revision: 0, store },
 });
 if (Number(saved.revision) !== 1) throw new Error("Progress revision did not advance");
 
-const loaded = await request("/api/progress", { token });
+const loaded = await request("/api/progress", { cookie: sessionCookie });
 if (loaded.store?.records?.["deltoid::find"]?.wrong !== 1) {
   throw new Error("Saved learning progress did not round-trip");
 }
@@ -156,7 +153,7 @@ let conflictCaught = false;
 try {
   await request("/api/progress", {
     method: "PUT",
-    token,
+    cookie: sessionCookie,
     body: { revision: 0, store },
   });
 } catch (error) {
@@ -164,12 +161,18 @@ try {
 }
 if (!conflictCaught) throw new Error("Stale progress revision must return 409");
 
-const login = await request("/api/account/login", {
+const loginResponse = await request("/api/account/login", {
   method: "POST",
+  raw: true,
   body: { identifier: username, password },
 });
-if (!login.token || login.user?.email !== email) {
-  throw new Error("Login did not return the account");
+const login = loginResponse.payload;
+if (login.user?.email !== email || "token" in login) {
+  throw new Error("Login did not return a protected cookie-only account session");
+}
+const loginSetCookie = loginResponse.headers["set-cookie"] || "";
+if (!/mm_session=/.test(loginSetCookie) || !/HttpOnly/i.test(loginSetCookie)) {
+  throw new Error("Login did not refresh the protected browser session cookie");
 }
 
 await request("/api/account/request-password-reset", {
@@ -177,7 +180,7 @@ await request("/api/account/request-password-reset", {
   body: { email },
 });
 
-const exported = await request("/api/account/export", { token });
+const exported = await request("/api/account/export", { cookie: sessionCookie });
 if (exported.user?.email !== email) throw new Error("Account export is missing profile");
 if (exported.progress?.store?.records?.["deltoid::find"]?.attempts !== 2) {
   throw new Error("Account export is missing progress");
@@ -193,7 +196,7 @@ await request("/api/account", { method: "DELETE", token, body: {} });
 
 let deleted = false;
 try {
-  await request("/api/account/me", { token });
+  await request("/api/account/me", { cookie: sessionCookie });
 } catch (error) {
   deleted = /401/.test(String(error));
 }
