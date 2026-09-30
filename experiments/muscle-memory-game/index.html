@@ -58,20 +58,7 @@
             <button id="quiz-muscle-hide" type="button">Скрыть</button>
           </div>
         </aside>
-        <aside id="mobile-muscle-card" class="mobile-muscle-card" hidden aria-live="polite">
-          <div id="mobile-context-trail" class="mobile-context-trail" hidden aria-label="Глубина просмотра"></div>
-          <div id="mobile-muscle-card-copy" class="mobile-muscle-card-copy">
-            <span id="mobile-muscle-kind">Мышца</span>
-            <strong id="mobile-muscle-name">Выбранная мышца</strong>
-          </div>
-          <div class="mobile-muscle-actions">
-            <button id="mobile-hide-muscle" type="button">Скрыть</button>
-            <button id="mobile-isolate-muscle" type="button">Изолировать мышцу</button>
-            <button id="mobile-isolate-region" type="button" hidden>Изолировать область</button>
-            <button id="mobile-back-context" class="mobile-back-context" type="button" hidden>← На шаг назад</button>
-            <button id="mobile-root-context" class="mobile-root-context" type="button" hidden>К первому уровню</button>
-          </div>
-        </aside>
+
 
 
         <div class="viewer-tools" aria-label="Управление моделью">
@@ -215,6 +202,40 @@
           <span class="hint-pointer">ЛКМ — вращать · колесо — приблизить · ПКМ — сдвинуть</span>
         </div>
       </div>
+        <aside id="mobile-muscle-card" class="mobile-muscle-card" hidden aria-live="polite">
+          <div id="mobile-context-trail" class="mobile-context-trail" hidden aria-label="Глубина просмотра"></div>
+          <div id="mobile-muscle-card-copy" class="mobile-muscle-card-copy">
+            <span id="mobile-muscle-kind">Мышца</span>
+            <strong id="mobile-muscle-name">Выбранная мышца</strong>
+          </div>
+          <div class="mobile-muscle-actions">
+            <button id="mobile-hide-muscle" type="button">Скрыть</button>
+            <button id="mobile-isolate-muscle" type="button">Изолировать мышцу</button>
+            <button id="mobile-isolate-region" type="button" hidden>Изолировать область</button>
+            <button id="mobile-back-context" class="mobile-back-context" type="button" hidden>← На шаг назад</button>
+            <button id="mobile-root-context" class="mobile-root-context" type="button" hidden>К первому уровню</button>
+          </div>
+          <section id="atlas-relations" class="atlas-relations" hidden aria-label="Связанные мышцы по движению">
+            <div class="atlas-relation-roles" aria-label="Роль связанных мышц">
+              <button type="button" data-quick-role="synergists" aria-expanded="false" aria-controls="atlas-relations-body">Синергисты</button>
+              <button type="button" data-quick-role="antagonists" aria-expanded="false" aria-controls="atlas-relations-body">Антагонисты</button>
+              <button id="atlas-relations-close" class="atlas-relations-close" type="button" aria-label="Закрыть сравнение" title="Закрыть сравнение" hidden>×</button>
+            </div>
+            <p id="atlas-relations-unavailable" class="atlas-relations-unavailable" hidden>Связи по движениям для этой мышцы пока не заполнены.</p>
+            <div id="atlas-relations-body" class="atlas-relations-body" hidden>
+              <label id="atlas-relations-part-field" class="reference-select-field" hidden>
+                <span>Часть мышцы для сравнения</span>
+                <select id="atlas-relations-part"></select>
+              </label>
+              <label class="reference-select-field">
+                <span>Для движения</span>
+                <select id="atlas-relations-movement"></select>
+              </label>
+              <div id="atlas-relations-list" class="atlas-relations-list" aria-label="Участники движения"></div>
+              <p id="atlas-relations-status" class="atlas-relations-status" role="status"></p>
+            </div>
+          </section>
+        </aside>
     </section>
 
     <aside class="panel">
@@ -306,6 +327,7 @@
             <button id="show-nearest-muscle" type="button" hidden disabled>К ближайшей мышце</button>
           </div>
         </div>
+        <div id="atlas-relations-desktop-slot"></div>
         <section id="structure-reference" class="structure-reference" hidden aria-label="Справка по выбранной мышце">
           <div class="structure-reference-head">
             <strong id="structure-reference-heading">Справка по структуре</strong>

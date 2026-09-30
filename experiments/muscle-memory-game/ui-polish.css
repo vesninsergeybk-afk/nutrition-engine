@@ -105,6 +105,23 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
 .structure-reference-source-item span { font-size: 11px; line-height: 1.55; }
 .attribution { margin-top: auto; color: #748093; line-height: 1.55; }
 .attribution a { color: #536a89; }
+/* Immediate movement comparison, shared with the full reference controller. */
+.atlas-relations { min-width: 0; }
+.atlas-relation-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.atlas-relations[data-open="true"] .atlas-relation-roles { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 44px; }
+.atlas-relation-roles button { min-width: 0; min-height: 44px; padding: 8px; border: 1px solid #ccd7e4; border-radius: 9px; background: #fff; color: #536176; font-size: 13px; font-weight: 650; }
+.atlas-relation-roles button[aria-expanded="true"] { color: #12646b; border-color: #68a3ac; background: #eff8f8; }
+.atlas-relation-roles button[data-quick-role="antagonists"][aria-expanded="true"] { color: #904819; border-color: #cd9a78; background: #fdf5ef; }
+.atlas-relation-roles button:disabled { color: #818c9b; background: #f2f4f7; }
+.atlas-relations-body:not([hidden]) { display: grid; gap: 9px; padding-top: 12px; animation: reference-arrive .16s ease-out; }
+.atlas-relations-list { display: flex; flex-wrap: wrap; gap: 6px; max-height: 112px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.atlas-relation-muscle { padding: 5px 8px; border: 1px solid #c5e1e1; border-radius: 7px; background: #f1f9f8; color: #12646b; font-size: 12px; line-height: 1.4; }
+.atlas-relations[data-role="antagonists"] .atlas-relation-muscle { color: #904819; border-color: #efd3bd; background: #fdf5ef; }
+.atlas-relations .atlas-relation-muscle[data-availability="hidden"], .atlas-relations .atlas-relation-muscle[data-availability="missing"] { color: #657185; border-color: var(--line); background: #f6f7f9; }
+.atlas-relations-status, .atlas-relations-unavailable, .atlas-relations-list p { margin: 0; font-size: 12px; line-height: 1.5; color: #657185; }
+.atlas-relations-status:empty { display: none; }
+.atlas-relations-unavailable { margin-top: 8px; }
+.atlas-relation-roles .atlas-relations-close { padding: 5px; color: #657185; background: #f8fafd; font-size: 23px; font-weight: 400; }
 @keyframes reference-arrive { from { opacity: .5; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes drawer-arrive { from { opacity: .7; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
 @media (min-width: 921px) {
@@ -116,6 +133,24 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
   .structure-reference-gallery .structure-reference-course-art-image { height: 330px; min-height: 280px; max-height: 360px; object-fit: contain; }
 }
 @media (max-width: 920px) {
+  body:not(.session-active):not(.motion-mode) .mobile-muscle-card:not([hidden]) {
+    position: static; width: auto; margin: 0; box-sizing: border-box; box-shadow: 0 2px 10px #26395008;
+    border-color: var(--line); background: #fff; backdrop-filter: none; border-radius: 14px; padding: 12px;
+  }
+  .mobile-muscle-actions button { min-height: 44px; }
+  .mobile-muscle-card:has(.atlas-relations[data-open="true"]) .mobile-muscle-actions { display: none; }
+  body:not(.session-active):not(.motion-mode) .mobile-muscle-card:has(.atlas-relations[data-open="true"]) {
+    display: flex; flex-direction: column; max-height: max(240px, calc(58dvh - 148px));
+  }
+  .mobile-muscle-card .atlas-relations[data-open="true"] { display: flex; flex-direction: column; min-height: 0; }
+  .mobile-muscle-card .atlas-relation-roles { flex: none; }
+  body:not(.session-active):not(.motion-mode) .stage:has(.atlas-relations[data-open="true"]) .viewer-wrap {
+    flex: none; height: max(260px, 42dvh); min-height: max(260px, 42dvh);
+  }
+  .mobile-muscle-card .atlas-relations-body { gap: 7px; padding-top: 9px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .mobile-muscle-card .atlas-relations-list { max-height: none; overflow: visible; }
+  .mobile-muscle-card .atlas-relations-status { order: -1; }
+  .mobile-muscle-card .atlas-relations-body .reference-select-field > span { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .topbar { align-items: center; }
   .brand h1 { font-size: 18px; }
   .brand h1 .brand-author { font-size: 12px; margin-top: 3px; }

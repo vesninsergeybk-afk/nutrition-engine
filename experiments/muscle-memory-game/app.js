@@ -313,6 +313,7 @@ const quizMuscleActionsName = document.querySelector("#quiz-muscle-actions-name"
 const quizMuscleSelectButton = document.querySelector("#quiz-muscle-select");
 const quizMuscleHideButton = document.querySelector("#quiz-muscle-hide");
 const mobileMuscleCard = document.querySelector("#mobile-muscle-card");
+const atlasRelationsRoot = document.querySelector("#atlas-relations");
 const mobileMuscleCardCopy = document.querySelector("#mobile-muscle-card-copy");
 const mobileMuscleKind = document.querySelector("#mobile-muscle-kind");
 const mobileMuscleName = document.querySelector("#mobile-muscle-name");
@@ -502,7 +503,7 @@ function clearStructureReferencePrimaryArt() {
 }
 
 function hideStructureReference() {
-  referenceUI.clearGroup();
+  referenceUI.render(null);
   if (structureReferenceEl) {
     structureReferenceEl.hidden = true;
     structureReferenceEl.dataset.referenceId = "";
@@ -516,6 +517,7 @@ function hideStructureReference() {
 }
 
 function renderSimpleAtlasReference(typeRu, depthRu, emptyText) {
+  referenceUI.render(null);
   if (!structureReferenceEl) return;
 
   closeStructureReferenceDetails();
@@ -986,6 +988,7 @@ function openDefaultStructureReferenceDetails() {
 }
 
 let functionalGroupActive = false;
+let functionalGroupFeedback = null;
 let functionalModelIndex = null;
 let functionalModelIndexMesh = null;
 
@@ -1025,6 +1028,7 @@ function clearFunctionalGroup() {
 }
 
 const referenceUI = createReferenceUI(structureReferenceEl, {
+  quickRoot: atlasRelationsRoot,
   onClearGroup: clearFunctionalGroup,
   onSelectItem(item) {
     if (appMode !== "explore") return "Выбор связанных мышц доступен в режиме «Атлас».";
@@ -1038,22 +1042,45 @@ const referenceUI = createReferenceUI(structureReferenceEl, {
     const mapped = items.map(item => ({ item, ids: functionalModelIds(item) }));
     const ids = [...new Set(mapped.flatMap(entry => entry.ids))].filter(sid => structureVisibility[sid] !== false);
     const missing = mapped.filter(entry => !entry.ids.length).length;
-    if (!ids.length) return { shown: false, message: "Участники скрыты или не представлены отдельными структурами в текущей модели. Откройте нужный слой или выберите другую модель." };
+    const availability = mapped.map(({ item, ids }) => ({
+      id: item.id, partId: item.partId,
+      state: !ids.length ? "missing" : ids.every(sid => structureVisibility[sid] === false) ? "hidden" : "visible",
+    }));
+    if (!ids.length) return { shown: false, availability, message: "Участники скрыты или не представлены отдельными структурами в текущей модели. Откройте нужный слой или выберите другую модель." };
     restoreHighlights();
     highlightStructures(ids, role === "synergists" ? "synergist" : "antagonist");
     const subjectIds = functionalModelIds(subject).filter(sid => structureVisibility[sid] !== false);
     highlightStructures(subjectIds, "selected");
+    functionalGroupFeedback = { text: feedbackEl.textContent, className: feedbackEl.className };
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = `${subject.movementRu}. Сравниваются ${role === "synergists" ? "синергисты" : "антагонисты"} выбранной мышцы или части. Цвета обозначают роли в этом движении.`;
     functionalGroupActive = true;
     canvas.dataset.functionalGroupRole = role;
     canvas.dataset.functionalGroupIds = ids.join(",");
     canvas.dataset.functionalGroupNames = ids.map(sid => structureNames[sid]).join(" | ");
     canvas.dataset.functionalSubjectNames = subjectIds.map(sid => structureNames[sid]).join(" | ");
-    return { shown: true, message: `Синий — изучаемая мышца; ${role === "synergists" ? "бирюзовый — синергисты" : "оранжевый — антагонисты"}. Выделено структур: ${ids.length}. Покрывающие слои сохраняются.${missing ? ` Без отдельной геометрии: ${missing}.` : ""}` };
+    return {
+      shown: true, availability,
+      quickMessage: `Синий — изучаемая мышца; ${role === "synergists" ? "бирюзовый — синергисты" : "оранжевый — антагонисты"}.`,
+      message: `Синий — изучаемая мышца; ${role === "synergists" ? "бирюзовый — синергисты" : "оранжевый — антагонисты"}. Выделено структур: ${ids.length}. Покрывающие слои сохраняются.${missing ? ` Без отдельной геометрии: ${missing}.` : ""}`,
+    };
   },
 });
 
+// Move one shared controller between the selected-muscle surfaces; state and
+// scene highlighting are identical at both sizes, including during rotation.
+const atlasRelationsMedia = window.matchMedia("(max-width: 920px)");
+function syncAtlasRelationsPlacement() {
+  const host = atlasRelationsMedia.matches
+    ? mobileMuscleCard
+    : document.querySelector("#atlas-relations-desktop-slot");
+  if (atlasRelationsRoot.parentElement !== host) host.append(atlasRelationsRoot);
+}
+atlasRelationsMedia.addEventListener("change", syncAtlasRelationsPlacement);
+syncAtlasRelationsPlacement();
+
 function renderFunctionalRelations(reference, sourceName) {
-  referenceUI.render(reference, sourceName);
+  referenceUI.render(reference, sourceName, appMode === "explore");
 }
 
 function renderStructureReference(sid) {
@@ -1070,6 +1097,7 @@ function renderStructureReference(sid) {
   const target = learningTargetBySid.get(sid) || null;
   const depth = targetDepthInfo(target);
   const reference = muscleReferenceFor(sourceName);
+  if (!reference || reference.ambiguous) referenceUI.render(null);
   const fallbackRegion = target?.region
     ? regionNameRu(target.region)
     : selectedLearningRegion && selectedLearningRegion !== "all"
@@ -2641,6 +2669,11 @@ function clearAnswerRevealOverlay() {
 }
 
 function restoreHighlights() {
+  if (functionalGroupFeedback) {
+    feedbackEl.textContent = functionalGroupFeedback.text;
+    feedbackEl.className = functionalGroupFeedback.className;
+    functionalGroupFeedback = null;
+  }
   functionalGroupActive = false;
   canvas.dataset.functionalGroupRole = "";
   canvas.dataset.functionalGroupIds = "";
@@ -3315,6 +3348,7 @@ function updateLayerButtons() {
     selectedExploreSid == null ||
     isolated ||
     structureVisibility[selectedExploreSid] === false;
+  referenceUI.refreshGroup();
   syncMobileMuscleCard();
 }
 

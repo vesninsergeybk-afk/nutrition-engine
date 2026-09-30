@@ -1,7 +1,8 @@
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 
-// This controller owns reference navigation only. Scene state remains in app.js.
-export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectItem }) {
+// One movement/part/role state for the compact Atlas menu and full reference.
+// Scene state remains in app.js.
+export function createReferenceUI(root, { quickRoot, onShowGroup, onClearGroup, onSelectItem }) {
   const find = id => root.querySelector(`#${id}`);
   const tabs = [...root.querySelectorAll("[data-reference-tab]")];
   const partField = find("functional-part-field");
@@ -11,10 +12,31 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
   const content = find("structure-reference-functional");
   const showButton = find("functional-show-group");
   const status = find("functional-model-status");
+  const quickFind = id => quickRoot?.querySelector(`#${id}`);
+  const quickBody = quickFind("atlas-relations-body");
+  const quickParts = quickFind("atlas-relations-part");
+  const quickMovements = quickFind("atlas-relations-movement");
+  const quickList = quickFind("atlas-relations-list");
+  const quickStatus = quickFind("atlas-relations-status");
+  const quickRoles = [...(quickRoot?.querySelectorAll("[data-quick-role]") || [])];
   let reference = null;
   let rows = [];
   let role = "synergists";
   let showing = false;
+  let quickOpen = false;
+  let quickMessage = "";
+
+  function syncQuickState() {
+    if (!quickRoot) return;
+    quickRoot.dataset.open = String(quickOpen);
+    quickRoot.dataset.role = quickOpen ? role : "";
+    quickBody.hidden = !quickOpen;
+    quickFind("atlas-relations-close").hidden = !quickOpen;
+    for (const button of quickRoles) {
+      button.setAttribute("aria-expanded", String(quickOpen && button.dataset.quickRole === role));
+    }
+    quickStatus.textContent = quickMessage || status.textContent;
+  }
 
   function clearGroup() {
     if (showing) onClearGroup?.();
@@ -22,6 +44,37 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
     showButton.setAttribute("aria-pressed", "false");
     showButton.textContent = "Выделить на модели";
     status.textContent = "";
+    quickMessage = "";
+    syncQuickState();
+  }
+
+  function closeQuick(focus = false) {
+    quickOpen = false;
+    clearGroup();
+    if (focus) quickRoles.find(button => button.dataset.quickRole === role)?.focus();
+  }
+
+  function showGroup() {
+    const row = selectedRow();
+    if (!row || !row[role]?.length) return;
+    const result = onShowGroup?.(row[role], role, { id: reference.id, partId: row.subjectPartId, movementRu: row.movementRu });
+    showing = Boolean(result?.shown);
+    showButton.setAttribute("aria-pressed", String(showing));
+    showButton.textContent = showing ? "Убрать выделение группы" : "Выделить на модели";
+    status.textContent = result?.message || "";
+    quickMessage = result?.quickMessage || "";
+    if (quickList) {
+      [...quickList.querySelectorAll(".atlas-relation-muscle")].forEach((label, index) => {
+        const state = result?.availability?.[index]?.state;
+        label.textContent = row[role][index].nameRu;
+        label.dataset.availability = state || "";
+        if (state === "missing" || state === "hidden") {
+          label.append(state === "missing" ? " · нет отдельной геометрии" : " · скрыта");
+          label.dataset.availability = state;
+        }
+      });
+    }
+    syncQuickState();
   }
 
   function syncPartContext() {
@@ -31,7 +84,7 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
   }
 
   function activateTab(tab, focus = false) {
-    if (tab.dataset.referenceTab !== "movement") clearGroup();
+    if (tab.dataset.referenceTab !== "movement") closeQuick();
     for (const button of tabs) {
       const active = button === tab;
       button.setAttribute("aria-selected", String(active));
@@ -63,6 +116,12 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
     root.dataset.functionalMovement = row?.movementId || "";
     root.dataset.functionalPart = row?.subjectPartId || "";
     root.dataset.referenceFunctionalRole = row ? role : "";
+    if (quickRoot) {
+      quickMovements.value = movementSelect.value;
+      quickList.replaceChildren();
+      quickRoot.dataset.movement = row?.movementId || "";
+      quickRoot.dataset.part = row?.subjectPartId || "";
+    }
     if (!row) return;
     const items = row[role] || [];
     const list = document.createElement("div");
@@ -79,6 +138,12 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
         if (message) status.textContent = message;
       });
       list.append(button);
+      if (quickList) {
+        const label = document.createElement("span");
+        label.className = "atlas-relation-muscle";
+        label.textContent = item.nameRu;
+        quickList.append(label);
+      }
     }
     if (!items.length) {
       const empty = document.createElement("p");
@@ -87,6 +152,14 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
         ? "Прямые антагонисты для этой задачи в карточке не указаны. Это не означает, что противоположное движение невозможно."
         : "Синергисты для этой задачи в карточке не указаны.";
       list.append(empty);
+      if (quickList) {
+        const summary = document.createElement("p");
+        summary.className = "functional-empty";
+        summary.textContent = role === "antagonists"
+          ? "Прямые антагонисты в данных не указаны."
+          : "Синергисты в данных не указаны.";
+        quickList.append(summary);
+      }
     }
     content.append(list);
     if (row.contextDependent?.length) {
@@ -94,6 +167,12 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
       conditional.className = "functional-conditional";
       conditional.textContent = "Зависят от части мышцы и положения: " + row.contextDependent.map(item => item.nameRu).join("; ") + ".";
       content.append(conditional);
+      if (quickList) {
+        const summary = document.createElement("p");
+        summary.className = "functional-conditional";
+        summary.textContent = conditional.textContent;
+        quickList.append(summary);
+      }
     }
     const note = document.createElement("p");
     note.className = "structure-reference-functional-row-note";
@@ -112,6 +191,7 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
     root.dataset.functionalMovement = row.movementId;
     root.dataset.functionalPart = row.subjectPartId || "";
     root.dataset.referenceFunctionalRole = role;
+    if (quickOpen) showGroup();
   }
 
   function renderMovements() {
@@ -123,30 +203,50 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
       option.textContent = row.movementRu;
       movementSelect.append(option);
     });
+    if (quickRoot) {
+      quickParts.value = partSelect.value;
+      quickMovements.replaceChildren(...[...movementSelect.options].map(option => option.cloneNode(true)));
+    }
     renderRow();
   }
   partSelect.addEventListener("change", renderMovements);
   movementSelect.addEventListener("change", renderRow);
-  roleButtons.forEach(button => button.addEventListener("click", () => {
-    role = button.dataset.functionalRole;
-    for (const item of roleButtons) item.setAttribute("aria-pressed", String(item === button));
+  function selectRole(nextRole) {
+    role = nextRole;
+    for (const item of roleButtons) item.setAttribute("aria-pressed", String(item.dataset.functionalRole === role));
     renderRow();
-  }));
+  }
+  roleButtons.forEach(button => button.addEventListener("click", () => selectRole(button.dataset.functionalRole)));
   showButton.addEventListener("click", () => {
-    if (showing) { clearGroup(); return; }
-    const row = selectedRow();
-    if (!row) return;
-    const result = onShowGroup?.(row[role], role, { id: reference.id, partId: row.subjectPartId });
-    showing = Boolean(result?.shown);
-    showButton.setAttribute("aria-pressed", String(showing));
-    showButton.textContent = showing ? "Убрать выделение группы" : "Выделить на модели";
-    status.textContent = result?.message || "";
+    if (showing) { closeQuick(); return; }
+    showGroup();
+  });
+  quickRoles.forEach(button => button.addEventListener("click", () => {
+    if (quickOpen && role === button.dataset.quickRole) { closeQuick(); return; }
+    quickOpen = true;
+    quickBody.scrollTop = 0;
+    selectRole(button.dataset.quickRole);
+  }));
+  quickParts?.addEventListener("change", () => {
+    partSelect.value = quickParts.value;
+    renderMovements();
+  });
+  quickMovements?.addEventListener("change", () => {
+    movementSelect.value = quickMovements.value;
+    renderRow();
+  });
+  quickFind("atlas-relations-close")?.addEventListener("click", () => closeQuick(true));
+  quickRoot?.addEventListener("keydown", event => {
+    if (event.key !== "Escape" || !quickOpen) return;
+    event.preventDefault();
+    closeQuick(true);
   });
 
   return {
-    clearGroup,
-    render(nextReference, sourceName) {
-      clearGroup();
+    clearGroup: closeQuick,
+    refreshGroup() { if (quickOpen) renderRow(); },
+    render(nextReference, sourceName, quickEnabled = true) {
+      closeQuick();
       reference = nextReference;
       const parts = reference?.functionalParts || [];
       partField.hidden = !parts.length;
@@ -160,6 +260,13 @@ export function createReferenceUI(root, { onShowGroup, onClearGroup, onSelectIte
       const selectedPart = functionalPartForModelName(reference?.id, sourceName);
       if (selectedPart) partSelect.value = selectedPart;
       const available = Boolean(reference?.functionalRelations?.length);
+      if (quickRoot) {
+        quickRoot.hidden = !quickEnabled || !reference || reference.ambiguous;
+        quickRoles.forEach(button => { button.disabled = !available; });
+        quickFind("atlas-relations-unavailable").hidden = available;
+        quickFind("atlas-relations-part-field").hidden = !parts.length;
+        quickParts.replaceChildren(...[...partSelect.options].map(option => option.cloneNode(true)));
+      }
       find("structure-reference-functional-details").hidden = !available;
       find("functional-unavailable").hidden = available;
       renderMovements();
