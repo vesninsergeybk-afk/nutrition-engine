@@ -92,6 +92,7 @@ function errorText(code) {
 
 export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateChange=()=>{}}={}) {
   const base=apiBase();
+  const buttons=[button,document.querySelector("#account-button-mobile")].filter(Boolean);
   const dialog=document.querySelector("#account-dialog");
   const offline=document.querySelector("#account-offline");
   const auth=document.querySelector("#account-auth");
@@ -113,10 +114,17 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
 
   const msg=(text,kind="")=>{message.textContent=text||"";message.dataset.kind=kind;};
   const setButton=()=>{
-    if(!button)return;
-    if(!base||!config.enabled){button.textContent="Прогресс на устройстве";button.dataset.state="local";return;}
-    button.textContent=user?user.username:"Войти";
-    button.dataset.state=user?"online":"ready";
+    for(const item of buttons){
+      if(!base||!config.enabled){
+        item.textContent="Прогресс на устройстве";
+        item.dataset.state="local";
+        item.title="Прогресс сохраняется локально на этом устройстве.";
+      }else{
+        item.textContent=user?user.username:"Войти";
+        item.dataset.state=user?"online":"ready";
+        item.title=user?"Аккаунт и синхронизация прогресса":"Войти, чтобы сохранять прогресс между устройствами";
+      }
+    }
   };
   const panel=(name)=>{
     login.hidden=name!=="login";
@@ -186,7 +194,7 @@ export function initAccountClient({button,getStore,onStoreMerged=()=>{},onStateC
     if(!dialog.open)dialog.showModal();
   }
 
-  button?.addEventListener("click",open);
+  for(const item of buttons) item.addEventListener("click",open);
   document.querySelector("#account-close")?.addEventListener("click",()=>dialog.close());
   dialog?.addEventListener("click",e=>{if(e.target===dialog)dialog.close();});
   document.querySelectorAll("[data-account-tab]").forEach(b=>b.addEventListener("click",()=>panel(b.dataset.accountTab)));
