@@ -25,9 +25,19 @@ export function createReferenceUI(root, { quickRoot, onShowGroup, onClearGroup, 
   let showing = false;
   let quickOpen = false;
   let quickMessage = "";
+  let quickOpeningAnimation = null;
+  let quickOpeningFrame = 0;
 
   function syncQuickState() {
     if (!quickRoot) return;
+    const opening = quickOpen && quickRoot.dataset.open !== "true";
+    const previousHeight = opening ? quickRoot.getBoundingClientRect().height : 0;
+    if (!quickOpen || opening) {
+      cancelAnimationFrame(quickOpeningFrame);
+      quickOpeningFrame = 0;
+      quickOpeningAnimation?.cancel();
+      quickOpeningAnimation = null;
+    }
     quickRoot.dataset.open = String(quickOpen);
     quickRoot.dataset.role = quickOpen ? role : "";
     quickBody.hidden = !quickOpen;
@@ -36,6 +46,22 @@ export function createReferenceUI(root, { quickRoot, onShowGroup, onClearGroup, 
       button.setAttribute("aria-expanded", String(quickOpen && button.dataset.quickRole === role));
     }
     quickStatus.textContent = quickMessage || status.textContent;
+    // Expand the existing card in place; repeated scene/status updates do not
+    // restart the motion, and a quick close cancels it immediately.
+    if (opening && previousHeight > 0 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      quickOpeningFrame = requestAnimationFrame(() => {
+        quickOpeningFrame = 0;
+        if (!quickOpen || quickRoot.hidden) return;
+        const expandedHeight = quickRoot.getBoundingClientRect().height;
+        quickOpeningAnimation = quickRoot.animate(
+          [
+            { height: `${previousHeight}px`, overflow: "hidden" },
+            { height: `${expandedHeight}px`, overflow: "hidden" },
+          ],
+          { duration: 220, easing: "cubic-bezier(.2,.7,.2,1)" }
+        );
+      });
+    }
   }
 
   function clearGroup() {

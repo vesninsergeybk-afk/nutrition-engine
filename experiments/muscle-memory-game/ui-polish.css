@@ -140,6 +140,9 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
   .mobile-muscle-actions button { min-height: 44px; }
   .mobile-muscle-card-copy { order: 1; }
   .mobile-muscle-card .atlas-relations { order: 2; }
+  body:not(.session-active):not(.motion-mode) .viewer-wrap {
+    transition: height .22s cubic-bezier(.2,.7,.2,1), min-height .22s cubic-bezier(.2,.7,.2,1);
+  }
   .mobile-muscle-actions { order: 3; }
   body:not(.session-active):not(.motion-mode) .stage:has(.mobile-muscle-card:not([hidden])) .viewer-wrap {
     flex: none; height: max(260px, calc(100dvh - 256px)); min-height: max(260px, calc(100dvh - 256px));
