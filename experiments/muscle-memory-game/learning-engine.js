@@ -622,6 +622,17 @@ export function saveLearningStore(store, storage = globalThis.localStorage) {
   try {
     store.updatedAt = Date.now();
     storage.setItem(STORAGE_KEY, JSON.stringify(store));
+    if (
+      storage === globalThis.localStorage &&
+      typeof globalThis.dispatchEvent === "function" &&
+      typeof globalThis.CustomEvent === "function"
+    ) {
+      globalThis.dispatchEvent(
+        new globalThis.CustomEvent("muscle-memory:store-saved", {
+          detail: { store },
+        })
+      );
+    }
   } catch {
     // Прогресс не должен ломать тренировку, если storage недоступен.
   }
