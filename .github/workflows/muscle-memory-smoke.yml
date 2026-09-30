@@ -349,7 +349,7 @@ jobs:
 
 
   browser-reference:
-    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') }}
+    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
     timeout-minutes: 7
@@ -368,21 +368,27 @@ jobs:
           npm install --silent playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Run four-muscle reference checkpoint
+      - name: Run targeted reference checkpoint
         shell: bash
         run: |
           python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/muscle-memory-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          timeout 5m node experiments/muscle-memory-game/browser-smoke-reference-cards.cjs
+          if [[ '${{ contains(github.event.head_commit.message, '[reference-ui-smoke]') }}' == 'true' ]]; then
+            timeout 5m node experiments/muscle-memory-game/browser-smoke-reference-ui.cjs
+          else
+            timeout 5m node experiments/muscle-memory-game/browser-smoke-reference-cards.cjs
+          fi
 
       - name: Upload reference-card screenshots
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: muscle-memory-reference-cards-smoke
-          path: /tmp/muscle-memory-reference-*.png
+          path: |
+            /tmp/muscle-memory-reference-*.png
+            /tmp/muscle-memory-quick-relations-*.png
           if-no-files-found: ignore
           retention-days: 7
 
