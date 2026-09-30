@@ -99,6 +99,19 @@ assert(
   "Show-answer mode must visibly emphasise the target muscle with an unlit overlay while keeping muted anatomical context"
 );
 
+assert(
+  app.includes("focusBox(box, 2.75, answerView.direction)") &&
+    app.includes("answerTargetSamplePoints(targetIds, 9)") &&
+    app.includes("answerOccludersFromCamera(targetIds, answerSamples)") &&
+    app.includes('canvas.dataset.answerRevealPadding = "2.75"'),
+  "Show-answer camera must keep wider anatomical context and probe multiple target-surface points for occluders"
+);
+assert(
+  app.includes("closeQuizMuscleActions({ restore: !locked })") &&
+    app.includes('After "Показать ответ" the session is locked until "Следующая"'),
+  "Touch/drag after answer reveal can still clear the persistent answer highlight"
+);
+
 console.log("Quiz answer reveal emphasis: target cyan overlay, context muted");
 
 console.log("Massage study layers: static contract ok");
