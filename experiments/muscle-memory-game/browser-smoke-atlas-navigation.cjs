@@ -60,7 +60,12 @@ const assert = require('node:assert/strict');
   const b=await page.locator('#viewer').boundingBox();
   const point=(await data('atlas-selection-point')).split(',').map(Number);
   assert.equal(point.length,2,'No projected triangle of the selected nerve');
+  await page.evaluate(()=>{
+   window.atlasSmokeTapEvents=[];
+   for(const type of ['pointerdown','pointerup','pointercancel','click'])document.getElementById('viewer').addEventListener(type,e=>window.atlasSmokeTapEvents.push({type,x:e.clientX,y:e.clientY,pointer:e.pointerType}),{capture:true});
+  });
   await page.touchscreen.tap(b.x+(point[0]+1)*b.width/2,b.y+(1-point[1])*b.height/2);
+  if(!await page.locator('#atlas-selection-menu').isVisible())console.log('TOUCH DIAGNOSTIC '+JSON.stringify({b,point,state:await page.evaluate(()=>({events:window.atlasSmokeTapEvents,dataset:{...document.getElementById('viewer').dataset},scrollY,menu:document.getElementById('atlas-selection-menu').outerHTML}))}));
   assert.ok(await page.locator('#atlas-selection-menu').isVisible(),'Touch did not open the small structure menu');
   assert.match(await page.locator('#atlas-selection-menu-name').textContent(),/Срединный нерв/);
   await click('#atlas-selection-menu-close');await click('#atlas-view-back');

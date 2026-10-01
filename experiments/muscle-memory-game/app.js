@@ -12652,6 +12652,7 @@ window.addEventListener("resize", () => {
 renderer.domElement.style.touchAction = "none";
 
 function syncAtlasCameraState() {
+  camera.updateMatrixWorld();
   canvas.dataset.atlasCamera = [...camera.position.toArray(), ...controls.target.toArray()].map(value => value.toFixed(4)).join(",");
   // A real triangle centre supports precise interaction diagnostics for thin
   // nerves; the centre of their bounding box can be empty space.
