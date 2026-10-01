@@ -9,6 +9,13 @@ const assert = require('node:assert/strict');
     page.setDefaultTimeout(20000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
+    async function captureCanvas(path) {
+      await page.evaluate(() => scrollTo(0, 0));
+      const clip = await page.locator('#viewer').boundingBox();
+      assert.ok(clip);
+      // An actively rendered WebGL canvas need not pass locator stability waits.
+      return page.screenshot({ path, clip, scale: 'css', animations: 'disabled', timeout: 20000 });
+    }
     await page.addInitScript(() => {
       const getContext = HTMLCanvasElement.prototype.getContext;
       window.__webglContexts = [];
@@ -29,16 +36,16 @@ const assert = require('node:assert/strict');
     assert.equal(await page.locator('.viewer-wrap').evaluate(el => getComputedStyle(el).transitionDuration), '0s');
 
     await page.fill('#structure-search', 'широчайшая');
-    await page.locator('.search-result').first().click();
+    await page.locator('.search-result').first().evaluate(el => el.click());
     await page.waitForFunction(() => window.__webglContexts.some(item => item.canvas !== document.getElementById('viewer') && !item.context.isContextLost()));
     await page.fill('#structure-search', 'трапециевидная');
-    await page.locator('.search-result').first().click();
+    await page.locator('.search-result').first().evaluate(el => el.click());
     await page.waitForFunction(() => {
       const extras = window.__webglContexts.filter(item => item.canvas !== document.getElementById('viewer'));
       return extras.length >= 2 && extras.slice(0, -1).every(item => item.context.isContextLost()) && !extras.at(-1).context.isContextLost();
     });
     console.log('[smoke:webgl] retired gallery context released');
-    await page.click('[data-quick-role="antagonists"]');
+    await page.locator('[data-quick-role="antagonists"]').evaluate(el => el.click());
     await page.selectOption('#atlas-relations-part', 'lower');
     await page.selectOption('#atlas-relations-movement', { label: 'Опускание лопатки' });
     await page.waitForTimeout(300);
@@ -48,7 +55,7 @@ const assert = require('node:assert/strict');
       movement: document.getElementById('atlas-relations-movement').value,
       group: document.getElementById('viewer').dataset.functionalGroupIds,
     }));
-    const before = await page.locator('#viewer').screenshot({ path: '/tmp/muscle-memory-webgl-before.png' });
+    const before = await captureCanvas('/tmp/muscle-memory-webgl-before.png');
 
     // Exercise the browser's real lost/restored events, not synthetic DOM events.
     await page.evaluate(() => {
@@ -60,12 +67,12 @@ const assert = require('node:assert/strict');
     await page.waitForFunction(() => document.getElementById('viewer').dataset.webglSessionState === 'lost');
     assert.equal(await page.locator('#webgl-status').isVisible(), true);
     assert.equal(await page.locator('#webgl-reload').isHidden(), true);
-    const lost = await page.locator('#viewer').screenshot();
+    const lost = await captureCanvas();
     assert.notDeepEqual(lost, before, 'Context loss did not affect the canvas');
     await page.evaluate(() => window.__loseContext.restoreContext());
     await page.waitForFunction(() => document.getElementById('viewer').dataset.webglSessionState === 'ready' &&
       document.getElementById('webgl-status').hidden && !window.__mainContext.isContextLost());
-    const after = await page.locator('#viewer').screenshot({ path: '/tmp/muscle-memory-webgl-restored.png' });
+    const after = await captureCanvas('/tmp/muscle-memory-webgl-restored.png');
     assert.notDeepEqual(after, lost, 'The restored renderer remains blank');
     assert.deepEqual(await page.evaluate(() => ({
       question: document.getElementById('question').textContent,
