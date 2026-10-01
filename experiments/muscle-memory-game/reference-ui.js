@@ -27,6 +27,14 @@ export function createReferenceUI(root, { quickRoot, onShowGroup, onClearGroup, 
   let quickMessage = "";
   let quickOpeningAnimation = null;
   let quickOpeningFrame = 0;
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  motionPreference.addEventListener("change", () => {
+    if (!motionPreference.matches) return;
+    cancelAnimationFrame(quickOpeningFrame);
+    quickOpeningFrame = 0;
+    quickOpeningAnimation?.cancel();
+    quickOpeningAnimation = null;
+  });
 
   function syncQuickState() {
     if (!quickRoot) return;
@@ -48,7 +56,7 @@ export function createReferenceUI(root, { quickRoot, onShowGroup, onClearGroup, 
     quickStatus.textContent = quickMessage || status.textContent;
     // Expand the existing card in place; repeated scene/status updates do not
     // restart the motion, and a quick close cancels it immediately.
-    if (opening && previousHeight > 0 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (opening && previousHeight > 0 && typeof quickRoot.animate === "function" && !motionPreference.matches) {
       quickOpeningFrame = requestAnimationFrame(() => {
         quickOpeningFrame = 0;
         if (!quickOpen || quickRoot.hidden) return;

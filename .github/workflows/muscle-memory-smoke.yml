@@ -120,6 +120,8 @@ jobs:
           node --check experiments/muscle-memory-game/browser-smoke-bodyparts.cjs
           node --check experiments/muscle-memory-game/anatomy-model-names.js
           node --check experiments/muscle-memory-game/reference-ui.js
+          node --check experiments/muscle-memory-game/ui-motion.js
+          node --check experiments/muscle-memory-game/browser-smoke-ui-motion.cjs
           node --check experiments/muscle-memory-game/reference-data/functional-parts.js
           node --check experiments/muscle-memory-game/browser-smoke-reference-ui.cjs
           node --check experiments/muscle-memory-game/browser-smoke-mobile-atlas.cjs
@@ -349,7 +351,7 @@ jobs:
 
 
   browser-reference:
-    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') }}
+    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') || contains(github.event.head_commit.message, '[ui-motion-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
     timeout-minutes: 7
@@ -375,7 +377,9 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          if [[ '${{ contains(github.event.head_commit.message, '[reference-ui-smoke]') }}' == 'true' ]]; then
+          if [[ '${{ contains(github.event.head_commit.message, '[ui-motion-smoke]') }}' == 'true' ]]; then
+            timeout 90s node experiments/muscle-memory-game/browser-smoke-ui-motion.cjs
+          elif [[ '${{ contains(github.event.head_commit.message, '[reference-ui-smoke]') }}' == 'true' ]]; then
             timeout 5m node experiments/muscle-memory-game/browser-smoke-reference-ui.cjs
           else
             timeout 5m node experiments/muscle-memory-game/browser-smoke-reference-cards.cjs
@@ -389,6 +393,7 @@ jobs:
           path: |
             /tmp/muscle-memory-reference-*.png
             /tmp/muscle-memory-quick-relations-*.png
+            /tmp/muscle-memory-ui-motion-*.png
           if-no-files-found: ignore
           retention-days: 7
 
