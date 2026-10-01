@@ -5791,7 +5791,7 @@ function selectReferenceStructure(layerKey, partId) {
   const term = referenceStructureTerm(sourceName, layerKey);
   selectedReference = { layerKey, partId };
 
-  const description = "Сопоставьте положение выбранной структуры с костями и другими системами. Вращайте модель; кнопка «К выбранной» приблизит эту структуру.";
+  const description = "Сопоставьте положение выбранной структуры с костями и другими системами. Вращайте и приближайте модель, чтобы рассмотреть её и соседние структуры.";
   renderSimpleAtlasReference(referenceLayerNameRu(layerKey), "Топография", description);
   structureReferenceEl.dataset.referenceKind = "context";
   structureReferenceHeading.textContent = term.nameRu;
