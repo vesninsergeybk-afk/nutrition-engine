@@ -226,8 +226,10 @@ assert(
   "Skeletal context must stay visible by default without making the working muscle model translucent or letting ghost skin intercept muscle picking"
 );
 assert(
-  !app.includes('muscleDisplayMode = "ghost";'),
-  "Support-layer controls must never make the working muscle model translucent"
+  !app.slice(app.indexOf("function applyStudyLayerPreset"), app.indexOf("function syncLayerPresetAvailability")).includes('muscleDisplayMode = "ghost"') &&
+    app.includes('muscleDisplayMode = previous.muscleMode') &&
+    app.includes('if (!atlasBonesView) return;'),
+  "Tissue presets must keep opaque muscles; explicit ghost context belongs to reversible bone study only"
 );
 assert(
   app.includes("applyRegionStudyVisibility();") &&
