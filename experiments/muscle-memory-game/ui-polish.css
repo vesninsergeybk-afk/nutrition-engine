@@ -238,3 +238,32 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
 }
 
 .mobile-muscle-card:has(#mobile-focus-structure:not([hidden])) .mobile-muscle-actions button { min-height: 44px; font-size: 14px; }
+
+.display-panel-toggle::after { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 1px 3px 9px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); transition: transform .18s; }
+.display-panel-toggle[aria-expanded="true"]::after { transform: translateY(3px) rotate(225deg); }
+#atlas-view-back { margin-right: auto; }
+.atlas-selection-menu { position: absolute; z-index: 8; width: min(270px, calc(100% - 16px)); padding: 10px; background: rgba(255,255,255,.97); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 24px #26395026; }
+.atlas-selection-menu[hidden] { display: none; }
+.atlas-selection-menu-head { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.atlas-selection-menu-head strong { flex: 1; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+.atlas-selection-menu-head button { flex: none; width: 32px; min-height: 32px; padding: 0; border: 0; background: transparent; font-size: 22px; }
+.atlas-selection-menu-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.atlas-selection-menu-actions button { min-height: 44px; padding: 6px; border: 1px solid var(--line); border-radius: 9px; background: #f6f8fc; color: inherit; font: inherit; font-size: 12px; font-weight: 600; }
+.atlas-selection-menu-actions [data-atlas-action="reveal"] { grid-column: 1 / -1; }
+.atlas-card-illustrations { display: grid; gap: 12px; }
+.atlas-card-illustrations figure { margin: 0; }
+.atlas-card-illustrations img { display: block; width: 100%; max-height: 440px; object-fit: contain; background: white; }
+.atlas-card-illustrations figcaption { font-size: 12px; line-height: 1.45; color: var(--muted); }
+.atlas-mini-view { margin-top: 12px; }
+.atlas-mini-view summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+.atlas-mini-stage { position: relative; height: 260px; }
+.atlas-mini-stage canvas { width: 100%; height: 100%; touch-action: none; border-radius: 12px; }
+.atlas-mini-stage button { position: absolute; top: 8px; right: 8px; min-height: 36px; }
+@media (max-width: 920px) {
+ .viewer-tools { flex-wrap: wrap; }
+ .viewer-tools #atlas-view-back { min-height: 36px; padding: 6px 8px; }
+ .viewer-tools #atlas-bones-toggle { font-size: 11px; padding: 6px 8px; }
+ .viewer-tools #display-panel-toggle[aria-expanded="true"] { min-width: 0; }
+ .mobile-muscle-card:has(#mobile-isolate-structure:not([hidden])) .mobile-muscle-actions { display: grid; grid-template-columns: 1fr 1fr; }
+ .mobile-muscle-card:has(#mobile-isolate-structure:not([hidden])) .mobile-back-context { grid-column: 1 / -1; }
+}

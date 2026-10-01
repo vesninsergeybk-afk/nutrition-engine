@@ -1,5 +1,18 @@
 # Third-party data and software notices
 
+## Context structure cards and historic illustrations
+
+Short Russian context summaries in `context-reference-data.js` are independently written from anatomical facts, with verification links to OpenStax, StatPearls and the cited PMC article. No current OpenStax illustrations are redistributed.
+
+Four unmodified public-domain historic plates by Henry Vandyke Carter, from Gray's Anatomy (20th edition, 1918), are used with source attribution:
+
+- Gray347.png: https://commons.wikimedia.org/wiki/File:Gray347.png — right knee, anterior view.
+- Gray348.png: https://commons.wikimedia.org/wiki/File:Gray348.png — left knee, posterior view.
+- Gray550.png: https://commons.wikimedia.org/wiki/File:Gray550.png — arteries of the leg, posterior view.
+- Gray662.png: https://commons.wikimedia.org/wiki/File:Gray662.png — cauda equina and filum terminale, posterior view.
+
+Commons records these scans as public domain (PD-old-100-expired / PD-scan); original English labels are retained. The annotated `Gray662Cauda.png` derivative is not used.
+
 ## 3D anatomical data used in the MVP
 
 The prototype currently references the muscle-system GLB published in:

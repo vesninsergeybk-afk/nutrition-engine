@@ -1,0 +1,86 @@
+const {chromium} = require('/tmp/node_modules/playwright');
+const assert = require('node:assert/strict');
+(async () => {
+ const browser=await chromium.launch({headless:true,args:['--enable-unsafe-swiftshader']});
+ try {
+  const page=await browser.newPage({viewport:{width:390,height:740},isMobile:true,hasTouch:true});
+  page.setDefaultTimeout(20000);
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const click=s=>page.locator(s).first().evaluate(el=>el.click());
+  const data=key=>page.locator('#viewer').getAttribute('data-'+key);
+  const search=async q=>{await page.fill('#structure-search',q);await click('.search-result');};
+  const layer=async key=>{await click('[data-context-layer="'+key+'"]');await page.waitForFunction(key=>document.getElementById('viewer').dataset.referenceLayers.includes(key),key,{timeout:45000});};
+  await page.goto('http://127.0.0.1:4173/?mode=explore&scope=all',{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>!document.getElementById('atlas-bones-toggle').disabled,null,{timeout:90000});
+  assert.match(await page.locator('#atlas-bones-toggle').textContent(),/Кости и системы/);
+  await click('#display-panel-toggle');assert.equal(await page.locator('#display-panel-toggle').getAttribute('aria-expanded'),'true');
+  await click('#display-panel-close');
+  await click('#atlas-bones-toggle');await layer('joints');await search('передняя крестообразная');
+  assert.match(await page.locator('#mobile-muscle-name').textContent(),/Передняя крестообразная/);
+  const joint=await data('selected-reference-part');
+  assert.match(await data('selected-reference-card'),/context:anterior cruciate ligament/);
+  assert.equal(await page.locator('#mobile-bone-reference img').count(),2);
+  await click('#mobile-isolate-structure');assert.ok(await data('atlas-isolated-selection'));
+  assert.equal(await data('reference-layers'),'joints');
+  assert.equal(await data('selected-reference-part'),joint);
+  await click('#atlas-view-back');assert.equal(await data('atlas-isolated-selection'),'');
+  assert.equal(await data('selected-reference-part'),joint);
+  const cameraBefore=await data('atlas-camera');
+  await click('#mobile-focus-structure');await click('#atlas-view-back');
+  assert.equal(await data('atlas-camera'),cameraBefore,'Back did not restore the camera');
+  assert.equal(await data('selected-reference-part'),joint);
+  await click('#mobile-hide-muscle');assert.ok(Number(await data('hidden-reference-parts'))>0);
+  await click('#atlas-view-back');assert.equal(await data('hidden-reference-parts'),'0');
+  assert.equal(await data('selected-reference-part'),joint);
+  // A deep object selected by name can open the actual anatomy in front of it.
+  await click('#mobile-reveal-structure');assert.ok(Number(await data('atlas-removed-occluders'))>0);
+  assert.equal(await data('selected-reference-part'),joint);
+  await click('#atlas-view-back');assert.equal(await data('selected-reference-part'),joint);
+  console.log('PASS joint card, isolation, focus, hide, geometric occlusion and back.');
+  await click('[data-context-layer="joints"]');await layer('nervous');await search('срединный нерв');
+  const nerve=await data('selected-reference-part');
+  assert.match(await data('selected-reference-card'),/context:median nerve/);
+  // Real touch drag, then a two-finger gesture: neither is a selection command.
+  const box=await page.locator('#viewer').boundingBox();
+  const cdp=await page.context().newCDPSession(page);
+  const p=(x,y,id)=>({x:Math.round(x),y:Math.round(y),id});
+  const x=box.x+box.width*.5,y=box.y+box.height*.5;
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[p(x,y,0)]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[p(x+70,y+40,0)]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  assert.equal(await data('selected-reference-part'),nerve);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[p(x-25,y,0),p(x+25,y,1)]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[p(x-45,y,0),p(x+45,y,1)]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  assert.equal(await data('selected-reference-part'),nerve);
+  // Isolate the thin nerve, focus it, and touch actual geometry.
+  await click('#mobile-isolate-structure');
+  const b=await page.locator('#viewer').boundingBox();
+  for(const [dx,dy] of [[0,0],[-15,0],[15,0],[0,-25],[0,25]]) {
+   await page.touchscreen.tap(b.x+b.width/2+dx,b.y+b.height/2+dy);
+   if(await page.locator('#atlas-selection-menu').isVisible())break;
+  }
+  assert.ok(await page.locator('#atlas-selection-menu').isVisible(),'Touch did not open the small structure menu');
+  assert.match(await page.locator('#atlas-selection-menu-name').textContent(),/Срединный нерв/);
+  await click('#atlas-selection-menu-close');await click('#atlas-view-back');
+  assert.equal(await data('selected-reference-part'),nerve);
+  await click('#mobile-bone-reference summary');await click('#mobile-bone-reference .atlas-mini-view summary');
+  await page.waitForFunction(()=>document.querySelector('#mobile-bone-reference .atlas-mini-stage canvas')?.width>0);
+  await click('#mobile-bone-reference .atlas-mini-view summary');
+  console.log('PASS thin named nerve, touch rotation/pinch, local menu and lazy 3D card.');
+  await click('[data-context-layer="nervous"]');await layer('vascular');await search('глубокая вена бедра');
+  assert.match(await data('selected-reference-card'),/context:deep femoral vein/);
+  await click('[data-context-layer="vascular"]');
+  await search('бедренная кость');
+  const bone=await data('selected-bone');
+  await click('#mobile-hide-muscle');assert.equal(await data('selected-bone'),'');
+  await click('#atlas-view-back');assert.equal(await data('selected-bone'),bone);
+  await click('#atlas-bones-toggle');assert.equal(await data('atlas-view'),'muscles');
+  await click('#atlas-view-back');assert.equal(await data('atlas-view'),'bones');assert.equal(await data('selected-bone'),bone);
+  await page.setViewportSize({width:320,height:720});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  assert.deepEqual(errors,[]);
+  console.log('PASS vessel card, bone hide/back, system mode back and narrow layout.');
+  try {await page.screenshot({path:'/tmp/atlas-navigation-mobile.png',timeout:8000,scale:'css',animations:'disabled'});} catch(e){console.log('Optional screenshot unavailable: '+e.message.split('\n')[0]);}
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

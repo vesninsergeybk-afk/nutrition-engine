@@ -1,0 +1,48 @@
+name: Atlas navigation and structure cards
+on:
+  push:
+    branches: [feature/atlas-navigation-20261001]
+    paths: [experiments/muscle-memory-game/**, .github/workflows/atlas-navigation-smoke.yml]
+permissions:
+  contents: read
+jobs:
+  targeted:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check changed code and names
+        run: |
+          node --check experiments/muscle-memory-game/app.js
+          node experiments/muscle-memory-game/check-context-cards.mjs
+          node experiments/muscle-memory-game/check-context-structures.mjs
+      - name: Fetch the four public domain atlas figures
+        run: |
+          mkdir -p /tmp/atlas-figures
+          curl -fL --retry 1 --max-time 25 https://upload.wikimedia.org/wikipedia/commons/f/f4/Gray662.png -o /tmp/atlas-figures/Gray662.png
+          curl -fL --retry 1 --max-time 25 https://upload.wikimedia.org/wikipedia/commons/a/a8/Gray347.png -o /tmp/atlas-figures/Gray347.png
+          curl -fL --retry 1 --max-time 25 https://upload.wikimedia.org/wikipedia/commons/1/19/Gray348.png -o /tmp/atlas-figures/Gray348.png
+          curl -fL --retry 1 --max-time 25 https://upload.wikimedia.org/wikipedia/commons/c/c0/Gray550.png -o /tmp/atlas-figures/Gray550.png
+      - name: Prepare browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Check changed interactions
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/atlas-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          timeout 5m node experiments/muscle-memory-game/browser-smoke-atlas-navigation.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atlas-navigation-review
+          path: |
+            /tmp/atlas-navigation-mobile.png
+            /tmp/atlas-figures/*.png
+          retention-days: 7

@@ -76,15 +76,16 @@
           <button id="focus-shoulder" type="button">К области</button>
           <button id="focus-selected" type="button" disabled>К выбранной</button>
           <button id="focus-full" type="button">Всё тело</button>
-          <button id="atlas-bones-toggle" class="viewer-quick-toggle" type="button" aria-pressed="false" title="Изучать кости: выбрать на модели и открыть справку" disabled>Кости</button>
+          <button id="atlas-view-back" type="button" hidden title="Вернуться к предыдущему виду, выделению и ракурсу">← Назад</button>
+          <button id="atlas-bones-toggle" class="viewer-quick-toggle" type="button" aria-pressed="false" title="Переключиться с мышц на кости, органы, нервы, сосуды и суставные структуры" disabled>Кости и системы</button>
           <button id="toggle-skeleton" class="viewer-quick-toggle" type="button" aria-pressed="true" disabled>Скелет</button>
 
-          <button id="display-panel-toggle" class="display-panel-toggle" type="button" aria-expanded="false" aria-controls="display-panel">
+          <button id="display-panel-toggle" class="display-panel-toggle" type="button" aria-expanded="false" aria-haspopup="dialog" aria-controls="display-panel">
             Отображение
           </button>
         </div>
 
-        <aside id="display-panel" class="display-panel viewer-settings" hidden aria-label="Настройки отображения">
+        <aside id="display-panel" class="display-panel viewer-settings" hidden role="dialog" aria-label="Настройки отображения">
           <div class="display-panel-head">
             <div>
               <strong>Отображение</strong>
@@ -204,6 +205,16 @@
           </section>
         </aside>
 
+        <aside id="atlas-selection-menu" class="atlas-selection-menu" hidden aria-label="Действия с выбранной структурой">
+          <div class="atlas-selection-menu-head"><strong id="atlas-selection-menu-name"></strong><button id="atlas-selection-menu-close" type="button" aria-label="Закрыть меню структуры">×</button></div>
+          <div class="atlas-selection-menu-actions">
+            <button type="button" data-atlas-action="focus">Приблизить</button>
+            <button type="button" data-atlas-action="isolate">Отдельно</button>
+            <button type="button" data-atlas-action="hide">Скрыть</button>
+            <button type="button" data-atlas-action="reveal" title="Скрыть объекты перед выбранной структурой с текущего ракурса">Убрать перекрытия</button>
+            <button type="button" data-atlas-action="reference">Справка</button>
+          </div>
+        </aside>
         <div class="viewer-hint">
           <span class="hint-touch">1 палец — вращать · 2 пальца — приблизить и сдвинуть</span>
           <span class="hint-pointer">ЛКМ — вращать · колесо — приблизить · ПКМ — сдвинуть</span>
@@ -240,6 +251,8 @@
           <div class="mobile-muscle-actions">
             <button id="mobile-hide-muscle" type="button">Скрыть</button>
             <button id="mobile-focus-structure" type="button" hidden>Приблизить</button>
+            <button id="mobile-isolate-structure" type="button" hidden>Показать отдельно</button>
+            <button id="mobile-reveal-structure" type="button" hidden title="Скрыть объекты перед выбранной структурой с текущего ракурса">Убрать перекрытия</button>
             <button id="mobile-isolate-muscle" type="button">Изолировать мышцу</button>
             <button id="mobile-isolate-region" type="button" hidden>Изолировать область</button>
             <button id="mobile-back-context" class="mobile-back-context" type="button" hidden>← На шаг назад</button>
