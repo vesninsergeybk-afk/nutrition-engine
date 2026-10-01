@@ -79,7 +79,7 @@ assert(
 assert(
   app.includes("function boneSearchText") &&
     app.includes('matches.push({ kind: "bone", id: boneId })') &&
-    app.includes('button.textContent = term.nameRu + " · Кость"') &&
+    app.includes('button.textContent = term.nameRu + " · " + term.kindRu') &&
     app.includes('boneDisplayMode = "anatomical"'),
   "Russian bone names are not connected to Atlas search"
 );

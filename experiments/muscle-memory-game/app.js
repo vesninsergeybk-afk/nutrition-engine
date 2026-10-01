@@ -3331,7 +3331,7 @@ function updateLayerButtons() {
   }
 
   const hasSelectedStructure =
-    selectedStudyId != null || selectedExploreSid != null || selectedBoneId != null;
+    selectedStudyId != null || selectedExploreSid != null;
   if (selectedStructureActions) {
     selectedStructureActions.hidden =
       appMode !== "explore" || !hasSelectedStructure;
