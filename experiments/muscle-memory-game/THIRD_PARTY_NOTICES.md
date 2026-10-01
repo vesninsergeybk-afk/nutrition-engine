@@ -89,3 +89,10 @@ The current Z-Anatomy-derived web prototype is pinned to the source repository c
 `37e85dfbbb398e11ba33c8f0e411f06f9bba592f`
 
 This avoids silent geometry changes when the upstream `main` branch moves. Pinning improves reproducibility but does **not** constitute anatomical validation.
+
+The skeleton-context view uses the following files from that same pinned revision:
+`systems/iskelet.glb`, `systems/sinir.glb`, `systems/dolasim.glb`,
+`systems/lenf.glb`, `systems/ic-organlar.glb`, and `systems/eklem.glb`.
+The joint layer is loaded on demand without modifying the source geometry.
+Russian labels describe the objects named by the source; they do not add
+unrepresented spinal levels, joint surfaces, or lymphatic vessels.

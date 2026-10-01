@@ -236,3 +236,5 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
 @media (max-width: 360px) {
   .atlas-context-layer-buttons { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+.mobile-muscle-card:has(#mobile-focus-structure:not([hidden])) .mobile-muscle-actions button { min-height: 44px; font-size: 14px; }

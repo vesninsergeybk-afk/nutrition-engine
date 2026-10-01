@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
   const page = await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   page.setDefaultTimeout(15000);
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const start=Date.now();const stage=s=>console.log(Math.round((Date.now()-start)/1000)+'s '+s);
   const click = s => page.locator(s).first().evaluate(el=>el.click());
   const ds = key => page.locator('#viewer').getAttribute('data-'+key);
   const search = async (q,expected) => {
@@ -14,12 +15,13 @@ const assert = require('node:assert/strict');
    assert.match(await page.locator('#mobile-muscle-name').textContent(),expected);
   };
   const layer = async key => {
+   stage(key+' selection passed');
    await click('[data-context-layer="'+key+'"]');
    await page.waitForFunction(key => document.getElementById('viewer').dataset.referenceLayers.includes(key),key,{timeout:45000});
   };
   await page.goto('http://127.0.0.1:4173/?mode=explore&scope=all',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>!document.getElementById('atlas-bones-toggle').disabled,null,{timeout:90000});
-  await click('#atlas-bones-toggle');
+  await click('#atlas-bones-toggle');stage('skeleton ready');
   await layer('organs');
   await search('большой сальник',/Большой сальник/);
   await click('#mobile-focus-structure');
@@ -52,6 +54,7 @@ const assert = require('node:assert/strict');
   await page.locator('#muscle-transparency').fill('97');
   assert.ok(Math.abs(Number(await ds('muscle-opacity'))-.03)<.001);
   assert.equal(await page.locator('#muscle-transparency-value').textContent(),'97%');
+  stage('organ tap, hide/undo, cache, opacity passed');
   await page.screenshot({path:'/tmp/muscle-memory-structures-mobile.png',fullPage:true,scale:'css',animations:'disabled'});
   await click('#atlas-context-restore');assert.equal(await ds('hidden-reference-parts'),'0');
   await click('#atlas-context-muscles');await click('[data-context-layer="organs"]');
@@ -78,13 +81,15 @@ const assert = require('node:assert/strict');
     assert.ok(await page.locator('#atlas-context-layers').isVisible());
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
    }
+   stage(key+' selection passed');
    await click('[data-context-layer="'+key+'"]');
    assert.equal(await ds('selected-reference-layer'),'');
   }
   await click('#atlas-bones-toggle');
-  await search('дельтовидная',/Дельтовидная/);
-  assert.ok(await page.locator('#structure-reference-facts').isVisible());
+  assert.equal(await ds('atlas-view'),'muscles');
+  assert.equal(await ds('muscle-mode'),'anatomical');
+  assert.equal(await ds('reference-layers'),'');
   assert.deepEqual(errors,[]);
-  console.log('PASS: real organ tap, hidden surface, undo/restore, layer cache, opacity, roots/cauda, all five systems, desktop/mobile layout and muscle return.');
+  console.log('PASS: real organ tap, hidden surface, undo/restore, layer cache, opacity, roots/cauda, all five systems, desktop/mobile layout and mode return.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
