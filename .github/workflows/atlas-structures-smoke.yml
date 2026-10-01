@@ -33,9 +33,3 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           timeout 4m node experiments/muscle-memory-game/browser-smoke-context-structures.cjs
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: atlas-structure-interaction
-          path: /tmp/muscle-memory-structures-*.png
-          retention-days: 7

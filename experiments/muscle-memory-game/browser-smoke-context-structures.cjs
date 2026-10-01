@@ -15,7 +15,7 @@ const assert = require('node:assert/strict');
    assert.match(await page.locator('#mobile-muscle-name').textContent(),expected);
   };
   const layer = async key => {
-   stage(key+' selection passed');
+   stage('loading '+key);
    await click('[data-context-layer="'+key+'"]');
    await page.waitForFunction(key => document.getElementById('viewer').dataset.referenceLayers.includes(key),key,{timeout:45000});
   };
@@ -55,7 +55,6 @@ const assert = require('node:assert/strict');
   assert.ok(Math.abs(Number(await ds('muscle-opacity'))-.03)<.001);
   assert.equal(await page.locator('#muscle-transparency-value').textContent(),'97%');
   stage('organ tap, hide/undo, cache, opacity passed');
-  await page.screenshot({path:'/tmp/muscle-memory-structures-mobile.png',fullPage:true,scale:'css',animations:'disabled'});
   await click('#atlas-context-restore');assert.equal(await ds('hidden-reference-parts'),'0');
   await click('#atlas-context-muscles');await click('[data-context-layer="organs"]');
   for(const [key,q,label] of [
@@ -76,7 +75,6 @@ const assert = require('node:assert/strict');
     await page.setViewportSize({width:1440,height:960});
     await page.evaluate(()=>scrollTo(0,0));
     assert.equal(await page.locator('#hide-selected').isEnabled(),true);
-    await page.screenshot({path:'/tmp/muscle-memory-structures-desktop.png',scale:'css',animations:'disabled'});
     await page.setViewportSize({width:320,height:720});
     assert.ok(await page.locator('#atlas-context-layers').isVisible());
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
