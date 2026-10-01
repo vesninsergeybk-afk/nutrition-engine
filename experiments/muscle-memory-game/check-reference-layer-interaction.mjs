@@ -37,7 +37,7 @@ for (const [source, layer, expected] of [
 const fallback = referenceStructureTerm("Unmapped source object 17", "nervous");
 assert(!fallback.specific, "Unknown source object must remain explicitly unspecific");
 assert(
-  fallback.nameRu === "Нервная структура",
+  fallback.nameRu === "Структура с нерасшифрованным названием",
   "Unknown nervous object must use a neutral Russian fallback"
 );
 assert(
@@ -72,7 +72,7 @@ assert(
 );
 assert(
   app.includes("if (!referencePartIsInteractive(mesh, partId)) continue;"),
-  "Unmapped source objects must stay out of the user-facing Atlas search"
+  "Hidden source objects must stay out of the user-facing Atlas search"
 );
 
 assert(

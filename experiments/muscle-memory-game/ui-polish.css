@@ -202,7 +202,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
 .mobile-page-scroll[data-dragging="true"] { cursor: grabbing; }
 .mobile-page-scroll[data-dragging="true"] .mobile-page-scroll-thumb { background: #245da8; }
 .atlas-context-layers { flex: none; border: 1px solid var(--line); border-radius: 14px; padding: 10px; background: #fff; }
-.atlas-context-layer-buttons { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.atlas-context-layer-buttons { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .atlas-context-layer-buttons button { min-width: 0; min-height: 44px; padding: 6px 3px; font-size: 12px; background: #f5f7fa; }
 .atlas-context-layer-buttons button::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; background: #d1ad5d; }
 [data-context-layer="vascular"]::before { background: #a44f4b !important; }
@@ -223,4 +223,16 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
   body.bones-mode .viewer-wrap { flex: none; }
   body:not(.session-active):not(.motion-mode) .panel:has(#structure-reference[data-reference-kind="context"]) #structure-reference,
   body:not(.session-active):not(.motion-mode) .question-card:has(#structure-reference[data-reference-kind="context"]) > :is(#question-label, #question, #feedback) { display: none; }
+}
+
+[data-context-layer="joints"]::before { background: #a7bac9 !important; }
+.muscle-transparency-field { display: grid; gap: 6px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.muscle-transparency-field > span { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+.muscle-transparency-field output { color: #244d78; font-variant-numeric: tabular-nums; }
+.muscle-transparency-field input { width: 100%; height: 32px; margin: 0; accent-color: #5682b5; cursor: pointer; }
+.atlas-context-restore-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.atlas-context-restore-actions:has(button:not([hidden])) { margin-top: 10px; }
+.atlas-context-restore-actions button { min-height: 40px; padding: 6px 10px; font-size: 14px; }
+@media (max-width: 360px) {
+  .atlas-context-layer-buttons { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }

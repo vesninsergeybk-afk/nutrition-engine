@@ -161,6 +161,7 @@ const REFERENCE_LAYER_SOURCES = {
   nervous: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/sinir.glb",
   vascular: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/dolasim.glb",
   lymphatic: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/lenf.glb",
+  joints: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/eklem.glb",
   organs: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/ic-organlar.glb",
 };
 
@@ -169,6 +170,7 @@ const REFERENCE_LAYER_COLORS = {
   vascular: 0xa44f4b,
   lymphatic: 0x78966f,
   organs: 0xc88179,
+  joints: 0xa7bac9,
 };
 
 function referenceContextColor(layerKey, sourceName) {
@@ -341,6 +343,13 @@ const atlasContextLayers = document.querySelector("#atlas-context-layers");
 const atlasContextButtons = [...document.querySelectorAll("[data-context-layer]")];
 const atlasContextMuscles = document.querySelector("#atlas-context-muscles");
 const atlasContextStatus = document.querySelector("#atlas-context-status");
+const muscleTransparency = document.querySelector("#muscle-transparency");
+const muscleTransparencyField = document.querySelector("#muscle-transparency-field");
+const muscleTransparencyValue = document.querySelector("#muscle-transparency-value");
+const atlasContextUndo = document.querySelector("#atlas-context-undo");
+const atlasContextRestore = document.querySelector("#atlas-context-restore");
+const mobileFocusStructure = document.querySelector("#mobile-focus-structure");
+let ghostMuscleOpacity = 0.06;
 const mobileMuscleCardCopy = document.querySelector("#mobile-muscle-card-copy");
 const mobileMuscleKind = document.querySelector("#mobile-muscle-kind");
 const mobileMuscleName = document.querySelector("#mobile-muscle-name");
@@ -2478,7 +2487,8 @@ function applyMuscleDisplayMode() {
 
   if (muscleDisplayMode === "ghost") {
     material.transparent = true;
-    material.opacity = 0.2;
+    material.opacity = ghostMuscleOpacity;
+    material.forceSinglePass = true;
     material.depthWrite = false;
   } else {
     material.transparent = false;
@@ -2489,6 +2499,7 @@ function applyMuscleDisplayMode() {
   material.depthTest = true;
   material.needsUpdate = true;
   canvas.dataset.muscleMode = muscleDisplayMode;
+  canvas.dataset.muscleOpacity = String(material.opacity);
 }
 
 function setConnectiveLayerSelection(keys) {
@@ -3309,7 +3320,7 @@ function renderDeeperStructures(ids, { pointSpecific = true } = {}) {
 function updateLayerButtons() {
   isolateButton.textContent = isolated ? "Вернуть окружение" : "Показать отдельно";
   hideSelectedButton.textContent =
-    selectedStudyId != null ? "Скрыть структуру" : "Скрыть мышцу";
+    selectedStudyId != null || selectedReference != null ? "Скрыть структуру" : "Скрыть мышцу";
   showAllButton.textContent = regionIsolationActive()
     ? "Вернуть структуры области"
     : "Вернуть все структуры";
@@ -3368,7 +3379,7 @@ function updateLayerButtons() {
   }
 
   const hasSelectedStructure =
-    selectedStudyId != null || selectedExploreSid != null;
+    selectedStudyId != null || selectedExploreSid != null || selectedReference != null;
   if (selectedStructureActions) {
     selectedStructureActions.hidden =
       appMode !== "explore" || !hasSelectedStructure;
@@ -3379,6 +3390,16 @@ function updateLayerButtons() {
       (!isolated && hiddenStack.length === 0 && exploreHiddenActions.length === 0);
   }
 
+  syncAtlasContextLayers();
+  if (selectedReference != null) {
+    syncMobileMuscleCard();
+    revealSelectedButton.hidden = true;
+    revealSelectedButton.disabled = true;
+    hideSelectedButton.disabled = !referencePartIsVisible(referenceMeshes.get(selectedReference.layerKey), selectedReference.partId);
+    isolateButton.disabled = true;
+    showNearestMuscleButton.hidden = true;
+    return;
+  }
   if (selectedStudyId != null) {
     revealSelectedButton.hidden = true;
     revealSelectedButton.disabled = true;
@@ -3569,14 +3590,16 @@ function syncMobileMuscleCard() {
   }
 
   mobileMuscleCardCopy.hidden = !hasSelection;
-  mobileHideMuscleButton.hidden = !hasMuscle;
+  mobileHideMuscleButton.hidden = !(hasMuscle || hasReference);
+  mobileFocusStructure.hidden = !hasReference;
   mobileIsolateMuscleButton.hidden = !hasMuscle;
-  mobileMuscleCard.querySelector(".mobile-muscle-actions").hidden = Boolean(hasBone || hasReference);
+  mobileMuscleCard.querySelector(".mobile-muscle-actions").hidden = Boolean(hasBone);
   mobileBoneReferenceEl.hidden = !(hasBone || hasReference);
   if (hasReference) {
     const term = referenceStructureTerm(referencePartSourceName(referenceMeshes.get(selectedReference.layerKey), selectedReference.partId), selectedReference.layerKey);
     mobileMuscleKind.textContent = referenceLayerNameRu(selectedReference.layerKey);
     mobileMuscleName.textContent = term.nameRu;
+    mobileHideMuscleButton.disabled = false;
   }
   if (hasBone) {
     const term = boneTermRu(boneNames[selectedBoneId]);
@@ -3656,7 +3679,9 @@ function restoreExploreContext() {
   applyBoneDisplayMode();
   applyConnectiveDisplayMode();
   applySkinDisplayMode();
+  for (const mesh of referenceMeshes.values()) mesh.userData.hiddenReferenceParts?.clear();
   restoreReferenceLayerVisibility();
+  if (atlasBonesView) enforceAtlasBonesView();
   updateLayerButtons();
   canvas.dataset.deeperFocus = "false";
   canvas.dataset.deeperFocusComponentCount = "";
@@ -3693,6 +3718,33 @@ function isolateSelectedStudyStructure() {
 function hideSelectedStructure() {
   if (appMode !== "explore") return;
   clearDeeperStructures();
+
+  if (selectedReference != null) {
+    const {layerKey, partId} = selectedReference;
+    const mesh = referenceMeshes.get(layerKey);
+    if (!mesh || !referencePartIsVisible(mesh, partId)) return;
+    const sourceName = referencePartSourceName(mesh, partId);
+    const ids = mesh.userData.referenceNames.flatMap((name, id) => name === sourceName ? [id] : []);
+    const label = referenceStructureTerm(sourceName, layerKey).nameRu;
+    for (const id of ids) {
+      mesh.userData.hiddenReferenceParts.add(id);
+      setReferencePartVisible(mesh, id, false);
+    }
+    exploreHiddenActions.push({kind: "reference", layerKey, ids, partId});
+    restoreHighlights();
+    selectedReference = null;
+    canvas.dataset.selectedReferenceLayer = "";
+    canvas.dataset.selectedReferencePart = "";
+    hideStructureReference();
+    focusSelectedButton.disabled = true;
+    questionLabelEl.textContent = "Структура скрыта";
+    questionEl.textContent = label;
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "Выберите структуру глубже или нажмите «Вернуть скрытую».";
+    updateLayerButtons();
+    renderSearchResults(searchInput.value);
+    return;
+  }
 
   if (selectedStudyId != null) {
     if (isolated || !studyStructureIsVisible(selectedStudyId)) return;
@@ -3746,6 +3798,18 @@ function hideSelectedStructure() {
 
 function undoLastHide() {
   const action = exploreHiddenActions.pop();
+
+  if (action?.kind === "reference") {
+    const mesh = referenceMeshes.get(action.layerKey);
+    if (mesh) {
+      for (const id of action.ids) mesh.userData.hiddenReferenceParts.delete(id);
+      applyReferenceRegionVisibility(mesh);
+      if (mesh.visible) selectReferenceStructure(action.layerKey, action.partId);
+    }
+    updateLayerButtons();
+    renderSearchResults(searchInput.value);
+    return;
+  }
 
   if (action?.kind === "verified-cover") {
     for (const sid of action.ids || []) setStructureVisible(sid, true);
@@ -5762,9 +5826,7 @@ function referencePartSourceName(mesh, partId) {
 
 function referencePartIsInteractive(mesh, partId) {
   if (!referencePartIsVisible(mesh, partId)) return false;
-  const layerKey = mesh?.userData?.referenceLayer;
-  const sourceName = referencePartSourceName(mesh, partId);
-  return referenceStructureTerm(sourceName, layerKey).specific;
+  return true;
 }
 
 function selectReferenceStructure(layerKey, partId) {
@@ -5791,7 +5853,9 @@ function selectReferenceStructure(layerKey, partId) {
   const term = referenceStructureTerm(sourceName, layerKey);
   selectedReference = { layerKey, partId };
 
-  const description = "Сопоставьте положение выбранной структуры с костями и другими системами. Вращайте и приближайте модель, чтобы рассмотреть её и соседние структуры.";
+  const description = term.specific
+    ? "Вращайте и приближайте модель. Чтобы открыть структуры глубже, скройте выбранную; её можно вернуть. Подробная справка будет добавлена отдельно."
+    : "В исходной модели название этого объекта не расшифровано. Его можно рассмотреть и скрыть; анатомическую принадлежность ещё предстоит уточнить.";
   renderSimpleAtlasReference(referenceLayerNameRu(layerKey), "Топография", description);
   structureReferenceEl.dataset.referenceKind = "context";
   structureReferenceHeading.textContent = term.nameRu;
@@ -5815,9 +5879,10 @@ function selectReferenceStructure(layerKey, partId) {
 
   canvas.dataset.selectedReferenceLayer = layerKey;
   canvas.dataset.selectedReferenceSpecific = String(term.specific);
+  canvas.dataset.selectedReferencePart = String(partId);
   focusSelectedButton.disabled = false;
   isolateButton.disabled = true;
-  hideSelectedButton.disabled = true;
+  hideSelectedButton.disabled = false;
   updateLayerButtons();
 }
 
@@ -5982,11 +6047,38 @@ function syncAtlasContextLayers() {
     else if (input?.checked) enabled.push(button.textContent);
   }
   atlasContextMuscles.setAttribute("aria-pressed", String(Boolean(atlasBonesView?.ghost)));
+  muscleTransparencyField.hidden = !atlasBonesView?.ghost;
+  muscleTransparencyValue.textContent = muscleTransparency.value + "%";
+  const hidden = [...referenceMeshes.values()].reduce((n, mesh) => n + (mesh.userData.hiddenReferenceParts?.size || 0), 0);
+  canvas.dataset.hiddenReferenceParts = String(hidden);
+  atlasContextUndo.hidden = exploreHiddenActions.length === 0;
+  atlasContextRestore.hidden = hidden === 0;
   atlasContextStatus.textContent = !available ? "Дополнительные системы доступны в модели Z-Anatomy."
     : loading.length ? "Загружается: " + loading.join(", ") + "…"
     : enabled.length ? "На модели: " + enabled.join(", ") + ". Выберите структуру касанием."
     : "Включите систему, чтобы увидеть её рядом с костями.";
+  if (enabled.includes("Лимфа")) atlasContextStatus.textContent += " Лимфа: узлы и органы, без сосудов.";
 }
+
+muscleTransparency.addEventListener("input", () => {
+  ghostMuscleOpacity = (100 - Number(muscleTransparency.value)) / 100;
+  if (atlasBonesView?.ghost) {
+    applyMuscleDisplayMode();
+    enforceAtlasBonesView();
+  }
+  muscleTransparencyValue.textContent = muscleTransparency.value + "%";
+});
+atlasContextUndo.addEventListener("click", undoLastHide);
+atlasContextRestore.addEventListener("click", () => {
+  for (const mesh of referenceMeshes.values()) mesh.userData.hiddenReferenceParts?.clear();
+  for (let i = exploreHiddenActions.length - 1; i >= 0; i--) {
+    if (exploreHiddenActions[i].kind === "reference") exploreHiddenActions.splice(i, 1);
+  }
+  restoreReferenceLayerVisibility();
+  updateLayerButtons();
+  renderSearchResults(searchInput.value);
+});
+mobileFocusStructure.addEventListener("click", () => focusSelectedStructures());
 
 for (const button of atlasContextButtons) button.addEventListener("click", () => {
   const input = referenceLayerInputs.find(item => item.dataset.referenceLayer === button.dataset.contextLayer);
@@ -5997,6 +6089,7 @@ for (const button of atlasContextButtons) button.addEventListener("click", () =>
 atlasContextMuscles.addEventListener("click", () => {
   if (!atlasBonesView) return;
   atlasBonesView.ghost = !atlasBonesView.ghost;
+  ghostMuscleOpacity = (100 - Number(muscleTransparency.value)) / 100;
   muscleDisplayMode = "ghost";
   applyMuscleDisplayMode();
   enforceAtlasBonesView();
@@ -6044,7 +6137,7 @@ function setAtlasBonesView(enabled) {
   document.body.classList.toggle("bones-mode", enabled);
   canvas.dataset.atlasView = enabled ? "bones" : "muscles";
   searchInput.value = "";
-  searchInput.placeholder = enabled ? "Кость, нерв, сосуд или орган…" : "Название мышцы…";
+  searchInput.placeholder = enabled ? "Название структуры…" : "Название мышцы…";
   searchResults.replaceChildren();
   questionLabelEl.textContent = enabled ? "Изучение скелета" : "Atlas";
   questionEl.textContent = enabled ? "Выберите кость на модели" : "Выберите мышцу на модели";
@@ -9407,7 +9500,7 @@ function renderSearchResults(query) {
       const term = boneTermRu(boneNames[boneId]);
       button.textContent = term.nameRu + " · " + term.kindRu;
       button.addEventListener("click", () => {
-        if (isolated || selectedStudyId != null || selectedReference != null) {
+        if (isolated || selectedStudyId != null) {
           restoreExploreContext();
         }
         if (boneDisplayMode === "off") {
@@ -9425,7 +9518,7 @@ function renderSearchResults(query) {
       const term = referenceStructureTerm(sourceName, match.layerKey);
       button.textContent = term.nameRu + " · " + referenceLayerNameRu(match.layerKey);
       button.addEventListener("click", () => {
-        if (isolated || selectedStudyId != null || selectedBoneId != null) {
+        if (isolated || selectedStudyId != null) {
           restoreExploreContext();
         }
         const input = referenceLayerInputs.find(
@@ -10450,9 +10543,9 @@ function applyReferenceRegionVisibility(mesh) {
 
   if (!regionIsolationActive()) {
     for (let i = 0; i < ranges.length; i += 1) {
-      setReferencePartVisible(mesh, i, true);
+      setReferencePartVisible(mesh, i, !mesh.userData.hiddenReferenceParts.has(i));
     }
-    return ranges.length;
+    return ranges.length - mesh.userData.hiddenReferenceParts.size;
   }
 
   const context = regionalBoneContextBox();
@@ -10465,7 +10558,7 @@ function applyReferenceRegionVisibility(mesh) {
 
   let visible = 0;
   for (let i = 0; i < ranges.length; i += 1) {
-    const show = context.intersectsBox(referenceWorldBox(mesh, i));
+    const show = !mesh.userData.hiddenReferenceParts.has(i) && context.intersectsBox(referenceWorldBox(mesh, i));
     setReferencePartVisible(mesh, i, show);
     if (show) visible += 1;
   }
@@ -10567,6 +10660,7 @@ async function loadReferenceLayer(layerKey) {
     mesh.userData.referenceRanges = ranges;
     mesh.userData.referenceBounds = localBounds;
     mesh.userData.referenceNames = sourceNames;
+    mesh.userData.hiddenReferenceParts = new Set();
     modelGroup.add(mesh);
     referenceMeshes.set(layerKey, mesh);
 

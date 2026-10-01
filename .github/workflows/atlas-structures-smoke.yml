@@ -1,0 +1,41 @@
+name: Atlas structure interaction
+on:
+  push:
+    branches: [feature/atlas-structures-20261001]
+    paths:
+      - experiments/muscle-memory-game/**
+      - .github/workflows/atlas-structures-smoke.yml
+permissions:
+  contents: read
+jobs:
+  targeted:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check context labels and syntax
+        run: |
+          node --check experiments/muscle-memory-game/app.js
+          node experiments/muscle-memory-game/check-context-structures.mjs
+          node experiments/muscle-memory-game/check-reference-layer-interaction.mjs
+      - name: Prepare browser
+        run: |
+          cd /tmp
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Check changed interaction once
+        run: |
+          python3 -m http.server 4173 --directory experiments/muscle-memory-game >/tmp/atlas-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          timeout 4m node experiments/muscle-memory-game/browser-smoke-context-structures.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: atlas-structure-interaction
+          path: /tmp/muscle-memory-structures-*.png
+          retention-days: 7

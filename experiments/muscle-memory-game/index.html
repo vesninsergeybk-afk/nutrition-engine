@@ -110,7 +110,7 @@
           <section class="display-section">
             <div class="display-section-head">
               <h3>Анатомический контекст</h3>
-              <span>Мышцы остаются основной непрозрачной и кликабельной моделью.</span>
+              <span>Включайте нужные ткани и выбирайте структуры на модели.</span>
             </div>
 
             <div id="layer-preset-field" hidden aria-hidden="true">
@@ -196,9 +196,10 @@
               <label><input type="checkbox" data-reference-layer="vascular" /> Кровеносные сосуды</label>
               <label><input type="checkbox" data-reference-layer="lymphatic" /> Лимфатические структуры</label>
               <label><input type="checkbox" data-reference-layer="organs" /> Внутренние органы</label>
+              <label><input type="checkbox" data-reference-layer="joints" /> Связки, капсулы и суставные диски</label>
             </fieldset>
             <p id="reference-layer-note" class="viewer-setting-note">
-              Системы доступны в Z-Anatomy и загружаются по выбору. Структуры с проверенным русским названием можно выбирать на модели и находить через поиск; остальные остаются фоновым анатомическим контекстом.
+              Системы доступны в Z-Anatomy и загружаются по выбору. Структуры можно выбирать на модели, находить по названию и скрывать по отдельности.
             </p>
           </section>
         </aside>
@@ -214,10 +215,19 @@
             <button type="button" data-context-layer="vascular" aria-pressed="false">Сосуды</button>
             <button type="button" data-context-layer="lymphatic" aria-pressed="false">Лимфа</button>
             <button type="button" data-context-layer="organs" aria-pressed="false">Органы</button>
+            <button type="button" data-context-layer="joints" aria-pressed="false">Суставы</button>
           </div>
           <div class="atlas-context-layer-footer">
             <button id="atlas-context-muscles" type="button" aria-pressed="false">Контуры мышц</button>
             <span id="atlas-context-status" role="status">Включите систему, чтобы увидеть её рядом с костями.</span>
+          </div>
+          <label id="muscle-transparency-field" class="muscle-transparency-field" hidden>
+            <span>Прозрачность мышц <output id="muscle-transparency-value" for="muscle-transparency">94%</output></span>
+            <input id="muscle-transparency" type="range" min="50" max="100" step="1" value="94" />
+          </label>
+          <div class="atlas-context-restore-actions">
+            <button id="atlas-context-undo" type="button" hidden>Вернуть скрытую</button>
+            <button id="atlas-context-restore" type="button" hidden>Вернуть все скрытые</button>
           </div>
         </section>
         <aside id="mobile-muscle-card" class="mobile-muscle-card" hidden aria-live="polite">
@@ -229,6 +239,7 @@
           <details id="mobile-bone-reference" class="bone-reference mobile-bone-reference" hidden></details>
           <div class="mobile-muscle-actions">
             <button id="mobile-hide-muscle" type="button">Скрыть</button>
+            <button id="mobile-focus-structure" type="button" hidden>Приблизить</button>
             <button id="mobile-isolate-muscle" type="button">Изолировать мышцу</button>
             <button id="mobile-isolate-region" type="button" hidden>Изолировать область</button>
             <button id="mobile-back-context" class="mobile-back-context" type="button" hidden>← На шаг назад</button>

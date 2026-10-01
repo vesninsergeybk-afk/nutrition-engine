@@ -1,8 +1,10 @@
+import { supplementalReferenceName } from "./reference-structure-names.js";
 const LAYER_RU = Object.freeze({
   nervous: "Нервная структура",
   vascular: "Сосудистая структура",
   lymphatic: "Лимфатическая структура",
   organs: "Внутренний орган",
+  joints: "Суставная структура",
 });
 
 const LAYER_LABEL_RU = Object.freeze({
@@ -10,6 +12,7 @@ const LAYER_LABEL_RU = Object.freeze({
   vascular: "Кровеносные сосуды",
   lymphatic: "Лимфатическая система",
   organs: "Внутренние органы",
+  joints: "Суставы и связки",
 });
 
 const EXACT = Object.freeze({
@@ -191,23 +194,21 @@ export function referenceLayerNameRu(layerKey) {
 
 export function referenceStructureTerm(sourceName, layerKey) {
   const { source, core, side } = splitSide(sourceName);
-  const normalizedCore = core
-    .replace(/\s+\((?:I|V|X)+\)$/i, "")
-    .trim()
-    .toLocaleLowerCase("en-US");
-  const exact = EXACT[normalizedCore] || EXACT[core.toLocaleLowerCase("en-US")];
+  const unsided = source.replace(/_/g, " ").replace(/\.[lr]$/i, "").replace(/\s+/g, " ").trim();
+  // Try the complete anatomical name before removing a leading side word.
+  // "Left main bronchus" and liver segment names encode the side themselves.
+  const fullExact = EXACT[unsided.toLowerCase()] || supplementalReferenceName(unsided);
+  const normalizedCore = core.replace(/\s+\((?:I|V|X)+\)$/i, "").trim().toLowerCase();
+  const exact = fullExact || EXACT[normalizedCore] || supplementalReferenceName(core);
   if (exact) {
-    return {
-      source,
-      nameRu: exact + sideSuffix(side),
-      side,
-      specific: true,
-    };
+    const embeddedSide = /^(left|right)\s/i.test(unsided) && Boolean(fullExact);
+    const segment = /\((B[IVX]+(?:\+B[IVX]+)?)\)/i.exec(source);
+    return {source, nameRu: exact + (segment ? " (" + segment[1].toUpperCase() + ")" : "") + (embeddedSide ? "" : sideSuffix(side)), side, specific: true};
   }
 
   return {
     source,
-    nameRu: (LAYER_RU[layerKey] || "Анатомический ориентир") + sideSuffix(side),
+    nameRu: "Структура с нерасшифрованным названием" + sideSuffix(side),
     specific: false,
   };
 }
