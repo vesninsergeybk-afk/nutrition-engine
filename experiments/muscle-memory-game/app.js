@@ -8,6 +8,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { structureTerm, structureSearchText } from "./anatomy-terms-ru.js";
 import { boneTermRu } from "./bone-terms-ru.js";
+import { boneCardForTerm } from "./bone-reference-data.js";
 import {
   muscleReferenceFor,
   muscleReferenceSource,
@@ -217,6 +218,9 @@ const revealDeeperButton = document.querySelector("#reveal-deeper");
 const undoQuizHideButton = document.querySelector("#undo-quiz-hide");
 const boneMode = document.querySelector("#bone-mode");
 const toggleSkeletonButton = document.querySelector("#toggle-skeleton");
+const atlasBonesButton = document.querySelector("#atlas-bones-toggle");
+const boneReferenceEl = document.querySelector("#bone-reference");
+const mobileBoneReferenceEl = document.querySelector("#mobile-bone-reference");
 const boneOpacity = document.querySelector("#bone-opacity");
 const boneOpacityField = document.querySelector("#bone-opacity-field");
 const connectiveMode = document.querySelector("#connective-mode");
@@ -439,6 +443,8 @@ let studyStructures = [];
 let studyRanges = new Map();
 let selectedStudyId = null;
 let selectedBoneId = null;
+let atlasBonesView = null;
+let boneHighlightMesh = null;
 let selectedReference = null;
 let highlightedStudyId = null;
 const exploreHiddenActions = [];
@@ -505,6 +511,9 @@ function clearStructureReferencePrimaryArt() {
 }
 
 function hideStructureReference() {
+  disposeReference3DViewer();
+  boneReferenceEl.hidden = true;
+  mobileBoneReferenceEl.hidden = true;
   referenceUI.render(null);
   if (structureReferenceEl) {
     structureReferenceEl.hidden = true;
@@ -519,6 +528,8 @@ function hideStructureReference() {
 }
 
 function renderSimpleAtlasReference(typeRu, depthRu, emptyText) {
+  boneReferenceEl.hidden = true;
+  mobileBoneReferenceEl.hidden = true;
   referenceUI.render(null);
   if (!structureReferenceEl) return;
 
@@ -1090,6 +1101,8 @@ function renderFunctionalRelations(reference, sourceName) {
 }
 
 function renderStructureReference(sid) {
+  boneReferenceEl.hidden = true;
+  mobileBoneReferenceEl.hidden = true;
   if (!structureReferenceEl || sid == null || !structureNames[sid]) {
     hideStructureReference();
     return;
@@ -2675,6 +2688,7 @@ function clearAnswerRevealOverlay() {
 }
 
 function restoreHighlights() {
+  clearBoneHighlight();
   if (functionalGroupFeedback) {
     feedbackEl.textContent = functionalGroupFeedback.text;
     feedbackEl.className = functionalGroupFeedback.className;
@@ -3317,7 +3331,7 @@ function updateLayerButtons() {
   }
 
   const hasSelectedStructure =
-    selectedStudyId != null || selectedExploreSid != null;
+    selectedStudyId != null || selectedExploreSid != null || selectedBoneId != null;
   if (selectedStructureActions) {
     selectedStructureActions.hidden =
       appMode !== "explore" || !hasSelectedStructure;
@@ -3507,16 +3521,25 @@ function renderMobileContextTrail() {
 function syncMobileMuscleCard() {
   if (!mobileMuscleCard) return;
   const sid = selectedExploreSid;
-  const hasSelection = appMode === "explore" && sid != null && structureNames[sid];
+  const hasMuscle = appMode === "explore" && sid != null && structureNames[sid];
+  const hasBone = appMode === "explore" && selectedBoneId != null && boneNames[selectedBoneId];
+  const hasSelection = hasMuscle || hasBone;
   const hasContext = appMode === "explore" && mobileIsolationStack.length > 0;
   mobileMuscleCard.hidden = !(hasSelection || hasContext);
   if (mobileMuscleCard.hidden) return;
 
   mobileMuscleCardCopy.hidden = !hasSelection;
-  mobileHideMuscleButton.hidden = !hasSelection;
-  mobileIsolateMuscleButton.hidden = !hasSelection;
+  mobileHideMuscleButton.hidden = !hasMuscle;
+  mobileIsolateMuscleButton.hidden = !hasMuscle;
+  mobileMuscleCard.querySelector(".mobile-muscle-actions").hidden = Boolean(hasBone);
+  mobileBoneReferenceEl.hidden = !hasBone;
+  if (hasBone) {
+    const term = boneTermRu(boneNames[selectedBoneId]);
+    mobileMuscleKind.textContent = term.kindRu;
+    mobileMuscleName.textContent = term.nameRu;
+  }
 
-  if (hasSelection) {
+  if (hasMuscle) {
     const reference = muscleReferenceFor(structureNames[sid]);
     mobileMuscleKind.textContent =
       reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
@@ -3525,10 +3548,10 @@ function syncMobileMuscleCard() {
     mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
   }
 
-  const target = hasSelection ? learningTargetBySid.get(sid) || null : null;
+  const target = hasMuscle ? learningTargetBySid.get(sid) || null : null;
   const regionId = target?.region || "";
   const canIsolateRegion =
-    hasSelection && regionId && regionId !== "all" &&
+    hasMuscle && regionId && regionId !== "all" &&
     [...learningRegion.options].some((option) => option.value === regionId) &&
     !(regionIsolationActive() && selectedLearningRegion === regionId);
   mobileIsolateRegionButton.hidden = !canIsolateRegion;
@@ -3539,7 +3562,8 @@ function syncMobileMuscleCard() {
   const depth = mobileIsolationStack.length;
   mobileBackContextButton.hidden = depth === 0;
   mobileRootContextButton.hidden = depth < 2;
-  renderMobileContextTrail();
+  if (hasBone) mobileContextTrail.hidden = true;
+  else renderMobileContextTrail();
 }
 
 function setStructureVisible(sid, visible) {
@@ -5514,6 +5538,7 @@ function parentMuscleContextIds(sid, reference = null) {
 
 function selectExploreStructure(sid, hitStack = null) {
   if (sid == null || !structureNames[sid]) return;
+  if (atlasBonesView) setAtlasBonesView(false);
 
   const keepIsolation =
     isolated &&
@@ -5741,6 +5766,129 @@ function selectReferenceStructure(layerKey, partId) {
   updateLayerButtons();
 }
 
+
+function clearBoneHighlight() {
+  if (boneHighlightMesh) {
+    boneHighlightMesh.removeFromParent();
+    disposeMotionMesh(boneHighlightMesh);
+    boneHighlightMesh = null;
+  }
+  canvas.dataset.selectedBone = "";
+}
+
+function syncBoneHighlightAppearance() {
+  if (!boneHighlightMesh || !skeletonMesh) return;
+  const source = skeletonMesh.material;
+  Object.assign(boneHighlightMesh.material, { transparent: source.transparent, depthTest: source.depthTest, depthWrite: source.depthWrite });
+  boneHighlightMesh.material.needsUpdate = true;
+  boneHighlightMesh.renderOrder = skeletonMesh.renderOrder + 1;
+}
+
+function highlightBone(boneId) {
+  clearBoneHighlight();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x568fd1, roughness: 0.7, side: THREE.DoubleSide,
+    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+  });
+  boneHighlightMesh = createMotionMesh(skeletonMesh, boneRanges[boneId], { material, name: "selected-bone" });
+  skeletonMesh.updateMatrix();
+  boneHighlightMesh.matrix.copy(skeletonMesh.matrix);
+  boneHighlightMesh.matrixAutoUpdate = false;
+  skeletonMesh.parent.add(boneHighlightMesh);
+  syncBoneHighlightAppearance();
+  canvas.dataset.selectedBone = String(boneId);
+}
+
+function fillBoneCard(container, card) {
+  container.replaceChildren();
+  if (container.tagName === "DETAILS") {
+    const summary = document.createElement("summary");
+    summary.textContent = "Справка: " + card.kindRu.toLocaleLowerCase("ru-RU");
+    container.append(summary);
+    container.open = false;
+  }
+  const latin = document.createElement("span");
+  latin.className = "bone-reference-latin";
+  latin.textContent = card.latin;
+  const description = document.createElement("p");
+  description.textContent = card.descriptionRu;
+  const title = document.createElement("strong");
+  title.textContent = "Что найти на модели";
+  const list = document.createElement("ul");
+  renderReferenceList(list, card.landmarksRu);
+  const source = document.createElement("a");
+  source.href = card.source.url;
+  source.target = "_blank";
+  source.rel = "noopener noreferrer";
+  source.textContent = card.source.title;
+  source.className = "bone-reference-source";
+  container.append(latin, description, title, list, source);
+}
+
+function renderBoneReference(term) {
+  const card = boneCardForTerm(term);
+  renderSimpleAtlasReference(term.kindRu, "Скелет", "Справка для этой структуры ещё не заполнена.");
+  if (!card) return;
+  structureReferenceHeading.textContent = "Справка: " + term.kindRu.toLocaleLowerCase("ru-RU");
+  structureReferenceEl.setAttribute("aria-label", "Справка по выбранной структуре");
+  structureReferenceLatin.textContent = card.latin;
+  structureReferenceRegion.textContent = card.regionRu;
+  structureReferenceEmpty.hidden = true;
+  fillBoneCard(boneReferenceEl, card);
+  fillBoneCard(mobileBoneReferenceEl, card);
+  boneReferenceEl.hidden = false;
+  canvas.dataset.selectedReferenceCard = "bone:" + term.canonicalKey;
+}
+
+function enforceAtlasBonesView() {
+  if (anatomyMesh) anatomyMesh.visible = false;
+  for (const mesh of studyMeshes()) mesh.visible = false;
+  for (const mesh of referenceMeshes.values()) mesh.visible = false;
+}
+
+function setAtlasBonesView(enabled) {
+  if (enabled && (appMode !== "explore" || !skeletonMesh)) return;
+  if (Boolean(atlasBonesView) === enabled) return;
+  clearDeeperStructures();
+  restoreHighlights();
+  restoreStudyHighlight();
+  hideStructureReference();
+  selectedBoneId = selectedExploreSid = selectedStudyId = selectedReference = null;
+  if (enabled) {
+    atlasBonesView = {
+      meshes: [anatomyMesh, ...studyMeshes(), ...referenceMeshes.values()].filter(Boolean).map(mesh => [mesh, mesh.visible]),
+      boneMode: boneDisplayMode,
+      isolated,
+    };
+    boneDisplayMode = "anatomical";
+    boneMode.value = boneDisplayMode;
+    applyBoneDisplayMode();
+    enforceAtlasBonesView();
+  } else {
+    const previous = atlasBonesView;
+    atlasBonesView = null;
+    isolated = previous.isolated;
+    for (const [mesh, visible] of previous.meshes) mesh.visible = visible;
+    boneDisplayMode = previous.boneMode;
+    boneMode.value = boneDisplayMode;
+    applyBoneDisplayMode();
+  }
+  document.body.classList.toggle("bones-mode", enabled);
+  canvas.dataset.atlasView = enabled ? "bones" : "muscles";
+  searchInput.value = "";
+  searchInput.placeholder = enabled ? "Название кости…" : "Название мышцы…";
+  searchResults.replaceChildren();
+  questionLabelEl.textContent = enabled ? "Изучение скелета" : "Atlas";
+  questionEl.textContent = enabled ? "Выберите кость на модели" : "Выберите мышцу на модели";
+  feedbackEl.className = "feedback";
+  feedbackEl.textContent = enabled ? "Нажмите на кость или найдите её по русскому названию." : "Вращайте модель и выбирайте мышцы.";
+  focusSelectedButton.disabled = true;
+  syncSkeletonQuickToggle();
+  updateLayerButtons();
+}
+
+atlasBonesButton.addEventListener("click", () => setAtlasBonesView(!atlasBonesView));
+
 function boneIdFromHit(hit) {
   if (!hit || hit.object !== skeletonMesh || hit.faceIndex == null) return null;
   const geometry = skeletonMesh?.geometry;
@@ -5775,16 +5923,13 @@ function selectBoneStructure(boneId) {
   isolated = false;
 
   const term = boneTermRu(boneNames[boneId]);
-  renderSimpleAtlasReference(
-    "Кость",
-    "Костный ориентир",
-    "Кость показана как опорный ориентир для изучения положения мышц, их начала, прикрепления и действия."
-  );
-  questionLabelEl.textContent = "Кость";
+  renderBoneReference(term);
+  highlightBone(boneId);
+  questionLabelEl.textContent = term.kindRu;
   questionEl.textContent = term.nameRu;
   feedbackEl.className = "feedback";
   feedbackEl.textContent = term.specific
-    ? "Костная структура выбрана. Можно приблизить её кнопкой «К выбранной»."
+    ? "Структура выделена синим. Вращайте модель, чтобы рассмотреть её со всех сторон."
     : "Костная структура выбрана; для этой записи источника точный русский термин ещё не подтверждён.";
 
   focusSelectedButton.disabled = false;
@@ -8853,6 +8998,7 @@ function prepareMotionComparison(sid) {
 
 function setMode(mode) {
   if (!["quiz", "explore", "motion"].includes(mode)) return;
+  if (atlasBonesView) setAtlasBonesView(false);
   if (mode === "motion" && !MOTION_UI_ENABLED) {
     mode = "explore";
   }
@@ -9008,7 +9154,7 @@ function renderSearchResults(query) {
     ? activeRegionConceptKeys()
     : null;
 
-  for (let sid = 0; sid < structureNames.length && matches.length < 10; sid += 1) {
+  for (let sid = 0; !atlasBonesView && sid < structureNames.length && matches.length < 10; sid += 1) {
     if (activeSidSet && !activeSidSet.has(sid)) continue;
     // The Z muscle GLB also contains bursae and tendinous structures whose
     // names mention a muscle. Classify the source so a bursa cannot
@@ -9029,7 +9175,7 @@ function renderSearchResults(query) {
     }
   }
 
-  if (appMode === "explore" && matches.length < 10) {
+  if (appMode === "explore" && !atlasBonesView && matches.length < 10) {
     for (const entry of studyStructures) {
       if (matches.length >= 10) break;
       if (!studyStructureMatchesActiveRegion(entry, activeConcepts)) continue;
@@ -9039,7 +9185,7 @@ function renderSearchResults(query) {
     }
   }
 
-  if (appMode === "explore" && matches.length < 10) {
+  if (appMode === "explore" && !atlasBonesView && matches.length < 10) {
     for (const [layerKey, mesh] of referenceMeshes) {
       const names = mesh.userData.referenceNames || [];
       for (let partId = 0; partId < names.length && matches.length < 10; partId += 1) {
@@ -9089,7 +9235,7 @@ function renderSearchResults(query) {
     } else if (match.kind === "bone") {
       const boneId = match.id;
       const term = boneTermRu(boneNames[boneId]);
-      button.textContent = term.nameRu + " · Кость";
+      button.textContent = term.nameRu + " · " + term.kindRu;
       button.addEventListener("click", () => {
         if (isolated || selectedStudyId != null || selectedReference != null) {
           restoreExploreContext();
@@ -9159,7 +9305,7 @@ let lastCanvasSelectionAt = 0;
 let lastCanvasPointerType = null;
 
 function visibleMuscleHitAtClientPoint(clientX, clientY) {
-  if (!anatomyMesh) return null;
+  if (!anatomyMesh?.visible || atlasBonesView) return null;
 
   const rect = renderer.domElement.getBoundingClientRect();
   if (!rect.width || !rect.height) return null;
@@ -9312,7 +9458,7 @@ function onPointerUp(event) {
   }
 
   const pickables = [
-    anatomyMesh,
+    anatomyMesh?.visible && !atlasBonesView ? anatomyMesh : null,
     skeletonMesh?.visible ? skeletonMesh : null,
     ...studyMeshes().filter((mesh) => mesh.visible),
     ...[...referenceMeshes.values()].filter((mesh) => mesh.visible),
@@ -9323,7 +9469,7 @@ function onPointerUp(event) {
   // A finger is much less precise than a mouse cursor. For a genuine touch tap,
   // sample a very small screen-space halo and prefer a visible muscle hit before
   // falling through to bones/support layers. This does not run after a drag.
-  if (start.pointerType === "touch") {
+  if (start.pointerType === "touch" && !atlasBonesView) {
     if (
       selectVisibleMuscleNearClientPoint(
         event.clientX,
@@ -9683,6 +9829,11 @@ function showSelectedMuscleBoneContext(ids) {
 }
 
 function syncSkeletonQuickToggle() {
+  atlasBonesButton.hidden = appMode !== "explore";
+  atlasBonesButton.disabled = !skeletonMesh || boneMode.disabled;
+  atlasBonesButton.setAttribute("aria-pressed", String(Boolean(atlasBonesView)));
+  atlasBonesButton.classList.toggle("active", Boolean(atlasBonesView));
+  toggleSkeletonButton.hidden = false;
   if (!toggleSkeletonButton) return;
   const available = Boolean(skeletonMesh) && !boneMode.disabled;
   const visible = available && boneDisplayMode !== "off";
@@ -9739,6 +9890,7 @@ function applyBoneDisplayMode() {
   }
 
   material.needsUpdate = true;
+  syncBoneHighlightAppearance();
   canvas.dataset.boneMode = mode;
   canvas.dataset.boneScope = regionIsolationActive() ? "regional" : "full";
   canvas.dataset.boneTransparent = String(Boolean(material.transparent));
@@ -9859,6 +10011,7 @@ function disposeMaterial(material) {
 }
 
 function resetLoadedModel() {
+  if (atlasBonesView) setAtlasBonesView(false);
   clearMotionPreview();
   regionalClipPlanes = [];
   regionalClipBounds = null;
@@ -11853,6 +12006,8 @@ renderer.domElement.addEventListener("click", (event) => {
   }
 });
 function animate(now = performance.now()) {
+  if (atlasBonesView) enforceAtlasBonesView();
+  if (boneHighlightMesh) boneHighlightMesh.visible = Boolean(skeletonMesh?.visible && boneVisibility[selectedBoneId] !== false);
   resize();
   controls.update();
   updateMotionPlayback(now);

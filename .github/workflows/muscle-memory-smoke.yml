@@ -204,6 +204,7 @@ jobs:
           node experiments/muscle-memory-game/check-product-shell.mjs
           node experiments/muscle-memory-game/check-display-drawer.mjs
           node experiments/muscle-memory-game/check-atlas-navigation.mjs
+          node experiments/muscle-memory-game/check-skeleton-reference.mjs
           node experiments/muscle-memory-game/check-muscle-reference.mjs
           node experiments/muscle-memory-game/check-functional-relations.mjs
           node experiments/muscle-memory-game/check-bodyparts-muscle-restoration.mjs
@@ -353,7 +354,7 @@ jobs:
 
 
   browser-reference:
-    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') || contains(github.event.head_commit.message, '[ui-motion-smoke]') || contains(github.event.head_commit.message, '[webgl-smoke]') }}
+    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') || contains(github.event.head_commit.message, '[ui-motion-smoke]') || contains(github.event.head_commit.message, '[webgl-smoke]') || contains(github.event.head_commit.message, '[bones-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
     timeout-minutes: 7
@@ -379,7 +380,9 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          if [[ '${{ contains(github.event.head_commit.message, '[webgl-smoke]') }}' == 'true' ]]; then
+          if [[ '${{ contains(github.event.head_commit.message, '[bones-smoke]') }}' == 'true' ]]; then
+            timeout 4m node experiments/muscle-memory-game/browser-smoke-atlas-bones.cjs
+          elif [[ '${{ contains(github.event.head_commit.message, '[webgl-smoke]') }}' == 'true' ]]; then
             timeout 3m node experiments/muscle-memory-game/browser-smoke-webgl-session.cjs
           elif [[ '${{ contains(github.event.head_commit.message, '[ui-motion-smoke]') }}' == 'true' ]]; then
             timeout 90s node experiments/muscle-memory-game/browser-smoke-ui-motion.cjs
@@ -399,6 +402,7 @@ jobs:
             /tmp/muscle-memory-quick-relations-*.png
             /tmp/muscle-memory-ui-motion-*.png
             /tmp/muscle-memory-webgl-*.png
+            /tmp/muscle-memory-bones-*.png
           if-no-files-found: ignore
           retention-days: 7
 

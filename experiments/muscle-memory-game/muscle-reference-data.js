@@ -1,3 +1,4 @@
+import { cardiacMuscleReferenceFor } from "./cardiac-muscle-reference.js";
 import { REFERENCE_SOURCES } from "./reference-data/sources.js";
 import {
   REFERENCE_REGIONS,
@@ -235,6 +236,9 @@ function candidateCard(candidate, mapping = null) {
       rightsStatus: item.rightsStatus,
       src: item.assetPath,
       locator: item.id,
+      kind: item.kind,
+      altRu: item.altRu,
+      captionRu: item.captionRu,
     }));
 
   const illustrations = [];
@@ -311,6 +315,8 @@ function ambiguityResult(labelRu, noteRu, candidateIds) {
 }
 
 export function muscleReferenceFor(sourceName) {
+  const cardiac = cardiacMuscleReferenceFor(sourceName);
+  if (cardiac) return cardiac;
   const mapping = aliasLookup(sourceName) || zAnatomyReferenceAlias(sourceName);
 
   if (mapping?.coverage === "ambiguous") {

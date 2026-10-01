@@ -1,4 +1,7 @@
+import { SUPPLEMENT_SOURCES } from "./supplement-illustrations.js";
 export const REFERENCE_SOURCES = Object.freeze({
+  ...SUPPLEMENT_SOURCES,
+  "ncbi-papillary-muscles": Object.freeze({ title: "NCBI Bookshelf — Anatomy, Thorax, Heart Papillary Muscles", url: "https://www.ncbi.nlm.nih.gov/books/NBK557802/", role: "Анатомические факты в самостоятельном русском изложении", rights: { text: "Факты в пересказе", illustrations: "review" } }),
   "miology-igma-2018": Object.freeze({
     title: "Растегаева Л. И., Козырева Е. А., Гомоюнова С. Л., Полякова О. Л. Миология",
     year: 2018,

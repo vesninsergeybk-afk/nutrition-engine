@@ -1,5 +1,7 @@
+import { SUPPLEMENT_ILLUSTRATIONS } from "./supplement-illustrations.js";
 export const REFERENCE_ILLUSTRATIONS = Object.freeze(
 [
+  ...SUPPLEMENT_ILLUSTRATIONS,
   {
     "id": "gray-411-subclavius-focused",
     "sourceId": "gray-1918-plate-411",

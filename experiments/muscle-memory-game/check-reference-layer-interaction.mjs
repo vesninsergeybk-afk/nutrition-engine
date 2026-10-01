@@ -79,7 +79,8 @@ assert(
 assert(
   app.includes("function renderSimpleAtlasReference") &&
     app.includes('"Ориентир безопасности"') &&
-    app.includes('"Костный ориентир"'),
+    app.includes('function renderBoneReference(term)') &&
+    app.includes('boneCardForTerm(term)'),
   "Bone and safety selections must surface their context in the Atlas information panel"
 );
 

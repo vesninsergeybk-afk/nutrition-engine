@@ -63,7 +63,8 @@ const assert = require('node:assert/strict');
   for (const selector of ['#view-preset', '#focus-shoulder', '#focus-selected', '#focus-full']) {
     assert.equal(await page.locator(selector).isVisible(), false, selector + ' should be hidden on mobile');
   }
-  assert.equal(await page.locator('#toggle-skeleton').isVisible(), true);
+  assert.equal(await page.locator('#atlas-bones-toggle').isVisible(), true);
+  assert.equal(await page.locator('#toggle-skeleton').isVisible(), false);
   assert.equal(await page.locator('#display-panel-toggle').isVisible(), true);
 
   // A coarse-pointer click without a preceding pointerup is the Android/WebView

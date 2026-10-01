@@ -3070,3 +3070,22 @@ body:not(.motion-mode) .comparison-pane-static {
     font-size: 11px;
   }
 }
+
+/* Bone study uses the existing Atlas workspace and a compact card below the model. */
+.bone-reference { font-size: 13px; line-height: 1.6; }
+.bone-reference p { margin: 9px 0 12px; }
+.bone-reference ul { margin: 6px 0 12px; padding-left: 19px; }
+.bone-reference-latin { display: block; color: var(--muted, #697689); font-style: italic; }
+.bone-reference-source { display: inline-block; font-size: 11px; color: #486b95; }
+.mobile-bone-reference { grid-column: 1 / -1; padding-top: 8px; border-top: 1px solid rgba(107, 124, 145, .18); }
+.mobile-bone-reference summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+#atlas-bones-toggle[aria-pressed="true"] { background: #dce9f6; color: #244d78; border-color: #b9cfe6; }
+body.bones-mode #display-layer-actions { display: none; }
+@media (max-width: 920px) { #atlas-bones-toggle { flex: 0 0 auto; } }
+
+#bone-reference .bone-reference-latin { display: none; }
+
+.mobile-muscle-card .mobile-bone-reference { order: 2; }
+
+body.bones-mode #toggle-skeleton { display: none; }
+@media (max-width: 920px) { body.explore-mode #toggle-skeleton { display: none; } }

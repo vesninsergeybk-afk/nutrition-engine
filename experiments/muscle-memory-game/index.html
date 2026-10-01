@@ -76,6 +76,7 @@
           <button id="focus-shoulder" type="button">К области</button>
           <button id="focus-selected" type="button" disabled>К выбранной</button>
           <button id="focus-full" type="button">Всё тело</button>
+          <button id="atlas-bones-toggle" class="viewer-quick-toggle" type="button" aria-pressed="false" title="Изучать кости: выбрать на модели и открыть справку" disabled>Кости</button>
           <button id="toggle-skeleton" class="viewer-quick-toggle" type="button" aria-pressed="true" disabled>Скелет</button>
 
           <button id="display-panel-toggle" class="display-panel-toggle" type="button" aria-expanded="false" aria-controls="display-panel">
@@ -212,6 +213,7 @@
             <span id="mobile-muscle-kind">Мышца</span>
             <strong id="mobile-muscle-name">Выбранная мышца</strong>
           </div>
+          <details id="mobile-bone-reference" class="bone-reference mobile-bone-reference" hidden></details>
           <div class="mobile-muscle-actions">
             <button id="mobile-hide-muscle" type="button">Скрыть</button>
             <button id="mobile-isolate-muscle" type="button">Изолировать мышцу</button>
@@ -361,6 +363,7 @@
             <ul id="structure-reference-ambiguity-candidates"></ul>
           </div>
 
+          <div id="bone-reference" class="bone-reference" hidden></div>
           <div id="structure-reference-facts" class="structure-reference-facts" hidden>
             <div class="reference-tabs" role="tablist" aria-label="Раздел справки">
               <button id="reference-tab-overview" type="button" role="tab" aria-controls="reference-overview" aria-selected="true" tabindex="0" data-reference-tab="overview">Обзор</button>

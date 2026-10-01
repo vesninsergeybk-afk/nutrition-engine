@@ -30,7 +30,7 @@ const skin = atlas.parts.filter(
 );
 
 const hasUnexpectedLatin = (value) =>
-  /[A-Za-z]/.test(String(value || "").replace(/\b[IVX]+\b/g, ""));
+  /[A-Za-z]/.test(String(value || "").replace(/\b[IVX]+\b/g, "").replace(/\b[CTL]\d+\b/g, ""));
 
 const missingBones = bones.filter((part) => {
   const term = boneTermRu(part.name);
