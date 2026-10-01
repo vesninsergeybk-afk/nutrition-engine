@@ -15,6 +15,7 @@ const assert = require('node:assert/strict');
     assert.deepEqual(requests, [], 'Optional systems loaded at startup');
     await click('#atlas-bones-toggle');
     assert.equal(await page.locator('#atlas-context-layers').isVisible(), true);
+    if (!process.argv.includes('--organs-only')) {
     await click('[data-context-layer="nervous"]');
     await page.waitForFunction(() => document.getElementById('viewer').dataset.referenceLayers.includes('nervous'), null, { timeout: 90000 });
     await page.fill('#structure-search', 'подмышечный нерв');
@@ -35,6 +36,7 @@ const assert = require('node:assert/strict');
     console.log('[smoke:comfort] lazy nerve layer, mobile selection and nerve → muscle card OK');
 
     await click('#atlas-bones-toggle');
+    }
     await click('[data-context-layer="organs"]');
     await page.waitForFunction(() => document.getElementById('viewer').dataset.referenceLayers.includes('organs'), null, { timeout: 90000 });
     await click('#atlas-context-muscles');
@@ -57,7 +59,7 @@ const assert = require('node:assert/strict');
     await click('[data-context-layer="organs"]');
     await page.waitForFunction(() => document.getElementById('viewer').dataset.referenceLayers.includes('organs'));
     assert.equal(requests.filter(url => url.includes('ic-organlar')).length, 1, 'A cached layer was fetched again');
-    assert.equal(requests.filter(url => url.includes('sinir')).length, 1);
+    assert.equal(requests.filter(url => url.includes('sinir')).length, process.argv.includes('--organs-only') ? 0 : 1);
     assert.deepEqual(errors, []);
     console.log('[smoke:comfort] organ layer, ghost muscles, desktop layout, deselection and cache OK');
   } finally { await browser.close(); }

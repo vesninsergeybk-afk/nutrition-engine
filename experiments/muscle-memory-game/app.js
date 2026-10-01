@@ -171,6 +171,20 @@ const REFERENCE_LAYER_COLORS = {
   organs: 0xc88179,
 };
 
+function referenceContextColor(layerKey, sourceName) {
+  const name = String(sourceName).replace(/_/g, " ").toLowerCase();
+  if (layerKey === "vascular") return /vein|vena|venous/.test(name) ? 0x6885b2 : 0xb76c68;
+  if (/lung|bronch|trachea/.test(name)) return 0xd6a4a2;
+  if (/liver/.test(name)) return 0xa67764;
+  if (/kidney|renal|suprarenal/.test(name)) return 0xb87969;
+  if (/bladder|ureter|urethra/.test(name)) return 0xd7b791;
+  if (/pancreas|thyroid|parathyroid|gland/.test(name)) return 0xd2ac7c;
+  if (/colon|jejunum|duodenum|appendix|taenia/.test(name)) return 0xcda594;
+  if (/gallbladder|bile/.test(name)) return 0x96a786;
+  if (/pleura|omentum|meso/.test(name)) return 0xd9cabc;
+  return REFERENCE_LAYER_COLORS[layerKey] || 0xc88179;
+}
+
 const BODYPARTS_SOURCE_ROOT =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
 const BODYPARTS_ATLAS_URL = BODYPARTS_SOURCE_ROOT + "/models/atlas.json";
@@ -2262,6 +2276,12 @@ function focusSelectedStructures(padding = 1.65, direction = null) {
     const mesh = referenceMeshes.get(selectedReference.layerKey);
     const box = referenceWorldBox(mesh, selectedReference.partId);
     if (!box.isEmpty()) {
+      // Keep a useful field of surrounding anatomy for small organs/nerves.
+      // A very tight crop can put the camera behind their covering structures.
+      const bodyHeight = skeletonMesh ? new THREE.Box3().setFromObject(skeletonMesh).getSize(new THREE.Vector3()).y : 0;
+      const size = box.getSize(new THREE.Vector3());
+      const margin = Math.max(0, (bodyHeight * .18 - Math.max(size.x, size.y, size.z)) / 2);
+      box.expandByScalar(margin);
       focusBox(box, Math.max(padding, 1.9), direction || currentViewDirection());
     }
     return;
@@ -10510,10 +10530,15 @@ async function loadReferenceLayer(layerKey) {
         const count = geometry.getAttribute("position").count;
         const colors = new Float32Array(count * 3);
         const materials = Array.isArray(child.material) ? child.material : [child.material];
-        const base = materials[0]?.color || new THREE.Color(REFERENCE_LAYER_COLORS[layerKey]);
+        const fallback = new THREE.Color(referenceContextColor(layerKey, sourceNames.at(-1)));
+        const colorFor = material => {
+          const color = material?.color;
+          return !color || (color.r > .98 && color.g > .98 && color.b > .98) ? fallback : color;
+        };
+        const base = colorFor(materials[0]);
         for (let i = 0; i < count; i++) base.toArray(colors, i * 3);
         for (const group of geometry.groups) {
-          const color = materials[group.materialIndex]?.color || base;
+          const color = colorFor(materials[group.materialIndex]);
           for (let i = group.start; i < Math.min(count, group.start + group.count); i++) color.toArray(colors, i * 3);
         }
         geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));

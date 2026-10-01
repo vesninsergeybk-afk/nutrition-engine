@@ -354,7 +354,7 @@ jobs:
 
 
   browser-reference:
-    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') || contains(github.event.head_commit.message, '[ui-motion-smoke]') || contains(github.event.head_commit.message, '[webgl-smoke]') || contains(github.event.head_commit.message, '[bones-smoke]') || contains(github.event.head_commit.message, '[atlas-comfort-smoke]') }}
+    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') || contains(github.event.head_commit.message, '[ui-motion-smoke]') || contains(github.event.head_commit.message, '[webgl-smoke]') || contains(github.event.head_commit.message, '[bones-smoke]') || contains(github.event.head_commit.message, '[atlas-comfort-smoke]') || contains(github.event.head_commit.message, '[organs-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
     timeout-minutes: 7
@@ -380,7 +380,9 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          if [[ '${{ contains(github.event.head_commit.message, '[atlas-comfort-smoke]') }}' == 'true' ]]; then
+          if [[ '${{ contains(github.event.head_commit.message, '[organs-smoke]') }}' == 'true' ]]; then
+            timeout 3m node experiments/muscle-memory-game/browser-smoke-atlas-comfort.cjs --organs-only
+          elif [[ '${{ contains(github.event.head_commit.message, '[atlas-comfort-smoke]') }}' == 'true' ]]; then
             timeout 90s node experiments/muscle-memory-game/browser-smoke-ui-motion.cjs
             timeout 4m node experiments/muscle-memory-game/browser-smoke-atlas-comfort.cjs
           elif [[ '${{ contains(github.event.head_commit.message, '[bones-smoke]') }}' == 'true' ]]; then
