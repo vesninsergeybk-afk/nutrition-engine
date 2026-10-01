@@ -11,10 +11,10 @@ const sources = {
   sciatic: {title: "StatPearls: анатомия седалищного нерва", url: "https://www.ncbi.nlm.nih.gov/books/NBK482431/"},
 };
 export const ATLAS_FIGURES = Object.freeze({
-  cauda: {src: "https://upload.wikimedia.org/wikipedia/commons/f/f4/Gray662.png", page: "https://commons.wikimedia.org/wiki/File:Gray662.png", caption: "Конский хвост и конечная нить, вид сзади. Твёрдая оболочка раскрыта. Gray’s Anatomy, рис. 662."},
-  kneeFront: {src: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Gray347.png", page: "https://commons.wikimedia.org/wiki/File:Gray347.png", caption: "Правый коленный сустав спереди: внутренние связки. Gray’s Anatomy, рис. 347."},
-  kneeBack: {src: "https://upload.wikimedia.org/wikipedia/commons/1/19/Gray348.png", page: "https://commons.wikimedia.org/wiki/File:Gray348.png", caption: "Левый коленный сустав сзади: внутренние связки и мениски. Gray’s Anatomy, рис. 348."},
-  legArteries: {src: "https://upload.wikimedia.org/wikipedia/commons/c/c0/Gray550.png", page: "https://commons.wikimedia.org/wiki/File:Gray550.png", caption: "Артерии голени, вид сзади. Gray’s Anatomy, рис. 550."},
+  cauda: {src: "./reference-data/atlas-figures/Gray662.png", page: "https://commons.wikimedia.org/wiki/File:Gray662.png", caption: "Конский хвост и конечная нить, вид сзади. Твёрдая оболочка раскрыта. Gray’s Anatomy, рис. 662."},
+  kneeFront: {src: "./reference-data/atlas-figures/Gray347.png", page: "https://commons.wikimedia.org/wiki/File:Gray347.png", caption: "Правый коленный сустав спереди: внутренние связки. Gray’s Anatomy, рис. 347."},
+  kneeBack: {src: "./reference-data/atlas-figures/Gray348.png", page: "https://commons.wikimedia.org/wiki/File:Gray348.png", caption: "Левый коленный сустав сзади: внутренние связки и мениски. Gray’s Anatomy, рис. 348."},
+  femoralArtery: {src: "./reference-data/atlas-figures/Gray550.png", page: "https://commons.wikimedia.org/wiki/File:Gray550.png", caption: "Бедренная артерия и её ветви на бедре. Gray’s Anatomy, рис. 550."},
 });
 const entry = (latin, descriptionRu, landmarksRu, source, figures = [], noteRu = "") => ({latin, descriptionRu, landmarksRu, source: sources[source], figures, noteRu});
 export const CONTEXT_CARDS = Object.freeze({
@@ -29,8 +29,8 @@ export const CONTEXT_CARDS = Object.freeze({
   "medial meniscus": entry("Meniscus medialis", "Полулунная пластинка волокнистого хряща между медиальными мыщелками бедренной и большеберцовой костей. Распределяет нагрузку и улучшает соответствие суставных поверхностей.", ["Расположение на медиальной стороне большеберцовой кости", "Форма и связь с суставной капсулой"], "knee", ["kneeBack", "kneeFront"]),
   "lateral meniscus": entry("Meniscus lateralis", "Пластинка волокнистого хряща между латеральными мыщелками бедренной и большеберцовой костей. Распределяет нагрузку и улучшает соответствие суставных поверхностей.", ["Расположение на латеральной стороне большеберцовой кости", "Более замкнутая форма по сравнению с медиальным мениском"], "knee", ["kneeBack", "kneeFront"]),
   "articular capsule of knee joint": entry("Capsula articularis", "Окружает полость коленного сустава. Имеет наружную фиброзную оболочку и внутреннюю синовиальную оболочку.", ["Граница капсулы вокруг суставных поверхностей", "Расположение крестообразных связок внутри капсулы"], "knee", ["kneeFront", "kneeBack"]),
-  "femoral artery": entry("Arteria femoralis", "Продолжение наружной подвздошной артерии ниже паховой связки. Проходит по бедру и, выйдя к задней стороне колена, продолжается как подколенная артерия.", ["Участок ниже паховой связки", "Продолжение в подколенную артерию"], "vessels"),
-  "popliteal artery": entry("Arteria poplitea", "Продолжение бедренной артерии в подколенной области. Кровоснабжает область колена и даёт начало основным артериям голени.", ["Расположение позади коленного сустава", "Переход к артериям голени"], "vessels", ["legArteries"]),
+  "femoral artery": entry("Arteria femoralis", "Продолжение наружной подвздошной артерии ниже паховой связки. Проходит по бедру и, выйдя к задней стороне колена, продолжается как подколенная артерия.", ["Участок ниже паховой связки", "Продолжение в подколенную артерию"], "vessels", ["femoralArtery"]),
+  "popliteal artery": entry("Arteria poplitea", "Продолжение бедренной артерии в подколенной области. Кровоснабжает область колена и даёт начало основным артериям голени.", ["Расположение позади коленного сустава", "Переход к артериям голени"], "vessels"),
   "femoral vein": entry("Vena femoralis", "Глубокая вена бедра. Продолжается из подколенной вены и отводит кровь в наружную подвздошную вену.", ["Соседство с бедренной артерией", "Соединение с глубокой веной бедра"], "vessels"),
   "deep femoral vein": entry("Vena profunda femoris", "Собирает кровь от глубоких тканей бедра и впадает в бедренную вену.", ["Ход среди глубоких тканей бедра", "Место соединения с бедренной веной"], "vessels"),
 });

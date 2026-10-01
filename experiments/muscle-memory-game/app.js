@@ -521,6 +521,7 @@ const atlasSelectionMenu = document.querySelector("#atlas-selection-menu");
 const mobileIsolateStructure = document.querySelector("#mobile-isolate-structure");
 const mobileRevealStructure = document.querySelector("#mobile-reveal-structure");
 const atlasViewHistory = [];
+const atlasHiddenBones = new Set();
 let restoringAtlasView = false;
 let atlasHistoryPause = 0;
 let isolatedAtlasSelection = null;
@@ -544,7 +545,7 @@ function captureAtlasView() {
     selection: atlasSelection(),
     region: selectedLearningRegion, regional: regionIsolation.checked,
     regionLabels: [...learningRegion.options].map(option => option.textContent),
-    clipBounds: regionalClipBounds?.clone() || null,
+    clipBounds: regionalClipBounds ? {...regionalClipBounds} : null,
     bonesView: atlasBonesView ? {...atlasBonesView, meshes: [...atlasBonesView.meshes]} : null,
     boneMode: boneDisplayMode, muscleMode: muscleDisplayMode,
     skinMode: skinDisplayMode, connectiveMode: connectiveDisplayMode,
@@ -552,7 +553,7 @@ function captureAtlasView() {
     referenceLayers: referenceLayerInputs.map(input => input.checked),
     referenceParts: [...referenceMeshes].map(([key, mesh]) => [key, [...mesh.userData.hiddenReferenceParts], mesh.userData.referenceRanges.map((range) => mesh.geometry.getAttribute("structureVisible").getX(range.start) >= .5)]),
     meshes: [anatomyMesh, skeletonMesh, ...studyMeshes(), ...referenceMeshes.values()].filter(Boolean).map(mesh => [mesh, mesh.visible]),
-    muscles: [...structureVisibility], bones: [...boneVisibility],
+    muscles: [...structureVisibility], bones: [...boneVisibility], manualBones: [...atlasHiddenBones],
     study: studyStructures.map(entry => studyStructureIsVisible(entry.id)),
     hidden: [...hiddenStack], actions: [...exploreHiddenActions],
     isolated, isolatedSelection: isolatedAtlasSelection, isolationOrigin: atlasIsolationOrigin,
@@ -588,7 +589,7 @@ function restoreAtlasView(state) {
     selectedLearningRegion = state.region;
     learningRegion.value = state.region; regionIsolation.checked = state.regional;
     [...learningRegion.options].forEach((option, i) => option.textContent = state.regionLabels[i]);
-    regionalClipBounds = state.clipBounds?.clone() || null;
+    regionalClipBounds = state.clipBounds ? {...state.clipBounds} : null;
     availableTargets = filterCatalogByRegion(learningCatalog, selectedLearningRegion);
     atlasBonesView = state.bonesView ? {...state.bonesView, meshes: [...state.bonesView.meshes]} : null;
     boneDisplayMode = boneMode.value = state.boneMode;
@@ -600,6 +601,7 @@ function restoreAtlasView(state) {
     connectiveLayerInputs.forEach((input, i) => input.checked = state.connectiveLayers[i]);
     referenceLayerInputs.forEach((input, i) => input.checked = state.referenceLayers[i]);
     isolatedAtlasSelection = state.isolatedSelection; atlasIsolationOrigin = state.isolationOrigin;
+    atlasHiddenBones.clear(); state.manualBones.forEach(id => atlasHiddenBones.add(id));
     applyMuscleDisplayMode(); applyBoneDisplayMode(); applyConnectiveDisplayMode(); applySkinDisplayMode();
     for (const [key, mesh] of referenceMeshes) {
       const saved = state.referenceParts.find(item => item[0] === key);
@@ -725,7 +727,7 @@ function revealAtlasStructure() {
     if (item.kind === "reference") {
       for (const part of atlasSelectionParts(item)) {part.mesh.userData.hiddenReferenceParts.add(part.id); setReferencePartVisible(part.mesh, part.id, false);}
     } else if (item.kind === "bone") {
-      for (const part of atlasSelectionParts(item)) setBoneVisible(part.id, false);
+      for (const part of atlasSelectionParts(item)) {atlasHiddenBones.add(part.id); setBoneVisible(part.id, false);}
     } else if (item.kind === "muscle") setStructureVisible(item.id, false);
     else setStudyStructureVisible(item.id, false);
   }
@@ -3990,7 +3992,7 @@ function hideSelectedStructure() {
   if (selectedBoneId != null) {
     rememberAtlasView("Скрытие кости");
     const label = boneTermRu(boneNames[selectedBoneId]).nameRu;
-    for (const part of atlasSelectionParts()) setBoneVisible(part.id, false);
+    for (const part of atlasSelectionParts()) {atlasHiddenBones.add(part.id); setBoneVisible(part.id, false);}
     restoreHighlights(); selectedBoneId = null;
     hideStructureReference(); focusSelectedButton.disabled = true;
     questionLabelEl.textContent = "Структура скрыта"; questionEl.textContent = label;
@@ -6293,7 +6295,7 @@ function fillBoneCard(container, card) {
   container.replaceChildren();
   if (container.tagName === "DETAILS") {
     const summary = document.createElement("summary");
-    summary.textContent = "Справка: " + card.kindRu.toLocaleLowerCase("ru-RU");
+    summary.textContent = card.kindRu ? "Справка: " + card.kindRu.toLocaleLowerCase("ru-RU") : "Анатомическая справка";
     container.append(summary);
     container.open = false;
   }
@@ -6397,7 +6399,7 @@ function syncAtlasContextLayers() {
   const hidden = [...referenceMeshes.values()].reduce((n, mesh) => n + (mesh.userData.hiddenReferenceParts?.size || 0), 0);
   canvas.dataset.hiddenReferenceParts = String(hidden);
   atlasContextUndo.hidden = exploreHiddenActions.length === 0;
-  atlasContextRestore.hidden = hidden === 0;
+  atlasContextRestore.hidden = hidden === 0 && atlasHiddenBones.size === 0;
   atlasContextStatus.textContent = !available ? "Дополнительные системы доступны в модели Z-Anatomy."
     : loading.length ? "Загружается: " + loading.join(", ") + "…"
     : enabled.length ? "На модели: " + enabled.join(", ") + ". Выберите структуру касанием."
@@ -6416,6 +6418,7 @@ muscleTransparency.addEventListener("input", () => {
 atlasContextUndo.addEventListener("click", undoLastHide);
 atlasContextRestore.addEventListener("click", () => {
   rememberAtlasView("Возврат скрытых структур");
+  atlasHiddenBones.clear(); applyRegionBoneVisibility();
   for (const mesh of referenceMeshes.values()) mesh.userData.hiddenReferenceParts?.clear();
   for (let i = exploreHiddenActions.length - 1; i >= 0; i--) {
     if (exploreHiddenActions[i].kind === "reference") exploreHiddenActions.splice(i, 1);
@@ -9611,6 +9614,10 @@ function prepareMotionComparison(sid) {
 
 function setMode(mode) {
   if (!["quiz", "explore", "motion"].includes(mode)) return;
+  if (mode !== "explore") {
+    if (isolatedAtlasSelection) restoreAtlasView(atlasIsolationOrigin);
+    atlasViewHistory.length = 0; atlasSelectionMenu.hidden = true;
+  }
   if (atlasBonesView) setAtlasBonesView(false);
   if (mode === "motion" && !MOTION_UI_ENABLED) {
     mode = "explore";
@@ -10270,6 +10277,7 @@ function setBoneVisible(boneId, visible) {
   if (!skeletonMesh || boneId == null || !boneRanges[boneId]) return;
   const attr = skeletonMesh.geometry.getAttribute("structureVisible");
   if (!attr) return;
+  if (atlasHiddenBones.has(boneId)) visible = false;
 
   const range = boneRanges[boneId];
   attr.array.fill(visible ? 1 : 0, range.start, range.start + range.count);
@@ -10332,6 +10340,7 @@ function applyRegionBoneVisibility() {
 
   if (!regionIsolationActive()) {
     setAllBonesVisible(true);
+    for (const id of atlasHiddenBones) setBoneVisible(id, false);
     return;
   }
 
@@ -10621,6 +10630,7 @@ function disposeMaterial(material) {
 
 function resetLoadedModel() {
   atlasViewHistory.length = 0;
+  atlasHiddenBones.clear();
   isolatedAtlasSelection = atlasIsolationOrigin = null;
   atlasSelectionMenu.hidden = true;
   if (atlasBonesView) setAtlasBonesView(false);

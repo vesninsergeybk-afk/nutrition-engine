@@ -8,7 +8,7 @@ Four unmodified public-domain historic plates by Henry Vandyke Carter, from Gray
 
 - Gray347.png: https://commons.wikimedia.org/wiki/File:Gray347.png — right knee, anterior view.
 - Gray348.png: https://commons.wikimedia.org/wiki/File:Gray348.png — left knee, posterior view.
-- Gray550.png: https://commons.wikimedia.org/wiki/File:Gray550.png — arteries of the leg, posterior view.
+- Gray550.png: https://commons.wikimedia.org/wiki/File:Gray550.png — femoral artery and its branches in the thigh.
 - Gray662.png: https://commons.wikimedia.org/wiki/File:Gray662.png — cauda equina and filum terminale, posterior view.
 
 Commons records these scans as public domain (PD-old-100-expired / PD-scan); original English labels are retained. The annotated `Gray662Cauda.png` derivative is not used.

@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
  try {
   const page=await browser.newPage({viewport:{width:390,height:740},isMobile:true,hasTouch:true});
   page.setDefaultTimeout(20000);
-  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error('APP ERROR: '+e.message);});
   const click=s=>page.locator(s).first().evaluate(el=>el.click());
   const data=key=>page.locator('#viewer').getAttribute('data-'+key);
   const search=async q=>{await page.fill('#structure-search',q);await click('.search-result');};
