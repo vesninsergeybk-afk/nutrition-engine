@@ -39,6 +39,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
 .mode-switch.ui-motion-track > button.active,
 .reference-tabs.ui-motion-track > button[aria-selected="true"] { background: transparent; box-shadow: none; }
 .viewer-wrap { border: 1px solid #d4dae3; border-radius: 20px; background: #e7e9ed; box-shadow: var(--shadow); }
+.webgl-status { z-index: 9; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+.webgl-status button { min-height: 44px; padding: 10px 16px; }
 .viewer-tools button, .viewer-tools select { min-height: 38px; background: rgba(255,255,255,.94); border-color: #ccd4df; box-shadow: 0 2px 5px #233e5b08; color: var(--ink); }
 .viewer-hint { background: rgba(255,255,255,.9); color: #536176; }
 .display-panel, .display-panel-head { background: #fafbfd; }
@@ -160,9 +162,6 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
   .mobile-muscle-actions button { min-height: 44px; }
   .mobile-muscle-card-copy { order: 1; }
   .mobile-muscle-card .atlas-relations { order: 2; }
-  body:not(.session-active):not(.motion-mode) .viewer-wrap {
-    transition: height var(--ui-motion-surface) var(--ui-motion-ease), min-height var(--ui-motion-surface) var(--ui-motion-ease);
-  }
   .mobile-muscle-actions { order: 3; }
   body:not(.session-active):not(.motion-mode) .stage:has(.mobile-muscle-card:not([hidden])) .viewer-wrap {
     flex: none; height: max(260px, calc(100dvh - 256px)); min-height: max(260px, calc(100dvh - 256px));

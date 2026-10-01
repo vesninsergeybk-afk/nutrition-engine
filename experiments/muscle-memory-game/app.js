@@ -1,5 +1,6 @@
 import { originalAnatomyName, isZAnatomyMuscleSourceName, stripRussianSideLabel } from "./anatomy-model-names.js";
 import { createReferenceUI } from "./reference-ui.js";
+import { createWebGLSession, viewerPixelRatio } from "./webgl-session.js";
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -373,13 +374,14 @@ function shouldUseTsmNativeMotion(action) {
 
 camera.position.set(0, 0, 4);
 
+const coarseGpuPointer = window.matchMedia("(pointer: coarse)").matches;
 const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
   stencil: true,
-  powerPreference: "high-performance",
+  powerPreference: coarseGpuPointer ? "default" : "high-performance",
 });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(viewerPixelRatio(window.devicePixelRatio, coarseGpuPointer));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.localClippingEnabled = true;
 
@@ -745,7 +747,7 @@ function appendReference3DGallerySlide(sid) {
       alpha: false,
       powerPreference: "low-power",
     });
-    miniRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    miniRenderer.setPixelRatio(viewerPixelRatio(window.devicePixelRatio, coarseGpuPointer));
     miniRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
     miniScene.add(new THREE.HemisphereLight(0xffffff, 0x8d877d, 2.25));
@@ -801,6 +803,7 @@ function appendReference3DGallerySlide(sid) {
     const modelBox = new THREE.Box3().setFromObject(modelGroup);
     if (modelBox.isEmpty()) {
       miniRenderer.dispose();
+      miniRenderer.forceContextLoss();
       row.remove();
       return;
     }
@@ -844,6 +847,7 @@ function appendReference3DGallerySlide(sid) {
     };
 
     miniControls.addEventListener("change", renderMini);
+    miniCanvas.addEventListener("webglcontextrestored", renderMini);
     reset.addEventListener("click", () => {
       resetView();
       renderMini();
@@ -856,9 +860,11 @@ function appendReference3DGallerySlide(sid) {
     reference3DViewerCleanup = () => {
       resizeObserver.disconnect();
       miniControls.removeEventListener("change", renderMini);
+      miniCanvas.removeEventListener("webglcontextrestored", renderMini);
       miniControls.dispose();
       for (const mesh of disposableMeshes) disposeMotionMesh(mesh);
       miniRenderer.dispose();
+      miniRenderer.forceContextLoss();
     };
 
     const count = structureReferenceIllustrations.querySelectorAll(
@@ -11846,12 +11852,6 @@ renderer.domElement.addEventListener("click", (event) => {
     return;
   }
 });
-renderer.domElement.addEventListener("webglcontextlost", (event) => {
-  event.preventDefault();
-  loadingEl.classList.remove("is-hidden");
-  loadingEl.textContent = "3D-сессия была приостановлена устройством. Обновите страницу, чтобы продолжить.";
-});
-
 function animate(now = performance.now()) {
   resize();
   controls.update();
@@ -11866,8 +11866,30 @@ function animate(now = performance.now()) {
     motionRenderer.render(motionScene, motionCamera);
   }
 
-  requestAnimationFrame(animate);
 }
 
-animate();
+const webglStatus = document.querySelector("#webgl-status");
+const webglStatusText = document.querySelector("#webgl-status-text");
+const webglReload = document.querySelector("#webgl-reload");
+let webglRecoveryTimer = 0;
+webglReload.addEventListener("click", () => window.location.reload());
+createWebGLSession({
+  canvas,
+  renderFrame: animate,
+  onLost() {
+    clearTimeout(webglRecoveryTimer);
+    webglStatus.hidden = false;
+    webglReload.hidden = true;
+    webglStatusText.textContent = "3D-модель временно недоступна. Ожидаю восстановления…";
+    webglRecoveryTimer = setTimeout(() => {
+      webglStatusText.textContent = "Браузер пока не восстановил 3D-модель. Можно обновить страницу.";
+      webglReload.hidden = false;
+    }, 8000);
+  },
+  onRestored() {
+    clearTimeout(webglRecoveryTimer);
+    webglStatus.hidden = true;
+    webglReload.hidden = true;
+  },
+});
 void loadSelectedModel(modelSource.value);
