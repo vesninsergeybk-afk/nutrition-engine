@@ -12653,6 +12653,22 @@ renderer.domElement.style.touchAction = "none";
 
 function syncAtlasCameraState() {
   canvas.dataset.atlasCamera = [...camera.position.toArray(), ...controls.target.toArray()].map(value => value.toFixed(4)).join(",");
+  // A real triangle centre supports precise interaction diagnostics for thin
+  // nerves; the centre of their bounding box can be empty space.
+  let closest = null, distance = Infinity;
+  for (const part of atlasSelectionParts()) {
+    const positions = part.mesh.geometry.getAttribute("position");
+    const triangles = Math.floor(part.range.count / 3), samples = Math.min(triangles, 24);
+    for (let i = 0; i < samples; i++) {
+      const start = part.range.start + Math.floor(i * triangles / samples) * 3;
+      const point = new THREE.Vector3();
+      for (let j = 0; j < 3; j++) point.add(new THREE.Vector3().fromBufferAttribute(positions, start + j));
+      point.multiplyScalar(1 / 3).applyMatrix4(part.mesh.matrixWorld).project(camera);
+      const d = point.x ** 2 + point.y ** 2;
+      if (Math.abs(point.x) < .9 && Math.abs(point.y) < .9 && point.z > -1 && point.z < 1 && d < distance) {closest = point; distance = d;}
+    }
+  }
+  canvas.dataset.atlasSelectionPoint = closest ? [closest.x, closest.y].map(value => value.toFixed(6)).join(",") : "";
 }
 controls.addEventListener("change", syncAtlasCameraState);
 syncAtlasCameraState();

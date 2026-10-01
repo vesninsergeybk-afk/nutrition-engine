@@ -41,6 +41,7 @@ const assert = require('node:assert/strict');
   const nerve=await data('selected-reference-part');
   assert.match(await data('selected-reference-card'),/context:median nerve/);
   // Real touch drag, then a two-finger gesture: neither is a selection command.
+  await page.locator('#viewer').scrollIntoViewIfNeeded();
   const box=await page.locator('#viewer').boundingBox();
   const cdp=await page.context().newCDPSession(page);
   const p=(x,y,id)=>({x:Math.round(x),y:Math.round(y),id});
@@ -55,11 +56,11 @@ const assert = require('node:assert/strict');
   assert.equal(await data('selected-reference-part'),nerve);
   // Isolate the thin nerve, focus it, and touch actual geometry.
   await click('#mobile-isolate-structure');
+  await page.locator('#viewer').scrollIntoViewIfNeeded();
   const b=await page.locator('#viewer').boundingBox();
-  for(const [dx,dy] of [[0,0],[-15,0],[15,0],[0,-25],[0,25]]) {
-   await page.touchscreen.tap(b.x+b.width/2+dx,b.y+b.height/2+dy);
-   if(await page.locator('#atlas-selection-menu').isVisible())break;
-  }
+  const point=(await data('atlas-selection-point')).split(',').map(Number);
+  assert.equal(point.length,2,'No projected triangle of the selected nerve');
+  await page.touchscreen.tap(b.x+(point[0]+1)*b.width/2,b.y+(1-point[1])*b.height/2);
   assert.ok(await page.locator('#atlas-selection-menu').isVisible(),'Touch did not open the small structure menu');
   assert.match(await page.locator('#atlas-selection-menu-name').textContent(),/Срединный нерв/);
   await click('#atlas-selection-menu-close');await click('#atlas-view-back');
