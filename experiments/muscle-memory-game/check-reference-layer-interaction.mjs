@@ -1,4 +1,6 @@
 import { readFile } from "node:fs/promises";
+import { nerveMentionMatches } from "./nerve-muscle-links.js";
+import { muscleReferenceFor } from "./muscle-reference-data.js";
 import {
   referenceLayerNameRu,
   referenceStructureSearchText,
@@ -15,6 +17,8 @@ for (const [source, layer, expected] of [
   ["Left femoral artery", "vascular", "Бедренная артерия (слева)"],
   ["Right great saphenous vein", "vascular", "Большая подкожная вена (справа)"],
   ["Thoracic duct", "lymphatic", "Грудной проток"],
+  ["Kidney.l", "organs", "Почка (слева)"],
+  ["Inferior lobe of right lung", "organs", "Нижняя доля правого лёгкого"],
   ["Left suprascapular nerve", "nervous", "Надлопаточный нерв (слева)"],
   ["Right vertebral artery", "vascular", "Позвоночная артерия (справа)"],
   ["Left supraclavicular nodes", "lymphatic", "Надключичные лимфатические узлы (слева)"],
@@ -78,7 +82,7 @@ assert(
 );
 assert(
   app.includes("function renderSimpleAtlasReference") &&
-    app.includes('"Ориентир безопасности"') &&
+    app.includes('structureReferenceEl.dataset.referenceKind = "context"') &&
     app.includes('function renderBoneReference(term)') &&
     app.includes('boneCardForTerm(term)'),
   "Bone and safety selections must surface their context in the Atlas information panel"
@@ -89,3 +93,6 @@ console.log(
 );
 
 assert(referenceStructureTerm("Axillary_nerve.l", "nervous").specific, "GLTF-sanitized nerve names must remain searchable and selectable");
+assert(nerveMentionMatches("Axillary_nerve.l", muscleReferenceFor("Deltoid muscle.l").innervationRu), "The deltoid card must be reachable from its named nerve");
+assert(nerveMentionMatches("Accessory nerve (XI).r", muscleReferenceFor("Trapezius muscle.r").innervationRu), "Cranial nerve suffix must not prevent a reference link");
+assert(!nerveMentionMatches("Radial nerve.l", "Лучевая половина мышцы; локтевой нерв."), "Directional words must not be interpreted as innervation");

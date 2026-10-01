@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 // Only scene initialization is replaced: this checkpoint does not test 3D.
 const fixture = `
 import { createReferenceUI } from './reference-ui.js';
+import { setSurfaceVisible } from './ui-surfaces.js';
 import { functionalPartsForStructure } from './reference-data/functional-parts.js';
 import { functionalRelationsForStructure } from './reference-data/functional-relations.js';
 const find = id => document.getElementById(id);
@@ -39,11 +40,12 @@ for (const button of document.querySelectorAll('.mode-switch > button:not([hidde
   });
 }
 find('display-panel-toggle').addEventListener('click', () => {
-  find('display-panel').hidden = !find('display-panel').hidden;
-  find('display-panel-toggle').setAttribute('aria-expanded', String(!find('display-panel').hidden));
+  const open = find('display-panel-toggle').getAttribute('aria-expanded') !== 'true';
+  setSurfaceVisible(find('display-panel'), open, { drawer: true });
+  find('display-panel-toggle').setAttribute('aria-expanded', String(open));
 });
 find('display-panel-close').addEventListener('click', () => {
-  find('display-panel').hidden = true;
+  setSurfaceVisible(find('display-panel'), false, { drawer: true });
   find('display-panel-toggle').setAttribute('aria-expanded', 'false');
 });
 document.documentElement.dataset.motionFixture = 'ready';
@@ -99,9 +101,11 @@ document.documentElement.dataset.motionFixture = 'ready';
     await page.click('#display-panel-toggle');
     assert.equal(await page.locator('#display-panel').isVisible(), true);
     await page.click('#display-panel-close');
-    assert.equal(await page.locator('#display-panel').isHidden(), true);
+    assert.equal(await page.locator('#display-panel').evaluate(el => el.inert), true);
+    assert.equal(await page.locator('#display-panel-toggle').getAttribute('aria-expanded'), 'false');
+    await page.waitForFunction(() => document.getElementById('display-panel').hidden);
 
-    // Desktop quick expansion uses the real controller, then Escape closes immediately.
+    // Expansion and exit use the real controller; logical closure is immediate.
     const openingMotion = await page.evaluate(async () => {
       document.querySelector('[data-quick-role="synergists"]').click();
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -110,9 +114,10 @@ document.documentElement.dataset.motionFixture = 'ready';
     assert.equal(openingMotion, true);
     await page.locator('#atlas-relations-movement').focus();
     await page.keyboard.press('Escape');
-    assert.equal(await page.locator('#atlas-relations-body').isHidden(), true);
+    assert.equal(await page.locator('#atlas-relations-body').evaluate(el => el.inert), true);
+    await page.waitForFunction(() => document.getElementById('atlas-relations-body').hidden);
     assert.equal(await page.locator('[data-quick-role="synergists"]').evaluate(el => el === document.activeElement), true);
-    assert.equal(await page.locator('#atlas-relations').evaluate(el => el.getAnimations().length), 0);
+    assert.equal(await page.locator('#atlas-relations').evaluate(el => el.getAnimations().filter(a => a.playState === 'running').length), 0);
     await page.waitForTimeout(260);
     await page.screenshot({ path: '/tmp/muscle-memory-ui-motion-desktop.png', fullPage: true });
 
@@ -135,10 +140,41 @@ document.documentElement.dataset.motionFixture = 'ready';
       assert.ok(geometry.viewerHeight >= 260, 'Canvas is too small for touch');
       await checkIndicator('.mode-switch', '#mode-explore');
       await page.screenshot({ path: '/tmp/muscle-memory-ui-motion-mobile-' + viewport.width + '.png', fullPage: false });
+      // Drag the dedicated lane instead of sending a gesture to the canvas.
+      await page.waitForFunction(() => !document.getElementById('mobile-page-scroll').hidden);
+      const rail = await page.locator('#mobile-page-scroll').boundingBox();
+      const thumb = await page.locator('.mobile-page-scroll-thumb').boundingBox();
+      await page.mouse.move(thumb.x + thumb.width / 2, thumb.y + thumb.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(rail.x + rail.width / 2, rail.y + rail.height - 10, { steps: 6 });
+      await page.mouse.up();
+      assert.ok(await page.evaluate(() => scrollY) > 100, 'Scroll thumb did not move the page');
+      await page.locator('#mobile-page-scroll').focus();
+      await page.keyboard.press('Home');
+      assert.equal(await page.evaluate(() => scrollY), 0);
+      await page.keyboard.press('End');
+      assert.ok(await page.evaluate(() => Math.abs(scrollY - (document.scrollingElement.scrollHeight - document.scrollingElement.clientHeight))) < 3);
+      await page.keyboard.press('Home');
+
       await page.locator('#atlas-relations-movement').focus();
       await page.keyboard.press('Escape');
-      assert.equal(await page.locator('#atlas-relations-body').isHidden(), true);
+      assert.equal(await page.locator('#atlas-relations-body').evaluate(el => el.inert), true);
+      await page.waitForFunction(() => document.getElementById('atlas-relations-body').hidden);
     }
+
+    // Reopening during an exit cancels the obsolete closure.
+    await page.evaluate(async () => {
+      const role = document.querySelector('[data-quick-role="synergists"]');
+      role.click();
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      role.click();
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      role.click();
+    });
+    await page.waitForTimeout(260);
+    assert.equal(await page.locator('#atlas-relations-body').isVisible(), true);
+    await page.click('[data-quick-role="synergists"]');
+    await page.waitForFunction(() => document.getElementById('atlas-relations-body').hidden);
 
     // Changing the system preference also cancels an animation already in flight.
     await page.evaluate(async () => {
@@ -153,11 +189,11 @@ document.documentElement.dataset.motionFixture = 'ready';
     await page.keyboard.press('Escape');
     await page.click('[data-quick-role="antagonists"]');
     assert.equal(await page.locator('#atlas-relations-body').isVisible(), true);
-    assert.equal(await page.locator('#atlas-relations').evaluate(el => el.getAnimations().length), 0);
+    assert.equal(await page.locator('#atlas-relations').evaluate(el => el.getAnimations().filter(a => a.playState === 'running').length), 0);
     assert.equal(await page.locator('.ui-selection-indicator').first().evaluate(el => getComputedStyle(el).transitionDuration), '0s');
     assert.deepEqual(modelRequests, [], 'UI checkpoint unexpectedly loaded 3D assets');
     assert.deepEqual(errors, [], 'UI motion produced browser exceptions');
-    console.log('[smoke:ui-motion] rapid switching, keyboard, desktop/390/320 layout, immediate close and reduced motion passed; no 3D assets loaded');
+    console.log('[smoke:ui-motion] rapid switching, keyboard, desktop/390/320 layout, animated exit, scroll thumb and reduced motion passed; no 3D assets loaded');
   } finally {
     await browser.close();
   }

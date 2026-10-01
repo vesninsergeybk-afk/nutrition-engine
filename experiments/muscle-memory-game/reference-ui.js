@@ -27,47 +27,80 @@ export function createReferenceUI(root, { quickRoot, onShowGroup, onClearGroup, 
   let quickMessage = "";
   let quickOpeningAnimation = null;
   let quickOpeningFrame = 0;
+  let quickBodyAnimation = null;
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   motionPreference.addEventListener("change", () => {
     if (!motionPreference.matches) return;
-    cancelAnimationFrame(quickOpeningFrame);
-    quickOpeningFrame = 0;
-    quickOpeningAnimation?.cancel();
-    quickOpeningAnimation = null;
+    quickOpeningAnimation?.finish();
+    quickBodyAnimation?.finish();
   });
 
   function syncQuickState() {
     if (!quickRoot) return;
-    const opening = quickOpen && quickRoot.dataset.open !== "true";
-    const previousHeight = opening ? quickRoot.getBoundingClientRect().height : 0;
-    if (!quickOpen || opening) {
+    const changed = String(quickOpen) !== quickRoot.dataset.open;
+    const previousHeight = changed ? quickRoot.getBoundingClientRect().height : 0;
+    if (changed) {
       cancelAnimationFrame(quickOpeningFrame);
       quickOpeningFrame = 0;
       quickOpeningAnimation?.cancel();
       quickOpeningAnimation = null;
+      quickBodyAnimation?.cancel();
+      quickBodyAnimation = null;
     }
     quickRoot.dataset.open = String(quickOpen);
     quickRoot.dataset.role = quickOpen ? role : "";
-    quickBody.hidden = !quickOpen;
-    quickFind("atlas-relations-close").hidden = !quickOpen;
+    quickBody.inert = !quickOpen;
+    quickBody.setAttribute("aria-hidden", String(!quickOpen));
     for (const button of quickRoles) {
       button.setAttribute("aria-expanded", String(quickOpen && button.dataset.quickRole === role));
     }
     quickStatus.textContent = quickMessage || status.textContent;
-    // Expand the existing card in place; repeated scene/status updates do not
-    // restart the motion, and a quick close cancels it immediately.
-    if (opening && previousHeight > 0 && typeof quickRoot.animate === "function" && !motionPreference.matches) {
+    if (!changed) return;
+    quickRoot.dataset.expanded = String(quickOpen);
+    quickBody.hidden = !quickOpen;
+    quickFind("atlas-relations-close").hidden = !quickOpen;
+    const canAnimate = previousHeight > 0 && !quickRoot.hidden &&
+      typeof quickRoot.animate === "function" && !motionPreference.matches;
+    const targetHeight = quickRoot.getBoundingClientRect().height;
+    if (!quickOpen && canAnimate) {
+      // Keep the exiting content visible, but inert. The visual expanded state
+      // keeps the canvas size fixed until closing finishes (one resize only).
+      quickRoot.dataset.expanded = "true";
+      quickBody.hidden = false;
+      quickFind("atlas-relations-close").hidden = false;
+    }
+    if (canAnimate) {
+      const targetOpen = quickOpen;
       quickOpeningFrame = requestAnimationFrame(() => {
         quickOpeningFrame = 0;
-        if (!quickOpen || quickRoot.hidden) return;
-        const expandedHeight = quickRoot.getBoundingClientRect().height;
-        quickOpeningAnimation = quickRoot.animate(
+        if (quickOpen !== targetOpen || quickRoot.hidden) return;
+        if (motionPreference.matches) {
+          quickRoot.dataset.expanded = String(quickOpen);
+          quickBody.hidden = !quickOpen;
+          quickFind("atlas-relations-close").hidden = !quickOpen;
+          return;
+        }
+        const animation = quickRoot.animate(
           [
             { height: `${previousHeight}px`, overflow: "hidden" },
-            { height: `${expandedHeight}px`, overflow: "hidden" },
+            { height: `${targetOpen ? quickRoot.getBoundingClientRect().height : targetHeight}px`, overflow: "hidden" },
           ],
           { duration: 220, easing: "cubic-bezier(.2,.7,.2,1)" }
         );
+        quickOpeningAnimation = animation;
+        quickBodyAnimation = quickBody.animate(
+          targetOpen ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
+          { duration: targetOpen ? 180 : 160, easing: "ease-out", fill: "forwards" }
+        );
+        animation.finished.then(() => {
+          if (quickOpeningAnimation !== animation) return;
+          quickOpeningAnimation = null;
+          quickBodyAnimation?.cancel();
+          quickBodyAnimation = null;
+          quickRoot.dataset.expanded = String(quickOpen);
+          quickBody.hidden = !quickOpen;
+          quickFind("atlas-relations-close").hidden = !quickOpen;
+        }, () => {});
       });
     }
   }
@@ -281,6 +314,15 @@ export function createReferenceUI(root, { quickRoot, onShowGroup, onClearGroup, 
     refreshGroup() { if (quickOpen) renderRow(); },
     render(nextReference, sourceName, quickEnabled = true) {
       closeQuick();
+      cancelAnimationFrame(quickOpeningFrame);
+      quickOpeningAnimation?.cancel();
+      quickBodyAnimation?.cancel();
+      quickOpeningAnimation = quickBodyAnimation = null;
+      if (quickRoot) {
+        quickRoot.dataset.expanded = "false";
+        quickBody.hidden = true;
+        quickFind("atlas-relations-close").hidden = true;
+      }
       reference = nextReference;
       const parts = reference?.functionalParts || [];
       partField.hidden = !parts.length;

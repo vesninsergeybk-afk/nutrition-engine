@@ -16,7 +16,7 @@
   </script>
 </head>
 <body>
-  <main class="app-shell">
+  <main id="atlas-page" class="app-shell">
     <section class="stage">
       <div class="topbar">
         <div class="brand">
@@ -187,7 +187,7 @@
 
           <section class="display-section">
             <div class="display-section-head">
-              <h3>Ориентиры безопасности</h3>
+              <h3>Анатомические системы</h3>
               <span>Дополнительные структуры для топографической ориентации</span>
             </div>
             <fieldset id="reference-layers-field" class="connective-layer-options" hidden>
@@ -195,9 +195,10 @@
               <label><input type="checkbox" data-reference-layer="nervous" /> Нервные структуры</label>
               <label><input type="checkbox" data-reference-layer="vascular" /> Кровеносные сосуды</label>
               <label><input type="checkbox" data-reference-layer="lymphatic" /> Лимфатические структуры</label>
+              <label><input type="checkbox" data-reference-layer="organs" /> Внутренние органы</label>
             </fieldset>
             <p id="reference-layer-note" class="viewer-setting-note">
-              Нервные, сосудистые и лимфатические ориентиры доступны в Z-Anatomy и загружаются по выбору. Структуры с проверенным русским названием можно выбирать на модели и находить через поиск; остальные остаются фоновым анатомическим контекстом.
+              Системы доступны в Z-Anatomy и загружаются по выбору. Структуры с проверенным русским названием можно выбирать на модели и находить через поиск; остальные остаются фоновым анатомическим контекстом.
             </p>
           </section>
         </aside>
@@ -207,6 +208,18 @@
           <span class="hint-pointer">ЛКМ — вращать · колесо — приблизить · ПКМ — сдвинуть</span>
         </div>
       </div>
+        <section id="atlas-context-layers" class="atlas-context-layers" hidden aria-label="Системы рядом со скелетом">
+          <div class="atlas-context-layer-buttons" role="group" aria-label="Показать анатомические системы">
+            <button type="button" data-context-layer="nervous" aria-pressed="false">Нервы</button>
+            <button type="button" data-context-layer="vascular" aria-pressed="false">Сосуды</button>
+            <button type="button" data-context-layer="lymphatic" aria-pressed="false">Лимфа</button>
+            <button type="button" data-context-layer="organs" aria-pressed="false">Органы</button>
+          </div>
+          <div class="atlas-context-layer-footer">
+            <button id="atlas-context-muscles" type="button" aria-pressed="false">Контуры мышц</button>
+            <span id="atlas-context-status" role="status">Включите систему, чтобы увидеть её рядом с костями.</span>
+          </div>
+        </section>
         <aside id="mobile-muscle-card" class="mobile-muscle-card" hidden aria-live="polite">
           <div id="mobile-context-trail" class="mobile-context-trail" hidden aria-label="Глубина просмотра"></div>
           <div id="mobile-muscle-card-copy" class="mobile-muscle-card-copy">
@@ -481,6 +494,10 @@
     </aside>
   </main>
 
+  <div id="mobile-page-scroll" class="mobile-page-scroll" role="scrollbar" tabindex="0" aria-label="Прокрутка страницы" aria-orientation="vertical" aria-controls="atlas-page" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" hidden>
+    <span class="mobile-page-scroll-thumb" aria-hidden="true"></span>
+  </div>
+  <script type="module" src="./mobile-scroll.js"></script>
   <script type="module" src="./ui-motion.js"></script>
   <script type="module" src="./app.js"></script>
 </body>

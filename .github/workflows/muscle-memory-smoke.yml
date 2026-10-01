@@ -354,7 +354,7 @@ jobs:
 
 
   browser-reference:
-    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') || contains(github.event.head_commit.message, '[ui-motion-smoke]') || contains(github.event.head_commit.message, '[webgl-smoke]') || contains(github.event.head_commit.message, '[bones-smoke]') }}
+    if: ${{ contains(github.event.head_commit.message, '[reference-smoke]') || contains(github.event.head_commit.message, '[reference-ui-smoke]') || contains(github.event.head_commit.message, '[ui-motion-smoke]') || contains(github.event.head_commit.message, '[webgl-smoke]') || contains(github.event.head_commit.message, '[bones-smoke]') || contains(github.event.head_commit.message, '[atlas-comfort-smoke]') }}
     needs: fast
     runs-on: ubuntu-latest
     timeout-minutes: 7
@@ -380,7 +380,10 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          if [[ '${{ contains(github.event.head_commit.message, '[bones-smoke]') }}' == 'true' ]]; then
+          if [[ '${{ contains(github.event.head_commit.message, '[atlas-comfort-smoke]') }}' == 'true' ]]; then
+            timeout 90s node experiments/muscle-memory-game/browser-smoke-ui-motion.cjs
+            timeout 4m node experiments/muscle-memory-game/browser-smoke-atlas-comfort.cjs
+          elif [[ '${{ contains(github.event.head_commit.message, '[bones-smoke]') }}' == 'true' ]]; then
             timeout 4m node experiments/muscle-memory-game/browser-smoke-atlas-bones.cjs
           elif [[ '${{ contains(github.event.head_commit.message, '[webgl-smoke]') }}' == 'true' ]]; then
             timeout 3m node experiments/muscle-memory-game/browser-smoke-webgl-session.cjs
@@ -403,6 +406,7 @@ jobs:
             /tmp/muscle-memory-ui-motion-*.png
             /tmp/muscle-memory-webgl-*.png
             /tmp/muscle-memory-bones-*.png
+            /tmp/muscle-memory-comfort-*.png
           if-no-files-found: ignore
           retention-days: 7
 

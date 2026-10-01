@@ -1,5 +1,7 @@
 import { originalAnatomyName, isZAnatomyMuscleSourceName, stripRussianSideLabel } from "./anatomy-model-names.js";
 import { createReferenceUI } from "./reference-ui.js";
+import { setSurfaceVisible } from "./ui-surfaces.js";
+import { nerveMentionMatches } from "./nerve-muscle-links.js";
 import { createWebGLSession, viewerPixelRatio } from "./webgl-session.js";
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
@@ -159,12 +161,14 @@ const REFERENCE_LAYER_SOURCES = {
   nervous: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/sinir.glb",
   vascular: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/dolasim.glb",
   lymphatic: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/lenf.glb",
+  organs: "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/ic-organlar.glb",
 };
 
 const REFERENCE_LAYER_COLORS = {
   nervous: 0xd1ad5d,
   vascular: 0xa44f4b,
   lymphatic: 0x78966f,
+  organs: 0xc88179,
 };
 
 const BODYPARTS_SOURCE_ROOT =
@@ -319,6 +323,10 @@ const quizMuscleSelectButton = document.querySelector("#quiz-muscle-select");
 const quizMuscleHideButton = document.querySelector("#quiz-muscle-hide");
 const mobileMuscleCard = document.querySelector("#mobile-muscle-card");
 const atlasRelationsRoot = document.querySelector("#atlas-relations");
+const atlasContextLayers = document.querySelector("#atlas-context-layers");
+const atlasContextButtons = [...document.querySelectorAll("[data-context-layer]")];
+const atlasContextMuscles = document.querySelector("#atlas-context-muscles");
+const atlasContextStatus = document.querySelector("#atlas-context-status");
 const mobileMuscleCardCopy = document.querySelector("#mobile-muscle-card-copy");
 const mobileMuscleKind = document.querySelector("#mobile-muscle-kind");
 const mobileMuscleName = document.querySelector("#mobile-muscle-name");
@@ -445,6 +453,7 @@ let selectedStudyId = null;
 let selectedBoneId = null;
 let atlasBonesView = null;
 let boneHighlightMesh = null;
+let referenceHighlightMesh = null;
 let selectedReference = null;
 let highlightedStudyId = null;
 const exploreHiddenActions = [];
@@ -486,8 +495,12 @@ const mobileTaskMedia = window.matchMedia("(max-width: 920px)");
 function setDisplayPanelOpen(open) {
   const next = Boolean(open);
   if (!displayPanel || !displayPanelToggle) return;
-  displayPanel.hidden = !next;
-  viewerWrap.classList.toggle("display-panel-open", next);
+  if (!next && displayPanel.contains(document.activeElement)) displayPanelToggle.focus({ preventScroll: true });
+  if (next) viewerWrap.classList.add("display-panel-open");
+  setSurfaceVisible(displayPanel, next, { drawer: true, onFinish() {
+    viewerWrap.classList.toggle("display-panel-open", next);
+    resize();
+  } });
   displayPanelToggle.setAttribute("aria-expanded", String(next));
   displayPanelToggle.classList.toggle("active", next);
   displayPanelToggle.textContent = next ? "Отображение · открыто" : "Отображение";
@@ -2692,6 +2705,7 @@ function clearAnswerRevealOverlay() {
 
 function restoreHighlights() {
   clearBoneHighlight();
+  clearReferenceHighlight();
   if (functionalGroupFeedback) {
     feedbackEl.textContent = functionalGroupFeedback.text;
     feedbackEl.className = functionalGroupFeedback.className;
@@ -3526,16 +3540,24 @@ function syncMobileMuscleCard() {
   const sid = selectedExploreSid;
   const hasMuscle = appMode === "explore" && sid != null && structureNames[sid];
   const hasBone = appMode === "explore" && selectedBoneId != null && boneNames[selectedBoneId];
-  const hasSelection = hasMuscle || hasBone;
+  const hasReference = appMode === "explore" && selectedReference != null;
+  const hasSelection = hasMuscle || hasBone || hasReference;
   const hasContext = appMode === "explore" && mobileIsolationStack.length > 0;
-  mobileMuscleCard.hidden = !(hasSelection || hasContext);
-  if (mobileMuscleCard.hidden) return;
+  if (!(hasSelection || hasContext)) {
+    setSurfaceVisible(mobileMuscleCard, false);
+    return;
+  }
 
   mobileMuscleCardCopy.hidden = !hasSelection;
   mobileHideMuscleButton.hidden = !hasMuscle;
   mobileIsolateMuscleButton.hidden = !hasMuscle;
-  mobileMuscleCard.querySelector(".mobile-muscle-actions").hidden = Boolean(hasBone);
-  mobileBoneReferenceEl.hidden = !hasBone;
+  mobileMuscleCard.querySelector(".mobile-muscle-actions").hidden = Boolean(hasBone || hasReference);
+  mobileBoneReferenceEl.hidden = !(hasBone || hasReference);
+  if (hasReference) {
+    const term = referenceStructureTerm(referencePartSourceName(referenceMeshes.get(selectedReference.layerKey), selectedReference.partId), selectedReference.layerKey);
+    mobileMuscleKind.textContent = referenceLayerNameRu(selectedReference.layerKey);
+    mobileMuscleName.textContent = term.nameRu;
+  }
   if (hasBone) {
     const term = boneTermRu(boneNames[selectedBoneId]);
     mobileMuscleKind.textContent = term.kindRu;
@@ -3565,8 +3587,9 @@ function syncMobileMuscleCard() {
   const depth = mobileIsolationStack.length;
   mobileBackContextButton.hidden = depth === 0;
   mobileRootContextButton.hidden = depth < 2;
-  if (hasBone) mobileContextTrail.hidden = true;
+  if (hasBone || hasReference) mobileContextTrail.hidden = true;
   else renderMobileContextTrail();
+  setSurfaceVisible(mobileMuscleCard, true);
 }
 
 function setStructureVisible(sid, visible) {
@@ -5748,17 +5771,26 @@ function selectReferenceStructure(layerKey, partId) {
   const term = referenceStructureTerm(sourceName, layerKey);
   selectedReference = { layerKey, partId };
 
-  renderSimpleAtlasReference(
-    referenceLayerNameRu(layerKey),
-    "Ориентир безопасности",
-    "Структура показана как топографический ориентир. Можно сопоставлять её положение с мышцами и костями; подробная справочная карточка будет добавляться только после проверки данных."
-  );
+  const description = "Сопоставьте положение выбранной структуры с костями и другими системами. Вращайте модель; кнопка «К выбранной» приблизит эту структуру.";
+  renderSimpleAtlasReference(referenceLayerNameRu(layerKey), "Топография", description);
+  structureReferenceEl.dataset.referenceKind = "context";
+  structureReferenceHeading.textContent = term.nameRu;
+  structureReferenceEl.setAttribute("aria-label", "Сведения о выбранной структуре");
+  mobileBoneReferenceEl.replaceChildren();
+  const summary = document.createElement("summary");
+  summary.textContent = "О выбранной структуре";
+  const note = document.createElement("p");
+  note.textContent = description;
+  mobileBoneReferenceEl.append(summary, note);
+  mobileBoneReferenceEl.open = false;
+  if (layerKey === "nervous") renderNerveMuscleLinks(sourceName, term);
+  highlightReferenceStructure(mesh, partId);
 
   questionLabelEl.textContent = referenceLayerNameRu(layerKey);
   questionEl.textContent = term.nameRu;
   feedbackEl.className = "feedback";
   feedbackEl.textContent = term.specific
-    ? "Анатомический ориентир выбран. Можно приблизить его кнопкой «К выбранной»."
+    ? "Структура выделена синим. Можно приблизить её кнопкой «К выбранной»."
     : "Ориентир выбран. Точный русский термин для этой записи источника ещё уточняется.";
 
   canvas.dataset.selectedReferenceLayer = layerKey;
@@ -5769,6 +5801,71 @@ function selectReferenceStructure(layerKey, partId) {
   updateLayerButtons();
 }
 
+function renderNerveMuscleLinks(sourceName, term) {
+  const seen = new Set();
+  const matches = [];
+  for (let sid = 0; sid < structureNames.length; sid++) {
+    const name = structureNames[sid];
+    if (!isZAnatomyMuscleSourceName(name)) continue;
+    const side = /\.([lr])$/i.exec(name)?.[1]?.toLowerCase();
+    if (term.side && side && side !== (term.side === "left" ? "l" : "r")) continue;
+    const reference = muscleReferenceFor(name);
+    if (!reference || reference.ambiguous || seen.has(reference.id) || !nerveMentionMatches(sourceName, reference.innervationRu)) continue;
+    seen.add(reference.id);
+    matches.push({ sid, reference });
+  }
+  if (!matches.length) return;
+  function content() {
+    const block = document.createElement("div");
+    block.className = "nerve-muscle-links";
+    const heading = document.createElement("strong");
+    heading.textContent = "Связанные карточки мышц";
+    const list = document.createElement("div");
+    for (const { sid, reference } of matches) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = reference.titleRu;
+      button.title = reference.innervationRu;
+      button.addEventListener("click", () => {
+        if (atlasBonesView) setAtlasBonesView(false);
+        restoreExploreContext();
+        setStructureVisible(sid, true);
+        selectExploreStructure(sid);
+      });
+      list.append(button);
+    }
+    const note = document.createElement("p");
+    note.textContent = "Этот нерв указан в разделе «Иннервация» этих карточек. Список ограничен справочником и структурами текущей 3D-модели.";
+    block.append(heading, list, note);
+    return block;
+  }
+  structureReferenceEmpty.hidden = true;
+  boneReferenceEl.replaceChildren(content());
+  boneReferenceEl.hidden = false;
+  mobileBoneReferenceEl.append(content());
+}
+
+function clearReferenceHighlight() {
+  if (!referenceHighlightMesh) return;
+  referenceHighlightMesh.removeFromParent();
+  disposeMotionMesh(referenceHighlightMesh);
+  referenceHighlightMesh = null;
+}
+
+function highlightReferenceStructure(mesh, partId) {
+  clearReferenceHighlight();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x568fd1, roughness: .6, side: THREE.DoubleSide,
+    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+    clippingPlanes: regionalClipPlanes,
+  });
+  referenceHighlightMesh = createMotionMesh(mesh, mesh.userData.referenceRanges[partId], { material, name: "selected-reference" });
+  mesh.updateMatrix();
+  referenceHighlightMesh.matrix.copy(mesh.matrix);
+  referenceHighlightMesh.matrixAutoUpdate = false;
+  referenceHighlightMesh.renderOrder = mesh.renderOrder + 1;
+  mesh.parent.add(referenceHighlightMesh);
+}
 
 function clearBoneHighlight() {
   if (boneHighlightMesh) {
@@ -5845,10 +5942,46 @@ function renderBoneReference(term) {
 }
 
 function enforceAtlasBonesView() {
-  if (anatomyMesh) anatomyMesh.visible = false;
+  if (anatomyMesh) anatomyMesh.visible = Boolean(atlasBonesView?.ghost);
   for (const mesh of studyMeshes()) mesh.visible = false;
-  for (const mesh of referenceMeshes.values()) mesh.visible = false;
 }
+
+function syncAtlasContextLayers() {
+  setSurfaceVisible(atlasContextLayers, Boolean(appMode === "explore" && atlasBonesView));
+  const available = currentModelSource === "z-anatomy";
+  const loading = [];
+  const enabled = [];
+  for (const button of atlasContextButtons) {
+    const key = button.dataset.contextLayer;
+    const input = referenceLayerInputs.find(item => item.dataset.referenceLayer === key);
+    const pending = referenceLayerPromises.has(key);
+    button.disabled = !available || pending;
+    button.setAttribute("aria-pressed", String(Boolean(input?.checked)));
+    button.setAttribute("aria-busy", String(pending));
+    if (pending) loading.push(button.textContent);
+    else if (input?.checked) enabled.push(button.textContent);
+  }
+  atlasContextMuscles.setAttribute("aria-pressed", String(Boolean(atlasBonesView?.ghost)));
+  atlasContextStatus.textContent = !available ? "Дополнительные системы доступны в модели Z-Anatomy."
+    : loading.length ? "Загружается: " + loading.join(", ") + "…"
+    : enabled.length ? "На модели: " + enabled.join(", ") + ". Выберите структуру касанием."
+    : "Включите систему, чтобы увидеть её рядом с костями.";
+}
+
+for (const button of atlasContextButtons) button.addEventListener("click", () => {
+  const input = referenceLayerInputs.find(item => item.dataset.referenceLayer === button.dataset.contextLayer);
+  if (!input || input.disabled) return;
+  input.checked = !input.checked;
+  void handleReferenceLayerChange(input);
+});
+atlasContextMuscles.addEventListener("click", () => {
+  if (!atlasBonesView) return;
+  atlasBonesView.ghost = !atlasBonesView.ghost;
+  muscleDisplayMode = "ghost";
+  applyMuscleDisplayMode();
+  enforceAtlasBonesView();
+  syncAtlasContextLayers();
+});
 
 function setAtlasBonesView(enabled) {
   if (enabled && (appMode !== "explore" || !skeletonMesh)) return;
@@ -5862,6 +5995,8 @@ function setAtlasBonesView(enabled) {
     atlasBonesView = {
       meshes: [anatomyMesh, ...studyMeshes(), ...referenceMeshes.values()].filter(Boolean).map(mesh => [mesh, mesh.visible]),
       boneMode: boneDisplayMode,
+      muscleMode: muscleDisplayMode,
+      ghost: false,
       isolated,
       regionLabels: [...learningRegion.options].map(option => [option, option.textContent]),
     };
@@ -5869,21 +6004,27 @@ function setAtlasBonesView(enabled) {
     boneDisplayMode = "anatomical";
     boneMode.value = boneDisplayMode;
     applyBoneDisplayMode();
+    muscleDisplayMode = "ghost";
+    applyMuscleDisplayMode();
+    restoreReferenceLayerVisibility();
     enforceAtlasBonesView();
   } else {
     const previous = atlasBonesView;
     atlasBonesView = null;
     isolated = previous.isolated;
     for (const [option, label] of previous.regionLabels) option.textContent = label;
+    muscleDisplayMode = previous.muscleMode;
+    applyMuscleDisplayMode();
     for (const [mesh, visible] of previous.meshes) mesh.visible = visible;
     boneDisplayMode = previous.boneMode;
     boneMode.value = boneDisplayMode;
     applyBoneDisplayMode();
+    restoreReferenceLayerVisibility();
   }
   document.body.classList.toggle("bones-mode", enabled);
   canvas.dataset.atlasView = enabled ? "bones" : "muscles";
   searchInput.value = "";
-  searchInput.placeholder = enabled ? "Название кости…" : "Название мышцы…";
+  searchInput.placeholder = enabled ? "Кость, нерв, сосуд или орган…" : "Название мышцы…";
   searchResults.replaceChildren();
   questionLabelEl.textContent = enabled ? "Изучение скелета" : "Atlas";
   questionEl.textContent = enabled ? "Выберите кость на модели" : "Выберите мышцу на модели";
@@ -5892,6 +6033,7 @@ function setAtlasBonesView(enabled) {
   focusSelectedButton.disabled = true;
   syncSkeletonQuickToggle();
   updateLayerButtons();
+  syncAtlasContextLayers();
 }
 
 atlasBonesButton.addEventListener("click", () => setAtlasBonesView(!atlasBonesView));
@@ -9192,8 +9334,9 @@ function renderSearchResults(query) {
     }
   }
 
-  if (appMode === "explore" && !atlasBonesView && matches.length < 10) {
+  if (appMode === "explore" && matches.length < 10) {
     for (const [layerKey, mesh] of referenceMeshes) {
+      if (atlasBonesView && !mesh.visible) continue;
       const names = mesh.userData.referenceNames || [];
       for (let partId = 0; partId < names.length && matches.length < 10; partId += 1) {
         if (!referencePartIsInteractive(mesh, partId)) continue;
@@ -10243,8 +10386,10 @@ const CONNECTIVE_DISPLAY_NAME_RE =
   /ligament|fascia|tendon|aponeuros|retinacul|cartilage|bursa|capsule|synovial|subcutaneous|adipose|iliotibial tract/i;
 
 function createReferenceMaterial(layerKey) {
+  const sourceColors = layerKey === "organs" || layerKey === "vascular";
   const material = new THREE.MeshStandardMaterial({
-    color: REFERENCE_LAYER_COLORS[layerKey] || 0xb8b8b8,
+    color: sourceColors ? 0xffffff : REFERENCE_LAYER_COLORS[layerKey] || 0xb8b8b8,
+    vertexColors: sourceColors,
     roughness: 0.58,
     metalness: 0,
     side: THREE.DoubleSide,
@@ -10361,6 +10506,18 @@ async function loadReferenceLayer(layerKey) {
         child.matrixWorld,
         referenceId
       );
+      if (layerKey === "organs" || layerKey === "vascular") {
+        const count = geometry.getAttribute("position").count;
+        const colors = new Float32Array(count * 3);
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        const base = materials[0]?.color || new THREE.Color(REFERENCE_LAYER_COLORS[layerKey]);
+        for (let i = 0; i < count; i++) base.toArray(colors, i * 3);
+        for (const group of geometry.groups) {
+          const color = materials[group.materialIndex]?.color || base;
+          for (let i = group.start; i < Math.min(count, group.start + group.count); i++) color.toArray(colors, i * 3);
+        }
+        geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+      }
       vertexCounts.push(geometry.getAttribute("position").count);
       localBounds.push(geometry.boundingBox?.clone() || null);
       geometries.push(geometry);
@@ -10410,11 +10567,13 @@ async function loadReferenceLayer(layerKey) {
       return null;
     })
     .finally(() => {
+      if (generation !== referenceLoadGeneration) return;
       referenceLayerPromises.delete(layerKey);
       const input = referenceLayerInputs.find(
         (item) => item.dataset.referenceLayer === layerKey
       );
       if (input && currentModelSource === "z-anatomy") input.disabled = false;
+      syncAtlasContextLayers();
     });
 
   referenceLayerPromises.set(layerKey, promise);
@@ -10430,6 +10589,7 @@ function setReferenceLayerAvailability(available) {
     updateReferenceLayerDataset();
     renderSearchResults(searchInput.value);
   }
+  syncAtlasContextLayers();
 }
 
 async function handleReferenceLayerChange(input) {
@@ -10439,17 +10599,31 @@ async function handleReferenceLayerChange(input) {
   if (!input.checked) {
     const mesh = referenceMeshes.get(layerKey);
     if (mesh) mesh.visible = false;
+    if (selectedReference?.layerKey === layerKey) {
+      restoreHighlights();
+      hideStructureReference();
+      selectedReference = null;
+      canvas.dataset.selectedReferenceLayer = "";
+      focusSelectedButton.disabled = true;
+      updateLayerButtons();
+    }
     updateReferenceLayerDataset();
+    syncAtlasContextLayers();
+    renderSearchResults(searchInput.value);
     return;
   }
 
   input.disabled = true;
-  const mesh = await loadReferenceLayer(layerKey);
+  const pending = loadReferenceLayer(layerKey);
+  syncAtlasContextLayers();
+  const mesh = await pending;
+  input.disabled = currentModelSource !== "z-anatomy";
   if (mesh && input.checked && currentModelSource === "z-anatomy") {
     mesh.visible = applyReferenceRegionVisibility(mesh) > 0;
     updateReferenceLayerDataset();
     renderSearchResults(searchInput.value);
   }
+  syncAtlasContextLayers();
 }
 
 function createConnectiveMaterial(layerKey) {
@@ -11570,11 +11744,11 @@ boneOpacity.addEventListener("input", () => {
 });
 
 displayPanelToggle?.addEventListener("click", () => {
-  setDisplayPanelOpen(displayPanel?.hidden !== false);
+  setDisplayPanelOpen(displayPanelToggle.getAttribute("aria-expanded") !== "true");
 });
 displayPanelClose?.addEventListener("click", () => setDisplayPanelOpen(false));
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && displayPanel?.hidden === false) {
+  if (event.key === "Escape" && displayPanelToggle.getAttribute("aria-expanded") === "true") {
     setDisplayPanelOpen(false);
   }
 });
@@ -12015,6 +12189,7 @@ renderer.domElement.addEventListener("click", (event) => {
 function animate(now = performance.now()) {
   if (atlasBonesView) enforceAtlasBonesView();
   if (boneHighlightMesh) boneHighlightMesh.visible = Boolean(skeletonMesh?.visible && boneVisibility[selectedBoneId] !== false);
+  if (referenceHighlightMesh) referenceHighlightMesh.visible = Boolean(selectedReference && referencePartIsVisible(referenceMeshes.get(selectedReference.layerKey), selectedReference.partId));
   resize();
   controls.update();
   updateMotionPlayback(now);
