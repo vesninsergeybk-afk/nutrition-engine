@@ -3089,3 +3089,16 @@ body.bones-mode #display-layer-actions { display: none; }
 
 body.bones-mode #toggle-skeleton { display: none; }
 @media (max-width: 920px) { body.explore-mode #toggle-skeleton { display: none; } }
+
+/* A selected bone has one reference card on each screen size. */
+#structure-reference[data-reference-kind="bone"] .structure-reference-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#structure-reference[data-reference-kind="bone"] .structure-reference-grid > div:last-child { display: none; }
+@media (max-width: 920px) {
+  .question-card:has(#structure-reference[data-reference-kind="bone"]) #structure-reference,
+  .question-card:has(#structure-reference[data-reference-kind="bone"]) #question-label,
+  .question-card:has(#structure-reference[data-reference-kind="bone"]) #question,
+  .question-card:has(#structure-reference[data-reference-kind="bone"]) #feedback { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-bone-reference[open] > :not(summary) { animation: reference-arrive var(--ui-motion-content, 160ms) ease-out; }
+}

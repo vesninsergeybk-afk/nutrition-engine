@@ -511,6 +511,7 @@ function clearStructureReferencePrimaryArt() {
 }
 
 function hideStructureReference() {
+  structureReferenceEl.dataset.referenceKind = "";
   disposeReference3DViewer();
   boneReferenceEl.hidden = true;
   mobileBoneReferenceEl.hidden = true;
@@ -528,6 +529,7 @@ function hideStructureReference() {
 }
 
 function renderSimpleAtlasReference(typeRu, depthRu, emptyText) {
+  structureReferenceEl.dataset.referenceKind = "";
   boneReferenceEl.hidden = true;
   mobileBoneReferenceEl.hidden = true;
   referenceUI.render(null);
@@ -1101,6 +1103,7 @@ function renderFunctionalRelations(reference, sourceName) {
 }
 
 function renderStructureReference(sid) {
+  structureReferenceEl.dataset.referenceKind = "muscle";
   boneReferenceEl.hidden = true;
   mobileBoneReferenceEl.hidden = true;
   if (!structureReferenceEl || sid == null || !structureNames[sid]) {
@@ -5829,6 +5832,7 @@ function renderBoneReference(term) {
   const card = boneCardForTerm(term);
   renderSimpleAtlasReference(term.kindRu, "Скелет", "Справка для этой структуры ещё не заполнена.");
   if (!card) return;
+  structureReferenceEl.dataset.referenceKind = "bone";
   structureReferenceHeading.textContent = "Справка: " + term.kindRu.toLocaleLowerCase("ru-RU");
   structureReferenceEl.setAttribute("aria-label", "Справка по выбранной структуре");
   structureReferenceLatin.textContent = card.latin;
@@ -5859,7 +5863,9 @@ function setAtlasBonesView(enabled) {
       meshes: [anatomyMesh, ...studyMeshes(), ...referenceMeshes.values()].filter(Boolean).map(mesh => [mesh, mesh.visible]),
       boneMode: boneDisplayMode,
       isolated,
+      regionLabels: [...learningRegion.options].map(option => [option, option.textContent]),
     };
+    for (const [option, label] of atlasBonesView.regionLabels) option.textContent = label.split(" · ")[0];
     boneDisplayMode = "anatomical";
     boneMode.value = boneDisplayMode;
     applyBoneDisplayMode();
@@ -5868,6 +5874,7 @@ function setAtlasBonesView(enabled) {
     const previous = atlasBonesView;
     atlasBonesView = null;
     isolated = previous.isolated;
+    for (const [option, label] of previous.regionLabels) option.textContent = label;
     for (const [mesh, visible] of previous.meshes) mesh.visible = visible;
     boneDisplayMode = previous.boneMode;
     boneMode.value = boneDisplayMode;
