@@ -267,3 +267,337 @@ button:focus-visible, select:focus-visible, input:focus-visible, [tabindex="0"]:
  .mobile-muscle-card:has(#mobile-isolate-structure:not([hidden])) .mobile-muscle-actions { display: grid; grid-template-columns: 1fr 1fr; }
  .mobile-muscle-card:has(#mobile-isolate-structure:not([hidden])) .mobile-back-context { grid-column: 1 / -1; }
 }
+
+
+/* Stage 1 — unified visual language, additive and layout-safe. */
+:root {
+  --ui-ink: #243043;
+  --ui-ink-soft: #455267;
+  --ui-muted: #697587;
+  --ui-bg: #f3f5f8;
+  --ui-surface: #ffffff;
+  --ui-surface-subtle: #f8fafc;
+  --ui-surface-control: rgba(255,255,255,.94);
+  --ui-border: #d8dfe8;
+  --ui-border-strong: #c7d0dc;
+  --ui-accent: #245da8;
+  --ui-accent-soft: #edf4fd;
+  --ui-focus: #6f9dd6;
+  --ui-radius-control: 10px;
+  --ui-radius-card: 14px;
+  --ui-radius-panel: 18px;
+  --ui-radius-viewer: 20px;
+  --ui-shadow-float: 0 8px 28px rgba(30,46,70,.10);
+  --ui-shadow-panel: 0 14px 42px rgba(30,46,70,.07);
+}
+
+body {
+  color: var(--ui-ink);
+  background: var(--ui-bg);
+}
+
+button,
+select,
+input[type="search"] {
+  border-radius: var(--ui-radius-control);
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline-color: var(--ui-focus);
+}
+
+.brand h1 {
+  color: var(--ui-ink);
+  font-weight: 720;
+}
+
+.brand h1 .brand-author {
+  color: var(--ui-muted);
+}
+
+.mode-switch {
+  border-color: var(--ui-border);
+  background: #e9edf3;
+  border-radius: 12px;
+}
+
+.mode-switch button {
+  border-radius: 8px;
+}
+
+.mode-switch button.active {
+  color: var(--ui-accent);
+}
+
+.viewer-wrap {
+  border-color: #d2d9e3;
+  border-radius: var(--ui-radius-viewer);
+  box-shadow: var(--ui-shadow-panel);
+}
+
+/* Scene toolbar: compact tools, not a row of pills. */
+.viewer-tools button,
+.viewer-tools > select {
+  min-height: 38px;
+  padding: 7px 10px;
+  border-radius: var(--ui-radius-control);
+  border-color: var(--ui-border-strong);
+  background: var(--ui-surface-control);
+  color: var(--ui-ink);
+  box-shadow: 0 2px 7px rgba(35,62,91,.06);
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.viewer-tools button:not(:disabled):hover,
+.viewer-tools > select:hover {
+  border-color: #aeb9c8;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(35,62,91,.08);
+}
+
+.viewer-quick-toggle[aria-pressed="true"] {
+  color: #244d78;
+  border-color: #9eb8d8;
+  background: var(--ui-accent-soft);
+  box-shadow: inset 0 0 0 1px rgba(36,93,168,.05);
+}
+
+/* "Display settings" is a gateway to a panel, not an anatomical action. */
+.display-panel-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border-radius: var(--ui-radius-control);
+  border-color: #bcc7d4;
+  background: rgba(248,250,252,.96);
+  color: #4d5a6c;
+  box-shadow: none;
+  font-weight: 630;
+}
+
+.display-panel-toggle::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 14px;
+  height: 10px;
+  opacity: .72;
+  background:
+    linear-gradient(currentColor 0 0) top / 100% 1.5px no-repeat,
+    linear-gradient(currentColor 0 0) center / 100% 1.5px no-repeat,
+    linear-gradient(currentColor 0 0) bottom / 100% 1.5px no-repeat;
+}
+
+.display-panel-toggle::after {
+  width: 6px;
+  height: 6px;
+  margin: 0 1px 3px 1px;
+  border-width: 0 1.5px 1.5px 0;
+  opacity: .7;
+}
+
+.display-panel-toggle:not(:disabled):hover {
+  color: #35465b;
+  border-color: #9fabb9;
+  background: #fff;
+}
+
+.display-panel-toggle.active,
+.display-panel-toggle[aria-expanded="true"] {
+  color: var(--ui-accent);
+  border-color: #a9bed9;
+  background: #f1f6fc;
+  box-shadow: 0 2px 8px rgba(36,93,168,.08);
+}
+
+.display-panel {
+  background: #fbfcfd;
+  border-right-color: var(--ui-border);
+  box-shadow: 12px 0 34px rgba(30,46,70,.10);
+}
+
+.display-panel-head {
+  background: rgba(251,252,253,.97);
+  border-bottom-color: var(--ui-border);
+}
+
+.display-panel-head strong {
+  font-size: 15px;
+  font-weight: 720;
+}
+
+.display-panel-head span,
+.display-section-head > span,
+.viewer-setting-note {
+  color: var(--ui-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.display-section {
+  gap: 11px;
+  border-bottom-color: #e3e8ef;
+}
+
+.display-section h3 {
+  color: var(--ui-ink);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.viewer-setting-field {
+  color: #59677a;
+  font-size: 12px;
+}
+
+.viewer-setting-field select {
+  min-height: 40px;
+  border-color: var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+  color: var(--ui-ink);
+}
+
+.connective-layer-options label {
+  color: var(--ui-ink-soft);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.panel {
+  background: var(--ui-surface-subtle);
+  border-left-color: var(--ui-border);
+}
+
+.question-card {
+  border-color: var(--ui-border);
+  border-radius: var(--ui-radius-panel);
+  background: var(--ui-surface);
+  box-shadow: 0 5px 24px rgba(30,46,70,.045);
+}
+
+.question-card h2 {
+  color: var(--ui-ink);
+  letter-spacing: -.022em;
+}
+
+.learning-field > span,
+.learning-mode-field > span,
+.search-field > span,
+.control-group-label {
+  color: #59677a;
+  font-size: 12px;
+  font-weight: 660;
+}
+
+.learning-field select,
+.search-field input,
+.reference-select-field select {
+  border-color: var(--ui-border-strong);
+  border-radius: var(--ui-radius-control);
+  background: #fff;
+  color: var(--ui-ink);
+}
+
+.selected-structure-actions button,
+.layer-actions button,
+.atlas-selection-menu-actions button,
+.mobile-muscle-actions button {
+  border-radius: var(--ui-radius-control);
+}
+
+.atlas-selection-menu {
+  border-color: var(--ui-border);
+  border-radius: var(--ui-radius-card);
+  background: rgba(255,255,255,.975);
+  box-shadow: var(--ui-shadow-float);
+}
+
+.structure-reference {
+  border-color: var(--ui-border);
+  border-radius: var(--ui-radius-card);
+  background: #fbfcfd;
+}
+
+.structure-reference-grid > div {
+  border-radius: 9px;
+  background: #f4f7fa;
+}
+
+.structure-reference-grid dt {
+  color: var(--ui-muted);
+  font-size: 11px;
+}
+
+.structure-reference-grid dd {
+  color: var(--ui-ink);
+  font-size: 13px;
+}
+
+.reference-tabs {
+  border-color: var(--ui-border);
+  border-radius: 12px;
+  background: #f0f3f7;
+}
+
+.reference-tabs button {
+  border-radius: 8px;
+}
+
+.reference-section h3 {
+  color: var(--ui-ink);
+}
+
+.reference-section p,
+.reference-section span,
+.reference-section li,
+.reference-function li {
+  color: #465468;
+}
+
+.functional-role button,
+.atlas-relation-roles button,
+.functional-muscle {
+  border-radius: var(--ui-radius-control);
+}
+
+.atlas-context-layers {
+  border-color: var(--ui-border);
+  border-radius: var(--ui-radius-card);
+  background: #fff;
+  box-shadow: 0 3px 16px rgba(30,46,70,.035);
+}
+
+.atlas-context-layer-buttons button {
+  border-radius: 9px;
+}
+
+.deeper-structures {
+  border-radius: var(--ui-radius-card);
+}
+
+.mobile-muscle-card {
+  border-radius: var(--ui-radius-card);
+}
+
+@media (max-width: 920px) {
+  .viewer-tools button,
+  .viewer-tools > select,
+  .display-panel-toggle {
+    min-height: 44px;
+  }
+
+  .display-panel-toggle {
+    padding-inline: 10px;
+  }
+}
+
+@media (max-width: 430px) {
+  .display-panel-toggle {
+    font-size: 11px;
+  }
+}
