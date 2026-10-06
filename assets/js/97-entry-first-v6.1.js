@@ -205,7 +205,7 @@
     if(w.MutationObserver){
       try{
         observer=new MutationObserver(schedule);
-        observer.observe(d.body||d.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','hidden','aria-expanded']});
+        observer.observe(d.body||d.documentElement,{childList:true,subtree:true});
       }catch(_){}
     }
     refresh();
