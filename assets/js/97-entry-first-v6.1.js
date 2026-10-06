@@ -20,12 +20,24 @@
 
   function ensureCanvas(){
     rememberCanvas();
-    var api=null,current='';
-    try{api=w.NutritionNavigationRecoveryV1||null;current=api&&api.getView?api.getView():'';}catch(_){}
-    if(api&&typeof api.setView==='function'&&current!=='canvas'&&!canvasRequested){
+    var shell=null,state=null,recovery=null,current='';
+    try{shell=w.NavigationShellV1||null;state=shell&&shell.getState?shell.getState():null;}catch(_){}
+    /* The shipping mobile runtime treats "canvas" only as a layout preference and
+       forces the sectioned workspace below 900px. For this entry-first product the
+       requested behaviour is the real continuous page, which is NavigationShell's
+       long mode. Keep the technical banner hidden in CSS and use the long DOM itself. */
+    if(shell&&typeof shell.setMode==='function'&&(!state||state.mode!=='long')&&!canvasRequested){
       canvasRequested=true;
-      try{api.setView('canvas');}catch(_){}
-      w.setTimeout(function(){canvasRequested=false;},250);
+      try{shell.setMode('long');}catch(_){}
+      w.setTimeout(function(){canvasRequested=false;},260);
+      return;
+    }
+    /* Compatibility with newer navigation-recovery builds if they are present. */
+    try{recovery=w.NutritionNavigationRecoveryV1||null;current=recovery&&recovery.getView?recovery.getView():'';}catch(_){}
+    if(!shell&&recovery&&typeof recovery.setView==='function'&&current!=='canvas'&&!canvasRequested){
+      canvasRequested=true;
+      try{recovery.setView('canvas');}catch(_){}
+      w.setTimeout(function(){canvasRequested=false;},260);
     }
   }
 
