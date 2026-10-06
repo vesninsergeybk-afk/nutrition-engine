@@ -4,7 +4,7 @@
   'use strict';
   if(window.NutritionGeminiRationImport&&window.NutritionGeminiRationImport.__initialized)return;
   var VERSION='v5.3.210-rc2-hf28-gemini-reliability';
-  var ENDPOINT='./api/gemini.php?v=v5.3.210-rc2-hf28-gemini-reliability';
+  var ENDPOINT='https://functions.yandexcloud.net/d4e2imcem5l4ttau8pdn';
   var MAX_FILES=8;
   var MAX_TOTAL_BYTES=7*1024*1024;
   var MAX_AUDIO_SOURCE_BYTES=64*1024*1024;
