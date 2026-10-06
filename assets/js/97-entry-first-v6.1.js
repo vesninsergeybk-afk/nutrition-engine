@@ -4,7 +4,7 @@
 (function(w,d){
   'use strict';
   var VERSION='v6.1-entry-first-2026-10-06';
-  var timer=0,observer=null,canvasRequested=false;
+  var timer=0,observer=null,canvasRequested=false,continueAfterCalculation=false;
 
   function byId(id){return d.getElementById(id);}
   function setText(node,text){if(node&&node.textContent!==text)node.textContent=text;}
@@ -117,9 +117,36 @@
   function improvePrimaryAction(){
     var btn=byId('profileCalculateContinue');
     if(!btn)return;
-    var count=byId('profileContinuityCount');
-    var complete=count&&/^5\s*из\s*5/i.test(String(count.textContent||'').trim());
-    if(complete&&!btn.disabled&&/заполн|рассч/i.test(String(btn.textContent||'')))setText(btn,'Рассчитать потребности');
+    var state=d.documentElement.getAttribute('data-profile-calculation-state')||'';
+    if(!btn.disabled&&state==='current')setText(btn,'Перейти к рациону');
+    else if(!btn.disabled)setText(btn,'Рассчитать и перейти к рациону');
+  }
+
+  function scrollToRation(){
+    var target=byId('globalSearchSection')||byId('geminiRationImportSection')||byId('rationSection');
+    if(!target)return;
+    try{target.scrollIntoView({behavior:'smooth',block:'start'});}catch(_){try{target.scrollIntoView(true);}catch(__){}}
+    w.setTimeout(function(){
+      var input=byId('globalSearchInput');
+      if(input){try{input.focus({preventScroll:true});}catch(_){}}
+    },420);
+  }
+
+  function handlePrimaryContinue(e){
+    var btn=e.target&&e.target.closest?e.target.closest('#profileCalculateContinue'):null;
+    if(!btn||btn.disabled)return;
+    /* In the old sectioned shell this button navigates into a workspace route.
+       In the continuous product it must calculate in place, then scroll to the
+       ration without changing the page mode. */
+    e.preventDefault();
+    e.stopPropagation();
+    if(typeof e.stopImmediatePropagation==='function')e.stopImmediatePropagation();
+    var state=d.documentElement.getAttribute('data-profile-calculation-state')||'';
+    if(state==='current'){scrollToRation();return;}
+    var canonical=byId('needs_calc_btn');
+    if(!canonical||canonical.disabled)return;
+    continueAfterCalculation=true;
+    try{canonical.click();}catch(_){continueAfterCalculation=false;}
   }
 
   function refresh(){
@@ -141,6 +168,12 @@
   function init(){
     mark();
     rememberCanvas();
+    d.addEventListener('click',handlePrimaryContinue,true);
+    w.addEventListener('needs:computed',function(){
+      if(!continueAfterCalculation)return;
+      continueAfterCalculation=false;
+      w.setTimeout(scrollToRation,120);
+    },false);
     [
       'app:ready','navigation-recovery:ready','navigation-shell:ready','navigation-shell:mode-changed',
       'profile:hierarchy-ready','needs:computed','needs:invalidated','interface-simplification:ready'
