@@ -1,0 +1,430 @@
+/* Entry-first UX pass: immediate canvas, visible profile form, mobile-first clarity.
+   Presentation only: calculation logic and data model remain unchanged. */
+
+html[data-entry-first-ui="1"]{
+  --ef-ink:#172033;
+  --ef-muted:#667085;
+  --ef-line:#d8e0ea;
+  --ef-soft:#f6f8fb;
+  --ef-blue:#1565d8;
+  --ef-blue-strong:#0f56bd;
+  --ef-radius:18px;
+  scroll-padding-top:20px;
+}
+
+/* Canvas is the primary product. Do not greet users with a mode/fallback card. */
+html[data-entry-first-ui="1"] #navigationShellLongReturn,
+html[data-entry-first-ui="1"] #primaryDisplayControls,
+html[data-entry-first-ui="1"] #workspaceViewSwitcher{
+  display:none!important;
+}
+
+/* Header: brand + one secondary control, no empty decorative block. */
+html[data-entry-first-ui="1"] #mainContent>header{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:start!important;
+  gap:5px 12px!important;
+  margin:0 0 10px!important;
+  padding:14px 2px 12px!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+html[data-entry-first-ui="1"] #mainContent>header .title{
+  grid-column:1!important;
+  grid-row:1!important;
+  margin:0!important;
+  max-width:760px;
+  color:var(--ef-ink)!important;
+  font-size:clamp(24px,3.2vw,36px)!important;
+  line-height:1.08!important;
+  letter-spacing:-.035em!important;
+  font-weight:850!important;
+}
+html[data-entry-first-ui="1"] #mainContent>header .title::before,
+html[data-entry-first-ui="1"] #mainContent>header .title::after{
+  display:none!important;
+  content:none!important;
+}
+html[data-entry-first-ui="1"] .entry-first-subtitle{
+  grid-column:1!important;
+  grid-row:2!important;
+  margin:0!important;
+  max-width:720px;
+  color:var(--ef-muted);
+  font-size:14px;
+  line-height:1.45;
+}
+html[data-entry-first-ui="1"] #mainContent>header>#interfaceSettingsPass1{
+  display:inline-flex!important;
+  grid-column:2!important;
+  grid-row:1 / span 2!important;
+  align-self:start!important;
+  justify-self:end!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:42px!important;
+  margin:0!important;
+  padding:9px 13px!important;
+  border:1px solid var(--ef-line)!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  color:#344054!important;
+  box-shadow:none!important;
+  font-size:13px!important;
+  font-weight:750!important;
+}
+html[data-entry-first-ui="1"] #mainContent>header.interface-settings-pass1-open>.toolbar{
+  grid-column:1/-1!important;
+  grid-row:auto!important;
+  margin-top:8px!important;
+}
+
+/* The old step cards consume the first screen. Keep them only as a quiet desktop index. */
+html[data-entry-first-ui="1"] .workflow-steps{
+  position:static!important;
+  display:flex!important;
+  gap:5px!important;
+  margin:0 0 12px!important;
+  padding:0!important;
+  overflow-x:auto!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-entry-first-ui="1"] .workflow-steps a{
+  flex:0 0 auto!important;
+  min-height:36px!important;
+  padding:7px 10px!important;
+  border:1px solid var(--ef-line)!important;
+  border-radius:999px!important;
+  background:#fff!important;
+  color:#475467!important;
+  box-shadow:none!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  white-space:nowrap!important;
+}
+html[data-entry-first-ui="1"] .workflow-steps a span{
+  width:auto!important;
+  min-width:20px!important;
+  height:20px!important;
+  margin-right:5px!important;
+  border-radius:999px!important;
+  background:#eef2f7!important;
+  color:#475467!important;
+  font-size:11px!important;
+}
+
+/* The form is the landing experience, not a collapsed teaser. */
+html[data-entry-first-ui="1"] #needsCompact{
+  margin:0 0 18px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-entry-first-ui="1"] #needsCompact>#v40NeedsSummary,
+html[data-entry-first-ui="1"] #needsCompact #v40NeedsSummary,
+html[data-entry-first-ui="1"] #v40NeedsToggle{
+  display:none!important;
+}
+html[data-entry-first-ui="1"] #needsCompact>.small{
+  display:none!important;
+}
+html[data-entry-first-ui="1"] #needs{
+  display:block!important;
+  visibility:visible!important;
+  margin:0!important;
+  padding:22px!important;
+  border:1px solid var(--ef-line)!important;
+  border-radius:var(--ef-radius)!important;
+  background:#fff!important;
+  box-shadow:0 8px 26px rgba(27,48,77,.055)!important;
+}
+html[data-entry-first-ui="1"] #needs>.row:first-child{
+  display:block!important;
+  margin:0 0 14px!important;
+}
+html[data-entry-first-ui="1"] #needs .section-title-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  margin:0!important;
+}
+html[data-entry-first-ui="1"] #needs .section-title-row h1{
+  margin:0!important;
+  color:var(--ef-ink)!important;
+  font-size:clamp(22px,2.6vw,30px)!important;
+  line-height:1.12!important;
+  letter-spacing:-.025em!important;
+}
+html[data-entry-first-ui="1"] #needs .step-badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:30px!important;
+  padding:5px 9px!important;
+  border-radius:999px!important;
+  background:#eaf2ff!important;
+  color:#1559b8!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  letter-spacing:.02em!important;
+}
+html[data-entry-first-ui="1"] .entry-first-needs-lead{
+  margin:10px 0 0!important;
+  max-width:780px;
+  color:var(--ef-muted);
+  font-size:14px;
+  line-height:1.5;
+}
+html[data-entry-first-ui="1"] #needsHelpBtn{
+  margin-left:auto!important;
+  min-height:38px!important;
+  padding:7px 10px!important;
+  font-size:12px!important;
+}
+
+/* Basic fields are visible immediately and read like one short form. */
+html[data-entry-first-ui="1"] #profileBasicSection{
+  margin:4px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection>.profile-hierarchy__header{
+  margin:0 0 12px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection>.profile-hierarchy__header>span{
+  display:none!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection>.profile-hierarchy__header h3{
+  margin:0 0 3px!important;
+  color:var(--ef-ink)!important;
+  font-size:16px!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection>.profile-hierarchy__header p{
+  margin:0!important;
+  color:var(--ef-muted)!important;
+  font-size:13px!important;
+  line-height:1.4!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection>.profile-hierarchy__fields{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection .entry-first-name-field{
+  grid-column:1/-1!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection label,
+html[data-entry-first-ui="1"] #needs label{
+  display:block!important;
+  margin:0 0 6px!important;
+  color:#344054!important;
+  font-size:13px!important;
+  font-weight:720!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection input,
+html[data-entry-first-ui="1"] #profileBasicSection select,
+html[data-entry-first-ui="1"] #needs input,
+html[data-entry-first-ui="1"] #needs select,
+html[data-entry-first-ui="1"] #needs textarea{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:48px!important;
+  padding:11px 12px!important;
+  border:1px solid #cdd6e1!important;
+  border-radius:11px!important;
+  background:#fff!important;
+  color:var(--ef-ink)!important;
+  box-shadow:none!important;
+  font-size:16px!important;
+  line-height:1.25!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection input:focus,
+html[data-entry-first-ui="1"] #profileBasicSection select:focus,
+html[data-entry-first-ui="1"] #needs input:focus,
+html[data-entry-first-ui="1"] #needs select:focus,
+html[data-entry-first-ui="1"] #needs textarea:focus{
+  outline:3px solid rgba(21,101,216,.14)!important;
+  outline-offset:1px!important;
+  border-color:var(--ef-blue)!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection .profile-hierarchy__purpose{
+  margin-top:5px!important;
+  color:#7b8796!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+html[data-entry-first-ui="1"] #profileBasicSection .entry-first-name-field .small{
+  display:block!important;
+}
+
+/* One strong action after the visible fields. */
+html[data-entry-first-ui="1"] #profileContinuityPanel{
+  margin:14px 0 0!important;
+  padding:14px!important;
+  border:1px solid #e0e6ee!important;
+  border-radius:14px!important;
+  background:var(--ef-soft)!important;
+  box-shadow:none!important;
+}
+html[data-entry-first-ui="1"] #profileContinuityPanel .profile-hierarchy__journey{
+  display:none!important;
+}
+html[data-entry-first-ui="1"] #profileContinuityPanel .profile-continuity__head{
+  margin:0 0 10px!important;
+}
+html[data-entry-first-ui="1"] #profileContinuityPanel .profile-continuity__head h2{
+  margin:0!important;
+  font-size:15px!important;
+}
+html[data-entry-first-ui="1"] #profileContinuityPanel .profile-continuity__head p{
+  display:none!important;
+}
+html[data-entry-first-ui="1"] #profileContinuityPanel .profile-continuity__actions{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:8px!important;
+}
+html[data-entry-first-ui="1"] #profileCalculateContinue{
+  min-height:48px!important;
+  border-radius:11px!important;
+  background:var(--ef-blue)!important;
+  color:#fff!important;
+  border-color:var(--ef-blue)!important;
+  font-size:14px!important;
+  font-weight:800!important;
+}
+html[data-entry-first-ui="1"] #profileCalculateContinue:not(:disabled):hover{
+  background:var(--ef-blue-strong)!important;
+}
+html[data-entry-first-ui="1"] #profileFocusMissing{
+  min-height:48px!important;
+  border-radius:11px!important;
+}
+html[data-entry-first-ui="1"] #profileContinuityPanel .profile-continuity__storage{
+  margin-top:10px!important;
+  padding-top:10px!important;
+  border-top:1px solid #e0e6ee!important;
+  font-size:12px!important;
+}
+
+/* Optional settings stay available but visually secondary. */
+html[data-entry-first-ui="1"] .profile-hierarchy__details{
+  margin-top:10px!important;
+  border:1px solid #e0e6ee!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+html[data-entry-first-ui="1"] .profile-hierarchy__details>summary{
+  min-height:48px!important;
+  padding:10px 12px!important;
+}
+html[data-entry-first-ui="1"] #profileMethodDetails{
+  margin-top:10px!important;
+}
+
+/* Subsequent canvas sections are clearly separated, not nested card-on-card noise. */
+html[data-entry-first-ui="1"][data-navigation-shell="long"] #mainContent>section.card:not(#needsCompact){
+  margin-top:16px!important;
+  border-radius:var(--ef-radius)!important;
+  box-shadow:none!important;
+}
+
+@media(max-width:860px){
+  html[data-entry-first-ui="1"] #mainContent{
+    width:100%!important;
+    max-width:none!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  html[data-entry-first-ui="1"] #mainContent>header{
+    gap:5px 8px!important;
+    padding:10px 0 8px!important;
+  }
+  html[data-entry-first-ui="1"] #mainContent>header .title{
+    font-size:25px!important;
+  }
+  html[data-entry-first-ui="1"] .entry-first-subtitle{
+    font-size:13px!important;
+    line-height:1.38!important;
+  }
+  html[data-entry-first-ui="1"] #mainContent>header>#interfaceSettingsPass1{
+    min-height:40px!important;
+    padding:8px 10px!important;
+    font-size:12px!important;
+  }
+  html[data-entry-first-ui="1"] .workflow-steps{
+    display:none!important;
+  }
+  html[data-entry-first-ui="1"] #needs{
+    padding:16px!important;
+    border-radius:15px!important;
+  }
+  html[data-entry-first-ui="1"] #needs .section-title-row{
+    align-items:flex-start!important;
+    flex-wrap:wrap!important;
+  }
+  html[data-entry-first-ui="1"] #needs .section-title-row h1{
+    flex:1 1 220px!important;
+    font-size:23px!important;
+  }
+  html[data-entry-first-ui="1"] #needsHelpBtn{
+    order:3!important;
+    margin-left:0!important;
+  }
+  html[data-entry-first-ui="1"] #profileBasicSection>.profile-hierarchy__fields{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  html[data-entry-first-ui="1"] #profileContinuityPanel .profile-continuity__actions{
+    grid-template-columns:1fr!important;
+  }
+  html[data-entry-first-ui="1"] #profileFocusMissing{
+    display:none!important;
+  }
+  html[data-entry-first-ui="1"] #profileContinuityPanel .profile-continuity__storage{
+    display:none!important;
+  }
+}
+
+@media(max-width:460px){
+  html[data-entry-first-ui="1"] #mainContent{
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+  html[data-entry-first-ui="1"] #mainContent>header{
+    grid-template-columns:minmax(0,1fr) auto!important;
+  }
+  html[data-entry-first-ui="1"] #mainContent>header .title{
+    font-size:22px!important;
+  }
+  html[data-entry-first-ui="1"] .entry-first-subtitle{
+    grid-column:1/-1!important;
+    max-width:none!important;
+  }
+  html[data-entry-first-ui="1"] #mainContent>header>#interfaceSettingsPass1{
+    grid-row:1!important;
+    padding:7px 9px!important;
+  }
+  html[data-entry-first-ui="1"] #profileBasicSection>.profile-hierarchy__fields{
+    grid-template-columns:1fr!important;
+  }
+  html[data-entry-first-ui="1"] #needs{
+    padding:14px!important;
+  }
+}
+
+@media print{
+  .entry-first-subtitle{display:none!important}
+}
