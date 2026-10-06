@@ -114,6 +114,28 @@
     if(longReturn)longReturn.hidden=true;
   }
 
+  function putAfter(node,reference){
+    if(!node||!reference||node===reference||reference.nextSibling===node)return;
+    try{reference.parentNode.insertBefore(node,reference.nextSibling);}catch(_){}
+  }
+
+  function reorderRationFlow(){
+    var needs=byId('needsCompact'),summary=byId('consultationNeedsSummary');
+    var search=byId('globalSearchSection'),ration=byId('rationSection'),media=byId('geminiRationImportSection');
+    var anchor=summary&&summary.parentNode===needs.parentNode?summary:needs;
+    if(anchor&&search)putAfter(search,anchor);
+    if(search&&ration)putAfter(ration,search);
+    if(ration&&media)putAfter(media,ration);
+    if(search){
+      var h=search.querySelector('.search-hero-head h2');
+      setText(h,'Добавьте продукты в рацион');
+      var lead=search.querySelector('.search-lead');
+      setText(lead,'Начните вводить название продукта или выберите фото/голос выше. После добавления позиции сразу появятся в рационе и в расчётах ниже.');
+      var badge=search.querySelector('.step-badge');
+      setText(badge,'2 · Рацион');
+    }
+  }
+
   function improvePrimaryAction(){
     var btn=byId('profileCalculateContinue');
     if(!btn)return;
@@ -157,6 +179,7 @@
     moveNameToBasics();
     clarifyNeeds();
     cleanLegacyLanding();
+    reorderRationFlow();
     improvePrimaryAction();
   }
 
