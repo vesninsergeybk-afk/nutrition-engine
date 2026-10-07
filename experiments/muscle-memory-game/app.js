@@ -12864,9 +12864,7 @@ async function restoreWorkspace(saved) {
     if (!learningAreaOptionExists(saved.region)) { workspaceNotify('partial'); return; }
     // Existing progress is migrated into the durable workspace boundary. The
     // original learning engine retains its compatibility cache and semantics.
-    if (Number(saved.progress.updatedAt) > Number(learningStore.updatedAt)) {
-      learningStore = structuredClone(saved.progress);
-    }
+    learningStore = structuredClone(saved.progress);
     selectedLearningRegion = learningRegion.value = saved.region;
     regionIsolation.checked = saved.regional;
     applyLearningRegion();
@@ -12887,10 +12885,13 @@ async function restoreWorkspace(saved) {
       if (saved.phase === 'summary') {
         finishLearningSession();
       } else {
-        const nextIndex = learningSession.index;
-        if (saved.phase === 'feedback') learningSession.index = Math.max(0, nextIndex - 1);
+        const nextIndex = learningSession.index, finishedAt = learningSession.finishedAt;
+        if (saved.phase === 'feedback') {
+          learningSession.index = Math.max(0, nextIndex - 1);
+          learningSession.finishedAt = null;
+        }
         prepareSessionItem();
-        learningSession.index = nextIndex;
+        learningSession.index = nextIndex; learningSession.finishedAt = finishedAt;
         currentItemWrongAttempts = saved.wrongAttempts;
         currentItemNavigationActions = saved.navigationActions;
         pendingNavigationSid = saved.pendingNavigation;
