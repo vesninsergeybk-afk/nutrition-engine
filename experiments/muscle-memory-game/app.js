@@ -12799,7 +12799,8 @@ function workspaceNotify(status) {
   workspaceStatus.dataset.state = status;
 }
 const workspaceStorage = new WorkspaceStorage('anatomy', {
-  validate: validAnatomyWorkspace, onStatus: workspaceNotify,
+  validate: validAnatomyWorkspace,
+  onStatus: status => { if (status !== 'saved') workspaceNotify(status); },
 });
 
 function captureWorkspace() {
@@ -12852,7 +12853,10 @@ async function saveWorkspace() {
     if (workspaceStorage.writable && workspaceStorage.revision > 0) workspaceNotify('saved');
     return;
   }
-  if (await workspaceStorage.write(payload)) workspaceLastSaved = serialized;
+  if (await workspaceStorage.write(payload)) {
+    workspaceLastSaved = serialized;
+    workspaceNotify(JSON.stringify(captureWorkspace()) === serialized ? 'saved' : 'pending');
+  }
 }
 
 function matchesWorkspaceRequest(saved) {
@@ -12983,6 +12987,33 @@ document.addEventListener('click', event => {
   if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
   event.preventDefault();
   void saveWorkspace().then(() => location.assign(url.href));
+});
+
+document.querySelector('[data-anatomy-export]')?.addEventListener('click', () => {
+  const data = {format:'VesninMed.Anatomy',schemaVersion:1,exportedAt:new Date().toISOString(),payload:captureWorkspace()};
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  const link = document.createElement('a'); link.href=url;link.download='vesninmed-anatomy.json';link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);document.querySelector('.workspace-backup').open=false;
+});
+document.querySelector('[data-anatomy-import]')?.addEventListener('change', async event => {
+  try {
+    const file=event.target.files[0];if(!file)return;
+    if(file.size>2*1024*1024)throw new Error('Файл больше 2 МБ.');
+    const data=JSON.parse(await file.text());
+    if(data.format!=='VesninMed.Anatomy'||data.schemaVersion!==1||!validAnatomyWorkspace(data.payload))throw new Error('Нужна резервная копия сессии Anatomy этой версии.');
+    if(!confirm('Восстановить сессию из файла? Текущую сессию можно предварительно скачать.'))return;
+    workspacePending=data.payload;modelSource.value=data.payload.model;
+    await loadSelectedModel(modelSource.value);await saveWorkspace();
+  } catch(error) {
+    workspaceStatus.textContent='Импорт не выполнен: '+error.message+' Текущая сессия сохранена.';
+  } finally {event.target.value='';document.querySelector('.workspace-backup').open=false;}
+});
+document.addEventListener('keydown', event => {
+  const menu=document.querySelector('.workspace-backup');
+  if(event.key==='Escape'&&menu?.open){menu.open=false;menu.querySelector('summary').focus();}
+});
+document.addEventListener('click', event => {
+  const menu=document.querySelector('.workspace-backup');if(menu?.open&&!menu.contains(event.target))menu.open=false;
 });
 
 void bootWorkspace();

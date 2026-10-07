@@ -25,6 +25,7 @@ export class WorkspaceStorage {
   constructor(key, { validate, onStatus = () => {} }) {
     this.key = key; this.validate = validate; this.onStatus = onStatus;
     this.revision = 0; this.writable = true; this.queue = Promise.resolve();
+    this.pendingWrites = 0;
   }
   status(value) { this.onStatus(value); }
   async read() {
@@ -55,6 +56,7 @@ export class WorkspaceStorage {
     if (!this.writable) return Promise.resolve(false);
     if (!this.validate(captured)) { this.status('invalid'); return Promise.resolve(false); }
     this.status('pending');
+    this.pendingWrites += 1;
     this.queue = this.queue.then(async () => {
       try {
         const database = await open();
@@ -76,9 +78,11 @@ export class WorkspaceStorage {
           transaction.onerror = () => reject(transaction.error);
           transaction.onabort = () => reject(reason || transaction.error);
         });
-        this.status('saved'); return true;
+        this.pendingWrites -= 1;
+        this.status(this.pendingWrites ? 'pending' : 'saved'); return true;
       } catch (error) {
         this.writable = false;
+        this.pendingWrites -= 1;
         this.status(error?.message === 'conflict' ? 'conflict' : 'unavailable');
         return false;
       }
