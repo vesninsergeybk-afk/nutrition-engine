@@ -12139,6 +12139,8 @@ async function loadBodyParts4Model() {
 
 async function loadSelectedModel(source) {
   const requestedSource = source === "bodyparts4" ? "bodyparts4" : "z-anatomy";
+  workspaceReady = false;
+  canvas.dataset.workspaceReady = "false";
   modelSource.disabled = true;
   loadingEl.classList.remove("is-hidden");
   loadingEl.textContent = "Загружаю анатомическую модель…";
@@ -12154,9 +12156,6 @@ async function loadSelectedModel(source) {
     } else {
       await loadZAnatomyModel();
     }
-
-    loadingEl.classList.add("is-hidden");
-    modelSource.disabled = false;
 
     if (appMode === "explore") {
       questionLabelEl.textContent = "Атлас";
@@ -12174,6 +12173,9 @@ async function loadSelectedModel(source) {
       await restoreWorkspace(checkpoint);
     }
     workspaceReady = true;
+    canvas.dataset.workspaceReady = "true";
+    loadingEl.classList.add("is-hidden");
+    modelSource.disabled = false;
     scheduleWorkspaceSave();
   } catch (error) {
     console.error(error);
@@ -12731,6 +12733,13 @@ renderer.domElement.addEventListener("click", (event) => {
     return;
   }
 });
+let viewerNeedsRender = true;
+let lastViewerRender = -Infinity;
+for (const type of ['click', 'input', 'change', 'keydown', 'pointerdown']) {
+  document.querySelector('#atlas-page').addEventListener(type, () => { viewerNeedsRender = true; }, {capture:true});
+}
+window.addEventListener('resize', () => { viewerNeedsRender = true; });
+controls.addEventListener('change', () => { viewerNeedsRender = true; });
 function animate(now = performance.now()) {
   if (atlasBonesView) enforceAtlasBonesView();
   if (boneHighlightMesh) boneHighlightMesh.visible = Boolean(skeletonMesh?.visible && boneVisibility[selectedBoneId] !== false);
@@ -12740,7 +12749,15 @@ function animate(now = performance.now()) {
   updateMotionPlayback(now);
   updateTsmNativePlayback(now);
   updateMyoArmElbowPlayback(now);
+  // A stationary atlas does not need to submit the complete body mesh every
+  // animation frame. Controls, exercises and motion still repaint immediately;
+  // the periodic refresh also covers asynchronously arriving reference assets.
+  if (!viewerNeedsRender && workspaceReady && appMode !== 'motion' &&
+      loadingEl.classList.contains('is-hidden') && now - lastViewerRender < 1000) return;
+  viewerNeedsRender = false;
+  lastViewerRender = now;
   renderer.render(scene, camera);
+  canvas.dataset.renderedFrames = String((Number(canvas.dataset.renderedFrames) || 0) + 1);
 
   if (appMode === "motion" && motionRenderer && !motionPane?.hidden) {
     resizeMotionViewer();
@@ -12755,7 +12772,7 @@ const webglStatusText = document.querySelector("#webgl-status-text");
 const webglReload = document.querySelector("#webgl-reload");
 let webglRecoveryTimer = 0;
 webglReload.addEventListener("click", () => window.location.reload());
-createWebGLSession({
+const webglSession = createWebGLSession({
   canvas,
   renderFrame: animate,
   onLost() {
@@ -12986,8 +13003,15 @@ document.addEventListener('click', event => {
   const url = new URL(link.href);
   if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
   event.preventDefault();
-  void saveWorkspace().then(() => location.assign(url.href));
+  // Stop submitting GPU frames while the final snapshot is committed. The
+  // current canvas remains visible and the navigation does not compete with
+  // a full-body software-rendering frame for main-thread time.
+  webglSession.pause();
+  void saveWorkspace().then(() => location.assign(url.href)).catch(() => {
+    workspaceNotify('invalid'); webglSession.resume();
+  });
 });
+window.addEventListener('pageshow', () => webglSession.resume());
 
 document.querySelector('[data-anatomy-export]')?.addEventListener('click', () => {
   const data = {format:'VesninMed.Anatomy',schemaVersion:1,exportedAt:new Date().toISOString(),payload:captureWorkspace()};

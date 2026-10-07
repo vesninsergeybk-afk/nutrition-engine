@@ -9,6 +9,7 @@ export function createWebGLSession({ canvas, renderFrame, onLost, onRestored }) 
   let lost = false;
   let restoring = false;
   let disposed = false;
+  let paused = false;
 
   function stop() {
     if (frame !== null) cancelAnimationFrame(frame);
@@ -16,13 +17,13 @@ export function createWebGLSession({ canvas, renderFrame, onLost, onRestored }) 
   }
 
   function schedule() {
-    if (disposed || lost || document.hidden || frame !== null) return;
+    if (disposed || paused || lost || document.hidden || frame !== null) return;
     frame = requestAnimationFrame(draw);
   }
 
   function draw(now) {
     frame = null;
-    if (disposed || lost || document.hidden) return;
+    if (disposed || paused || lost || document.hidden) return;
     renderFrame(now);
     canvas.dataset.webglSessionState = "ready";
     if (restoring) {
@@ -63,6 +64,8 @@ export function createWebGLSession({ canvas, renderFrame, onLost, onRestored }) 
   document.addEventListener("visibilitychange", visibilityChanged);
   schedule();
   return {
+    pause() { paused = true; stop(); },
+    resume() { if (!disposed) { paused = false; schedule(); } },
     dispose() {
       disposed = true;
       stop();

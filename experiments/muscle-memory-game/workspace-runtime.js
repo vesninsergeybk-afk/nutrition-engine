@@ -210,8 +210,15 @@ document.addEventListener('click', event => {
   const url = new URL(link.href);
   if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
   event.preventDefault();
-  void saveWorkspace().then(() => location.assign(url.href));
+  // Stop submitting GPU frames while the final snapshot is committed. The
+  // current canvas remains visible and the navigation does not compete with
+  // a full-body software-rendering frame for main-thread time.
+  webglSession.pause();
+  void saveWorkspace().then(() => location.assign(url.href)).catch(() => {
+    workspaceNotify('invalid'); webglSession.resume();
+  });
 });
+window.addEventListener('pageshow', () => webglSession.resume());
 
 document.querySelector('[data-anatomy-export]')?.addEventListener('click', () => {
   const data = {format:'VesninMed.Anatomy',schemaVersion:1,exportedAt:new Date().toISOString(),payload:captureWorkspace()};
