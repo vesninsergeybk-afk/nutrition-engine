@@ -54,6 +54,7 @@ export class WorkspaceStorage {
     try { captured = structuredClone(payload); } catch { this.status('invalid'); return Promise.resolve(false); }
     if (!this.writable) return Promise.resolve(false);
     if (!this.validate(captured)) { this.status('invalid'); return Promise.resolve(false); }
+    this.status('pending');
     this.queue = this.queue.then(async () => {
       try {
         const database = await open();

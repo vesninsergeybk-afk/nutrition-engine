@@ -12784,6 +12784,7 @@ let workspacePending = null;
 const workspaceStatus = document.querySelector('[data-workspace-status]');
 const workspaceMessages = {
   ready: 'Состояние сохраняется в этом браузере.',
+  pending: 'Сохраняю изменения…',
   saved: 'Состояние сохраняется в этом браузере.',
   restored: 'Сохранённый контекст восстановлен.',
   incompatible: 'Сохранённую сессию не удалось прочитать. Она оставлена без изменений. Новая сессия будет временной.',
@@ -12838,6 +12839,7 @@ function captureWorkspace() {
 function scheduleWorkspaceSave() {
   if (!workspaceReady || workspaceRestoring || !anatomyMesh) return;
   clearTimeout(workspaceSaveTimer);
+  if (workspaceStorage.writable) workspaceNotify('pending');
   workspaceSaveTimer = setTimeout(() => void saveWorkspace(), 120);
 }
 async function saveWorkspace() {
@@ -12864,7 +12866,9 @@ async function restoreWorkspace(saved) {
     if (!learningAreaOptionExists(saved.region)) { workspaceNotify('partial'); return; }
     // Existing progress is migrated into the durable workspace boundary. The
     // original learning engine retains its compatibility cache and semantics.
-    learningStore = structuredClone(saved.progress);
+    if (Number(saved.progress.updatedAt) > Number(learningStore.updatedAt)) {
+      learningStore = structuredClone(saved.progress);
+    }
     selectedLearningRegion = learningRegion.value = saved.region;
     regionIsolation.checked = saved.regional;
     applyLearningRegion();
@@ -12885,13 +12889,10 @@ async function restoreWorkspace(saved) {
       if (saved.phase === 'summary') {
         finishLearningSession();
       } else {
-        const nextIndex = learningSession.index, finishedAt = learningSession.finishedAt;
-        if (saved.phase === 'feedback') {
-          learningSession.index = Math.max(0, nextIndex - 1);
-          learningSession.finishedAt = null;
-        }
+        const nextIndex = learningSession.index;
+        if (saved.phase === 'feedback') learningSession.index = Math.max(0, nextIndex - 1);
         prepareSessionItem();
-        learningSession.index = nextIndex; learningSession.finishedAt = finishedAt;
+        learningSession.index = nextIndex;
         currentItemWrongAttempts = saved.wrongAttempts;
         currentItemNavigationActions = saved.navigationActions;
         pendingNavigationSid = saved.pendingNavigation;
