@@ -71,7 +71,11 @@ async function saveWorkspace() {
   if (!workspaceReady || workspaceRestoring || !anatomyMesh) return;
   const payload = captureWorkspace();
   const serialized = JSON.stringify(payload);
-  if (serialized === workspaceLastSaved) return workspaceStorage.flush();
+  if (serialized === workspaceLastSaved) {
+    await workspaceStorage.flush();
+    if (workspaceStorage.writable && workspaceStorage.revision > 0) workspaceNotify('saved');
+    return;
+  }
   if (await workspaceStorage.write(payload)) workspaceLastSaved = serialized;
 }
 
