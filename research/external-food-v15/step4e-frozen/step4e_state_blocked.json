@@ -1,0 +1,1050 @@
+[
+  {
+    "family_key": "bean pinto",
+    "family_id": "fam_d607294ddaec",
+    "tier": "EXTENDED",
+    "name_ru": "Фасоль пинто",
+    "source_count": 2,
+    "profile_count": 2,
+    "record_count": 9,
+    "name_ru_import": "Фасоль пинто, сухая (зрелые семена)",
+    "product_key_proposed": "ext_bean_pinto",
+    "selected_profile_id": "profile_1428802fd13e",
+    "selected_profile_key": "bean pinto mature seed",
+    "primary_source": {
+      "source_registry_id": "HEALTH_CANADA_CNF",
+      "source_record_id": "3269",
+      "source_name": "Beans, pinto, mature seeds, dry",
+      "variant_signature": "unspecified"
+    },
+    "fndds_exact_matches": [],
+    "nutrients": {
+      "kcal": 347.0,
+      "protein_per_100g": 21.42,
+      "fat_per_100g": 1.23,
+      "carbs_per_100g": 62.55,
+      "sugar_per_100g": 2.11,
+      "fiber_per_100g": 15.5,
+      "sfa": 0.235,
+      "unsat": 0.636,
+      "added_sugar": 0,
+      "salt": 0.03048,
+      "calcium_mg": 113.0,
+      "iron_mg": 5.07,
+      "magnesium_mg": 176.0,
+      "phosphorus_mg": 411.0,
+      "potassium_mg": 1393.0,
+      "sodium_mg": 12.0,
+      "zinc_mg": 2.28,
+      "copper_mg": 0.893,
+      "manganese_mg": 1.148,
+      "selenium_ug": 27.9,
+      "vitamin_a_mcg": 0.0,
+      "vitamin_e_mg": 0.21,
+      "vitamin_d_mcg": 0.0,
+      "vitamin_c_mg": 6.3,
+      "vitamin_b1_mg": 0.713,
+      "vitamin_b2_mg": 0.212,
+      "vitamin_b3_mg": 1.174,
+      "vitamin_b5_mg": 0.785,
+      "vitamin_b6_mg": 0.474,
+      "vitamin_b9_mcg": 525.0,
+      "vitamin_b12_mcg": 0.0,
+      "choline_mg": 66.2,
+      "vitamin_k_mcg": 5.6
+    },
+    "nutrient_provenance_import_v15": {
+      "kcal": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "protein_per_100g": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "fat_per_100g": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "carbs_per_100g": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "sugar_per_100g": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "fiber_per_100g": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "sfa": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "unsat": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "salt": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "calcium_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "iron_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "magnesium_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "phosphorus_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "potassium_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "sodium_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "zinc_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "copper_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "manganese_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "selenium_ug": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_a_mcg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_e_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_d_mcg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_c_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_b1_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_b2_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_b3_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_b5_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_b6_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_b9_mcg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_b12_mcg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "choline_mg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "vitamin_k_mcg": {
+        "method": "SOURCE_REPORTED_COMPAT",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "added_sugar": {
+        "method": "ASSUMED_ZERO",
+        "reason": "plain_single_ingredient_identity"
+      }
+    },
+    "missing_nutrients": [],
+    "hei_equivalents": {
+      "fruit_cup_eq_per_100g": 0.0,
+      "whole_fruit_cup_eq_per_100g": 0.0,
+      "veg_cup_eq_per_100g": 0.57,
+      "greens_beans_cup_eq_per_100g": 0.57,
+      "dairy_cup_eq_per_100g": 0.0,
+      "whole_grain_oz_eq_per_100g": 0.0,
+      "refined_grain_oz_eq_per_100g": 0.0,
+      "protein_oz_eq_per_100g": 0.0,
+      "seafood_plant_oz_eq_per_100g": 2.29,
+      "added_sugars_tsp_eq_per_100g": 0.0
+    },
+    "hei_equiv_provenance_import_v15": {
+      "status": "OFFICIAL_EXACT",
+      "source": "USDA_FPID_2017_2018",
+      "code": "16043",
+      "description": "Beans, pinto, mature seeds, cooked, boiled, without salt"
+    },
+    "issues": [
+      "PROVENANCE_METHOD_SCHEMA_GATE"
+    ],
+    "status": "READY_FOR_STAGING_SCHEMA_PATCH",
+    "step4b_provenance_policy_version": "external-food-step4b-provenance-v15",
+    "nutrient_provenance_resolved_v15": {
+      "kcal": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "protein_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fat_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "carbs_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sugar_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fiber_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sfa": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "unsat": {
+        "method": "CALCULATED",
+        "formula": "source_MUFA_plus_PUFA",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "added_sugar": {
+        "method": "ASSUMED_ZERO",
+        "reason": "plain_single_ingredient_identity"
+      },
+      "salt": {
+        "method": "CALCULATED",
+        "formula": "sodium_mg*2.54/1000",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "calcium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "iron_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "magnesium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "phosphorus_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "potassium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sodium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "zinc_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "copper_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "manganese_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "selenium_ug": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_a_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_e_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_d_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_c_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b1_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b2_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b3_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b5_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b6_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b9_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b12_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "choline_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_k_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      }
+    },
+    "issues_after_step4b": [],
+    "status_after_step4b": "READY_FOR_NEXT_STAGING_GATE",
+    "nutrient_provenance_step4c_v15": {
+      "kcal": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "protein_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fat_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "carbs_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sugar_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fiber_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sfa": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "unsat": {
+        "method": "CALCULATED",
+        "formula": "source_MUFA_plus_PUFA",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "added_sugar": {
+        "method": "ASSUMED_ZERO",
+        "reason": "plain_single_ingredient_identity"
+      },
+      "salt": {
+        "method": "CALCULATED",
+        "formula": "sodium_mg*2.54/1000",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "calcium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "iron_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "magnesium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "phosphorus_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "potassium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sodium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "zinc_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "copper_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "manganese_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "selenium_ug": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_a_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_e_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_d_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_c_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b1_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b2_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b3_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b5_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b6_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b9_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b12_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "choline_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_k_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      }
+    },
+    "issues_after_step4c": [],
+    "status_after_step4c": "READY_FOR_NEXT_STAGING_GATE",
+    "step4c_policy_version": "external-food-step4c-missing-nutrients-v15",
+    "issues_after_step4d": [],
+    "status_after_step4d": "READY_FOR_NEXT_STAGING_GATE",
+    "step4d_policy_version": "external-food-step4d-semantic-v15",
+    "nutrient_provenance_final_v15": {
+      "kcal": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "protein_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fat_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "carbs_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sugar_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fiber_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sfa": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "unsat": {
+        "method": "CALCULATED",
+        "formula": "source_MUFA_plus_PUFA",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "added_sugar": {
+        "method": "ASSUMED_ZERO",
+        "reason": "plain_single_ingredient_identity"
+      },
+      "salt": {
+        "method": "CALCULATED",
+        "formula": "sodium_mg*2.54/1000",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "calcium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "iron_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "magnesium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "phosphorus_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "potassium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sodium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "zinc_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "copper_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "manganese_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "selenium_ug": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_a_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_e_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_d_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_c_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b1_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b2_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b3_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b5_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b6_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b9_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b12_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "choline_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_k_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      }
+    },
+    "nutrient_provenance_legacy_pre_step4c_v15": {
+      "kcal": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "protein_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fat_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "carbs_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sugar_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "fiber_per_100g": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sfa": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "unsat": {
+        "method": "CALCULATED",
+        "formula": "source_MUFA_plus_PUFA",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "added_sugar": {
+        "method": "ASSUMED_ZERO",
+        "reason": "plain_single_ingredient_identity"
+      },
+      "salt": {
+        "method": "CALCULATED",
+        "formula": "sodium_mg*2.54/1000",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269"
+      },
+      "calcium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "iron_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "magnesium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "phosphorus_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "potassium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "sodium_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "zinc_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "copper_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "manganese_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "selenium_ug": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_a_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_e_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_d_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_c_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b1_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b2_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b3_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b5_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b6_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b9_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_b12_mcg": {
+        "method": "SOURCE_REPORTED_ZERO",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "choline_mg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      },
+      "vitamin_k_mcg": {
+        "method": "SOURCE_REPORTED",
+        "source_registry_id": "HEALTH_CANADA_CNF",
+        "source_record_id": "3269",
+        "claim_scope": "official_source_row_value_only"
+      }
+    },
+    "step4e_policy_version": "external-food-step4e-integrity-v15",
+    "step4e_status": "BLOCKED_STATE_HEI",
+    "step4e_block_reason": "DRY_PINT0_NUTRIENTS_VS_COOKED_FPID_EQUIVALENT"
+  }
+]

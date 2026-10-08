@@ -1,0 +1,30 @@
+{
+  "policy": "external-food-step4e-integrity-v15",
+  "status": "PASS",
+  "source_proposals": 89,
+  "current_main_products": 1105,
+  "preview_only_candidates": 32,
+  "blocked_state_hei": 1,
+  "blocked_existing_gates": 56,
+  "legacy_stale_provenance_fields": 40,
+  "provenance_transitions": {
+    "('MISSING', 'SOURCE_REPORTED_ZERO')": 31,
+    "('MISSING', 'SOURCE_REPORTED')": 8,
+    "('MISSING', 'CALCULATED')": 1
+  },
+  "final_field_method_counts": {
+    "SOURCE_REPORTED": 2017,
+    "SOURCE_REPORTED_ZERO": 481,
+    "CALCULATED": 175,
+    "ASSUMED_ZERO": 85,
+    "MISSING": 179
+  },
+  "unresolved_issues": {
+    "HEI_EQUIVALENTS_UNRESOLVED": 28,
+    "MISSING_CALCULATOR_NUTRIENTS": 52
+  },
+  "production_provenance_policy_not_changed": true,
+  "production_main_changed": false,
+  "import_to_production_permitted": false,
+  "errors": []
+}
