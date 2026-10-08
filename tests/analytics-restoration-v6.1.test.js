@@ -100,6 +100,11 @@ assert(printed.indexOf('Наглядный разбор показателей')
 assert.match(printed,/break-inside:auto/);
 assert.match(printed,/<details open/);
 assert.equal(printedCount,1);
+const oldOpen=window.open;let warning='';
+window.open=()=>null;window.alert=message=>{warning=message;};
+assert.equal(window.NutritionAnalyticsRestorationV1.print(),false,'blocked popups are reported');
+assert.match(warning,/заблокировал/);
+window.open=oldOpen;
 assert.match(printed,/data-ar-source-key=/);
 data={items:0,hei:{model:{total:0},rows:[]}};
 window.NutritionAnalyticsRestorationV1.refresh();
@@ -108,6 +113,9 @@ assert.doesNotMatch(nodes.arBody.innerHTML,/0 из 100/);
 data={items:1,snapshot:{totals:{kcal:300}},nutrients:[{title:'<img src=x onerror=alert(1)>',
   status:{label:'нет данных'},group:'basic',coverage:{covered:0,total:1}}],hei:{model:{total:64},rows:[]}};
 window.NutritionAnalyticsRestorationV1.refresh();
+window.__lastDietAnalysisProfile={};
+window.NutritionAnalyticsRestorationV1.refresh();
+assert.doesNotMatch(nodes.arBody.innerHTML,/class="ar-matrix-point"/,'missing matrix score cannot show fake point');
 assert.match(nodes.arBody.innerHTML,/&lt;img/);
 assert.doesNotMatch(nodes.arBody.innerHTML,/<img src=x/);
 console.log('PASS: entrypoint, water, meal split, nutrients, contributor provenance, HEI, matrix, print and empty states');
