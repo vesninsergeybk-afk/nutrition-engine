@@ -103,7 +103,8 @@
       '<p class="ar-note">Показаны только добавленные продукты. Список не является рейтингом продуктов в общем каталоге.</p></div></details>';
   }
   function nutrientGroups(vm){
-    var html='<section class="ar-block"><div class="ar-block-title"><h3>Нутриенты и минералы</h3><p>Выберите группу, затем показатель. Шкала показывает отношение к референсному значению; превышение 100% не всегда означает улучшение.</p></div>';
+    var n=vm.nutrientSummary||{},counts='<div class="ar-nutrient-summary"><span><b>'+fmt(number(n.attention),0)+'</b> требуют проверки</span><span><b>'+fmt(number(n.incomplete),0)+'</b> с неполными данными</span></div>';
+    var html='<section class="ar-block"><div class="ar-block-title"><h3>Нутриенты и минералы</h3><p>Выберите группу, затем показатель. Шкала показывает отношение к референсному значению; превышение 100% не всегда означает улучшение.</p></div>'+counts;
     GROUPS.forEach(function(group,i){
       var rows=(vm.nutrients||[]).filter(function(x){return x.group===group[0];});
       if(!rows.length)return;
@@ -116,12 +117,21 @@
     var pts=number(row.points),max=number(row.maxPoints),percent=validTarget(max)?pts/max*100:NaN;
     var contributors=row.contributors&&row.contributors.positive||row.contributors||{};
     var negative=row.key==='fatty_acids_ratio'&&row.contributors&&row.contributors.negative?'<h4>Вклад насыщенных жиров</h4>'+contributorRows(row.contributors.negative,''):'';
-    return '<details class="ar-detail-row"><summary><span class="ar-row-main"><b>'+esc(row.title)+'</b><small>'+esc(row.status&&row.status.label||'HEI‑2020')+'</small></span>'+
+    return '<details class="ar-detail-row" data-ar-hei-key="'+esc(row.key)+'"><summary><span class="ar-row-main"><b>'+esc(row.title)+'</b><small>'+esc(row.status&&row.status.label||'HEI‑2020')+'</small></span>'+
       '<span class="ar-row-value"><strong>'+fmt(pts,1)+' / '+fmt(max,0)+'</strong>'+
       pctBar(percent,fmt(percent,0)+'% от возможного балла')+'</span></summary><div class="ar-row-content">'+
       '<p>Фактический показатель: '+esc(row.actual||'—')+'. Ориентир: '+esc(row.norm||'—')+'.</p>'+
       (row.action?'<p>'+esc(row.action)+'</p>':'')+'<h4>Учтённые продукты</h4>'+contributorRows(contributors,'')+negative+
       '<p class="ar-note">HEI оценивает соответствие структуре пищевых рекомендаций; показатель сам по себе не диагностирует дефициты.</p></div></details>';
+  }
+  function heiOverview(rows){
+    if(!rows.length)return '';
+    return '<div class="ar-hei-overview" aria-label="Обзор компонентов HEI-2020">'+rows.map(function(x){
+      var max=number(x.maxPoints),points=number(x.points),ratio=validTarget(max)?points/max*100:NaN;
+      return '<button class="ar-hei-jump" type="button" data-ar-hei-jump="'+esc(x.key)+'" aria-label="Подробнее о компоненте '+esc(x.title)+'">'+
+        '<span class="ar-hei-jump-top"><b>'+esc(x.title)+'</b><small>'+fmt(points,1)+' / '+fmt(max,0)+'</small></span>'+
+        pctBar(ratio,fmt(ratio,0)+'% балла')+'</button>';
+    }).join('')+'</div>';
   }
   function heiBlock(vm){
     var has=vm.items>0&&vm.hei&&vm.hei.model&&isFinite(number(vm.hei.model.total));
@@ -131,7 +141,7 @@
       '<div class="ar-hei-total"><strong>'+(has?fmt(total,1)+' <small>из 100</small>':'Пока нет расчёта')+'</strong>'+
       pctBar(total,has?'HEI '+fmt(total,1)+' из 100':'HEI не рассчитан')+
       '<p>'+(has?'Оценка пищевой структуры. Ограничения по отдельным нутриентам проверяются независимо.':'Добавьте продукты для оценки структуры питания.')+'</p></div>'+
-      (rows.length?'<details class="ar-group ar-hei-list"><summary><b>Все компоненты HEI</b><span>'+rows.length+' показателей</span></summary><div class="ar-group-list">'+rows.map(heiRow).join('')+'</div></details>':'')+'</section>';
+      (rows.length?heiOverview(rows)+'<details class="ar-group ar-hei-list"><summary><b>Подробный разбор компонентов</b><span>'+rows.length+' показателей</span></summary><div class="ar-group-list">'+rows.map(heiRow).join('')+'</div></details>':'')+'</section>';
   }
   function matrix(vm){
     var p=w.__lastDietAnalysisProfile||{},hei=number(p.hei),structure=number(p.dailyStructure);
@@ -178,6 +188,18 @@
     return true;
   }
   function handleClick(e){
+    var jump=e.target&&e.target.closest?e.target.closest('[data-ar-hei-jump]'):null;
+    if(jump){
+      var key=jump.getAttribute('data-ar-hei-jump'),body=el('arBody'),details=body&&body.querySelectorAll?body.querySelectorAll('[data-ar-hei-key]'):[],i,target=null,fold=null;
+      for(i=0;i<details.length;i++)if(details[i].getAttribute('data-ar-hei-key')===key){target=details[i];break;}
+      if(target){
+        fold=target.closest?target.closest('.ar-hei-list'):null;if(fold)fold.open=true;
+        target.open=true;
+        if(target.scrollIntoView)target.scrollIntoView({behavior:'smooth',block:'center'});
+        if(target.querySelector){var title=target.querySelector('summary');if(title&&title.focus)title.focus({preventScroll:true});}
+      }
+      e.preventDefault();return;
+    }
     var button=e.target&&e.target.closest?e.target.closest('[data-ar-print],#printAllBtn,#exportAllPdfBtn,[data-workspace-report-print],[data-workspace-report-pdf]'):null;
     if(!button)return;
     if(!w.WorkspaceReportHF13)return;
