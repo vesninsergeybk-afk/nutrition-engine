@@ -60,7 +60,7 @@ def main():
            method="SOURCE_REPORTED_ZERO"
            source_dataset=manifest["source_donor"]["dataset"]
            scientist_review="REPORTED_ZERO_REPORTING_LIMIT_SCIENTIFIC_REVIEW_REQUIRED"
-       elif fk in ("zander","flour buckwheat"):
+       elif fk=="zander" or (fk=="flour buckwheat" and field=="vitamin_c_mg"):
            assert p["primary_source"]["source_registry_id"]=="GERMANY_BLS"
            expected_primary_id="T603100" if fk=="zander" else "C424000"
            assert str(p["primary_source"]["source_record_id"])==expected_primary_id
