@@ -1,0 +1,37 @@
+name: Food Verified Nutrient Fields - Staging
+
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/apply_external_food_verified_field_patches.py"
+      - ".github/workflows/external-food-verified-nutrient-patches.yml"
+      - "research/external-food-v15/verified-field-patches/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  science-patches:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reproduce verified changes from frozen original data
+        run: |
+          set -euo pipefail
+          python3 tools/apply_external_food_verified_field_patches.py \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --folate-patch research/external-food-v15/verified-field-patches/spelt-folate-417-2026.json \
+            --saffron-patch research/external-food-v15/verified-field-patches/saffron-sugars-42_4-cofid2021.json \
+            --out-dir .verified-food-staging
+          cat .verified-food-staging/source_field_recovery_2_scientific_gate.json >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve reproducible 56-card proof; never modify runtime
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-56-two-source-fields-staging-only
+          path: .verified-food-staging/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
