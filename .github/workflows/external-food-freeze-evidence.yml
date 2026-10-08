@@ -1,0 +1,78 @@
+name: Freeze External Food Source Evidence
+
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths: [".github/workflows/external-food-freeze-evidence.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  freeze-step4e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Retrieve frozen science audit from last successful historical run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh run view 37851579594 --repo "$GITHUB_REPOSITORY" --json conclusion --jq .conclusion)" = "success"
+          mkdir -p research/external-food-v15/step4e-frozen
+          gh run download 37851579594 --repo "$GITHUB_REPOSITORY" \
+            --name external-food-step4e-integrity \
+            --dir research/external-food-v15/step4e-frozen
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("research/external-food-v15/step4e-frozen")
+          a=json.loads((p/"step4e_preview_only_proposals.json").read_text())
+          b=json.loads((p/"step4e_blocked_other.json").read_text())
+          c=json.loads((p/"step4e_state_blocked.json").read_text())
+          d=json.loads((p/"step4e_integrity_report.json").read_text())
+          assert len(a)==32 and len(b)==56 and len(c)==1
+          assert d["status"]=="PASS" and d["source_proposals"]==89
+          all89=a+b+c
+          assert len({x["family_key"] for x in all89})==89
+          assert all(set(x["nutrients"])==set(a[0]["nutrients"]) for x in all89)
+          print("FROZEN_SOURCE_GATE_89_32_56_1_PASS")
+          PY
+          {
+            echo "# Frozen source evidence for food catalog expansion";
+            echo;
+            echo "Evidence from successful Step 4E GitHub workflow run 37851579594 (2026-10-09).";
+            echo "32 preview-only + 56 blocked for provenance/HEI + 1 dry-bean state mismatch = 89.";
+            echo;
+            echo "Do not import or publish any of these 89 profiles without independent scientific";
+            echo "review, explicit per-field provenance and HEI mapping, and protected runtime QA.";
+            echo "This research subtree is isolated from the main product catalog.";
+            echo;
+            echo "Original source workflow: https://github.com/$GITHUB_REPOSITORY/actions/runs/37851579594";
+            echo "Original research branch: data-source-expansion";
+            echo;
+            echo "## Evidence file checksums";
+            echo;
+            echo '~~~';
+            sha256sum research/external-food-v15/step4e-frozen/*.json;
+            echo '~~~';
+          } > research/external-food-v15/README.md
+      - name: Version original scientific evidence on research branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add -f research/external-food-v15/
+          if git diff --cached --quiet; then
+            echo "Unchanged evidence"
+            exit 0
+          fi
+          git commit -m "research(food): freeze 89 Stage 4E source proposals before artifact expiration"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
