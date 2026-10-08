@@ -76,6 +76,11 @@ assert.equal(typeof events['needs:computed'],'function','listen to non-bubbling 
 window.__lastNeedsMeta={ok:true,waterReference:{kind:'ai',valueL:2.0},workingEnergyTargetKcal:1800};
 events['needs:computed']();
 assert.match(nodes.arNeedsExtra.innerHTML,/2 л\/сут/,'needs recomputation updates water');
+window.__lastNeedsMeta={ok:true,waterReference:{kind:'ai',valueL:2.0},workingEnergyTargetKcal:2000,totalProtein:100,fatGrams:60,carbGrams:240,macroCalculationAvailable:true,normsSyncAllowed:true};
+events['needs:computed']();
+assert.match(nodes.arNeedsExtra.innerHTML,/Б 25 г/,'per-meal protein uses working target');
+assert.match(nodes.arNeedsExtra.innerHTML,/Ж 15 г/,'per-meal fat uses working target');
+assert.match(nodes.arNeedsExtra.innerHTML,/У 60 г/,'per-meal carbohydrates use working target');
 assert.equal(window.NutritionAnalyticsRestorationV1.print(),true);
 assert.match(printed,/canonical-report/);
 assert.match(printed,/Наглядный разбор показателей/);
