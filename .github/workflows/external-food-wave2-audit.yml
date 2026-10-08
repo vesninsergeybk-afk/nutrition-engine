@@ -62,6 +62,7 @@ jobs:
           name: external-food-wave2-staging-audit
           path: |
             .stage4f/wave2_audit.json
+            .stage4f/wave2_staging_15_preview_only.json
             .stage4f/wave2_summary.md
             .stage4f/step4f_preview_report.json
           retention-days: 14
