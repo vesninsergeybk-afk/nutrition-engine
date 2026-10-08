@@ -5,6 +5,7 @@ on:
     branches: [data-food-wave3-resolution-20261009]
     paths:
       - "tools/probe_uk_cofid2021_sources.py"
+      - "tools/probe_cofid_candidate_donors.py"
       - ".github/workflows/external-food-uk-cofid-probe.yml"
   workflow_dispatch:
 
@@ -27,6 +28,10 @@ jobs:
           python3 -m pip install --quiet openpyxl
           python3 tools/probe_uk_cofid2021_sources.py \
             --xlsx /tmp/cofid2021.xlsx \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out-dir .out-cofid
+          python3 tools/probe_cofid_candidate_donors.py \
+            --cofid /tmp/cofid2021.xlsx \
             --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
             --out-dir .out-cofid
       - uses: actions/upload-artifact@v4
