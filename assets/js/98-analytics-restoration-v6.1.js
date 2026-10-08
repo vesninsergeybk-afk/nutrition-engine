@@ -42,7 +42,13 @@
     var raw=String(chosen||'').split('|'),percent=(raw[1]||'').split(',').map(Number);
     if(!percent.length||percent.some(function(v){return !isFinite(v)||v<0;}))return '';
     var energy=number(meta&&meta.workingEnergyTargetKcal);
-    var cols=percent.map(function(p,i){var part=isFinite(energy)?' · '+fmt(energy*p/100,0)+' ккал':'';return '<span><b>'+(i+1)+'-й приём</b> '+fmt(p,0)+'%'+part+'</span>';});
+    var canMacro=!!(meta&&meta.macroCalculationAvailable===true&&meta.normsSyncAllowed===true);
+    var protein=canMacro?number(meta.totalProtein):NaN,fat=canMacro?number(meta.fatGrams):NaN,carbs=canMacro?number(meta.carbGrams):NaN;
+    var cols=percent.map(function(p,i){
+      var part=isFinite(energy)?'<small>'+fmt(energy*p/100,0)+' ккал</small>':'';
+      var macro=isFinite(protein)&&isFinite(fat)&&isFinite(carbs)?'<small>Б '+fmt(protein*p/100,1)+' г · Ж '+fmt(fat*p/100,1)+' г · У '+fmt(carbs*p/100,1)+' г</small>':'';
+      return '<span><b>'+(i+1)+'-й приём · '+fmt(p,0)+'%</b>'+part+macro+'</span>';
+    });
     return '<div class="ar-meals">'+cols.join('')+'</div>';
   }
   function needsExtra(){
@@ -54,7 +60,7 @@
     host.innerHTML='<div class="ar-needs-head"><div><strong>Вода и распределение по приёмам пищи</strong><p>Расчётные ориентиры и способ распределить выбранную энергию по приёмам.</p></div></div>'+
       '<div class="ar-water"><span>Общее поступление воды — из пищи и напитков</span><strong>'+waterText(meta&&meta.waterReference)+'</strong><small>'+(meta?'Справочный ориентир, а не обязательный объём выпиваемой воды.':'Ориентир появится после расчёта потребностей.')+'</small></div>'+
       '<div class="ar-meal-select"><label for="arMealSplit">Распределение энергии</label>'+choice+'</div>'+
-      mealRows(meta,selected)+'<p class="ar-note">Доли по приёмам — выбираемая схема, а не физиологическая норма. Килокалории по приёмам показываются только при заданной рабочей энергетической цели.</p>';
+      mealRows(meta,selected)+'<p class="ar-note">Доли по приёмам — выбираемая схема, а не физиологическая норма. Энергия и БЖУ распределяются по одной выбранной схеме только при наличии соответствующих расчётных целей.</p>';
   }
   function metricSpec(detail,source,key,short,unit){
     var totals=detail&&detail.snapshot&&detail.snapshot.totals||{};
