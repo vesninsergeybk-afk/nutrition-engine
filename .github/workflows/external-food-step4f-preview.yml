@@ -1,0 +1,82 @@
+name: External Food Step 4F Preview Gate
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "tools/build_external_food_preview_step4f_v15.py"
+      - ".github/workflows/external-food-step4f-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout actual production catalog
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: .current-main
+          persist-credentials: false
+      - name: Download successful Step 4E staging-only candidates
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p .stage4e
+          gh run download 37851579594 \
+            --repo "${{ github.repository }}" \
+            --name external-food-step4e-integrity \
+            --dir .stage4e
+      - name: Build non-deployable preview
+        shell: bash
+        run: |
+          python3 tools/build_external_food_preview_step4f_v15.py \
+            --proposals .stage4e/step4e_preview_only_proposals.json \
+            --current-glob ".current-main/data/products.v5.3.210-p1.3.part-*.json" \
+            --out-dir staging/import-v15/step4f
+      - name: Assert no changes to production product cards
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("staging/import-v15/step4f")
+          r=json.loads((p/"step4f_preview_report.json").read_text())
+          assert r["status"]=="PASS",r
+          assert r["production_records_unchanged"]==1105
+          assert r["preview_cards"]==32
+          assert r["combined_preview_cards"]==1137
+          assert r["not_production_importable"] is True
+          assert r["production_main_changed"] is False
+          assert r["errors"]==[]
+          print("Step 4F PASS: 1,105 untouched + 32 separate preview cards")
+          PY
+      - name: Publish summary
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r=json.load(open("staging/import-v15/step4f/step4f_preview_report.json"))
+          print("## Step 4F isolated preview")
+          print("- Original catalog untouched: "+str(r["production_records_unchanged"]))
+          print("- New preview cards: "+str(r["preview_cards"]))
+          print("- Total preview: "+str(r["combined_preview_cards"]))
+          print("- Import to production: NOT APPROVED")
+          print("- Errors: "+str(len(r["errors"])))
+          PY
+      - name: Upload preview artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-step4f-preview
+          path: staging/import-v15/step4f/
+          retention-days: 14
+          if-no-files-found: error
