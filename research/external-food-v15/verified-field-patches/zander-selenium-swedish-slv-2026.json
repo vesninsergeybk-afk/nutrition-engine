@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "record_type": "SWEDISH_FOOD_COMPOSITION_SOURCE_NUTRIENT_RECOVERY",
+  "family_key": "zander",
+  "scientific_name": "Sander lucioperca",
+  "source_primary": {
+    "registry": "GERMANY_BLS",
+    "id": "T603100",
+    "description": "Pike-perch raw"
+  },
+  "source_donor": {
+    "registry": "SWEDEN_SLV",
+    "food_number": 1263,
+    "description": "Pike-perch raw",
+    "scientific_name": "Sander lucioperca",
+    "registry_url": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/1263/naringsvarden?sprak=2",
+    "nutrient": "Selenium, Se",
+    "nutrient_eurofir": "SE",
+    "value_type": "Single analytical value of composite sample",
+    "value_type_code": "MN",
+    "method": "Analytical result(s), ICP minerals",
+    "source_type": "Independent laboratory",
+    "reference": "Analytical protocol Dnr 2646/01"
+  },
+  "recovery": {
+    "field": "selenium_ug",
+    "previous_value": null,
+    "value": 22.6,
+    "unit": "µg/100g",
+    "method": "ANALYTICAL_REPORTED"
+  },
+  "source_run": 37861549737,
+  "status": "IDENTITY_AND_MACRO_PARITY_CHECKED",
+  "production_permission": "STAGING_ONLY"
+}
