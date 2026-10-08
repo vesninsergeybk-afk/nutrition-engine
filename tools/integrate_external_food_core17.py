@@ -94,8 +94,30 @@ def extend_method_bundle(path, *, zipped=False):
 def build(preview_file: Path):
     preview = json.loads(preview_file.read_text(encoding="utf-8"))
     check(len(preview) == 32, "Step 4F evidence must contain 32 preview cards")
-    chosen = [copy.deepcopy(p) for p in preview if p.get("external_import_v15", {}).get("tier") == "CORE"]
-    check(len(chosen) == 17, f"Expected 17 CORE cards, got {len(chosen)}")
+    core_pool = [copy.deepcopy(p) for p in preview if p.get("external_import_v15", {}).get("tier") == "CORE"]
+    check(len(core_pool) == 17, f"Expected 17 CORE proposals, got {len(core_pool)}")
+    quarantined = []
+    chosen = []
+    for candidate in core_pool:
+        provenance = candidate.get("hei_equiv_provenance") or {}
+        nutrition_row = normalize(candidate.get("name", ""))
+        hei_row = normalize(provenance.get("description", ""))
+        if provenance.get("status") == "OFFICIAL_EXACT" and (
+            ("fresh" in nutrition_row and "dried" in hei_row) or
+            ("dried" in nutrition_row and "fresh" in hei_row)
+        ):
+            quarantined.append({
+                "key": candidate["key"], "name_ru": candidate["name_ru"],
+                "reason": "HEI_OFFICIAL_EXACT_STATE_MISMATCH",
+                "nutrition_row": candidate.get("name"),
+                "hei_source_row": provenance.get("description")
+            })
+        else:
+            chosen.append(candidate)
+    check(len(chosen) == 16 and len(quarantined) == 1 and
+          quarantined[0]["key"] == "ext_spice_thyme",
+          f"Unexpected scientific quarantine: {quarantined}")
+
     base = []
     base_hashes = {}
     for i in range(1, 13):
@@ -154,7 +176,7 @@ def build(preview_file: Path):
             "source_id": p.get("source_id",""),
             "source_dataset": p.get("source_dataset",""),
             "source_url": p.get("source_url",""),
-            "source_version": p.get("source_version","unknown"),
+            "source_version": p.get("source_version") or "unknown",
             "food_state": p.get("state","unspecified"),
             "review_status": "REVIEW_REQUIRED",
             "confidence_tier": "MEDIUM",
@@ -172,7 +194,7 @@ def build(preview_file: Path):
         seen_sources.add(src)
 
     check(len(base + chosen) == len({p["key"] for p in base + chosen}), "Product keys collide")
-    check(len(base + chosen) == 1122, "Product count changed unexpectedly")
+    check(len(base + chosen) == 1121, "Product count changed unexpectedly")
     save(JSON_OUT, jtext(chosen))
     save(JS_OUT, ("// External reference food pilot; shard 13, generated and reviewed separately.\n"
                   "window.__PRODUCT_SCRIPT_CHUNKS__ = window.__PRODUCT_SCRIPT_CHUNKS__ || [];\n"
@@ -247,10 +269,10 @@ def build(preview_file: Path):
     cfg["asset_bytes"]["deferred_runtime_modern_compressed"] = deferred_sizes["Modern"]
     cfg["asset_bytes"]["deferred_runtime_legacy_compressed"] = deferred_sizes["Legacy"]
     save(conf_path, jtext(cfg, pretty=True))
-    index_path = "index.html"
-    patch_exact(index_path,
-        "./assets/runtime/runtime-manifest-v6.0.0-beta6.js?v=v6-needs-checkpoint-2026-09-11",
-        "./assets/runtime/runtime-manifest-v6.0.0-beta6.js?v="+VERSION)
+    for index_path in ("index.html", "index-v5.3.210.html"):
+        patch_exact(index_path,
+            "./assets/runtime/runtime-manifest-v6.0.0-beta6.js?v=v6-needs-checkpoint-2026-09-11",
+            "./assets/runtime/runtime-manifest-v6.0.0-beta6.js?v="+VERSION)
 
     for path, expected in base_hashes.items():
         check(hashlib.sha256((ROOT/path).read_bytes()).hexdigest()==expected,
@@ -261,6 +283,7 @@ def build(preview_file: Path):
       "added": len(chosen), "total": len(all_products), "shard_count": 13,
       "keys": [p["key"] for p in chosen],
       "names_ru": [p["name_ru"] for p in chosen],
+      "quarantined": quarantined,
       "all_33_nutrients_numeric": True, "all_10_hei_equivalents_numeric": True,
       "all_review_required": True, "unknown_added_sugar_reported_as_assumption": True,
       "energy_hei_calculation_core_changed": False, "production_published": False,
