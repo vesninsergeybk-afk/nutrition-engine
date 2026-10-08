@@ -9,6 +9,7 @@ on:
       - "tools/probe_cnf2026_schema.py"
       - "tools/recover_external_food_from_cnf2026.py"
       - "tools/recover_usda_legacy_from_cnf2026.py"
+      - "tools/audit_unresolved_hei_fpid28.py"
   workflow_dispatch:
 
 permissions:
@@ -60,6 +61,18 @@ jobs:
             --cnf-zip /tmp/cnf_fcen_2026.zip \
             --fdc-zip /tmp/usda_sr_legacy2018.zip \
             --blocked .input/step4e_blocked_other.json --output .output
+      - name: Cross-reference 28 unresolved food-pattern identities against official USDA FPID
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 --connect-timeout 15 --max-time 130 \
+            'https://www.ars.usda.gov/ARSUserFiles/80400530/apps/FPID_1718.xls' \
+            -o /tmp/usda_fpid_1718.xls
+          python3 -m pip install --quiet pandas xlrd
+          python3 tools/audit_unresolved_hei_fpid28.py \
+            --blocked .input/step4e_blocked_other.json \
+            --fpid /tmp/usda_fpid_1718.xls \
+            --output .output
       - uses: actions/upload-artifact@v4
         with:
           name: external-food-blocked56-science-ledger
