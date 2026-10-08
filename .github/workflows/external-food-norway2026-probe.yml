@@ -4,6 +4,7 @@ on:
     branches: [data-food-wave3-resolution-20261009]
     paths:
       - "tools/probe_norway2026_food_source.py"
+      - "tools/crosscheck_norway2026_56_nutrients.py"
       - ".github/workflows/external-food-norway2026-probe.yml"
   workflow_dispatch:
 permissions:
@@ -19,6 +20,9 @@ jobs:
           set -euo pipefail
           python3 -m pip install --quiet beautifulsoup4 openpyxl requests
           python3 tools/probe_norway2026_food_source.py \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out .norway-science
+          python3 tools/crosscheck_norway2026_56_nutrients.py \
             --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
             --out .norway-science
       - uses: actions/upload-artifact@v4
