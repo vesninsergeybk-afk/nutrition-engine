@@ -1,0 +1,32 @@
+name: 56-Food Three-Source Field Staging Gate
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/build_external_food_patches_v3.py"
+      - ".github/workflows/external-food-v3-source-staging.yml"
+      - "research/external-food-v15/verified-field-patches/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strict-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate 56 sources and regenerate staging exactly
+        run: |
+          set -euo pipefail
+          python3 tools/build_external_food_patches_v3.py \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --manifest-dir research/external-food-v15/verified-field-patches \
+            --out .reconstructed-food-v3
+          cat .reconstructed-food-v3/field_recovery_three_report.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blocked56-evidence-three-field-staging
+          path: .reconstructed-food-v3/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 21
