@@ -10,6 +10,7 @@ on:
       - "tools/recover_external_food_from_cnf2026.py"
       - "tools/recover_usda_legacy_from_cnf2026.py"
       - "tools/audit_unresolved_hei_fpid28.py"
+      - "tools/probe_foundation2026_schema.py"
   workflow_dispatch:
 
 permissions:
@@ -73,6 +74,17 @@ jobs:
             --blocked .input/step4e_blocked_other.json \
             --fpid /tmp/usda_fpid_1718.xls \
             --output .output
+      - name: Probe newer USDA Foundation Foods 2026 source availability
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 --connect-timeout 15 --max-time 130 \
+            'https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_json_2026-04-30.zip' \
+            -o /tmp/usda_foundation_2026.zip || { echo 'FOUNDATION_2026_UNAVAILABLE'; exit 0; }
+          unzip -t /tmp/usda_foundation_2026.zip >/dev/null || { echo 'FOUNDATION_2026_ZIP_INVALID'; exit 0; }
+          python3 tools/probe_foundation2026_schema.py \
+            --zip /tmp/usda_foundation_2026.zip \
+            --blocked .input/step4e_blocked_other.json --output .output
       - uses: actions/upload-artifact@v4
         with:
           name: external-food-blocked56-science-ledger
