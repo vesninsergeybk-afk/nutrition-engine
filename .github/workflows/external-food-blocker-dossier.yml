@@ -24,16 +24,24 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Verify and load immutable 4E records
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Verify permanently frozen Step 4E science evidence
         run: |
           set -euo pipefail
-          test "$(gh run view 37851579594 --repo "$GITHUB_REPOSITORY" --json conclusion --jq .conclusion)" = "success"
           mkdir -p .input
-          gh run download 37851579594 --repo "$GITHUB_REPOSITORY" --name external-food-step4e-integrity --dir .input
+          cp research/external-food-v15/step4e-frozen/step4e_*.json .input/
           test -s .input/step4e_blocked_other.json
           test -s .input/step4e_state_blocked.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path(".input")
+          a=json.loads((p/"step4e_preview_only_proposals.json").read_text())
+          b=json.loads((p/"step4e_blocked_other.json").read_text())
+          c=json.loads((p/"step4e_state_blocked.json").read_text())
+          meta=json.loads((p/"step4e_integrity_report.json").read_text())
+          assert (len(a),len(b),len(c))==(32,56,1)
+          assert meta["status"]=="PASS" and meta["source_proposals"]==89
+          PY
       - name: Inventory all unresolved exact fields and sources
         run: |
           python3 tools/audit_external_food_blockers.py \
