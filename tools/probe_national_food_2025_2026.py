@@ -15,7 +15,7 @@ def score(a,b):
   a=norm(a);b=norm(b);x=set(a.split());y=set(b.split())
   return round(.65*len(x&y)/len(x|y)+.35*SequenceMatcher(None,a,b).ratio(),4) if x|y else 0
 def loadurl(url):
-  r=requests.get(url,timeout=45,headers={"User-Agent":"nutrition-engine-research/1.0 (academic source quality audit)","Accept":"application/json"})
+  r=requests.get(url,timeout=45,headers={"User-Agent":"nutrition-engine-research/1.0 (academic source quality audit)","Accept":"*/*"})
   print("HTTP",r.status_code,url,"bytes",len(r.content))
   r.raise_for_status()
   return r
@@ -42,6 +42,16 @@ def main():
       "sample":str(sw)[:2500]}
     (dst/"sweden_api_list_preview.json").write_text(json.dumps(sw,ensure_ascii=False,indent=2)[:220000]+"\n")
     print("SWEDEN_LIST_STRUCTURE",json.dumps(report["source_schema"]["sweden"],ensure_ascii=False)[:2500])
+    samples=(sw.get("livsmedel") or [])[:3]
+    for p in samples:
+      try:
+        num=p["nummer"]
+        val=loadurl("https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/"+str(num)+"/naringsvarden?sprak=2").json()
+        print("SWEDEN_NUTRIENT_SAMPLE",num,json.dumps(val,ensure_ascii=False)[:4200])
+        report["source_schema"]["sweden"]["nutrient_example"]=val
+        break
+      except Exception as ex:
+        print("SWEDEN_NUTRIENT_SAMPLE_ERROR",str(ex)[:150])
   except Exception as e:
     report["source_schema"]["sweden"]={"error":type(e).__name__+": "+str(e)[:250]}
     print("SWEDEN_SOURCE_ERROR",report["source_schema"]["sweden"]["error"])
