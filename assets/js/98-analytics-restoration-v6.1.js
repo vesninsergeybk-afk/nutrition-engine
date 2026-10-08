@@ -77,8 +77,12 @@
     var rows=vm&&vm.nutrients||[],row=null,i;
     for(i=0;i<rows.length;i++)if(rows[i]&&rows[i].key==='water_ml'){row=rows[i];break;}
     var c=row&&row.coverage||{};
-    if(row&&number(c.covered)>0&&isFinite(number(row.actual)))
-      return metricSpec(vm,null,'water_ml','Вода из продуктов','мл');
+    if(row&&number(c.covered)>0&&isFinite(number(row.actual))){
+      var html=metricSpec(vm,null,'water_ml','Вода из продуктов','мл');
+      if(number(c.total)>number(c.covered))
+        html=html.replace('</article>','<small>Данные о воде имеются для '+fmt(number(c.covered),0)+' из '+fmt(number(c.total),0)+' продуктов; итог может быть занижен.</small></article>');
+      return html;
+    }
     return '<article class="ar-metric ar-metric-unavailable"><div class="ar-metric-head"><strong>Вода из продуктов</strong><b>нет данных</b></div>'+
       '<span class="ar-meter is-unknown" aria-hidden="true"></span>'+
       '<small>В карточках текущего рациона нет пригодных данных о содержании воды. Ноль здесь не означал бы отсутствие воды.</small></article>';
