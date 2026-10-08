@@ -93,7 +93,7 @@
       metricSpec(vm,null,'carbs_g','Углеводы','г')+waterIntakeMetric(vm)+'</div>';
   }
   function contributorRows(coverage,unit){
-    var items=coverage&&coverage.items||[];
+    var items=Array.isArray(coverage)?coverage:(coverage&&coverage.items||[]);
     if(!items.length)return '<p class="ar-note">Для введённых продуктов подтверждённый вклад не найден.</p>';
     return '<div class="ar-contributors">'+items.map(function(x){
       var share=number(x.share),fill=isFinite(share)?bounded(share):0;
