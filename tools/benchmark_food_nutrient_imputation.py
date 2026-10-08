@@ -32,16 +32,18 @@ def distance(a,b):
     text=1-SequenceMatcher(None,da,db).ratio()
     return macro*.85+text*.15
 
-def predict(target,peers,field):
+def ranked_peers(target,peers):
+    return sorted(((distance(target,p),p) for p in peers), key=lambda v:v[0])
+
+def predict(target,ranked,field):
     eligible=[]
-    for p in peers:
+    for d,p in ranked:
         val=p.get(field)
-        if numeric(val):
-            d=distance(target,p)
-            if math.isfinite(d):eligible.append((d,val,p))
+        if numeric(val) and math.isfinite(d):
+            eligible.append((d,val,p))
+            if len(eligible)==9:break
     if len(eligible)<5:return None
-    eligible.sort(key=lambda x:x[0])
-    selected=eligible[:min(9,len(eligible))]
+    selected=eligible
     w=[1/(.05+d) for d,_,_ in selected]
     mid=sum(w)/2
     running=0
@@ -108,9 +110,10 @@ def main():
     validation_details=[]
     for t in observed:
         peers=[p for p in classes[get_category(t)] if p["key"]!=t["key"]]
+        ranked=ranked_peers(t,peers)
         for field in wanted:
             if field in SKIP_PREDICTION:continue
-            result=predict(t,peers,field)
+            result=predict(t,ranked,field)
             if result is None:continue
             truth=t[field];est=result["estimate"]
             # sAPE has bounded 0..2; no artificially huge MAPE on true zeros.
@@ -136,13 +139,14 @@ def main():
            **p["nutrients"]}
         cat=group(p["family_key"])
         peers=classes.get(cat,[])
+        ranked=ranked_peers(t,peers)
         found={}
         for f in CALCULATOR_FIELDS:
             if p["nutrients"][f] is not None:continue
             if f in SKIP_PREDICTION:
                 found[f]={"status":"NO_RELIABLE_MODEL_PRODUCT_FORMULATION_UNKNOWN"}
                 continue
-            res=predict(t,peers,f)
+            res=predict(t,ranked,f)
             metric=field_metrics.get(f)
             if res:
                 predicted+=1
