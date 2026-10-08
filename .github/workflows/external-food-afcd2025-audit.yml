@@ -27,7 +27,7 @@ jobs:
             'https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20profiles.xlsx' \
             -o /tmp/afcd2025/nutrient-profiles.xlsx
           curl -fsSL --retry 2 --connect-timeout 15 --max-time 90 \
-            'https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20Details.xlsx' \
+            'https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20details.xlsx' \
             -o /tmp/afcd2025/nutrient-details.xlsx
           python3 - <<'PY'
           import zipfile
