@@ -39,10 +39,11 @@ test('real loaded calculator renders progressive analytics and verified-source d
   // Open the first nutrient with a defined source lookup using normal user controls.
   const source=page.locator('#arBody [data-ar-source-key]').first();
   await expect(source).toBeAttached();
-  await source.evaluate(button=>{
-    let parent=button.parentElement;
-    while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;}
-  });
+  const outer=page.locator('#arBody details.ar-group').filter({has:source}).first();
+  const inner=page.locator('#arBody details.ar-detail-row').filter({has:source}).first();
+  if(!(await outer.evaluate(node=>node.open)))await outer.locator(':scope > summary').click();
+  if(!(await inner.evaluate(node=>node.open)))await inner.locator(':scope > summary').click();
+  await expect(source).toBeVisible({timeout:12000});
   await source.click({timeout:10000});
   await expect(page.locator('#arFoodSourcesDialog')).toBeVisible();
   await expect(page.locator('#arSourcesIntro')).toContainText('Проверено');
@@ -79,7 +80,24 @@ test('calculated profile exposes real water reference and full print report is g
   await page.fill('#needs_h','168');
   await page.fill('#needs_w','64');
   await page.selectOption('#needs_activity','moderate');
+  const before=await page.evaluate(()=>({
+    primaryDisabled:document.querySelector('#profileCalculateContinue')?.disabled,
+    canonicalDisabled:document.querySelector('#needs_calc_btn')?.disabled,
+    sex:document.querySelector('#needs_sex')?.value,
+    age:document.querySelector('#needs_age')?.value,
+    height:document.querySelector('#needs_h')?.value,
+    weight:document.querySelector('#needs_w')?.value,
+    activity:document.querySelector('#needs_activity')?.value,
+    state:document.documentElement.getAttribute('data-profile-calculation-state')
+  }));
+  console.log('PROFILE_CALC_PRECHECK',JSON.stringify(before));
   await page.locator('#profileCalculateContinue').click();
+  const after=await page.evaluate(()=>({
+    needsOk:window.__lastNeedsMeta?.ok,
+    canonicalDisabled:document.querySelector('#needs_calc_btn')?.disabled,
+    state:document.documentElement.getAttribute('data-profile-calculation-state')
+  }));
+  console.log('PROFILE_CALC_POSTCHECK',JSON.stringify(after));
   await page.waitForFunction(()=>window.__lastNeedsMeta&&window.__lastNeedsMeta.ok===true,{},{timeout:18000});
 
   const reference=await page.evaluate(()=>({
