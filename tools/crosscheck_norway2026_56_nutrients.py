@@ -40,7 +40,7 @@ def read_sheet(book,name):
  ws=book[name]
  it=ws.iter_rows(values_only=True)
  header=list(next(it))
- return header,{str(r[0]):dict(zip(header,r)) for r in it if r[0] and re.match(r"^\d+\.\d+$",str(r[0]))}
+ return header,{str(r[0]):dict(zip(header,r)) for r in it if r[0] and r[1] and re.match(r"^\d+\.",str(r[0]))}
 def main():
  p=argparse.ArgumentParser()
  for opt in ("blocked","out"):p.add_argument("--"+opt,required=True)
