@@ -38,7 +38,7 @@ def main():
   foods=obj["FoundationFoods"]
   def norm(s):
     s=unicodedata.normalize("NFKC",str(s or "")).casefold()
-    return re.sub(r"\\s+"," ",re.sub(r"[^a-z0-9]+"," ",s)).strip()
+    return re.sub(r"\s+"," ",re.sub(r"[^a-z0-9]+"," ",s)).strip()
   by_name=defaultdict(list)
   for f in foods: by_name[norm(f["description"])].append(f)
   blocked=json.loads(Path(a.blocked).read_text())
