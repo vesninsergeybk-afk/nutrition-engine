@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "record_type": "CROSS_DATASET_IDENTIFIED_FOOD_NUTRIENT_FIELD_RECOVERY",
+  "research_status": "SOURCE_REPORTED_ZERO_WITH_ANALYSIS_SAMPLING_REVIEW",
+  "family_key": "flour arrowroot",
+  "source_primary": {
+    "registry": "GERMANY_BLS",
+    "id": "K550000",
+    "description": "Arrowroot flour"
+  },
+  "source_donor": {
+    "registry": "AUSTRALIA_AFCD",
+    "food_key": "F003983",
+    "description": "Flour, arrowroot",
+    "dataset": "Australian Food Composition Database Release 3, December 2025",
+    "food_derivation": "Analysed",
+    "column": "Selenium (Se) (ug)",
+    "unit": "µg/100g",
+    "sampling_details": "The majority of nutrient data were derived from a composite of 6 samples of flour in Adelaide in 1986. Minerals and vitamins derived from a composite of 8 samples in Adelaide in 1993; see official food-details spreadsheet for exact provenance.",
+    "url": "https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/data-files"
+  },
+  "recovery": {
+    "field": "selenium_ug",
+    "previous_value": null,
+    "value": 0,
+    "method": "SOURCE_REPORTED_ZERO",
+    "explanation": "Numeric zero in source; does not prove chemical absence, may reflect reporting threshold"
+  },
+  "validation": {
+    "macro_parity": "protein 0.3 vs 0.4 g/100g; fat 0.1 vs 0.2 g/100g. Differences large relative but small absolute.",
+    "state": "flour, arrowroot, match exact canonical tokens",
+    "workflow_run": 37859922721
+  },
+  "production_permission": "DENIED_UNTIL_FIELD_SCIENTIFIC_REVIEW"
+}
