@@ -1,0 +1,32 @@
+name: Nutrient Imputation Model Holdout Quality
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/benchmark_food_nutrient_imputation.py"
+      - ".github/workflows/external-food-imputation-benchmark.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  heldout-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Benchmark baseline catalog with masked known nutrients
+        run: |
+          set -euo pipefail
+          python3 tools/benchmark_food_nutrient_imputation.py \
+            --manifest data/products.v5.3.210-p1.3.manifest.json \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --sample-size 200 \
+            --out .imputation-study
+          cat .imputation-study/imputation_heldout_quality_report.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 56food-mask-and-predict-uncertainty-research-only
+          path: .imputation-study/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
