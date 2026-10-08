@@ -12737,6 +12737,21 @@ renderer.domElement.addEventListener("click", (event) => {
 });
 let viewerNeedsRender = true;
 let lastViewerRender = -Infinity;
+const viewerGl = renderer.getContext();
+let viewerRenderFence = null;
+function releaseViewerRenderFence() {
+  if (viewerRenderFence) viewerGl.deleteSync(viewerRenderFence);
+  viewerRenderFence = null;
+}
+function viewerFrameCompleted() {
+  if (!viewerRenderFence) return true;
+  // Poll without blocking the UI. Coalesce changes while the previous frame
+  // is still on the GPU instead of queuing full-body draws at RAF frequency.
+  const status = viewerGl.clientWaitSync(viewerRenderFence, 0, 0);
+  if (status === viewerGl.TIMEOUT_EXPIRED) return false;
+  releaseViewerRenderFence();
+  return true;
+}
 for (const type of ['click', 'input', 'change', 'keydown', 'pointerdown']) {
   document.querySelector('#atlas-page').addEventListener(type, () => { viewerNeedsRender = true; }, {capture:true});
 }
@@ -12751,6 +12766,7 @@ function animate(now = performance.now()) {
   updateMotionPlayback(now);
   updateTsmNativePlayback(now);
   updateMyoArmElbowPlayback(now);
+  if (!viewerFrameCompleted()) return;
   // A stationary atlas does not need to submit the complete body mesh every
   // animation frame. Controls, exercises and motion still repaint immediately;
   // the periodic refresh also covers asynchronously arriving reference assets.
@@ -12759,6 +12775,10 @@ function animate(now = performance.now()) {
   viewerNeedsRender = false;
   lastViewerRender = now;
   renderer.render(scene, camera);
+  if (typeof viewerGl.fenceSync === 'function') {
+    viewerRenderFence = viewerGl.fenceSync(viewerGl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    viewerGl.flush();
+  }
   canvas.dataset.renderedFrames = String((Number(canvas.dataset.renderedFrames) || 0) + 1);
 
   if (appMode === "motion" && motionRenderer && !motionPane?.hidden) {
@@ -12778,6 +12798,7 @@ const webglSession = createWebGLSession({
   canvas,
   renderFrame: animate,
   onLost() {
+    releaseViewerRenderFence();
     clearTimeout(webglRecoveryTimer);
     webglStatus.hidden = false;
     webglReload.hidden = true;
