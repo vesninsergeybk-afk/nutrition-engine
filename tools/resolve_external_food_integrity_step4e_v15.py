@@ -87,10 +87,15 @@ def main():
         if numeric(n.get("salt")) and numeric(n.get("sodium_mg")):
             if abs(n["salt"]-n["sodium_mg"]*2.54/1000)>1e-6:
                 errors.append(f"salt_equation:{fk}")
-        if set(hei)!=set(HEI) or any(not numeric(v) or v<0 for v in hei.values()):
+        issues_for_hei=q.get("issues_after_step4d") or []
+        unresolved="HEI_EQUIVALENTS_UNRESOLVED" in issues_for_hei
+        if unresolved:
+            if q.get("hei_equivalents") is not None:
+                errors.append(f"hei_unresolved_not_null:{fk}")
+        elif set(hei)!=set(HEI) or any(not numeric(v) or v<0 for v in hei.values()):
             errors.append(f"hei_semantics:{fk}")
         hprov=q.get("hei_equiv_provenance_step4d_v15") or q.get("hei_equiv_provenance_import_v15") or {}
-        if hprov.get("status") not in ("OFFICIAL_EXACT","STRUCTURAL_ZERO"):
+        if not unresolved and hprov.get("status") not in ("OFFICIAL_EXACT","STRUCTURAL_ZERO"):
             errors.append(f"hei_provenance_status:{fk}:{hprov.get('status')}")
         if hprov.get("status")=="STRUCTURAL_ZERO" and any(v!=0 for v in hei.values()):
             errors.append(f"structural_zero_nonzero:{fk}")
