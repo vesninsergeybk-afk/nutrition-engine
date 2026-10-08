@@ -65,11 +65,11 @@
   function metricSpec(detail,source,key,short,unit){
     var totals=detail&&detail.snapshot&&detail.snapshot.totals||{};
     var value=number(totals[key]),target=number(el('normInput-'+key)&&el('normInput-'+key).value),known=validTarget(target);
-    var text=fmt(value,key==='kcal'?0:1)+' '+unit;
+    var text=isFinite(value)?fmt(value,key==='kcal'?0:1)+' '+unit:'нет данных';
     var ratio=known&&isFinite(value)?value/target*100:NaN;
     return '<article class="ar-metric"><div class="ar-metric-head"><strong>'+esc(short)+'</strong><b>'+esc(text)+'</b></div>'+
-      (known?pctBar(ratio,short+': '+fmt(ratio,0)+'% от ориентира'):'<span class="ar-meter is-unknown"></span>')+
-      '<small>'+(known?'Ориентир: '+fmt(target,0)+' '+unit+' · '+fmt(ratio,0)+'%':'Ориентир не задан')+'</small></article>';
+      (known&&isFinite(value)?pctBar(ratio,short+': '+fmt(ratio,0)+'% от ориентира'):'<span class="ar-meter is-unknown"></span>')+
+      '<small>'+(known?(isFinite(value)?'Ориентир: '+fmt(target,0)+' '+unit+' · '+fmt(ratio,0)+'%':'Ориентир: '+fmt(target,0)+' '+unit+' · данных о поступлении нет'):'Ориентир не задан')+'</small></article>';
   }
   function macros(vm){
     return '<div class="ar-metrics">'+metricSpec(vm,null,'kcal','Энергия','ккал')+
@@ -80,7 +80,8 @@
     var items=coverage&&coverage.items||[];
     if(!items.length)return '<p class="ar-note">Для введённых продуктов подтверждённый вклад не найден.</p>';
     return '<div class="ar-contributors">'+items.map(function(x){
-      return '<div><strong>'+esc(x.name)+'</strong><span>'+fmt(number(x.value),2)+' '+esc(unit||'')+' · '+fmt(number(x.share),0)+'% вклада</span></div>';
+      var share=number(x.share),fill=isFinite(share)?bounded(share):0;
+      return '<div class="ar-contributor-entry"><div><strong>'+esc(x.name)+'</strong><span>'+fmt(number(x.value),2)+' '+esc(unit||'')+' · '+fmt(share,0)+'% рассчитанного вклада</span></div>'+pctBar(share,'Доля продукта: '+fmt(share,0)+'%')+'</div>';
     }).join('')+'</div>';
   }
   function nutrientRow(row){
@@ -88,15 +89,17 @@
     var complete=isFinite(total)&&total>0&&coverage===total,any=isFinite(coverage)&&coverage>0;
     var valueText=any&&isFinite(value)?fmt(value,2)+' '+esc(row.unit||''):'нет данных';
     var label=row.status&&row.status.label||'Оценка недоступна';
+    var isUpper=row.mode==='upper_limit';
     var canBar=any&&validTarget(target)&&row.mode!=='informational';
     var percent=canBar?value/target*100:NaN;
-    var unit=esc(row.unit||'');
+    var unit=esc(row.unit||''),limitLabel=isUpper?'верхний предел':'ориентир';
+    var quality=row.quality&&row.quality.label?'<span class="ar-quality-label">Достоверность: '+esc(row.quality.label)+'</span>':'';
     return '<details class="ar-detail-row"><summary><span class="ar-row-main"><b>'+esc(row.title)+'</b><small>'+esc(label)+(complete?'':' · неполные данные')+'</small></span>'+
-      '<span class="ar-row-value"><strong>'+valueText+'</strong><small>'+(validTarget(target)?'ориентир '+fmt(target,2)+' '+unit:'ориентир не задан')+'</small>'+
-      (canBar?pctBar(percent,fmt(percent,0)+'% от референсного значения'):'<span class="ar-meter is-unknown"></span>')+'</span></summary>'+
-      '<div class="ar-row-content"><p>'+esc(row.status&&row.status.note||'Числа оцениваются с учётом типа референсного значения; верхний допустимый уровень не является целью.')+'</p>'+
+      '<span class="ar-row-value"><strong>'+valueText+'</strong><small>'+(validTarget(target)?limitLabel+' '+fmt(target,2)+' '+unit:'ориентир не задан')+'</small>'+ 
+      (canBar?pctBar(percent,fmt(percent,0)+'% '+(isUpper?'от верхнего предела':'от референсного значения')):'<span class="ar-meter is-unknown"></span>')+'</span></summary>'+
+      '<div class="ar-row-content"><p>'+esc(row.status&&row.status.note||'Числа оцениваются с учётом типа референсного значения; верхний допустимый уровень не является целью.')+'</p>'+(isUpper?'<p><strong>Верхний предел — не цель потребления.</strong> Заполнение шкалы показывает приближение к указанной границе.</p>':'')+quality+
       (!complete?'<p>Данные имеются для '+fmt(coverage,0)+' из '+fmt(total,0)+' позиций: отсутствующие значения не считаются нулями.</p>':'')+
-      '<h4>Источники в вашем рационе</h4>'+contributorRows(c,row.unit)+
+      '<h4>Источники в вашем рационе</h4>'+contributorRows(c,row.unit)+'<button type="button" class="secondary ar-source-open" data-ar-source-key="'+esc(row.key)+'">Посмотреть продукты в справочнике</button>'+
       '<p class="ar-note">Показаны только добавленные продукты. Список не является рейтингом продуктов в общем каталоге.</p></div></details>';
   }
   function nutrientGroups(vm){
