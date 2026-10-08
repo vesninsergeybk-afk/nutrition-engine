@@ -66,6 +66,8 @@ vm.runInNewContext(source,{window,document,Event:class Event{},CustomEvent:class
 assert(nodes.nutritionInsightDashboard,'section inserted');
 assert.match(nodes.arBody.innerHTML,/Витамин A/);
 assert.match(nodes.arBody.innerHTML,/Морковь/);
+assert.match(nodes.arBody.innerHTML,/data-ar-source-key="vitamin_a"/);
+assert.match(nodes.arBody.innerHTML,/рассчитанного вклада/);
 assert.match(nodes.arBody.innerHTML,/неполные данные/);
 assert.match(nodes.arBody.innerHTML,/74,5/);
 assert.match(nodes.arBody.innerHTML,/Качество × структура/);
@@ -86,6 +88,7 @@ assert.match(printed,/canonical-report/);
 assert.match(printed,/Наглядный разбор показателей/);
 assert.match(printed,/<details open/);
 assert.equal(printedCount,1);
+assert.match(printed,/data-ar-source-key=/);
 data={items:0,hei:{model:{total:0},rows:[]}};
 window.NutritionAnalyticsRestorationV1.refresh();
 assert.match(nodes.arBody.innerHTML,/Графики появятся/);
