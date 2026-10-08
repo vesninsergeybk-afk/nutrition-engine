@@ -73,7 +73,13 @@ assert.match(nodes.arBody.innerHTML,/74,5/);
 assert.match(nodes.arBody.innerHTML,/data-ar-hei-jump="total_veg"/);
 assert.match(nodes.arBody.innerHTML,/ar-hei-overview/);
 assert.match(nodes.arBody.innerHTML,/Качество × структура/);
-assert.match(nodes.arBody.innerHTML,/Вода в рационе/);
+assert.match(nodes.arBody.innerHTML,/Вода из продуктов/);
+assert.match(nodes.arBody.innerHTML,/нет пригодных данных/,'without a water field, report missing rather than fake zero');
+data.nutrients.push({key:'water_ml',title:'Вода',unit:'мл',actual:900,mode:'informational',group:'other',
+  coverage:{covered:1,total:2,items:[]},status:{label:'Неполные данные'}});
+window.NutritionAnalyticsRestorationV1.refresh();
+assert.match(nodes.arBody.innerHTML,/900 мл/);
+assert.match(nodes.arBody.innerHTML,/может быть занижен/);
 assert.match(nodes.arNeedsExtra.innerHTML,/2,5 л\/сут/);
 assert.match(nodes.arNeedsExtra.innerHTML,/4 приёма/);
 assert.equal(typeof events['needs:computed'],'function','listen to non-bubbling document event');
