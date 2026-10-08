@@ -1,4 +1,4 @@
-name: 56-Food Three-Source Field Staging Gate
+name: 56-Food Six-Source Field Staging Gate
 on:
   push:
     branches: [data-food-wave3-resolution-20261009]
@@ -22,10 +22,10 @@ jobs:
             --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
             --manifest-dir research/external-food-v15/verified-field-patches \
             --out .reconstructed-food-v3
-          cat .reconstructed-food-v3/field_recovery_three_report.json >> "$GITHUB_STEP_SUMMARY"
+          cat .reconstructed-food-v3/field_recovery_six_report.json >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
-          name: blocked56-evidence-three-field-staging
+          name: blocked56-evidence-six-field-staging
           path: .reconstructed-food-v3/
           include-hidden-files: true
           if-no-files-found: error
