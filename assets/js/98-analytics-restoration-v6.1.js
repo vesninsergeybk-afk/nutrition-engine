@@ -164,7 +164,7 @@
     var has=vm.items>0&&isFinite(hei)&&isFinite(structure);
     var x=has?bounded(structure):50,y=has?bounded(hei):50;
     return '<section class="ar-block"><div class="ar-block-title"><h3>Качество × структура</h3><p>Две самостоятельные оценки: HEI‑2020 по вертикали и авторская структурная модель по горизонтали.</p></div>'+
-      '<div class="ar-matrix-layout"><div class="ar-matrix" role="img" aria-label="'+(has?'HEI '+fmt(hei,0)+' из 100; структурная оценка '+fmt(structure,0)+' из 100':'Матрица появится после расчёта')+'"><span class="ar-matrix-point" style="left:'+x+'%;bottom:'+y+'%"></span><span class="ar-axis ar-axis-y">HEI ↑</span><span class="ar-axis ar-axis-x">Структура →</span><span class="ar-tick ar-tick-y100">100</span><span class="ar-tick ar-tick-zero">0</span><span class="ar-tick ar-tick-x100">100</span></div>'+
+      '<div class="ar-matrix-layout"><div class="ar-matrix" role="img" aria-label="'+(has?'HEI '+fmt(hei,0)+' из 100; структурная оценка '+fmt(structure,0)+' из 100':'Матрица появится после расчёта')+'">'+(has?'<span class="ar-matrix-point" style="left:'+x+'%;bottom:'+y+'%"></span>':'')+'<span class="ar-axis ar-axis-y">HEI ↑</span><span class="ar-axis ar-axis-x">Структура →</span><span class="ar-tick ar-tick-y100">100</span><span class="ar-tick ar-tick-zero">0</span><span class="ar-tick ar-tick-x100">100</span></div>'+
       '<div class="ar-matrix-copy"><b>'+(has?'HEI '+fmt(hei,0)+' / структура '+fmt(structure,0):'Ожидаем данные')+'</b>'+
       '<p>'+(has?'Точка отображает два показателя текущего рациона. Сопоставляйте их с подробным разбором, а не как медицинский диагноз.':'Профиль появится после ввода продуктов и расчёта обеих осей.')+'</p>'+
       '<p class="ar-note">Структурный показатель является дополнительной моделью данного калькулятора и не тождественен HEI.</p></div></div></section>';
@@ -188,7 +188,7 @@
     var api=w.WorkspaceReportHF13;
     if(!api||!api.buildDocumentHtml||!api.buildReportModel)return false;
     var win=w.open('','_blank','width=1040,height=880,scrollbars=yes,resizable=yes');
-    if(!win)return true;
+    if(!win){try{w.alert('Браузер заблокировал окно отчёта. Разрешите всплывающие окна и повторите действие.');}catch(_){}return false;}
     try{
       var opts={detailedNutrients:true,fullHei:true,contributors:true,appliedChanges:true,methodology:true};
       var model=api.buildReportModel(opts),vm=detail();
