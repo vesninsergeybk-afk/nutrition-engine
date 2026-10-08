@@ -75,6 +75,10 @@ linear-gradient(to top,transparent 49.7%,#d9e1ea 50%,transparent 50.3%),#fafbfd}
 .ar-axis{position:absolute;font-size:11px;font-weight:750;color:#5d6f86}
 .ar-axis-y{left:7px;top:7px}
 .ar-axis-x{right:7px;bottom:7px}
+.ar-tick{position:absolute;color:#6b7b91;font-size:10px;line-height:1;pointer-events:none}
+.ar-tick-y100{top:-13px;left:0}
+.ar-tick-zero{bottom:-14px;left:0}
+.ar-tick-x100{bottom:-14px;right:0}
 .ar-matrix-copy b{font-size:18px;color:#24344c}
 .ar-matrix-copy p{max-width:510px;color:#536176;font-size:13px;line-height:1.55}
 .ar-needs-extra{margin-top:13px;padding:14px;border:1px solid #dce3eb;border-radius:12px;background:#fbfcfe}
