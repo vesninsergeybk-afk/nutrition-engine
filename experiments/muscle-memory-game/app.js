@@ -12141,6 +12141,7 @@ async function loadSelectedModel(source) {
   const requestedSource = source === "bodyparts4" ? "bodyparts4" : "z-anatomy";
   workspaceReady = false;
   canvas.dataset.workspaceReady = "false";
+  document.dispatchEvent(new Event("vesninmed:workspace-readiness"));
   modelSource.disabled = true;
   loadingEl.classList.remove("is-hidden");
   loadingEl.textContent = "Загружаю анатомическую модель…";
@@ -12174,6 +12175,7 @@ async function loadSelectedModel(source) {
     }
     workspaceReady = true;
     canvas.dataset.workspaceReady = "true";
+    document.dispatchEvent(new Event("vesninmed:workspace-readiness"));
     loadingEl.classList.add("is-hidden");
     modelSource.disabled = false;
     scheduleWorkspaceSave();
