@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "record_type": "CROSS_DATASET_IDENTIFIED_FOOD_NUTRIENT_FIELD_RECOVERY",
+  "research_status": "MATCHED_FOOD_AND_MACRO_PROFILE_SCIENTIFIC_REVIEW_REQUIRED",
+  "family_key": "spice saffron",
+  "source_primary": {
+    "registry": "USDA_FDC",
+    "fdc_id": "170934",
+    "description": "Spices, saffron"
+  },
+  "source_donor": {
+    "registry": "UK_COFID",
+    "food_code": "13-852",
+    "description": "Saffron",
+    "dataset": "McCance and Widdowson's Composition of Foods Integrated Dataset 2021",
+    "column": "Total sugars (g)",
+    "source_food_reference": "Marsh et al. (1977) Composition of foods: spices and herbs, raw, processed and prepared, Agriculture Handbook No. 8-2",
+    "url": "https://www.gov.uk/government/publications/composition-of-foods-integrated-dataset-cofid"
+  },
+  "recovery": {
+    "field": "sugar_per_100g",
+    "previous_value": null,
+    "value": 42.4,
+    "unit": "g/100g",
+    "method": "SOURCE_REPORTED",
+    "donor_claim_scope": "cofid_record_food_name_semantically_equivalent_macro_profile_match"
+  },
+  "macro_parity": {
+    "kcal": {
+      "old": 310,
+      "donor": 310
+    },
+    "protein_per_100g": {
+      "old": 11.43,
+      "donor": 11.4
+    },
+    "fat_per_100g": {
+      "old": 5.85,
+      "donor": 5.9
+    },
+    "carbs_per_100g": {
+      "old": 65.37,
+      "donor": 61.5
+    }
+  },
+  "ci_workflow": 37858984084,
+  "research_permission": "STAGING_ONLY",
+  "production_permission": "DENIED_UNTIL_SCIENTIFIC_REVIEW_AND_RUNTIME_GATES"
+}
