@@ -118,8 +118,7 @@ jobs:
             assets/js/00-runtime-bootstrap-v6.0.0-beta6.js \
             assets/legacy/js/00-runtime-bootstrap-v6.0.0-beta6.legacy.js \
             assets/runtime/runtime-manifest-v6.0.0-beta6.js \
-            index.html \
-            reports/external-food-core17-integration.json
+            index.html
           if git diff --cached --quiet; then
             echo 'Nothing to stage; already generated.'
           else
