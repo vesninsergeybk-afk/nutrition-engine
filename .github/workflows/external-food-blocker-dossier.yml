@@ -7,6 +7,7 @@ on:
       - "tools/audit_external_food_blockers.py"
       - ".github/workflows/external-food-blocker-dossier.yml"
       - "tools/probe_cnf2026_schema.py"
+      - "tools/recover_external_food_from_cnf2026.py"
   workflow_dispatch:
 
 permissions:
@@ -46,6 +47,9 @@ jobs:
             -o /tmp/cnf_fcen_2026.zip || { echo 'CNF_2026_HTTP_DOWNLOAD_UNAVAILABLE'; exit 0; }
           unzip -t /tmp/cnf_fcen_2026.zip >/dev/null || { echo 'CNF_2026_ZIP_INVALID'; exit 0; }
           python3 tools/probe_cnf2026_schema.py --zip /tmp/cnf_fcen_2026.zip \
+            --blocked .input/step4e_blocked_other.json --output .output
+          python3 tools/recover_external_food_from_cnf2026.py \
+            --zip /tmp/cnf_fcen_2026.zip \
             --blocked .input/step4e_blocked_other.json --output .output
       - uses: actions/upload-artifact@v4
         with:
