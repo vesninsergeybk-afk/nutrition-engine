@@ -40,4 +40,5 @@ jobs:
           name: external-food-blocked56-science-ledger
           path: .output/
           retention-days: 21
+          include-hidden-files: true
           if-no-files-found: error
