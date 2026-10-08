@@ -27,6 +27,10 @@ jobs:
           python3 tools/probe_fineli16_release.py \
             --source .historical-fineli/data/Fineli_Rel16_open \
             --out .fineli-research
+          python3 tools/crosscheck_fineli16_nutrients.py \
+            --source .historical-fineli/data/Fineli_Rel16_open \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out .fineli-research
       - uses: actions/upload-artifact@v4
         with:
           name: historical-fineli16-source-audit
