@@ -27,6 +27,14 @@ test('real loaded calculator renders progressive analytics and verified-source d
   await expect(page.locator('#arBody .ar-metric')).toHaveCount(5);
   await expect(page.locator('#arBody')).toContainText('Нутриенты и минералы');
   await expect(page.locator('#arBody')).toContainText('Качество × структура');
+  await expect(page.locator('#nutritionInsightDashboard')).toBeVisible();
+  const heiRows=await page.evaluate(()=>{
+    const rows=window.NutritionAnalysisWorkspaceHF7.getViewModel().hei.rows||[];
+    return rows.filter(x=>Array.isArray(x.contributors&&x.contributors.positive)&&x.contributors.positive.length).map(x=>x.key);
+  });
+  expect(heiRows.length).toBeGreaterThan(0);
+  await expect(page.locator('#arBody [data-ar-hei-key="'+heiRows[0]+'"] .ar-contributor-entry').first()).toBeAttached();
+  await expect(page.locator('#arBody .ar-hei-jump')).toHaveCount(13);
 
   // Open the first nutrient with a defined source lookup using normal user controls.
   const source=page.locator('#arBody [data-ar-source-key]').first();
@@ -54,4 +62,57 @@ test('mobile analytics remain within viewport and source lookup is keyboard reac
   });
   expect(metrics.sourceExists).toBe(true);
   expect(metrics.scroll).toBeLessThanOrEqual(metrics.client+2);
+});
+
+
+test('calculated profile exposes real water reference and full print report is generated from canonical model',async({page,loadApp})=>{
+  await page.setViewportSize({width:1280,height:900});
+  await loadApp();
+  const sex=page.locator('#needs_sex');
+  if(!(await sex.isVisible())){
+    const toggle=page.locator('#v40NeedsToggle');
+    if(await toggle.count())await toggle.click();
+  }
+  await expect(sex).toBeVisible();
+  await sex.selectOption('female');
+  await page.fill('#needs_age','42');
+  await page.fill('#needs_h','168');
+  await page.fill('#needs_w','64');
+  await page.selectOption('#needs_activity','moderate');
+  await page.locator('#profileCalculateContinue').click();
+  await page.waitForFunction(()=>window.__lastNeedsMeta&&window.__lastNeedsMeta.ok===true,{},{timeout:18000});
+
+  const reference=await page.evaluate(()=>({
+    water:window.__lastNeedsMeta.waterReference,
+    state:document.documentElement.getAttribute('data-profile-calculation-state')
+  }));
+  expect(reference.state).toBe('current');
+  await expect(page.locator('#arNeedsExtra .ar-water')).toContainText('Общее поступление воды');
+  const expected=reference.water.valueL?Number(reference.water.valueL).toLocaleString('ru-RU',{maximumFractionDigits:1}):null;
+  if(expected)await expect(page.locator('#arNeedsExtra .ar-water')).toContainText(expected);
+
+  await page.evaluate(()=>{
+    const food=window.DB.items.find(p=>p&&p.kcal>0&&p.protein_per_100g>0&&p.hidden_from_search!==true);
+    if(!food)throw new Error('No test food in real catalog');
+    window.State.add(food.key,150);
+  });
+  await page.waitForFunction(()=>document.querySelector('#arBody .ar-primary .ar-metrics'),null,{timeout:18000});
+  const printResult=await page.evaluate(()=>{
+    let printed=null,count=0;
+    const previous=window.open;
+    window.open=()=>({
+      document:{open(){},write(html){printed=html;},close(){},body:{textContent:''}},
+      focus(){},setTimeout(fn){fn();},print(){count++;}
+    });
+    let ok;
+    try{ok=window.NutritionAnalyticsRestorationV1.print();}finally{window.open=previous;}
+    return {ok,count,html:printed};
+  });
+  expect(printResult.ok).toBe(true);
+  expect(printResult.count).toBe(1);
+  expect(printResult.html).toContain('workspace-report-cover');
+  expect(printResult.html).toContain('Наглядный разбор показателей');
+  expect(printResult.html).toContain('Показатели');
+  expect(printResult.html.indexOf('workspace-report-cover')).toBeLessThan(printResult.html.indexOf('Наглядный разбор показателей'));
+  expect(printResult.html).not.toMatch(/<button[^>]+data-ar-source-key/);
 });
