@@ -1,0 +1,68 @@
+name: External Foods Wave 2 Audit
+
+on:
+  push:
+    branches: [data-food-wave2-audit-20261009]
+    paths:
+      - ".github/workflows/external-food-wave2-audit.yml"
+      - "tools/audit_external_food_wave2.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  inspect-next15:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout unchanged baseline and audit script
+        uses: actions/checkout@v4
+      - name: Checkout original Step 4F adapter
+        uses: actions/checkout@v4
+        with:
+          ref: data-source-expansion
+          path: .research
+          persist-credentials: false
+      - name: Checkout latest isolated pilot
+        uses: actions/checkout@v4
+        with:
+          ref: integration/food-pilot-core17-20261009
+          path: .pilot
+          persist-credentials: false
+      - name: Download passed Step 4E evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(gh run view 37851579594 --repo "$GITHUB_REPOSITORY" --json conclusion --jq .conclusion)" = "success"
+          mkdir -p .step4e
+          gh run download 37851579594 --repo "$GITHUB_REPOSITORY" --name external-food-step4e-integrity --dir .step4e
+          test -s .step4e/step4e_preview_only_proposals.json
+      - name: Reproduce Step 4F exactly from existing evidence
+        run: |
+          python3 .research/tools/build_external_food_preview_step4f_v15.py \
+            --proposals .step4e/step4e_preview_only_proposals.json \
+            --current-glob 'data/products.v5.3.210-p1.3.part-*.json' \
+            --out-dir .stage4f
+      - name: Audit remaining 15 with states, FPID, macronutrients and provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/audit_external_food_wave2.py \
+            --preview .stage4f/step4f_new_preview_products.json \
+            --pilot .pilot/data/products.external-food-core17.part-13.json \
+            --out .stage4f/wave2_audit.json
+          cat .stage4f/wave2_summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve audit evidence without product import
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-wave2-staging-audit
+          path: |
+            .stage4f/wave2_audit.json
+            .stage4f/wave2_summary.md
+            .stage4f/step4f_preview_report.json
+          retention-days: 14
+          if-no-files-found: error
