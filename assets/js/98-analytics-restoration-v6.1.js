@@ -63,13 +63,19 @@
       mealRows(meta,selected)+'<p class="ar-note">Доли по приёмам — выбираемая схема, а не физиологическая норма. Энергия и БЖУ распределяются по одной выбранной схеме только при наличии соответствующих расчётных целей.</p>';
   }
   function metricSpec(detail,source,key,short,unit){
-    var totals=detail&&detail.snapshot&&detail.snapshot.totals||{};
-    var value=number(totals[key]),target=number(el('normInput-'+key)&&el('normInput-'+key).value),known=validTarget(target);
-    var text=isFinite(value)?fmt(value,key==='kcal'?0:1)+' '+unit:'нет данных';
+    var totals=detail&&detail.snapshot&&detail.snapshot.totals||{},rows=detail&&detail.nutrients||[],row=null,i;
+    for(i=0;i<rows.length;i++)if(rows[i]&&rows[i].key===key){row=rows[i];break;}
+    var cov=row&&row.coverage||{},quality=row&&row.quality||{};
+    var covered=number(cov.covered),total=number(cov.total),missing=number(quality.missing),assumed=number(quality.assumed);
+    var absent=isFinite(total)&&total>0&&covered===0;
+    var incomplete=(isFinite(total)&&total>0&&covered<total)||(isFinite(missing)&&missing>0)||(isFinite(assumed)&&assumed>0);
+    var value=absent?NaN:number(totals[key]),target=number(el('normInput-'+key)&&el('normInput-'+key).value),known=validTarget(target);
+    var title=isFinite(value)?fmt(value,key==='kcal'?0:1)+' '+unit:'нет данных';
     var ratio=known&&isFinite(value)?value/target*100:NaN;
-    return '<article class="ar-metric"><div class="ar-metric-head"><strong>'+esc(short)+'</strong><b>'+esc(text)+'</b></div>'+
+    return '<article class="ar-metric"><div class="ar-metric-head"><strong>'+esc(short)+'</strong><b>'+esc(title)+'</b></div>'+
       (known&&isFinite(value)?pctBar(ratio,short+': '+fmt(ratio,0)+'% от ориентира'):'<span class="ar-meter is-unknown"></span>')+
-      '<small>'+(known?(isFinite(value)?'Ориентир: '+fmt(target,0)+' '+unit+' · '+fmt(ratio,0)+'%':'Ориентир: '+fmt(target,0)+' '+unit+' · данных о поступлении нет'):'Ориентир не задан')+'</small></article>';
+      '<small>'+(known?(isFinite(value)?'Ориентир: '+fmt(target,0)+' '+unit+' · '+fmt(ratio,0)+'%':'Ориентир: '+fmt(target,0)+' '+unit+' · данных о поступлении нет'):'Ориентир не задан')+'</small>'+
+      (incomplete?'<small class="ar-metric-quality">Сведения есть не для всех продуктов либо содержат допущения; поступление может быть занижено.</small>':'')+'</article>';
   }
   function waterIntakeMetric(vm){
     /* Product catalog shards can omit water/moisture altogether. A zero total in
