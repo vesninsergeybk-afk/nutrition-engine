@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "research_status": "PROVISIONAL_NOT_SOURCE_MEASURED",
+  "dataset": "Fineli Release 16.0 (2014), CC BY 4.0",
+  "publisher": "Finnish Institute for Health and Welfare (THL)",
+  "archived_mirror": "https://github.com/mafredri/fineli-sql/tree/98fbfd01e0e841ff707d52750437940429fab93d/data/Fineli_Rel16_open",
+  "evidence_run": 37859379411,
+  "imputed_fields": [
+    {
+      "family_key": "flour oat",
+      "field": "selenium_ug",
+      "source_food_id": "30190",
+      "source_name": "OAT FLOUR",
+      "component": "SE",
+      "value": 8.6,
+      "unit": "µg/100g",
+      "source_acquisition_code": "S",
+      "source_method_code": "I",
+      "source_method": "imputed/estimated from related food",
+      "status": "UNVALIDATED_DIETARY_ESTIMATE",
+      "uncertainty": "HIGH_SOIL_DEPENDENT_SELENIUM",
+      "may_publish_as_measured": false
+    },
+    {
+      "family_key": "flour oat",
+      "field": "vitamin_c_mg",
+      "source_food_id": "30190",
+      "source_name": "OAT FLOUR",
+      "component": "VITC",
+      "value": 0,
+      "unit": "mg/100g",
+      "source_acquisition_code": "S",
+      "source_method_code": "I",
+      "source_method": "imputed/estimated from related food",
+      "status": "UNVALIDATED_STRUCTURAL_ZERO_ESTIMATE",
+      "uncertainty": "IMPUTED_NOT_ANALYTICALLY_TESTED",
+      "may_publish_as_measured": false
+    },
+    {
+      "family_key": "spice pepper white",
+      "field": "sugar_per_100g",
+      "source_food_id": "11178",
+      "source_name": "PEPPER, WHITE",
+      "component": "SUGAR",
+      "value": 0,
+      "unit": "g/100g",
+      "source_acquisition_code": "S",
+      "source_method_code": "S",
+      "source_method": "summation from constituent components",
+      "status": "UNVALIDATED_CALCULATED_ZERO_ESTIMATE",
+      "uncertainty": "SUMMATION_ZERO_NOT_CONFIRMED_BY_ANALYSIS",
+      "may_publish_as_measured": false
+    }
+  ],
+  "production_permission": "DENIED_UNTIL_INDEPENDENT_SCIENTIFIC_REVIEW"
+}
