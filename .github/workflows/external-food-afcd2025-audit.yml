@@ -44,6 +44,11 @@ jobs:
             --nutrients /tmp/afcd2025/nutrient-profiles.xlsx \
             --details /tmp/afcd2025/nutrient-details.xlsx \
             --out .afcd-review
+          python3 tools/recover_afcd2025_food_nutrients.py \
+            --foods /tmp/afcd2025/food-details.xlsx \
+            --nutrients /tmp/afcd2025/nutrient-profiles.xlsx \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out .afcd-review
       - uses: actions/upload-artifact@v4
         with:
           name: afcd2025-verified-source-inspection
