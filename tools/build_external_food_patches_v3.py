@@ -18,11 +18,13 @@ def main():
     assert len(original)==56
     patched=copy.deepcopy(original)
     manifests=[read(p) for p in sorted(Path(a.manifest_dir).glob("*.json"))]
-    assert len(manifests)>=3, "Require known three source records"
+    assert len(manifests)>=3, "Require at least three source records"
     allowed={
        ("flour spelt","vitamin_b9_mcg"):("USDA_FDC",2003587,38.4),
        ("spice saffron","sugar_per_100g"):("UK_COFID","13-852",42.4),
-       ("flour arrowroot","selenium_ug"):("AUSTRALIA_AFCD","F003983",0)
+       ("flour arrowroot","selenium_ug"):("AUSTRALIA_AFCD","F003983",0),
+       ("zander","selenium_ug"):("SWEDEN_SLV",1263,22.6),
+       ("flour buckwheat","vitamin_c_mg"):("SWEDEN_SLV",1930,0)
     }
     assert len(manifests)==len(allowed),"Unreviewed extra patch requires explicit admission"
     list_changed=[]
@@ -49,13 +51,24 @@ def main():
            method="SOURCE_REPORTED"
            source_dataset=manifest["source_donor"]["dataset"]
            scientist_review="CROSS_DATASET_MATCH_SCIENTIFIC_REVIEW_REQUIRED"
-       else:
+       elif fk=="flour arrowroot":
            assert p["primary_source"]["source_registry_id"]=="GERMANY_BLS"
            assert str(p["primary_source"]["source_record_id"])=="K550000"
            assert manifest["source_donor"]["food_key"]=="F003983"
            method="SOURCE_REPORTED_ZERO"
            source_dataset=manifest["source_donor"]["dataset"]
            scientist_review="REPORTED_ZERO_REPORTING_LIMIT_SCIENTIFIC_REVIEW_REQUIRED"
+       elif fk in ("zander","flour buckwheat"):
+           assert p["primary_source"]["source_registry_id"]=="GERMANY_BLS"
+           expected_primary_id="T603100" if fk=="zander" else "C424000"
+           assert str(p["primary_source"]["source_record_id"])==expected_primary_id
+           assert manifest["source_donor"]["food_number"]==record_id
+           method=manifest["recovery"]["method"]
+           source_dataset="Swedish Food Agency / Livsmedelsdatabasen 2026"
+           scientist_review=("INDEPENDENT_LAB_RAW_FISH" if fk=="zander"
+              else "SOURCE_LOGICALLY_DEDUCED_ZERO")
+       else:
+           raise AssertionError("Unreviewed family profile "+fk)
        p["nutrients"][field]=expected
        p["nutrient_provenance_final_v15"][field]={
            "method":method,"source_registry_id":registry,"source_record_id":str(record_id),
@@ -76,24 +89,24 @@ def main():
             if p1["nutrients"][f]!=v:
                 assert v is None and (p0["family_key"],f) in allowed
                 diffs.append((p0["family_key"],f))
-    assert len(diffs)==3,diffs
+    assert len(diffs)==5,diffs
     before=sum(v is None for p in original for v in p["nutrients"].values())
     after=sum(v is None for p in patched for v in p["nutrients"].values())
-    assert before==179 and after==176
+    assert before==179 and after==174
     assert sum(p["nutrients"]["choline_mg"] is None for p in patched)==41
     assert sum(p.get("hei_equivalents") is None for p in patched)==28
     assert sum("MISSING_CALCULATOR_NUTRIENTS" in p["issues_after_step4d"] for p in patched)==52
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
-    (out/"blocked56_source_recovered3_staging_only.json").write_text(json.dumps(patched,ensure_ascii=False,indent=2)+"\n")
+    (out/"blocked56_source_recovered5_staging_only.json").write_text(json.dumps(patched,ensure_ascii=False,indent=2)+"\n")
     report={
         "status":"PASS_STAGING_NOT_SCIENTIFIC_PUBLICATION_APPROVAL",
-        "source_verified_observations":3,"field_changes":list_changed,
-        "unfilled_nutrient_fields_before":179,"unfilled_nutrient_fields_after":176,
+        "source_verified_observations":5,"field_changes":list_changed,
+        "unfilled_nutrient_fields_before":179,"unfilled_nutrient_fields_after":174,
         "hei_unresolved_profiles":28,"blocked_profiles":56,
         "all_preexisting_nutrients_unchanged":True,
         "runtime_changes":0,"production_ready":False
     }
-    (out/"field_recovery_three_report.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
+    (out/"field_recovery_five_report.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
     print("RECONSTRUCTED_NUTRIENT_STAGING",json.dumps(report,ensure_ascii=False))
 if __name__=="__main__":
     main()
