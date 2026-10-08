@@ -1,0 +1,37 @@
+name: FNDDS 2024 Nutrient Source Comparison
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/probe_fndds2024_food_sources.py"
+      - ".github/workflows/external-food-fndds-comparison.yml"
+      - "tools/recover_fndds2024_nutrients.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download official FNDDS 2024-10-31 archive
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 --connect-timeout 15 --max-time 160 \
+            'https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_survey_food_csv_2024-10-31.zip' \
+            -o /tmp/fndds2024.zip
+          unzip -t /tmp/fndds2024.zip >/dev/null
+      - name: Inspect exact-identity food nutrient availability
+        run: |
+          python3 tools/probe_fndds2024_food_sources.py \
+            --zip /tmp/fndds2024.zip \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out .fndds-research
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fndds-2024-candidate-food-nutrient-evidence
+          path: .fndds-research/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
