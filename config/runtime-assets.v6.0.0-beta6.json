@@ -61,7 +61,8 @@
     "./data/products.v5.3.210-p1.3.part-09.json?v=v5.3.210-p1.3",
     "./data/products.v5.3.210-p1.3.part-10.json?v=v5.3.210-p1.3",
     "./data/products.v5.3.210-p1.3.part-11.json?v=v5.3.210-p1.3",
-    "./data/products.v5.3.210-p1.3.part-12.json?v=v5.3.210-p1.3"
+    "./data/products.v5.3.210-p1.3.part-12.json?v=v5.3.210-p1.3",
+    "./data/products.external-food-core17.part-13.json?v=external-food-core17-20261009"
   ],
   "product_script_chunks": [
     "./assets/data/products.v5.3.210-p1.3.part-01.js?v=v5.3.210-p1.3",
@@ -75,7 +76,8 @@
     "./assets/data/products.v5.3.210-p1.3.part-09.js?v=v5.3.210-p1.3",
     "./assets/data/products.v5.3.210-p1.3.part-10.js?v=v5.3.210-p1.3",
     "./assets/data/products.v5.3.210-p1.3.part-11.js?v=v5.3.210-p1.3",
-    "./assets/data/products.v5.3.210-p1.3.part-12.js?v=v5.3.210-p1.3"
+    "./assets/data/products.v5.3.210-p1.3.part-12.js?v=v5.3.210-p1.3",
+    "./assets/data/products.external-food-core17.part-13.js?v=external-food-core17-20261009"
   ],
   "modern_core_scripts": [
     "./assets/data/formula-registry.v5.3.210-p1.4.js?v=v5.3.210-p1.4",
@@ -285,8 +287,8 @@
       ]
     },
     "deferred_runtime_bundles": {
-      "modern": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js?v=v6-needs-checkpoint-2026-09-11",
-      "legacy": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js?v=v6-needs-checkpoint-2026-09-11"
+      "modern": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js?v=external-food-core17-20261009",
+      "legacy": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js?v=external-food-core17-20261009"
     },
     "deferred_runtime_sources": {
       "modern": [
@@ -442,18 +444,18 @@
         "./assets/legacy/js/87-workspace-report-v5.3.210-rc2-hf14.js?v=v5.3.210-rc2-hf14"
       ]
     },
-    "product_bundle_script": "./assets/data/products.v5.3.210-p1.3.bundle.js?v=v6.0.0-beta5-cross-stage-hardening",
+    "product_bundle_script": "./assets/data/products.v5.3.210-p1.3.bundle.js?v=external-food-core17-20261009",
     "route_guard_until_background_ready": true,
     "source_fallbacks_preserved": true,
-    "product_compressed_json": "./assets/data/products.v5.3.210-p1.3.compact.json.gz?v=v6.0.0-beta5-cross-stage-hardening",
+    "product_compressed_json": "./assets/data/products.v5.3.210-p1.3.compact.json.gz?v=external-food-core17-20261009",
     "lazy_feature_scripts": {
       "gemini_media_import": "./assets/js/62-gemini-ration-import-v5.js?v=v6.0.0-beta5-cross-stage-hardening"
     },
     "media_module_in_critical_shell": false,
     "media_module_lazy": true,
     "deferred_runtime_compressed": {
-      "modern": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js.gz?v=v6-needs-checkpoint-2026-09-11",
-      "legacy": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js.gz?v=v6-needs-checkpoint-2026-09-11"
+      "modern": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js.gz?v=external-food-core17-20261009",
+      "legacy": "./assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js.gz?v=external-food-core17-20261009"
     },
     "splash_policy": {
       "minimum_visible_ms": 4200,
@@ -619,8 +621,8 @@
     "profile_hierarchy_css": 9717,
     "profile_hierarchy_js": 12555,
     "profile_persistence_js": 21374,
-    "deferred_runtime_modern_compressed": 629878,
-    "deferred_runtime_legacy_compressed": 623073,
+    "deferred_runtime_modern_compressed": 631403,
+    "deferred_runtime_legacy_compressed": 624660,
     "design_refinement_css": 14879,
     "ivory_shell_js": 21118,
     "quality_completion_css": 15560,

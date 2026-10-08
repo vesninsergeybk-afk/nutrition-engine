@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "version": "external-food-core17-20261009",
+  "review_status": "REVIEW_REQUIRED",
+  "source_model": "reference_food_per_100g",
+  "new_method": {
+    "SOURCE_REPORTED": {
+      "relative_uncertainty": 0.08,
+      "meaning": "Value reported in an identified primary food-composition row; not laboratory-verified here."
+    }
+  },
+  "old_registry_unchanged": true,
+  "assumed_added_sugar_is_measurement": false,
+  "unknown_is_never_silently_zero": true,
+  "pilot_cards": 17
+}
