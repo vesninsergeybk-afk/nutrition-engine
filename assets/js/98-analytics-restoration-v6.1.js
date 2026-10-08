@@ -71,10 +71,22 @@
       (known&&isFinite(value)?pctBar(ratio,short+': '+fmt(ratio,0)+'% от ориентира'):'<span class="ar-meter is-unknown"></span>')+
       '<small>'+(known?(isFinite(value)?'Ориентир: '+fmt(target,0)+' '+unit+' · '+fmt(ratio,0)+'%':'Ориентир: '+fmt(target,0)+' '+unit+' · данных о поступлении нет'):'Ориентир не задан')+'</small></article>';
   }
+  function waterIntakeMetric(vm){
+    /* Product catalog shards can omit water/moisture altogether. A zero total in
+       that case is missing information, not measured absence of water. */
+    var rows=vm&&vm.nutrients||[],row=null,i;
+    for(i=0;i<rows.length;i++)if(rows[i]&&rows[i].key==='water_ml'){row=rows[i];break;}
+    var c=row&&row.coverage||{};
+    if(row&&number(c.covered)>0&&isFinite(number(row.actual)))
+      return metricSpec(vm,null,'water_ml','Вода из продуктов','мл');
+    return '<article class="ar-metric ar-metric-unavailable"><div class="ar-metric-head"><strong>Вода из продуктов</strong><b>нет данных</b></div>'+
+      '<span class="ar-meter is-unknown" aria-hidden="true"></span>'+
+      '<small>В карточках текущего рациона нет пригодных данных о содержании воды. Ноль здесь не означал бы отсутствие воды.</small></article>';
+  }
   function macros(vm){
     return '<div class="ar-metrics">'+metricSpec(vm,null,'kcal','Энергия','ккал')+
       metricSpec(vm,null,'protein_g','Белки','г')+metricSpec(vm,null,'fat_g','Жиры','г')+
-      metricSpec(vm,null,'carbs_g','Углеводы','г')+metricSpec(vm,null,'water_ml','Вода в рационе','мл')+'</div>';
+      metricSpec(vm,null,'carbs_g','Углеводы','г')+waterIntakeMetric(vm)+'</div>';
   }
   function contributorRows(coverage,unit){
     var items=coverage&&coverage.items||[];
