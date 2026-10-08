@@ -73,7 +73,7 @@
   function contributorRows(coverage,unit){
     var items=coverage&&coverage.items||[];
     if(!items.length)return '<p class="ar-note">Для введённых продуктов подтверждённый вклад не найден.</p>';
-    return '<div class="ar-contributors">'+items.slice(0,5).map(function(x){
+    return '<div class="ar-contributors">'+items.map(function(x){
       return '<div><strong>'+esc(x.name)+'</strong><span>'+fmt(number(x.value),2)+' '+esc(unit||'')+' · '+fmt(number(x.share),0)+'% вклада</span></div>';
     }).join('')+'</div>';
   }
