@@ -47,7 +47,7 @@ let data={
     coverage:{covered:1,total:2,items:[{name:'Морковь',share:100,value:500}]}}],
   hei:{model:{total:74.5},rows:[{key:'total_veg',title:'Овощи',points:3,maxPoints:5,
     status:{label:'Требует внимания'},actual:'1 порция',norm:'2 порции',
-    contributors:{positive:[{name:'Морковь',share:100,value:3}]}}}]},
+    contributors:{positive:[{name:'Морковь',share:100,value:3}]}}]},
 };
 let printed='',printedCount=0;
 const popup={document:{open(){},write(s){printed=s;},close(){},body:{}},
