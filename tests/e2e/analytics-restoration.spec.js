@@ -115,4 +115,13 @@ test('calculated profile exposes real water reference and full print report is g
   expect(printResult.html).toContain('Показатели');
   expect(printResult.html.indexOf('workspace-report-cover')).toBeLessThan(printResult.html.indexOf('Наглядный разбор показателей'));
   expect(printResult.html).not.toMatch(/<button[^>]+data-ar-source-key/);
+  if(test.info().project.name==='chromium'){
+    const preview=await page.context().newPage();
+    try{
+      await preview.setContent(printResult.html,{waitUntil:'domcontentloaded'});
+      const pdf=await preview.pdf({format:'A4',printBackground:true});
+      expect(pdf.subarray(0,4).toString()).toBe('%PDF');
+      expect(pdf.length).toBeGreaterThan(8000);
+    }finally{await preview.close();}
+  }
 });
