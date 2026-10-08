@@ -106,11 +106,12 @@
   function heiRow(row){
     var pts=number(row.points),max=number(row.maxPoints),percent=validTarget(max)?pts/max*100:NaN;
     var contributors=row.contributors&&row.contributors.positive||row.contributors||{};
+    var negative=row.key==='fatty_acids_ratio'&&row.contributors&&row.contributors.negative?'<h4>Вклад насыщенных жиров</h4>'+contributorRows(row.contributors.negative,''):'';
     return '<details class="ar-detail-row"><summary><span class="ar-row-main"><b>'+esc(row.title)+'</b><small>'+esc(row.status&&row.status.label||'HEI‑2020')+'</small></span>'+
       '<span class="ar-row-value"><strong>'+fmt(pts,1)+' / '+fmt(max,0)+'</strong>'+
       pctBar(percent,fmt(percent,0)+'% от возможного балла')+'</span></summary><div class="ar-row-content">'+
       '<p>Фактический показатель: '+esc(row.actual||'—')+'. Ориентир: '+esc(row.norm||'—')+'.</p>'+
-      (row.action?'<p>'+esc(row.action)+'</p>':'')+'<h4>Учтённые продукты</h4>'+contributorRows(contributors,'')+
+      (row.action?'<p>'+esc(row.action)+'</p>':'')+'<h4>Учтённые продукты</h4>'+contributorRows(contributors,'')+negative+
       '<p class="ar-note">HEI оценивает соответствие структуре пищевых рекомендаций; показатель сам по себе не диагностирует дефициты.</p></div></details>';
   }
   function heiBlock(vm){
@@ -128,7 +129,7 @@
     var has=vm.items>0&&isFinite(hei)&&isFinite(structure);
     var x=has?bounded(structure):50,y=has?bounded(hei):50;
     return '<section class="ar-block"><div class="ar-block-title"><h3>Качество × структура</h3><p>Две самостоятельные оценки: HEI‑2020 по вертикали и авторская структурная модель по горизонтали.</p></div>'+
-      '<div class="ar-matrix-layout"><div class="ar-matrix" role="img" aria-label="'+(has?'HEI '+fmt(hei,0)+' из 100; структурная оценка '+fmt(structure,0)+' из 100':'Матрица появится после расчёта')+'"><span class="ar-matrix-point" style="left:'+x+'%;bottom:'+y+'%"></span><span class="ar-axis ar-axis-y">HEI ↑</span><span class="ar-axis ar-axis-x">Структура →</span></div>'+
+      '<div class="ar-matrix-layout"><div class="ar-matrix" role="img" aria-label="'+(has?'HEI '+fmt(hei,0)+' из 100; структурная оценка '+fmt(structure,0)+' из 100':'Матрица появится после расчёта')+'"><span class="ar-matrix-point" style="left:'+x+'%;bottom:'+y+'%"></span><span class="ar-axis ar-axis-y">HEI ↑</span><span class="ar-axis ar-axis-x">Структура →</span><span class="ar-tick ar-tick-y100">100</span><span class="ar-tick ar-tick-zero">0</span><span class="ar-tick ar-tick-x100">100</span></div>'+
       '<div class="ar-matrix-copy"><b>'+(has?'HEI '+fmt(hei,0)+' / структура '+fmt(structure,0):'Ожидаем данные')+'</b>'+
       '<p>'+(has?'Точка отображает два показателя текущего рациона. Сопоставляйте их с подробным разбором, а не как медицинский диагноз.':'Профиль появится после ввода продуктов и расчёта обеих осей.')+'</p>'+
       '<p class="ar-note">Структурный показатель является дополнительной моделью данного калькулятора и не тождественен HEI.</p></div></div></section>';
@@ -156,7 +157,9 @@
     try{
       var opts={detailedNutrients:true,fullHei:true,contributors:true,appliedChanges:true,methodology:true};
       var model=api.buildReportModel(opts),vm=detail();
-      var graphs=vm&&vm.items>0?'<section class="ar-print-block"><h2>Наглядный разбор показателей</h2>'+macros(vm)+heiBlock(vm)+nutrientGroups(vm)+matrix(vm)+'</section>':'';
+      var n=currentNeeds(),chosen=el('needs_split');
+      var needsGraphic='<section class="ar-print-block"><h2>Вода и приёмы пищи</h2><p>Общее поступление воды: '+waterText(n&&n.waterReference)+'</p>'+mealRows(n,chosen&&chosen.value)+'<p>Доли приёмов являются выбираемой схемой, а не нормативом.</p></section>';
+      var graphs=needsGraphic+(vm&&vm.items>0?'<section class="ar-print-block"><h2>Наглядный разбор показателей</h2>'+macros(vm)+heiBlock(vm)+nutrientGroups(vm)+matrix(vm)+'</section>':'');
       var style='<style>.ar-print-block{margin:16px 0;font:10pt/1.4 Arial,sans-serif}.ar-primary{display:block}.ar-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.ar-metric,.ar-block{padding:9px;margin:8px 0;border:1px solid #d5dde7;break-inside:avoid}.ar-meter{display:block;height:7px;margin:5px 0;background:#e5eaf0;border-radius:7px;overflow:hidden}.ar-meter i{display:block;height:100%;background:#486a94}.ar-detail-row{padding:5px;border-bottom:1px solid #e5eaf0}.ar-detail-row summary{display:flex;justify-content:space-between;gap:12px}.ar-detail-row small,.ar-note,.ar-matrix-copy p{color:#596579;font-size:9pt}.ar-detail-row .ar-row-content{padding:4px 8px}.ar-contributors>div{display:flex;gap:12px;justify-content:space-between}.ar-matrix{position:relative;width:190px;height:190px;border:1px solid #a9b8cd;background:linear-gradient(to right,transparent 49.7%,#cdd5df 50%,transparent 50.3%),linear-gradient(to top,transparent 49.7%,#cdd5df 50%,transparent 50.3%)}.ar-matrix-point{position:absolute;transform:translate(-50%,50%);border:5px solid #284f7d;border-radius:50%;width:12px;height:12px}.ar-matrix-layout{display:flex;gap:20px}.ar-axis{font-size:8pt}.ar-axis-x{position:absolute;bottom:3px;right:4px}.ar-axis-y{position:absolute;top:4px;left:4px}.ar-hei-total strong{font-size:18pt}.ar-block-title p,.ar-hei-total p{color:#596579}.ar-group>summary{font-weight:bold}.ar-print{display:none}</style>';
       var full=api.buildDocumentHtml(model);
       if(graphs){graphs=graphs.replace(/<details(?=[ >])/g,'<details open');full=full.replace('</head>',style+'</head>');full=full.replace('</body>',graphs+'</body>');}
