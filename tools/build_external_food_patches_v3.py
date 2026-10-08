@@ -25,7 +25,8 @@ def main():
        ("flour arrowroot","selenium_ug"):("AUSTRALIA_AFCD","F003983",0),
        ("zander","selenium_ug"):("SWEDEN_SLV",1263,22.6),
        ("flour buckwheat","vitamin_c_mg"):("SWEDEN_SLV",1930,0),
-       ("flour barley","selenium_ug"):("FRANCE_CIQUAL","9550",1.0)
+       ("flour barley","selenium_ug"):("FRANCE_CIQUAL","9550",1.0),
+       ("flour buckwheat","selenium_ug"):("NORWAY_MATTILSYNET","05.132",3.0)
     }
     assert len(manifests)==len(allowed),"Unreviewed extra patch requires explicit admission"
     list_changed=[]
@@ -75,6 +76,13 @@ def main():
            method="PUBLISHED_CROSS_SOURCE"
            source_dataset="ANSES French Ciqual 2025"
            scientist_review="FOOD_NAME_AND_MACRO_PARITY_MATCHED_ANALYTICAL_METHOD_REVIEW_REQUIRED"
+       elif fk=="flour buckwheat":
+           assert str(p["primary_source"]["source_record_id"])=="C424000"
+           assert manifest["source_donor"]["norway_food_id"]=="05.132"
+           assert manifest["source_donor"]["source_sha256"]=="91af92552975dcb259735e833639f8aacd7cf4674b5c7321e7271224000c247c"
+           method="SOURCE_REPORTED"
+           source_dataset="Norwegian Food Composition Table 2026, provenance 611a"
+           scientist_review="EXACT_SOURCE_NORWAY_SELENIUM_REGION_VARIABILITY"
        else:
            raise AssertionError("Unreviewed family profile "+fk)
        p["nutrients"][field]=expected
@@ -97,24 +105,24 @@ def main():
             if p1["nutrients"][f]!=v:
                 assert v is None and (p0["family_key"],f) in allowed
                 diffs.append((p0["family_key"],f))
-    assert len(diffs)==6,diffs
+    assert len(diffs)==7,diffs
     before=sum(v is None for p in original for v in p["nutrients"].values())
     after=sum(v is None for p in patched for v in p["nutrients"].values())
-    assert before==179 and after==173
+    assert before==179 and after==172
     assert sum(p["nutrients"]["choline_mg"] is None for p in patched)==41
     assert sum(p.get("hei_equivalents") is None for p in patched)==28
     assert sum("MISSING_CALCULATOR_NUTRIENTS" in p["issues_after_step4d"] for p in patched)==52
     out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
-    (out/"blocked56_source_recovered6_staging_only.json").write_text(json.dumps(patched,ensure_ascii=False,indent=2)+"\n")
+    (out/"blocked56_source_recovered7_staging_only.json").write_text(json.dumps(patched,ensure_ascii=False,indent=2)+"\n")
     report={
         "status":"PASS_STAGING_NOT_SCIENTIFIC_PUBLICATION_APPROVAL",
-        "source_verified_observations":6,"field_changes":list_changed,
-        "unfilled_nutrient_fields_before":179,"unfilled_nutrient_fields_after":173,
+        "source_verified_observations":7,"field_changes":list_changed,
+        "unfilled_nutrient_fields_before":179,"unfilled_nutrient_fields_after":172,
         "hei_unresolved_profiles":28,"blocked_profiles":56,
         "all_preexisting_nutrients_unchanged":True,
         "runtime_changes":0,"production_ready":False
     }
-    (out/"field_recovery_six_report.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
+    (out/"field_recovery_seven_report.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
     print("RECONSTRUCTED_NUTRIENT_STAGING",json.dumps(report,ensure_ascii=False))
 if __name__=="__main__":
     main()
