@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "record_type": "SWEDISH_FOOD_COMPOSITION_SOURCE_NUTRIENT_RECOVERY",
+  "family_key": "flour buckwheat",
+  "scientific_name": "Fagopyrum esculentum Moench",
+  "source_primary": {
+    "registry": "GERMANY_BLS",
+    "id": "C424000",
+    "description": "Buckwheat flour"
+  },
+  "source_donor": {
+    "registry": "SWEDEN_SLV",
+    "food_number": 1930,
+    "description": "Buckwheat flour",
+    "scientific_name": "Fagopyrum esculentum Moench",
+    "registry_url": "https://dataportal.livsmedelsverket.se/livsmedel/api/v1/livsmedel/1930/naringsvarden?sprak=2",
+    "nutrient": "Vitamin C",
+    "nutrient_eurofir": "VITC",
+    "value_type": "Logical zero",
+    "value_type_code": "LZ",
+    "method": "Estimated according to logical deduction",
+    "source_type": "Value created within host-system",
+    "reference": "Swedish Food Agency - Guidelines for foods"
+  },
+  "recovery": {
+    "field": "vitamin_c_mg",
+    "previous_value": null,
+    "value": 0,
+    "unit": "mg/100g",
+    "method": "LOGICALLY_DEDUCED_ZERO"
+  },
+  "source_run": 37861549737,
+  "status": "SOURCE_CLASSIFIED_LOGICAL_ZERO_NOT_MEASURED",
+  "production_permission": "STAGING_ONLY"
+}
