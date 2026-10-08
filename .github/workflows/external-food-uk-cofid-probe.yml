@@ -1,0 +1,38 @@
+name: CoFID 2021 Exact Food Source Probe
+
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/probe_uk_cofid2021_sources.py"
+      - ".github/workflows/external-food-uk-cofid-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch Public Health England CoFID 2021 (no production edits)
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 --connect-timeout 15 --max-time 90 \
+            'https://assets.publishing.service.gov.uk/media/60538b91e90e07527df82ae4/McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021..xlsx' \
+            -o /tmp/cofid2021.xlsx
+          test -s /tmp/cofid2021.xlsx
+          python3 -m pip install --quiet openpyxl
+          python3 tools/probe_uk_cofid2021_sources.py \
+            --xlsx /tmp/cofid2021.xlsx \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out-dir .out-cofid
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uk-cofid2021-food-science-probe
+          path: .out-cofid/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
