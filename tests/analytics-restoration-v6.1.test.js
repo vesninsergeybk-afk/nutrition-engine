@@ -59,7 +59,7 @@ const window={
   NutritionAnalysisWorkspaceHF7:{refresh(){},getViewModel(){return data;}},
   State:{get(){return [{key:'carrot',grams:100}];}},
   WorkspaceReportHF13:{buildReportModel(options){assert.equal(options.contributors,true);return {ration:{count:2}};},
-    buildDocumentHtml(){return '<!doctype html><html><head></head><body><article id="canonical-report">Полный отчёт</article></body></html>';}},
+    buildDocumentHtml(){return '<!doctype html><html><head></head><body><article id="canonical-report"><section class="workspace-report-section workspace-report-cover">Обложка</section><section id="detailed-report">Полный отчёт</section></article></body></html>'; }},
   open(){return popup;},
 };
 vm.runInNewContext(source,{window,document,Event:class Event{},CustomEvent:class CustomEvent{}});
@@ -70,6 +70,8 @@ assert.match(nodes.arBody.innerHTML,/data-ar-source-key="vitamin_a"/);
 assert.match(nodes.arBody.innerHTML,/рассчитанного вклада/);
 assert.match(nodes.arBody.innerHTML,/неполные данные/);
 assert.match(nodes.arBody.innerHTML,/74,5/);
+assert.match(nodes.arBody.innerHTML,/data-ar-hei-jump="total_veg"/);
+assert.match(nodes.arBody.innerHTML,/ar-hei-overview/);
 assert.match(nodes.arBody.innerHTML,/Качество × структура/);
 assert.match(nodes.arBody.innerHTML,/Вода в рационе/);
 assert.match(nodes.arNeedsExtra.innerHTML,/2,5 л\/сут/);
@@ -86,6 +88,9 @@ assert.match(nodes.arNeedsExtra.innerHTML,/У 60 г/,'per-meal carbohydrates use
 assert.equal(window.NutritionAnalyticsRestorationV1.print(),true);
 assert.match(printed,/canonical-report/);
 assert.match(printed,/Наглядный разбор показателей/);
+assert(printed.indexOf('Обложка') < printed.indexOf('Наглядный разбор показателей'));
+assert(printed.indexOf('Наглядный разбор показателей') < printed.indexOf('detailed-report'));
+assert.match(printed,/break-inside:auto/);
 assert.match(printed,/<details open/);
 assert.equal(printedCount,1);
 assert.match(printed,/data-ar-source-key=/);
