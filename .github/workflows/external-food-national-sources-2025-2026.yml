@@ -1,0 +1,32 @@
+name: National Food Sources 2025-2026 Audit
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/probe_national_food_2025_2026.py"
+      - ".github/workflows/external-food-national-sources-2025-2026.yml"
+      - "tools/crosscheck_swedish_food_missing.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  national-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install source readers
+        run: python3 -m pip install --quiet openpyxl requests
+      - name: Examine official Swedish and French food data schemas
+        run: |
+          set -euo pipefail
+          python3 tools/probe_national_food_2025_2026.py \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out .national-science
+      - uses: actions/upload-artifact@v4
+        with:
+          name: national-2025-2026-primary-dataset-evidence
+          path: .national-science/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
