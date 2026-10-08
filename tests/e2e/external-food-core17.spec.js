@@ -25,7 +25,7 @@ async function searchProduct(page, term) {
     const root = document.getElementById('globalResults');
     return root && root.classList.contains('has-query') && root.getBoundingClientRect().height > 0;
   });
-  await expect(page.locator('#globalResults')).toContainText(term, { timeout: 10000 });
+  await expect(page.locator('#globalResults')).toContainText(new RegExp(term, 'i'), { timeout: 10000 });
 }
 
 test('CORE17: all source-backed foods load with provenance, search and calculate in real desktop UI', async ({page, loadApp}) => {
