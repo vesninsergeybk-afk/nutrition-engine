@@ -1,0 +1,33 @@
+name: Nutrition analytics parity smoke
+
+on:
+  pull_request:
+    paths:
+      - 'assets/js/98-analytics-restoration-v6.1.js'
+      - 'assets/css/analytics-restoration-v6.1.css'
+      - 'tests/analytics-restoration-v6.1.test.js'
+      - 'index.html'
+      - '.github/workflows/analytics-restoration-smoke.yml'
+  push:
+    branches:
+      - 'feature/ration-analytics-restoration-20261009'
+    paths:
+      - 'assets/js/98-analytics-restoration-v6.1.js'
+      - 'assets/css/analytics-restoration-v6.1.css'
+      - 'tests/analytics-restoration-v6.1.test.js'
+      - 'index.html'
+      - '.github/workflows/analytics-restoration-smoke.yml'
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify progressive analytics contract
+        run: node tests/analytics-restoration-v6.1.test.js
