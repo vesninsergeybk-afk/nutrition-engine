@@ -11,6 +11,7 @@ on:
       - "tools/recover_usda_legacy_from_cnf2026.py"
       - "tools/audit_unresolved_hei_fpid28.py"
       - "tools/probe_foundation2026_schema.py"
+      - "tools/verify_spelt_folate_from_foundation2026.py"
   workflow_dispatch:
 
 permissions:
@@ -85,6 +86,10 @@ jobs:
           python3 tools/probe_foundation2026_schema.py \
             --zip /tmp/usda_foundation_2026.zip \
             --blocked .input/step4e_blocked_other.json --output .output
+          python3 tools/verify_spelt_folate_from_foundation2026.py \
+            --foundation-zip /tmp/usda_foundation_2026.zip \
+            --blocked .input/step4e_blocked_other.json \
+            --out-dir .output
       - uses: actions/upload-artifact@v4
         with:
           name: external-food-blocked56-science-ledger
