@@ -6,6 +6,7 @@ on:
       - ".github/workflows/external-food-afcd2025-audit.yml"
       - "tools/probe_afcd2025_source.py"
       - "tools/recover_afcd2025_food_nutrients.py"
+      - "tools/verify_afcd_arrowroot_selenium.py"
   workflow_dispatch:
 permissions:
   contents: read
@@ -45,6 +46,11 @@ jobs:
             --details /tmp/afcd2025/nutrient-details.xlsx \
             --out .afcd-review
           python3 tools/recover_afcd2025_food_nutrients.py \
+            --foods /tmp/afcd2025/food-details.xlsx \
+            --nutrients /tmp/afcd2025/nutrient-profiles.xlsx \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out .afcd-review
+          python3 tools/verify_afcd_arrowroot_selenium.py \
             --foods /tmp/afcd2025/food-details.xlsx \
             --nutrients /tmp/afcd2025/nutrient-profiles.xlsx \
             --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
