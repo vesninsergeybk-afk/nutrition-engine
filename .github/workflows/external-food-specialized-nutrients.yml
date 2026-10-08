@@ -30,6 +30,14 @@ jobs:
             'https://fineli.fi/fineli/content/file/49' \
             -o /tmp/official-food-evidence/fineli74.zip || echo 'FINELI_PUBLIC_DOWNLOAD_BLOCKED_403'
 
+          curl -fL --retry 2 --connect-timeout 15 --max-time 130 \
+            'https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip' \
+            -o /tmp/official-food-evidence/sr_legacy.zip
+          curl -fL --retry 2 --connect-timeout 15 --max-time 130 \
+            'https://open.canada.ca/data/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109/resource/019f2a90-e3a9-489d-b6e1-f74f4ba1d006/download/cnf_fcen_all-files-data_2026.zip' \
+            -o /tmp/official-food-evidence/cnf2026.zip
+          unzip -t /tmp/official-food-evidence/sr_legacy.zip >/dev/null
+          unzip -t /tmp/official-food-evidence/cnf2026.zip >/dev/null
           unzip -t /tmp/official-food-evidence/Choln02.zip >/dev/null
           if [ -s /tmp/official-food-evidence/fineli74.zip ]; then unzip -t /tmp/official-food-evidence/fineli74.zip >/dev/null; fi
       - name: Inspect source table semantics
@@ -38,6 +46,12 @@ jobs:
             --choline /tmp/official-food-evidence/Choln02.zip \
             --fineli /tmp/official-food-evidence/fineli74.zip \
             --out .stage-specialized
+          python3 tools/recover_specialized_food_nutrients.py \
+            --choline-zip /tmp/official-food-evidence/Choln02.zip \
+            --legacy-zip /tmp/official-food-evidence/sr_legacy.zip \
+            --cnf-zip /tmp/official-food-evidence/cnf2026.zip \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --output .stage-specialized
       - name: Preserve exact source observations
         uses: actions/upload-artifact@v4
         with:
