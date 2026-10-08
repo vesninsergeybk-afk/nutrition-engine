@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "record_type": "OFFICIAL_SAME_RECORD_NUTRIENT_FIELD_RECOVERY",
+  "research_status": "VERIFIED_PRIMARY_RECORD_STAGING_ONLY",
+  "family_key": "flour spelt",
+  "food_name_en": "Flour, spelt, whole grain",
+  "food_name_ru": "Мука полбяная цельнозерновая",
+  "source": {
+    "dataset": "USDA FoodData Central Foundation Foods",
+    "release": "2026-04-30",
+    "fdc_id": 2003587,
+    "nutrient_number": "417",
+    "nutrient_name": "Folate, total",
+    "unit": "µg / 100 g",
+    "source_url": "https://fdc.nal.usda.gov/food-details/2003587/nutrients",
+    "dataset_url": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_json_2026-04-30.zip",
+    "source_derivation_code": "A",
+    "source_derivation_description": "Analytical or derived from analytical"
+  },
+  "recovery": {
+    "field": "vitamin_b9_mcg",
+    "previous_value": null,
+    "value": 38.4,
+    "method": "SOURCE_REPORTED"
+  },
+  "verification": {
+    "workflow_run": 37857800922,
+    "validation": "exact same fdcId, product description, analyte id, unit and macro parity; other 55 profiles unchanged",
+    "missing_nutrients_remaining_all_blocked": 178,
+    "blocked_profiles_remaining": 56
+  },
+  "import_permission": "DENIED_UNTIL_ALL_SCIENCE_AND_RUNTIME_GATES_PASS"
+}
