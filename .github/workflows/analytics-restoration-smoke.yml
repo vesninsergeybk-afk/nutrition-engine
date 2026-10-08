@@ -10,6 +10,7 @@ on:
       - 'tests/e2e/analytics-restoration.spec.js'
       - 'assets/js/99-nutrient-source-explorer-v6.1.js'
       - 'index.html'
+      - 'index-v5.3.210.html'
       - '.github/workflows/analytics-restoration-smoke.yml'
   push:
     branches:
@@ -18,7 +19,11 @@ on:
       - 'assets/js/98-analytics-restoration-v6.1.js'
       - 'assets/css/analytics-restoration-v6.1.css'
       - 'tests/analytics-restoration-v6.1.test.js'
+      - 'tests/nutrient-source-explorer-v6.1.test.js'
+      - 'tests/e2e/analytics-restoration.spec.js'
+      - 'assets/js/99-nutrient-source-explorer-v6.1.js'
       - 'index.html'
+      - 'index-v5.3.210.html'
       - '.github/workflows/analytics-restoration-smoke.yml'
 
 jobs:
@@ -38,8 +43,12 @@ jobs:
           node tests/nutrient-source-explorer-v6.1.test.js
 
   browser:
-    name: Chromium analytics interaction
+    name: ${{ matrix.browser }} analytics interaction
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     timeout-minutes: 18
     permissions:
       contents: read
@@ -50,18 +59,48 @@ jobs:
           node-version: '22'
       - name: Install test packages
         run: npm ci --no-audit --no-fund
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Exercise real calculator (virtual local origin)
-        run: npx playwright test tests/e2e/analytics-restoration.spec.js --project=chromium --retries=0 --reporter=line
+        run: npx playwright test tests/e2e/analytics-restoration.spec.js --project=${{ matrix.browser }} --retries=0 --reporter=line
       - name: Keep failed screenshots and traces
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: analytics-browser-diagnostics
+          name: analytics-${{ matrix.browser }}-diagnostics
           path: |
             reports/playwright-artifacts/
             reports/playwright-results.json
             reports/playwright-html/
+          retention-days: 5
+          if-no-files-found: ignore
+
+  core-regression:
+    name: Canonical core and safety regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.0'
+      - name: Install core checks
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends php-cli curl
+      - name: Set up safe test configuration
+        run: |
+          cp api/gemini-secret.example.php api/gemini-secret.php
+          chmod 0644 api/gemini-secret.php
+      - name: Run canonical core and safety suite
+        run: python3 tools/ci_core_gate_v6.py
+      - name: Collect failed diagnostic reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analytics-core-diagnostics
+          path: reports/
           retention-days: 5
           if-no-files-found: ignore
