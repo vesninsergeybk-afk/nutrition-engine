@@ -68,7 +68,7 @@
   function macros(vm){
     return '<div class="ar-metrics">'+metricSpec(vm,null,'kcal','Энергия','ккал')+
       metricSpec(vm,null,'protein_g','Белки','г')+metricSpec(vm,null,'fat_g','Жиры','г')+
-      metricSpec(vm,null,'carbs_g','Углеводы','г')+'</div>';
+      metricSpec(vm,null,'carbs_g','Углеводы','г')+metricSpec(vm,null,'water_ml','Вода в рационе','мл')+'</div>';
   }
   function contributorRows(coverage,unit){
     var items=coverage&&coverage.items||[];
@@ -159,7 +159,7 @@
       var graphs=vm&&vm.items>0?'<section class="ar-print-block"><h2>Наглядный разбор показателей</h2>'+macros(vm)+heiBlock(vm)+nutrientGroups(vm)+matrix(vm)+'</section>':'';
       var style='<style>.ar-print-block{margin:16px 0;font:10pt/1.4 Arial,sans-serif}.ar-primary{display:block}.ar-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.ar-metric,.ar-block{padding:9px;margin:8px 0;border:1px solid #d5dde7;break-inside:avoid}.ar-meter{display:block;height:7px;margin:5px 0;background:#e5eaf0;border-radius:7px;overflow:hidden}.ar-meter i{display:block;height:100%;background:#486a94}.ar-detail-row{padding:5px;border-bottom:1px solid #e5eaf0}.ar-detail-row summary{display:flex;justify-content:space-between;gap:12px}.ar-detail-row small,.ar-note,.ar-matrix-copy p{color:#596579;font-size:9pt}.ar-detail-row .ar-row-content{padding:4px 8px}.ar-contributors>div{display:flex;gap:12px;justify-content:space-between}.ar-matrix{position:relative;width:190px;height:190px;border:1px solid #a9b8cd;background:linear-gradient(to right,transparent 49.7%,#cdd5df 50%,transparent 50.3%),linear-gradient(to top,transparent 49.7%,#cdd5df 50%,transparent 50.3%)}.ar-matrix-point{position:absolute;transform:translate(-50%,50%);border:5px solid #284f7d;border-radius:50%;width:12px;height:12px}.ar-matrix-layout{display:flex;gap:20px}.ar-axis{font-size:8pt}.ar-axis-x{position:absolute;bottom:3px;right:4px}.ar-axis-y{position:absolute;top:4px;left:4px}.ar-hei-total strong{font-size:18pt}.ar-block-title p,.ar-hei-total p{color:#596579}.ar-group>summary{font-weight:bold}.ar-print{display:none}</style>';
       var full=api.buildDocumentHtml(model);
-      if(graphs){full=full.replace('</head>',style+'</head>');full=full.replace('</body>',graphs+'</body>');}
+      if(graphs){graphs=graphs.replace(/<details(?=[ >])/g,'<details open');full=full.replace('</head>',style+'</head>');full=full.replace('</body>',graphs+'</body>');}
       win.document.open();win.document.write(full);win.document.close();
       win.focus();win.setTimeout(function(){try{win.print();}catch(_){}},250);
     }catch(error){try{win.document.body.textContent='Не удалось подготовить отчёт: '+String(error&&error.message||error);}catch(_){}}
