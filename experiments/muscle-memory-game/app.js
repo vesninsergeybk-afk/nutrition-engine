@@ -418,6 +418,8 @@ const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
   stencil: true,
+  // Keep the last completed frame visible while GPU backpressure defers a draw.
+  preserveDrawingBuffer: true,
   powerPreference: coarseGpuPointer ? "default" : "high-performance",
 });
 renderer.setPixelRatio(viewerPixelRatio(window.devicePixelRatio, coarseGpuPointer));
@@ -10171,6 +10173,7 @@ function resize() {
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    invalidateViewer();
   }
 }
 
@@ -12739,6 +12742,11 @@ let viewerNeedsRender = true;
 let lastViewerRender = -Infinity;
 const viewerGl = renderer.getContext();
 let viewerRenderFence = null;
+canvas.dataset.renderState = 'pending';
+function invalidateViewer() {
+  viewerNeedsRender = true;
+  canvas.dataset.renderState = 'pending';
+}
 function releaseViewerRenderFence() {
   if (viewerRenderFence) viewerGl.deleteSync(viewerRenderFence);
   viewerRenderFence = null;
@@ -12750,13 +12758,15 @@ function viewerFrameCompleted() {
   const status = viewerGl.clientWaitSync(viewerRenderFence, 0, 0);
   if (status === viewerGl.TIMEOUT_EXPIRED) return false;
   releaseViewerRenderFence();
+  canvas.dataset.completedFrames = canvas.dataset.renderedFrames || '0';
+  canvas.dataset.renderState = viewerNeedsRender ? 'pending' : 'ready';
   return true;
 }
 for (const type of ['click', 'input', 'change', 'keydown', 'pointerdown']) {
-  document.querySelector('#atlas-page').addEventListener(type, () => { viewerNeedsRender = true; }, {capture:true});
+  document.querySelector('#atlas-page').addEventListener(type, invalidateViewer, {capture:true});
 }
-window.addEventListener('resize', () => { viewerNeedsRender = true; });
-controls.addEventListener('change', () => { viewerNeedsRender = true; });
+window.addEventListener('resize', invalidateViewer);
+controls.addEventListener('change', invalidateViewer);
 function animate(now = performance.now()) {
   if (atlasBonesView) enforceAtlasBonesView();
   if (boneHighlightMesh) boneHighlightMesh.visible = Boolean(skeletonMesh?.visible && boneVisibility[selectedBoneId] !== false);
@@ -12774,12 +12784,17 @@ function animate(now = performance.now()) {
       loadingEl.classList.contains('is-hidden') && now - lastViewerRender < 1000) return;
   viewerNeedsRender = false;
   lastViewerRender = now;
+  canvas.dataset.renderState = 'pending';
   renderer.render(scene, camera);
   if (typeof viewerGl.fenceSync === 'function') {
     viewerRenderFence = viewerGl.fenceSync(viewerGl.SYNC_GPU_COMMANDS_COMPLETE, 0);
     viewerGl.flush();
   }
   canvas.dataset.renderedFrames = String((Number(canvas.dataset.renderedFrames) || 0) + 1);
+  if (!viewerRenderFence) {
+    canvas.dataset.completedFrames = canvas.dataset.renderedFrames;
+    canvas.dataset.renderState = 'ready';
+  }
 
   if (appMode === "motion" && motionRenderer && !motionPane?.hidden) {
     resizeMotionViewer();
@@ -12890,12 +12905,18 @@ async function saveWorkspace() {
   const serialized = JSON.stringify(payload);
   if (serialized === workspaceLastSaved) {
     await workspaceStorage.flush();
-    if (workspaceStorage.writable && workspaceStorage.revision > 0) workspaceNotify('saved');
+    if (workspaceStorage.writable && workspaceStorage.revision > 0) {
+      if (JSON.stringify(captureWorkspace()) === serialized) workspaceNotify('saved');
+      else scheduleWorkspaceSave();
+    }
     return;
   }
   if (await workspaceStorage.write(payload)) {
     workspaceLastSaved = serialized;
-    workspaceNotify(JSON.stringify(captureWorkspace()) === serialized ? 'saved' : 'pending');
+    // Camera damping or a later action can change the snapshot during the write.
+    // Commit that newer snapshot too, instead of leaving an unscheduled pending state.
+    if (JSON.stringify(captureWorkspace()) === serialized) workspaceNotify('saved');
+    else scheduleWorkspaceSave();
   }
 }
 
