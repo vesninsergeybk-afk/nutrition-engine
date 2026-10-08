@@ -6,6 +6,8 @@ on:
       - 'assets/js/98-analytics-restoration-v6.1.js'
       - 'assets/css/analytics-restoration-v6.1.css'
       - 'tests/analytics-restoration-v6.1.test.js'
+      - 'tests/nutrient-source-explorer-v6.1.test.js'
+      - 'assets/js/99-nutrient-source-explorer-v6.1.js'
       - 'index.html'
       - '.github/workflows/analytics-restoration-smoke.yml'
   push:
@@ -30,4 +32,6 @@ jobs:
         with:
           node-version: '22'
       - name: Verify progressive analytics contract
-        run: node tests/analytics-restoration-v6.1.test.js
+        run: |
+          node tests/analytics-restoration-v6.1.test.js
+          node tests/nutrient-source-explorer-v6.1.test.js
