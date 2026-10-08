@@ -1,0 +1,47 @@
+name: Food Missing Nutrients - Specialized Evidence
+
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/probe_specialized_food_sources.py"
+      - ".github/workflows/external-food-specialized-nutrients.yml"
+      - "tools/recover_specialized_food_nutrients.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  science-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch official specialized evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/official-food-evidence
+          curl -fL --retry 2 --connect-timeout 15 --max-time 100 \
+            'https://www.ars.usda.gov/ARSUserFiles/80400535/Data/Choline/Choln02.zip' \
+            -o /tmp/official-food-evidence/Choln02.zip
+          curl -fL --retry 2 --connect-timeout 15 --max-time 100 \
+            'https://fineli.fi/fineli/content/file/49' \
+            -o /tmp/official-food-evidence/fineli74.zip
+          unzip -t /tmp/official-food-evidence/Choln02.zip >/dev/null
+          unzip -t /tmp/official-food-evidence/fineli74.zip >/dev/null
+      - name: Inspect source table semantics
+        run: |
+          python3 tools/probe_specialized_food_sources.py \
+            --choline /tmp/official-food-evidence/Choln02.zip \
+            --fineli /tmp/official-food-evidence/fineli74.zip \
+            --out .stage-specialized
+      - name: Preserve exact source observations
+        uses: actions/upload-artifact@v4
+        with:
+          name: specialized-food-nutrient-evidence
+          path: .stage-specialized/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
