@@ -1,0 +1,36 @@
+name: Historical Fineli Nutrient Donor Audit
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - ".github/workflows/external-food-fineli16-audit.yml"
+      - "tools/probe_fineli16_release.py"
+      - "tools/crosscheck_fineli16_nutrients.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout pinned archived THL dataset mirror
+        uses: actions/checkout@v4
+        with:
+          repository: mafredri/fineli-sql
+          ref: 98fbfd01e0e841ff707d52750437940429fab93d
+          path: .historical-fineli
+          persist-credentials: false
+      - name: Inspect provenance and nutrient value schema
+        run: |
+          python3 tools/probe_fineli16_release.py \
+            --source .historical-fineli/data/Fineli_Rel16_open \
+            --out .fineli-research
+      - uses: actions/upload-artifact@v4
+        with:
+          name: historical-fineli16-source-audit
+          path: .fineli-research/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
