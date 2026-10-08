@@ -83,6 +83,12 @@ def main():
     assert len(next15)==15
     assert Counter((p.get("external_import_v15") or {}).get("tier") for p in next15)=={"EXTENDED":14,"CHILD":1}
     details=[examine(p) for p in next15]
+    assert not any(d["hard_blocks"] for d in details), "Wave 2 includes a hard scientific mismatch"
+    assert not set(pilot_keys) & {x["key"] for x in next15}
+    # Exact original Step 4F cards remain flagged PREVIEW_ONLY, not certified
+    # production assets. Keep their source and field-level provenance intact.
+    staging_path=Path(".stage4f/wave2_staging_15_preview_only.json")
+    staging_path.write_text(json.dumps(next15,ensure_ascii=False,indent=2)+"\n")
     report={
       "status":"STAGING_AUDIT_ONLY",
       "source_screening":89,
@@ -91,6 +97,8 @@ def main():
       "piloted_separately":16,
       "fresh_thyme_quarantine":1,
       "second_wave_candidates":15,
+      "projected_catalog_if_both_waves_pass":1136,
+      "exported_preview_only_path":str(staging_path),
       "core":0,"extended":14,"variant":1,
       "candidate_names":[p["name_ru"] for p in details],
       "requires_corrections":sum(bool(p["hard_blocks"]) for p in details),
