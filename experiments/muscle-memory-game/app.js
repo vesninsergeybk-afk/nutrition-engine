@@ -12177,6 +12177,7 @@ async function loadSelectedModel(source) {
       await restoreWorkspace(checkpoint);
     }
     workspaceReady = true;
+    invalidateViewer();
     canvas.dataset.workspaceReady = "true";
     document.dispatchEvent(new Event("vesninmed:workspace-readiness"));
     loadingEl.classList.add("is-hidden");
@@ -12784,7 +12785,8 @@ function animate(now = performance.now()) {
       loadingEl.classList.contains('is-hidden') && now - lastViewerRender < 1000) return;
   viewerNeedsRender = false;
   lastViewerRender = now;
-  canvas.dataset.renderState = 'pending';
+  // A periodic refresh keeps the completed frame valid. Only scene changes
+  // invalidate it, so a slow background draw does not hide ready state forever.
   renderer.render(scene, camera);
   if (typeof viewerGl.fenceSync === 'function') {
     viewerRenderFence = viewerGl.fenceSync(viewerGl.SYNC_GPU_COMMANDS_COMPLETE, 0);
