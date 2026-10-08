@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "source_version": "2026-10-09",
+  "reason": "Guard against false precision despite superficially available published zeros/values",
+  "quarantined": [
+    {
+      "family_key": "flour buckwheat",
+      "field": "selenium_ug",
+      "source": "SWEDEN_SLV:1930",
+      "raw_value": 0,
+      "value_type": "BL",
+      "status": "CENSORED_BELOW_DETECTION",
+      "rationale": "0 is below analytical detection limit; country and soil composition differ. Norwegian source has 3.0 µg per 100 g based on Danish analytical report 2019. Swedish number is NOT a genuine zero."
+    },
+    {
+      "family_key": "spice bay leaf",
+      "field": "sugar_per_100g",
+      "source": "FRANCE_CIQUAL:11053",
+      "raw_value": 48.6,
+      "unit": "g/100g",
+      "status": "SUSPECT_MISLABELED_AVAILABLE_CARBOHYDRATE",
+      "rationale": "48.6g closely matches 74.97g source carbohydrates minus 26.3g fibre, rather than an independently measured sugar fraction. Do not publish without source-derivation validation."
+    },
+    {
+      "family_key": "spice pepper white",
+      "field": "vitamin_k_mcg",
+      "source": "FRANCE_CIQUAL:11019",
+      "raw_value": 0,
+      "unit": "µg/100g",
+      "status": "HELD_K1_VS_TOTAL_K_SEMANTIC_SCOPE",
+      "rationale": "Ciqual labels Vitamin K1 (phylloquinone). Verify nutrition-engine vitamin_k_mcg field definition and zero provenance before borrowing."
+    }
+  ],
+  "evidence_workflows": [
+    37861821233,
+    37862151000
+  ],
+  "production_permission": "DENIED"
+}
