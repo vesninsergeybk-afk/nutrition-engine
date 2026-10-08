@@ -6,6 +6,7 @@ on:
     paths:
       - "tools/audit_external_food_blockers.py"
       - ".github/workflows/external-food-blocker-dossier.yml"
+      - "tools/probe_cnf2026_schema.py"
   workflow_dispatch:
 
 permissions:
@@ -35,6 +36,17 @@ jobs:
             --state-blocked .input/step4e_state_blocked.json \
             --output .output
           cat .output/blocked56_inventory.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Probe official CNF 2026 dataset; evidence only
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 --connect-timeout 15 --max-time 130 \
+            -A 'nutrition-engine-science-audit/1.0 (+independent source verification)' \
+            'https://open.canada.ca/data/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109/resource/019f2a90-e3a9-489d-b6e1-f74f4ba1d006/download/cnf_fcen_all-files-data_2026.zip' \
+            -o /tmp/cnf_fcen_2026.zip || { echo 'CNF_2026_HTTP_DOWNLOAD_UNAVAILABLE'; exit 0; }
+          unzip -t /tmp/cnf_fcen_2026.zip >/dev/null || { echo 'CNF_2026_ZIP_INVALID'; exit 0; }
+          python3 tools/probe_cnf2026_schema.py --zip /tmp/cnf_fcen_2026.zip \
+            --blocked .input/step4e_blocked_other.json --output .output
       - uses: actions/upload-artifact@v4
         with:
           name: external-food-blocked56-science-ledger
