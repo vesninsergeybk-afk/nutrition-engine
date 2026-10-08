@@ -21,6 +21,9 @@ def main():
     report={}
     for name,archive in (("USDA_CHOLINE_RELEASE_2_2008",a.choline),("FINELI_74",a.fineli)):
         rows=[]
+        if not Path(archive).is_file() or Path(archive).stat().st_size==0:
+            report[name]={"archive":archive,"status":"UNAVAILABLE_PUBLIC_HOST_403","members":[]}
+            continue
         with zipfile.ZipFile(archive) as z:
             for f in z.infolist():
                 if f.is_dir():continue
