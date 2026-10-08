@@ -1,0 +1,53 @@
+name: AFCD 2025 Nutrient Source Recovery
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - ".github/workflows/external-food-afcd2025-audit.yml"
+      - "tools/probe_afcd2025_source.py"
+      - "tools/recover_afcd2025_food_nutrients.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download official Australian AFCD Release 3 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/afcd2025
+          curl -fsSL --retry 2 --connect-timeout 15 --max-time 90 \
+            'https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Food%20Details.xlsx' \
+            -o /tmp/afcd2025/food-details.xlsx
+          curl -fsSL --retry 2 --connect-timeout 15 --max-time 90 \
+            'https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20profiles.xlsx' \
+            -o /tmp/afcd2025/nutrient-profiles.xlsx
+          curl -fsSL --retry 2 --connect-timeout 15 --max-time 90 \
+            'https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20Details.xlsx' \
+            -o /tmp/afcd2025/nutrient-details.xlsx
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          for f in Path("/tmp/afcd2025").glob("*.xlsx"):
+            assert zipfile.is_zipfile(f), f
+          assert len(list(Path("/tmp/afcd2025").glob("*.xlsx")))==3
+          PY
+      - name: Inspect exact AFCD spreadsheet schema and units
+        run: |
+          python3 -m pip install --quiet openpyxl
+          python3 tools/probe_afcd2025_source.py \
+            --foods /tmp/afcd2025/food-details.xlsx \
+            --nutrients /tmp/afcd2025/nutrient-profiles.xlsx \
+            --details /tmp/afcd2025/nutrient-details.xlsx \
+            --out .afcd-review
+      - uses: actions/upload-artifact@v4
+        with:
+          name: afcd2025-verified-source-inspection
+          path: .afcd-review/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
