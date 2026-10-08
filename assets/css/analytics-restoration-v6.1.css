@@ -111,3 +111,57 @@ linear-gradient(to top,transparent 49.7%,#d9e1ea 50%,transparent 50.3%),#fafbfd}
 }
 @media(prefers-reduced-motion:reduce){.ar-meter i{transition:none}}
 @media print{#nutritionInsightDashboard .ar-print{display:none!important}}
+
+/* Verified food-source explorer: on demand, outside the overview flow. */
+#nutritionInsightDashboard .ar-source-open{
+  display:inline-flex;align-items:center;justify-content:center;min-height:40px;
+  margin:12px 0 2px;padding:9px 12px;border:1px solid #c6d4e3;border-radius:9px;
+  background:#fff;color:#244c73;font-size:12px;font-weight:750;
+}
+#nutritionInsightDashboard .ar-quality-label{display:block;padding:6px 0;color:#5c6980;font-size:12px}
+#nutritionInsightDashboard .ar-contributor-entry{
+  display:block;padding:8px 10px;background:#fff;border:1px solid #e1e8f1;border-radius:8px;
+}
+#nutritionInsightDashboard .ar-contributor-entry>div{
+  display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:12px;
+}
+#nutritionInsightDashboard .ar-contributor-entry .ar-meter{height:5px;margin:7px 0 0}
+#nutritionInsightDashboard .ar-contributor-entry strong{overflow-wrap:anywhere}
+#nutritionInsightDashboard .ar-contributor-entry span{white-space:normal;text-align:right;color:#5e6c80}
+.ar-sources-dialog{
+  width:min(760px,calc(100vw - 24px));max-width:min(760px,calc(100vw - 24px));
+  max-height:min(86dvh,850px);overflow:auto;padding:20px;border:1px solid #bdcbdc;
+  border-radius:17px;background:#fff;color:#172033;box-shadow:0 22px 60px #17203322;
+}
+.ar-sources-dialog::backdrop{background:rgba(20,33,50,.42)}
+.ar-sources-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.ar-sources-head h2{margin:4px 0 12px;font-size:22px;line-height:1.25}
+.ar-sources-head button{min-height:40px;border:1px solid #d1dbe5;border-radius:9px;padding:8px 14px;background:#fff}
+.ar-sources-dialog p{margin:8px 0 12px;color:#475569;font-size:13px;line-height:1.55}
+.ar-sources-dialog .ar-sources-note{color:#667589;font-size:12px}
+.ar-sources-dialog .ar-sources-science{margin:14px 0;padding:12px;background:#f5f8fb;border-left:3px solid #487ca8;border-radius:5px}
+.ar-sources-dialog .ar-sources-science a{color:#1b5b93;text-decoration:underline}
+.ar-sources-label{display:block;margin:17px 0 7px;color:#24344c;font-size:13px;font-weight:800}
+#arSourcesSearch{
+  display:block;width:100%;min-height:44px;margin-bottom:12px;padding:10px 12px;
+  border:1px solid #bfccd9;border-radius:10px;background:#fff;color:#172033;
+  font:inherit;font-size:14px;
+}
+#arSourcesSearch:focus-visible{outline:3px solid #8db4d9;outline-offset:2px}
+.ar-source-list{display:grid;gap:7px;max-height:48dvh;overflow:auto}
+.ar-source-item{display:flex;justify-content:space-between;align-items:center;gap:15px;min-width:0;padding:11px 12px;border:1px solid #e0e7ee;border-radius:10px}
+.ar-source-item strong{display:block;font-size:13px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.ar-source-item small{display:block;margin-top:4px;color:#64748b;font-size:11px}
+.ar-source-amount{flex:0 0 auto;text-align:right;font-variant-numeric:tabular-nums}
+.ar-source-amount b{font-size:15px;color:#244a70}
+.ar-sources-empty{padding:16px;border:1px dashed #c7d4e2;border-radius:9px;background:#f8fafc}
+@media(max-width:540px){
+  .ar-sources-dialog{padding:13px}
+  .ar-sources-head h2{font-size:18px}
+  .ar-source-item{align-items:flex-start;gap:10px}
+  .ar-source-amount b{font-size:13px}
+  #nutritionInsightDashboard .ar-contributor-entry>div{flex-wrap:wrap}
+}
+@media print{
+  #nutritionInsightDashboard .ar-source-open,.ar-sources-dialog{display:none!important}
+}
