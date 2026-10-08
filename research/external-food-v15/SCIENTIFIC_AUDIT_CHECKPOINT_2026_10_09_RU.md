@@ -63,3 +63,26 @@
 - [Проверенный патч фолатов и все 56 профилей — run 37857800922](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37857800922)
 - [Повторный source dossier от зафиксированной копии — run 37857951498](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37857951498)
 - [Дополнительный UK CoFID аудит — run 37858011324](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37858011324)
+
+
+## Продолжение: специализированные нутриентные справочники и 2 подтверждаемые поправки
+
+**Научный статус:** этот раздел обновляет первичный checkpoint, не меняя его исходные результаты. Проверено 2026-10-09.
+
+1. USDA Choline Release 2 (2008), архив `Choln02.zip`, **634** записей: для 41 отсутствующего значения холина выполнено сопоставление по USDA NDB (через USDA SR Legacy 2018/CNF 2026). **0 точных совпадений NDB**. Холин остаётся неизвестным; нельзя брать значения соседнего продукта. Источник: https://agdatacommons.nal.usda.gov/articles/dataset/USDA_Database_for_the_Choline_Content_of_Common_Foods_Release_2_2008_/24660123.
+2. UK CoFID 2021: при сравнении смыслового имени продукта без категории `Spices` нашлось сочетание **Saffron (CoFID 13-852)** и **Spices, saffron (USDA FDC 170934)**. Для него по источнику дано `sugar_per_100g=42.4` г/100 г из колонки *Total sugars (g)*, публикация Marsh et al. (1977). Контроль макропрофиля: **310 vs 310 ккал, белки 11.43 vs 11.4 г, жиры 5.85 vs 5.9 г, углеводы 65.37 vs 61.5 г**. Это *донорский справочный показатель с явной прослеживаемостью*, требует отдельного независимого scientific review перед окончательным релизом.
+3. USDA FNDDS 2024-10-31: 5 432 survey foods, 353 015 записей о нутриентах; **0 нормализованно точных названий** среди 56 базовых профилей — неоднозначные блюда не используются как доноры.
+4. Исторический Fineli Release 16.0 (THL, 2014, CC BY 4.0, проверенный pinned mirror SHA `98fbfd01e0e841ff707d52750437940429fab93d`) охватывает 3 738 пищевых записей и 55 компонент. Найдены **три** дополнительныe наблюдения для внешне подходящих продуктов, но *не импортируются как измеренные*: овсяная мука vitamin C=0 и селен=8.6 µg/100g оба отмечены как *imputed/estimated from related food*, белый перец total sugars=0 получен *суммированием компонентов* и требует проверки нулевой семантики.
+5. Актуальный stage: оригинально **179** пропусков; после точной проверки фолатов полбяной муки 38.4 µg/100g и документированной проверки сахаров шафрана 42.4 g/100g **177 остаются null**. Ни одно из 28 HEI сопоставлений не было неподтверждённо заполнено. **Все 56 карточек пока заблокированы до полноценного источника или научно корректной обработки неизвестных полей.**
+
+### Действительное сохранение результатов
+
+- Скрипт `tools/apply_external_food_verified_field_patches.py` воспроизводимо берёт 56 оригинальных карточек из `research/external-food-v15/step4e-frozen/step4e_blocked_other.json`, накладывает ровно **две** проверяемые по первичным источникам поправки, сохраняет 177 иных null и проверяет неизменность исходных непустых нутриентов.
+- Два именных манифеста в `research/external-food-v15/verified-field-patches/`. Статус `STAGING_ONLY`, отсутствие импорта в действующий runtime.
+- [CI PASS: two-source fields staged](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37859178216)
+- [USDA Choline NDB check](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37858748148)
+- [UK CoFID macro parity](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37858984084)
+- [USDA FNDDS 2024 source check](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37859058225)
+- [Historical THL Fineli method-level check](https://github.com/vesninsergeybk-afk/nutrition-engine/actions/runs/37859379411)
+
+**Следующие направления:** отдельное изучение химически/биологически корректных структурных нулей с provenance `STRUCTURAL_ZERO_ESTIMATE` и честный runtime для частичных карточек; перепроверка новейших точных оригинальных справочников по первичным продуктам; пересчёт HEI по официальным эквивалентам только при доказанном состоянии, без межвидовых прокси. Не сводить к принудительному заполнению всех 33 полей любой ценой.
