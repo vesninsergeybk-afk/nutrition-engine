@@ -1,0 +1,31 @@
+name: Official Swedish French Source Verification
+on:
+  push:
+    branches: [data-food-wave3-resolution-20261009]
+    paths:
+      - "tools/validate_swedish_french_verified_fields.py"
+      - ".github/workflows/external-food-national-verified-fields.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  primary-source-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify official government food source original values
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet requests openpyxl
+          python3 tools/validate_swedish_french_verified_fields.py \
+            --blocked research/external-food-v15/step4e-frozen/step4e_blocked_other.json \
+            --out .government-food-verified
+          cat .government-food-verified/gov_sources_added_fields_check.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-swedish-french-three-nutrient-verification
+          path: .government-food-verified/
+          include-hidden-files: true
+          retention-days: 21
+          if-no-files-found: error
