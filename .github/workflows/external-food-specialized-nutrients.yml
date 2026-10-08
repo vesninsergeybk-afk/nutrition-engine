@@ -26,11 +26,12 @@ jobs:
           curl -fL --retry 2 --connect-timeout 15 --max-time 100 \
             'https://www.ars.usda.gov/ARSUserFiles/80400535/Data/Choline/Choln02.zip' \
             -o /tmp/official-food-evidence/Choln02.zip
-          curl -fL --retry 2 --connect-timeout 15 --max-time 100 \
+          curl -fL --retry 1 --connect-timeout 15 --max-time 35 \
             'https://fineli.fi/fineli/content/file/49' \
-            -o /tmp/official-food-evidence/fineli74.zip
+            -o /tmp/official-food-evidence/fineli74.zip || echo 'FINELI_PUBLIC_DOWNLOAD_BLOCKED_403'
+
           unzip -t /tmp/official-food-evidence/Choln02.zip >/dev/null
-          unzip -t /tmp/official-food-evidence/fineli74.zip >/dev/null
+          if [ -s /tmp/official-food-evidence/fineli74.zip ]; then unzip -t /tmp/official-food-evidence/fineli74.zip >/dev/null; fi
       - name: Inspect source table semantics
         run: |
           python3 tools/probe_specialized_food_sources.py \
