@@ -185,6 +185,9 @@
   function init(){
     d.addEventListener('click',handleClick,true);
     d.addEventListener('change',handleChange,false);
+    /* Needs checkpoint dispatches needs:computed on document, without bubbling. */
+    d.addEventListener('needs:computed',schedule,false);
+    d.addEventListener('needs:invalidated',schedule,false);
     ['app:ready','ration:changed','needs:computed','needs:invalidated','needs:changed','hei:rendered','diet:profile-rendered','analysis-workspace:ready'].forEach(function(name){w.addEventListener(name,schedule,false);});
     w.NutritionAnalyticsRestorationV1={version:VERSION,refresh:render,print:detailedPrint};
     schedule();
