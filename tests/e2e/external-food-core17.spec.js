@@ -51,10 +51,11 @@ test('CORE17: all source-backed foods load with provenance, search and calculate
         return bad.map(field => x.key+':'+field);
       }),
       cheese:added.find(x=>x.key==='ext_cheese_camembert')?.name_ru,
-      carp:added.find(x=>x.key==='ext_carp')?.name_ru
+      carp:added.find(x=>x.key==='ext_carp')?.name_ru,
+      thymeCorrectlyQuarantined:!catalog.some(x=>x.key==='ext_spice_thyme')
     };
   },{fields:FIELDS,hei:HEI});
-  expect(state).toMatchObject({boot:'ready',total:1121,added:16,manifest:1121,invalid:[]});
+  expect(state).toMatchObject({boot:'ready',total:1121,added:16,manifest:1121,invalid:[],thymeCorrectlyQuarantined:true});
   expect(state.cheese).toContain('камамбер');
   expect(state.carp).toContain('Карп');
   await searchProduct(page,'камамбер');
