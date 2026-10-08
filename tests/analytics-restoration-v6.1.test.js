@@ -74,6 +74,19 @@ assert.match(nodes.arBody.innerHTML,/data-ar-hei-jump="total_veg"/);
 assert.match(nodes.arBody.innerHTML,/Учтённые продукты<\/h4><div class="ar-contributors">/,'real HEI contributor array must be rendered');
 assert.match(nodes.arBody.innerHTML,/ar-hei-overview/);
 assert.match(nodes.arBody.innerHTML,/Качество × структура/);
+
+data.nutrients.push({key:'protein_g',title:'Белок',unit:'г',actual:60,target:90,mode:'minimum',group:'basic',
+  coverage:{covered:1,total:2,items:[{name:'Морковь',share:100,value:60}]},
+  quality:{missing:1,assumed:0,label:'частичное покрытие'},
+  status:{label:'Предварительно'}});
+window.NutritionAnalyticsRestorationV1.refresh();
+assert.match(nodes.arBody.innerHTML,/поступление может быть занижено/,'macro cards must flag source gaps');
+data.nutrients.find(x=>x.key==='protein_g').coverage.covered=0;
+window.NutritionAnalyticsRestorationV1.refresh();
+assert.match(nodes.arBody.innerHTML,/Белки<\/strong><b>нет данных<\/b>/,'unavailable protein is not false zero');
+data.nutrients=data.nutrients.filter(x=>x.key!=='protein_g');
+window.NutritionAnalyticsRestorationV1.refresh();
+
 assert.match(nodes.arBody.innerHTML,/Вода из продуктов/);
 assert.match(nodes.arBody.innerHTML,/нет пригодных данных/,'without a water field, report missing rather than fake zero');
 data.nutrients.push({key:'water_ml',title:'Вода',unit:'мл',actual:900,mode:'informational',group:'other',
