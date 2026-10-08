@@ -1,0 +1,98 @@
+name: External Food Step 4E Integrity Gate
+
+on:
+  push:
+    branches:
+      - data-source-expansion
+    paths:
+      - "tools/resolve_external_food_integrity_step4e_v15.py"
+      - ".github/workflows/external-food-step4e-integrity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout isolated research branch
+        uses: actions/checkout@v4
+
+      - name: Checkout live main product catalog separately
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: .current-main
+          persist-credentials: false
+
+      - name: Record baseline revisions
+        shell: bash
+        run: |
+          echo "research_head=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "production_main_head=$(git -C .current-main rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Recover audited Step 4D staging snapshot
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p .stage4d
+          gh run download 36448883372 \
+            --repo "${{ github.repository }}" \
+            --name external-food-step4d-semantic-gate \
+            --dir .stage4d
+          test -s .stage4d/import_proposals_v15_step4d.json
+
+      - name: Audit all 89 fields and current production compatibility
+        shell: bash
+        run: |
+          python3 tools/resolve_external_food_integrity_step4e_v15.py \
+            --proposals .stage4d/import_proposals_v15_step4d.json \
+            --current-glob ".current-main/data/products.v5.3.210-p1.3.part-*.json" \
+            --out-dir staging/import-v15/step4e
+
+      - name: Gate assertions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("staging/import-v15/step4e")
+          r=json.loads((p/"step4e_integrity_report.json").read_text())
+          assert r["status"]=="PASS",r
+          assert r["source_proposals"]==89
+          assert r["current_main_products"]==1105
+          assert r["preview_only_candidates"]==32
+          assert r["blocked_state_hei"]==1
+          assert r["blocked_existing_gates"]==56
+          assert r["legacy_stale_provenance_fields"]==40
+          assert r["import_to_production_permitted"] is False
+          print("Step 4E PASS: 32 preview-only, 1 dry-bean state block, 56 other blocks")
+          PY
+
+      - name: Publish summary
+        shell: bash
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r=json.load(open("staging/import-v15/step4e/step4e_integrity_report.json"))
+          print("## External food Step 4E: "+r["status"])
+          print("- Existing production products: "+str(r["current_main_products"]))
+          print("- Preview only: "+str(r["preview_only_candidates"]))
+          print("- Dry bean HEI block: "+str(r["blocked_state_hei"]))
+          print("- Other blocked: "+str(r["blocked_existing_gates"]))
+          print("- Stale provenance fields repaired in staging: "+str(r["legacy_stale_provenance_fields"]))
+          print("- Production import: NOT PERMITTED")
+          PY
+
+      - name: Upload audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-food-step4e-integrity
+          path: staging/import-v15/step4e/
+          retention-days: 14
+          if-no-files-found: error
