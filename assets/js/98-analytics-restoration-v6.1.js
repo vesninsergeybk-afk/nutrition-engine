@@ -258,6 +258,11 @@
     },130);
   }
   function init(){
+    /* In WebKit an initial pointer activation can focus the primary control
+       without producing the delegated click. Do not alter the calculation;
+       recover through the canonical action only if the profile is still draft. */
+    w.addEventListener('pointerup',retryPrimaryNeedsCalculation,true);
+    w.addEventListener('mouseup',retryPrimaryNeedsCalculation,true);
     w.addEventListener('click',retryPrimaryNeedsCalculation,true);
     d.addEventListener('click',handleClick,true);
     d.addEventListener('change',handleChange,false);
