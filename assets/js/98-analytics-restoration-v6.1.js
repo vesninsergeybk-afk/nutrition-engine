@@ -21,6 +21,15 @@
   }
   function needsCurrent(){return d.documentElement.getAttribute('data-profile-calculation-state')==='current';}
   function currentNeeds(){return needsCurrent()&&w.__lastNeedsMeta&&w.__lastNeedsMeta.ok?w.__lastNeedsMeta:null;}
+  function stableDetailsToggle(e){
+    /* Keep one deterministic toggle path for nested disclosure rows in
+       Chromium, Firefox and WebKit, and preserve native keyboard click support. */
+    var t=e.target&&e.target.nodeType===3?e.target.parentElement:e.target;
+    var summary=t&&t.closest?t.closest('summary'):null;
+    if(!summary||!summary.parentElement||summary.parentElement.tagName!=='DETAILS')return;
+    e.preventDefault();
+    summary.parentElement.open=!summary.parentElement.open;
+  }
   function panel(){
     var anchor=el('heiPanel'),main=el('mainContent');if(!anchor||!main)return null;
     var node=el('nutritionInsightDashboard');
@@ -28,6 +37,7 @@
       node=d.createElement('section');node.id='nutritionInsightDashboard';
       node.className='card ar-dashboard';node.setAttribute('aria-labelledby','arTitle');
       node.innerHTML='<div class="ar-heading"><div><span class="ar-kicker">АНАЛИЗ РАЦИОНА</span><h2 id="arTitle">Что показывает ваш рацион</h2><p>Значения и графики обновляются при изменении продуктов. Нажмите на показатель, чтобы увидеть источники.</p></div><button type="button" class="secondary ar-print" data-ar-print>Полный отчёт · PDF</button></div><div id="arBody" aria-live="polite"></div>';
+      node.addEventListener('click',stableDetailsToggle,true);
       main.insertBefore(node,anchor);
     }
     return node;
