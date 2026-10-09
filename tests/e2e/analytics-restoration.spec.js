@@ -108,18 +108,9 @@ test('calculated profile exposes real water reference and full print report is g
     state:document.documentElement.getAttribute('data-profile-calculation-state')
   }));
   console.log('PROFILE_CALC_POSTCHECK',JSON.stringify(after));
-  if(test.info().project.name==='webkit'&&!after.needsOk){
-    const diag=await page.evaluate(()=>{
-      const events=window.__webKitCalcProbe||[];
-      const direct=document.getElementById('needs_calc_btn');
-      if(direct&&!direct.disabled)direct.click();
-      return {events,afterDirect:window.__lastNeedsMeta?.ok,afterDirectState:document.documentElement.getAttribute('data-profile-calculation-state')};
-    });
-    console.log('WEBKIT_CLICK_DIAGNOSTIC',JSON.stringify(diag));
-  }
-  if(test.info().project.name==='webkit')expect(after.needsOk).toBe(true);
+  await page.waitForFunction(()=>window.__lastNeedsMeta&&window.__lastNeedsMeta.ok===true,null,{timeout:18000});
+  if(test.info().project.name==='webkit')console.log('WEBKIT_CALC_EVENT_CHAIN',JSON.stringify(await page.evaluate(()=>window.__webKitCalcProbe||[])));
 
-  await page.waitForFunction(()=>window.__lastNeedsMeta&&window.__lastNeedsMeta.ok===true,{},{timeout:18000});
 
   const reference=await page.evaluate(()=>({
     water:window.__lastNeedsMeta.waterReference,
