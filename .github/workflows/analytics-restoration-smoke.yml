@@ -1,5 +1,9 @@
 name: Nutrition analytics parity smoke
 
+concurrency:
+  group: nutrition-analytics-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 on:
   pull_request:
     paths:
