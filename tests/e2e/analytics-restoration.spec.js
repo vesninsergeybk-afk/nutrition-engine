@@ -39,8 +39,8 @@ test('real loaded calculator renders progressive analytics and verified-source d
   // Open the first nutrient with a defined source lookup using normal user controls.
   const source=page.locator('#arBody [data-ar-source-key]').first();
   await expect(source).toBeAttached();
-  const outer=page.locator('#arBody details.ar-group').filter({has:source}).first();
-  const inner=page.locator('#arBody details.ar-detail-row').filter({has:source}).first();
+  const outer=page.locator('#arBody details.ar-group').filter({has:page.locator('[data-ar-source-key]')}).first();
+  const inner=page.locator('#arBody details.ar-detail-row').filter({has:page.locator('[data-ar-source-key]')}).first();
   if(!(await outer.evaluate(node=>node.open)))await outer.locator(':scope > summary').click();
   if(!(await inner.evaluate(node=>node.open)))await inner.locator(':scope > summary').click();
   await expect(source).toBeVisible({timeout:12000});
