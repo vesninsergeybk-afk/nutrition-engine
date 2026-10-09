@@ -13,7 +13,8 @@ assert(html.includes('98-analytics-restoration-v6.1.js'),'new layer is loaded in
 assert(html.includes('analytics-restoration-v6.1.css'),'analytics CSS is loaded');
 new vm.Script(source,{filename:'98-analytics-restoration-v6.1.js'});
 
-const nodes={},events={};
+const nodes={},events={},windowEvents={};
+let needsReady=true;
 function makeNode(id){
   return {id:id||'',className:'',value:'',attributes:{},innerHTML:'',parentNode:null,
     setAttribute(k,v){this.attributes[k]=v;},
@@ -34,7 +35,7 @@ main.insertBefore=node=>{
 out.parentNode={insertBefore(node){nodes[node.id]=node;}};
 
 const document={readyState:'complete',
-  documentElement:{getAttribute(k){return k==='data-profile-calculation-state'?'current':'long';}},
+  documentElement:{getAttribute(k){return k==='data-profile-calculation-state'?(needsReady?'current':'draft'):'long';}},
   getElementById(k){return nodes[k]||null;},
   createElement(){return makeNode('');},
   addEventListener(k,handler){events[k]=handler;},
@@ -53,7 +54,7 @@ let printed='',printedCount=0;
 const popup={document:{open(){},write(s){printed=s;},close(){},body:{}},
   focus(){},setTimeout(fn){fn();},print(){printedCount++;}};
 const window={
-  clearTimeout(){},setTimeout(fn){fn();return 1;},addEventListener(){},
+  clearTimeout(){},setTimeout(fn){fn();return 1;},addEventListener(k,fn){windowEvents[k]=fn;},
   __lastNeedsMeta:{ok:true,waterReference:{kind:'ai',valueL:2.5},workingEnergyTargetKcal:2000},
   __lastDietAnalysisProfile:{hei:74.5,dailyStructure:55},
   NutritionAnalysisWorkspaceHF7:{refresh(){},getViewModel(){return data;}},
@@ -131,6 +132,14 @@ window.NutritionAnalyticsRestorationV1.refresh();
 window.__lastDietAnalysisProfile={};
 window.NutritionAnalyticsRestorationV1.refresh();
 assert.doesNotMatch(nodes.arBody.innerHTML,/class="ar-matrix-point"/,'missing matrix score cannot show fake point');
+let retryClicks=0;
+nodes.needs_calc_btn={disabled:false,click(){retryClicks++;}};
+needsReady=false;
+windowEvents.click({target:{closest(s){return s==='#profileCalculateContinue'?{disabled:false}:null;}}});
+assert.equal(retryClicks,1,'fallback retries canonical button rather than recalculating nutrients');
+needsReady=true;
+windowEvents.click({target:{closest(s){return s==='#profileCalculateContinue'?{disabled:false}:null;}}});
+assert.equal(retryClicks,1,'no retry after successful calculation');
 assert.match(nodes.arBody.innerHTML,/&lt;img/);
 assert.doesNotMatch(nodes.arBody.innerHTML,/<img src=x/);
 console.log('PASS: entrypoint, water, meal split, nutrients, contributor provenance, HEI, matrix, print and empty states');
