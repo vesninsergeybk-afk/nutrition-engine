@@ -91,6 +91,16 @@ test('calculated profile exposes real water reference and full print report is g
     state:document.documentElement.getAttribute('data-profile-calculation-state')
   }));
   console.log('PROFILE_CALC_PRECHECK',JSON.stringify(before));
+  if(test.info().project.name==='webkit')await page.evaluate(()=>{
+    window.__webKitCalcProbe=[];
+    window.addEventListener('click',event=>{
+      const target=event.target;
+      const btn=target&&target.closest?target.closest('#profileCalculateContinue,#needs_calc_btn'):null;
+      if(btn)window.__webKitCalcProbe.push({id:btn.id,time:Date.now(),disabled:btn.disabled});
+    },true);
+    document.addEventListener('needs:computed',()=>window.__webKitCalcProbe.push({id:'computed',time:Date.now()}));
+  });
+
   await page.locator('#profileCalculateContinue').click();
   const after=await page.evaluate(()=>({
     needsOk:window.__lastNeedsMeta?.ok,
@@ -98,6 +108,17 @@ test('calculated profile exposes real water reference and full print report is g
     state:document.documentElement.getAttribute('data-profile-calculation-state')
   }));
   console.log('PROFILE_CALC_POSTCHECK',JSON.stringify(after));
+  if(test.info().project.name==='webkit'&&!after.needsOk){
+    const diag=await page.evaluate(()=>{
+      const events=window.__webKitCalcProbe||[];
+      const direct=document.getElementById('needs_calc_btn');
+      if(direct&&!direct.disabled)direct.click();
+      return {events,afterDirect:window.__lastNeedsMeta?.ok,afterDirectState:document.documentElement.getAttribute('data-profile-calculation-state')};
+    });
+    console.log('WEBKIT_CLICK_DIAGNOSTIC',JSON.stringify(diag));
+  }
+  expect(after.needsOk).toBe(true);
+
   await page.waitForFunction(()=>window.__lastNeedsMeta&&window.__lastNeedsMeta.ok===true,{},{timeout:18000});
 
   const reference=await page.evaluate(()=>({
