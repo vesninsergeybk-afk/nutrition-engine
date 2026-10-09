@@ -244,7 +244,21 @@
     try{source.dispatchEvent(new Event('change',{bubbles:true}));}catch(_){}
     schedule();
   }
+  function retryPrimaryNeedsCalculation(e){
+    /* WebKit can miss the legacy delegated primary handler in a long canvas.
+       Never calculate independently: retry only the existing canonical button,
+       and only when the primary did not achieve a current calculated profile. */
+    var button=e.target&&e.target.closest?e.target.closest('#profileCalculateContinue'):null;
+    if(!button||button.disabled||needsCurrent())return;
+    w.setTimeout(function(){
+      if(needsCurrent())return;
+      var canonical=el('needs_calc_btn');
+      if(!canonical||canonical.disabled)return;
+      try{canonical.click();}catch(_){}
+    },130);
+  }
   function init(){
+    w.addEventListener('click',retryPrimaryNeedsCalculation,true);
     d.addEventListener('click',handleClick,true);
     d.addEventListener('change',handleChange,false);
     /* Needs checkpoint dispatches needs:computed on document, without bubbling. */
