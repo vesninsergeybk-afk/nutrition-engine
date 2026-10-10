@@ -196,6 +196,12 @@ const scenarios=[
     1
   ]
 ];
-for(const [name,input,expected] of scenarios){assert.equal(core.evaluate(input).category,expected,name);}
+const complete={barriersPresent:'no',foodAccess:'no',illnessAffectsIntake:'no',functionDecline:'no',expectedLowIntakeDays:0};
+for(const [name,input,expected] of scenarios){
+  const data={...complete,...input};
+  assert.equal(core.evaluate(data).category,expected,name);
+}
+assert.equal(core.evaluate({age:40,heightCm:174,weightKg:70,weightLossIntent:'none',intakeReduced:'no',almostNoIntakeDays:0}).category,'insufficient','missing sections must not mean no risk');
+assert.equal(core.evaluate({...complete,age:15,weightLossIntent:'none',intakeReduced:'no',almostNoIntakeDays:0}).category,'insufficient','underage is outside scope');
 assert.equal(core.evaluate({age:35,heightCm:180,weightKg:52,weightLossIntent:'none',intakeReduced:'no',almostNoIntakeDays:11}).refeedingRiskFlag,'needs-professional-review');
 console.log('Synthetic behavior checks passed: '+scenarios.length+' scenarios. These checks are not clinical validation.');
