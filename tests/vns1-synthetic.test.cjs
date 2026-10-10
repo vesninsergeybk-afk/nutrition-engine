@@ -196,7 +196,7 @@ const scenarios=[
     1
   ]
 ];
-const complete={fluidState:'no',weightReliable:true,barriersPresent:'no',foodAccess:'no',illnessAffectsIntake:'no',functionDecline:'no',expectedLowIntakeDays:0};
+const complete={emergency:'none',fluidState:'no',weightReliable:true,barriersPresent:'no',foodAccess:'no',illnessAffectsIntake:'no',functionDecline:'no',expectedLowIntakeDays:0};
 for(const [name,input,expected] of scenarios){
   const data={...complete,...input};
   assert.equal(core.evaluate(data).category,expected,name);
