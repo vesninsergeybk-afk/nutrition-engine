@@ -137,6 +137,12 @@
       model.category===2?'Обсудите результаты с медицинским специалистом для оценки питания и причин изменений. Не используйте результат для самостоятельного назначения нутритивной поддержки.':
       model.category===1?'Если трудности сохраняются, обратитесь к врачу для уточнения причин.':'При изменении состояния повторите оценку; отсутствие отмеченных признаков не исключает нарушений питания.';
     add(box,'p','vns1-next-step',advice);
+    var analysis=byId('dietAnalysisProfilePanel');
+    if(analysis){
+      var brief=byId('vns1AnalysisBrief');
+      if(!brief){brief=d.createElement('p');brief.id='vns1AnalysisBrief';brief.className='vns1-analysis-brief';var head=analysis.querySelector('.diet-analysis-head')||analysis.firstElementChild;if(head&&head.nextSibling)analysis.insertBefore(brief,head.nextSibling);else analysis.insertBefore(brief,analysis.firstChild);}
+      brief.textContent='ВНС-1 (исследовательская версия): '+model.title+'. Это отдельная предварительная оценка; она не меняет нормы калорий и белка.';
+    }
   }
   function changed(){
     updateShared();
