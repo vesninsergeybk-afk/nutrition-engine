@@ -47,7 +47,7 @@
     var root=section;section=content;
     subsection('Проверка безопасности','При опасных симптомах оценка питания не должна задерживать обращение за медицинской помощью.');
     field('emergency','Есть ли сейчас признаки, требующие незамедлительной помощи?',[
-      ['none','Нет'],['cannot-swallow-saliva','Не могу проглотить слюну'],['breathing-problem','Нарушено дыхание'],['aspiration-breathing','При глотании возникает затруднение дыхания'],['cannot-keep-fluids','Не удаётся удержать жидкость из-за повторной рвоты']]);
+      ['','Выберите ответ'],['none','Нет'],['cannot-swallow-saliva','Не могу проглотить слюну'],['breathing-problem','Нарушено дыхание'],['aspiration-breathing','При глотании возникает затруднение дыхания'],['cannot-keep-fluids','Не удаётся удержать жидкость из-за повторной рвоты']]);
     subsection('Изменение массы и питания','Учитывайте только фактические изменения, даже если нет точных измерений.');
     field('weightLossIntent','За последние 3–6 месяцев масса тела снижалась?',[
       ['','Выберите ответ'],['none','Нет'],['unintentional','Да, без намерения похудеть'],['intentional','Да, я намеренно снижал(а) вес'],['unknown','Не знаю']]);
@@ -112,7 +112,7 @@
       foodAccess:val('vns1_foodAccess')||undefined,illnessAffectsIntake:val('vns1_illnessAffectsIntake')||undefined,
       functionDecline:val('vns1_functionDecline')||undefined,expectedLowIntakeDays:numeric('vns1_futureDays'),
       specialContext:val('vns1_pregnancy')==='yes'?'pregnancy':val('vns1_support')==='enteral'?'enteral':val('vns1_support')==='parenteral'?'parenteral':state==='icu'?'icu':state==='dialysis'?'dialysis':state==='ckd'?'ckd':state,
-      emergency:val('vns1_emergency')||'none',
+      emergency:val('vns1_emergency')||'unknown',
       lowElectrolytes:val('needs_electrolytes')==='low'?'yes':val('needs_electrolytes')==='normal'?'no':'unknown',
       refeedingFactors:val('needs_refeeding_factors')
     };
