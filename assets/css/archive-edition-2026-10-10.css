@@ -385,3 +385,582 @@ html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
     display:none!important;
   }
 }
+
+
+/* Archive editorial refinement R2 — 2026-10-10.
+   Screen-only visual geometry and type. Does not modify application logic,
+   routes, JSON, calculation inputs, form state, or theme selection. */
+@media screen {
+  html[data-theme="modern"] {
+    --archive-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --archive-serif: Georgia, "Times New Roman", serif;
+  }
+  html[data-theme="modern"] #mainContent,
+  html[data-theme="modern"] #mainContent :is(button,input,select,textarea,option) {
+    font-family:var(--archive-sans)!important;
+  }
+  html[data-theme="modern"] #mainContent :is(button,.btn,input,select,textarea) {
+    letter-spacing:normal!important;
+  }
+  html[data-theme="modern"] #mainContent :is(.card,h1,h2,h3) {
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* The brand belongs in an eyebrow, not in a heavy H1. */
+  html[data-theme="modern"] #mainContent>header .title {
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:7px!important;
+    min-width:0!important;
+    font-weight:500!important;
+    font-family:var(--archive-serif)!important;
+    font-size:clamp(27px,2.8vw,38px)!important;
+    line-height:1.18!important;
+  }
+  html[data-theme="modern"] #mainContent>header .archive-brandline {
+    font-family:var(--archive-sans)!important;
+    font-size:11px!important;
+    line-height:1.35!important;
+    letter-spacing:.12em!important;
+    font-weight:600!important;
+    text-transform:uppercase;
+    color:var(--archive-accent)!important;
+  }
+  html[data-theme="modern"] #mainContent>header .archive-title-text {
+    display:block;
+    font-family:var(--archive-serif)!important;
+    font-weight:500!important;
+    letter-spacing:-.028em!important;
+    color:var(--archive-ink);
+  }
+  html[data-theme="modern"] #mainContent>header .entry-first-subtitle {
+    max-width:650px!important;
+    font-size:13px!important;
+    line-height:1.55!important;
+    letter-spacing:normal!important;
+  }
+  html[data-theme="modern"] #mainContent>header>#interfaceSettingsPass1 {
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    min-height:40px!important;
+    padding:8px 14px!important;
+    border-radius:8px!important;
+    font-size:13px!important;
+    font-weight:550!important;
+    box-shadow:none!important;
+    white-space:nowrap;
+  }
+  html[data-theme="modern"] #mainContent>header>#interfaceSettingsPass1[aria-expanded="true"] {
+    border-color:var(--archive-accent)!important;
+    background:var(--archive-accent-soft)!important;
+    color:var(--archive-accent)!important;
+  }
+
+  /* Form sections: one typographic scale, four meaningful weights. */
+  html[data-theme="modern"] #mainContent :is(#needs,#geminiAiSection,#presetsPanel,#globalSearchSection,#rationSection)
+    :is(strong,b,legend) {
+    font-weight:650!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#needs,#geminiAiSection) :is(h1,h2,h3) {
+    font-family:var(--archive-serif)!important;
+    font-weight:500!important;
+    letter-spacing:-.024em!important;
+    line-height:1.2!important;
+  }
+  html[data-theme="modern"] #mainContent #needs .section-title-row h1 {
+    font-size:clamp(23px,2.3vw,29px)!important;
+    line-height:1.2!important;
+    font-weight:500!important;
+  }
+  html[data-theme="modern"] #mainContent :is(.profile-hierarchy__details>summary,.norm-region-comparison-details>summary,.workspace-alt-entry>summary) {
+    font-family:var(--archive-sans)!important;
+    font-size:13px!important;
+    font-weight:600!important;
+    line-height:1.4!important;
+  }
+  html[data-theme="modern"] #mainContent :is(.profile-hierarchy__details,.norm-region-comparison-details,.workspace-alt-entry) {
+    border-radius:9px!important;
+    background:var(--archive-panel)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent :is(.profile-hierarchy__details>summary,.workspace-alt-entry>summary):hover {
+    background:var(--archive-subtle)!important;
+  }
+
+  /* Text-first navigation. Small numbers are redundant to the labels. */
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps {
+    display:flex!important;
+    width:100%!important;
+    gap:2px!important;
+    align-items:stretch!important;
+    margin:0 0 14px!important;
+    padding:0 2px!important;
+    border:0!important;
+    border-bottom:1px solid var(--archive-rule)!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow-x:auto!important;
+    scrollbar-width:thin;
+  }
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps a {
+    flex:0 0 auto!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    min-height:44px!important;
+    padding:9px 15px!important;
+    border:0!important;
+    border-bottom:2px solid transparent!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    color:var(--archive-muted)!important;
+    font-family:var(--archive-sans)!important;
+    font-size:13px!important;
+    font-weight:550!important;
+    text-decoration:none!important;
+  }
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps a span {
+    display:none!important; /* visual step counters, link labels stay visible */
+  }
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps a:is(:hover,:focus-visible),
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps a:is(.is-active,[aria-current="step"]) {
+    color:var(--archive-accent)!important;
+    border-bottom-color:var(--archive-accent)!important;
+    background:var(--archive-subtle)!important;
+  }
+
+  /* Alternate workspace navigation remains functional when enabled by old clients. */
+  html[data-theme="modern"] .navigation-shell__items a {
+    border-radius:8px!important;
+    font-size:13px!important;
+    font-weight:550!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] .navigation-shell__items a.is-active {
+    background:var(--archive-accent-soft)!important;
+    border-color:#c6dacd!important;
+    color:var(--archive-accent)!important;
+  }
+  html[data-theme="modern"] .navigation-shell__items a span {
+    font-size:12px!important;
+    font-weight:550!important;
+  }
+
+  /* Settings are a contained panel with independent, predictable fields. */
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar {
+    box-sizing:border-box!important;
+    grid-column:1/-1!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px 16px!important;
+    align-items:start!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin:12px 0 0!important;
+    padding:16px!important;
+    border:1px solid var(--archive-rule)!important;
+    border-radius:12px!important;
+    background:var(--archive-panel)!important;
+    box-shadow:0 12px 28px rgba(33,55,45,.045)!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>* {
+    box-sizing:border-box!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>select {
+    width:100%!important;
+    min-height:42px!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>#normRegionSwitcher {
+    width:100%!important;
+    min-width:0!important;
+    padding:12px!important;
+    border:1px solid var(--archive-rule)!important;
+    border-radius:10px!important;
+    background:var(--archive-subtle)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>#normRegionSwitcher :is(.norm-region-switcher__controls,.norm-region-switcher__head) {
+    min-width:0!important;
+    gap:10px!important;
+    flex-wrap:wrap!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>#interfaceControlsBarHF2 {
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-column:1/-1!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-areas:"view theme"!important;
+    align-items:start!important;
+    gap:12px!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    border:0!important;
+    padding:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open :is(#workspaceViewSwitcher,#themeSwitcher) {
+    box-sizing:border-box!important;
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    border:1px solid var(--archive-rule)!important;
+    border-radius:10px!important;
+    padding:9px!important;
+    background:var(--archive-subtle)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open #themeSwitcher {
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto!important;
+    gap:7px!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open #themeSwitcher>.theme-switcher__label {
+    grid-column:1!important;
+    grid-row:1!important;
+    min-width:0!important;
+    width:auto!important;
+    font-size:12px!important;
+    font-weight:600!important;
+    letter-spacing:normal!important;
+    text-transform:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open #themeSwitcher>.theme-switcher__options {
+    grid-column:1!important;
+    grid-row:2!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;
+    min-width:0!important;
+    width:100%!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .theme-switcher__option {
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:40px!important;
+    padding:7px 5px!important;
+    border-radius:7px!important;
+    border:1px solid var(--archive-rule)!important;
+    box-shadow:none!important;
+    background:var(--archive-panel)!important;
+    color:var(--archive-ink)!important;
+    font-size:12px!important;
+    font-weight:500!important;
+    overflow-wrap:anywhere;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .theme-switcher__option[aria-pressed="true"] {
+    background:var(--archive-accent-soft)!important;
+    border-color:var(--archive-accent)!important;
+    color:var(--archive-accent)!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .theme-switcher__option span {
+    min-width:0!important;
+    width:auto!important;
+    font-size:12px!important;
+    font-weight:500!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .toolbar button {
+    min-width:0!important;
+    min-height:40px!important;
+    border-radius:8px!important;
+    font-size:12px!important;
+    font-weight:550!important;
+    letter-spacing:normal!important;
+    text-transform:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .toolbar button:not(.theme-switcher__option):not([data-region]) {
+    width:auto!important;
+    justify-self:start!important;
+    padding:8px 12px!important;
+    background:var(--archive-panel)!important;
+    border-color:var(--archive-rule)!important;
+    color:var(--archive-ink)!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .toolbar #regionSeg {
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    min-width:0!important;
+    max-width:100%!important;
+    gap:3px!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .toolbar #regionSeg button {
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    background:var(--archive-panel)!important;
+    border-color:var(--archive-rule)!important;
+    color:var(--archive-ink)!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open .toolbar #regionSeg button[aria-pressed="true"] {
+    background:var(--archive-accent-soft)!important;
+    color:var(--archive-accent)!important;
+    border-color:var(--archive-accent)!important;
+  }
+
+  /* Exaggerated default actions become proportional buttons. */
+  html[data-theme="modern"] #mainContent :is(button,.btn) {
+    font-size:13px!important;
+    font-weight:550!important;
+    line-height:1.35!important;
+    text-transform:none!important;
+    text-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#profileCalculateContinue,#needs_calc_btn,#geminiAiRunBtn) {
+    font-size:14px!important;
+    font-weight:600!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel {
+    background:var(--archive-subtle)!important;
+    border-color:var(--archive-rule)!important;
+    padding:14px!important;
+    border-radius:10px!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__missing button {
+    padding:5px 10px!important;
+    min-height:30px!important;
+    width:auto!important;
+    font-size:12px!important;
+    background:var(--archive-panel)!important;
+    border:1px solid var(--archive-rule)!important;
+    border-radius:7px!important;
+    color:var(--archive-muted)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__actions {
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel #profileCalculateContinue {
+    flex:0 1 auto!important;
+    min-width:min(100%,290px)!important;
+    min-height:44px!important;
+    padding:10px 16px!important;
+    width:auto!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel #profileFocusMissing {
+    flex:0 1 auto!important;
+    min-height:44px!important;
+    width:auto!important;
+    padding:9px 14px!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage {
+    display:flex!important;
+    align-items:center!important;
+    flex-wrap:wrap!important;
+    gap:8px 16px!important;
+    padding-top:12px!important;
+    color:var(--archive-muted)!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage label {
+    display:inline-flex!important;
+    flex:0 1 auto!important;
+    align-items:center!important;
+    width:auto!important;
+    gap:8px!important;
+    font-size:13px!important;
+    font-weight:500!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage label input[type="checkbox"] {
+    display:inline-block!important;
+    position:static!important;
+    flex:0 0 17px!important;
+    appearance:auto!important;
+    width:17px!important;
+    height:17px!important;
+    max-width:17px!important;
+    min-width:17px!important;
+    margin:0!important;
+    padding:0!important;
+    border-radius:3px!important;
+    box-shadow:none!important;
+    accent-color:var(--archive-accent);
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage button {
+    width:auto!important;
+    min-height:34px!important;
+    margin-left:auto!important;
+    background:transparent!important;
+    border:1px solid var(--archive-rule)!important;
+    color:var(--archive-muted)!important;
+    font-weight:500!important;
+  }
+
+  /* Planner: equal-width restrained selectors, without the oversized green capsule. */
+  html[data-theme="modern"] #mainContent #geminiAiSection :is(.ai-planner-task-grid,.ai-planner-context-grid,.ai-planner-constraint-grid,.ai-planner-scale-grid) {
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid {
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:10px!important;
+    align-items:stretch!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label {
+    display:block!important;
+    box-sizing:border-box!important;
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>span {
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:center!important;
+    align-items:flex-start!important;
+    box-sizing:border-box!important;
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-height:77px!important;
+    margin:0!important;
+    padding:12px 14px!important;
+    border:1px solid var(--archive-rule)!important;
+    border-radius:10px!important;
+    background:var(--archive-panel)!important;
+    box-shadow:none!important;
+    text-align:left!important;
+    color:var(--archive-ink)!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>span strong {
+    font-size:14px!important;
+    font-weight:600!important;
+    line-height:1.35!important;
+    color:inherit!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>span small {
+    display:block!important;
+    margin-top:4px!important;
+    font-size:12px!important;
+    line-height:1.35!important;
+    font-weight:450!important;
+    opacity:1!important;
+    color:var(--archive-muted)!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>input:checked+span {
+    background:var(--archive-accent-soft)!important;
+    border-color:var(--archive-accent)!important;
+    color:var(--archive-accent)!important;
+    box-shadow:inset 0 0 0 1px var(--archive-accent)!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>input:focus-visible+span {
+    outline:3px solid rgba(33,95,80,.28)!important;
+    outline-offset:2px!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>input:checked+span small {
+    color:var(--archive-accent)!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-context-grid label {
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection :is(.ai-planner-context-grid select,.gemini-ai-constraint textarea) {
+    display:block!important;
+    box-sizing:border-box!important;
+    min-width:0!important;
+    max-width:100%!important;
+    width:100%!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-constraint-grid label {
+    min-width:0!important;
+    border:1px solid var(--archive-rule)!important;
+    border-radius:9px!important;
+    background:var(--archive-subtle)!important;
+    box-shadow:none!important;
+    font-size:13px!important;
+    font-weight:500!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-constraint-grid input[type="checkbox"] {
+    flex:0 0 17px!important;
+    width:17px!important;
+    height:17px!important;
+    min-width:17px!important;
+    max-width:17px!important;
+    accent-color:var(--archive-accent);
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection :is(.ai-planner-taskset>legend,.ai-planner-scales>legend,.ai-planner-constraints>legend) {
+    font-size:16px!important;
+    font-weight:600!important;
+    letter-spacing:-.01em!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection :is(.ai-planner-task-card span,.ai-planner-scale-grid span) {
+    box-shadow:none!important;
+  }
+
+  /* Compact report actions without disturbing exported JSON. */
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar>button {
+    width:auto!important;
+    min-width:0!important;
+    max-width:100%!important;
+    flex:0 1 auto!important;
+    min-height:40px!important;
+    padding:9px 12px!important;
+  }
+}
+@media screen and (max-width:920px) {
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar {
+    grid-template-columns:1fr!important;
+    padding:12px!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>#interfaceControlsBarHF2 {
+    grid-column:1!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:"view" "theme"!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>#normRegionSwitcher,
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>.toolbar>select {
+    grid-column:1!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media screen and (max-width:620px) {
+  html[data-theme="modern"] #mainContent>header .title {
+    font-size:clamp(24px,6vw,30px)!important;
+  }
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps {
+    display:flex!important;
+    overflow-x:auto!important;
+    scrollbar-width:none;
+  }
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps a {
+    min-height:42px!important;
+    padding:10px 12px!important;
+    font-size:12px!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid {
+    grid-template-columns:1fr!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>span {
+    min-height:60px!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel #profileCalculateContinue {
+    width:100%!important;
+    flex:1 1 100%!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage button {
+    margin-left:0!important;
+  }
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar>button {
+    flex:1 1 calc(50% - 8px)!important;
+    white-space:normal!important;
+  }
+}
