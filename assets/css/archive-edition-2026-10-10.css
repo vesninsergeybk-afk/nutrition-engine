@@ -1013,8 +1013,7 @@ html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
 
   /* The legacy first-screen form gives all inputs a 48px minimum, including
      native checkbox/radio inputs. Reset only native selection controls. */
-  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent #needs input[type="checkbox"],
-  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent #needs input[type="radio"] {
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent #needs input[type="checkbox"] {
     display:inline-block!important;
     box-sizing:border-box!important;
     flex:0 0 17px!important;
@@ -1051,5 +1050,16 @@ html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
 @media screen and (max-width:860px) {
   html[data-theme="modern"][data-entry-first-ui="1"] #mainContent #profileContinuityPanel .profile-continuity__storage {
     display:none!important;
+  }
+}
+
+
+/* Prevent an empty settings wrapper if the shell has relocated the theme control. */
+@media screen {
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>#interfaceControlsBarHF2 {
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
   }
 }
