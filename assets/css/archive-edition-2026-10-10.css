@@ -1063,3 +1063,25 @@ html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
     box-shadow:none!important;
   }
 }
+
+
+/* Preserve visual hierarchy when people switch to the two existing legacy themes. */
+@media screen {
+  #mainContent>header .title>.archive-brandline {
+    display:block;
+    font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    font-size:11px;
+    font-weight:600;
+    line-height:1.4;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    opacity:.75;
+  }
+  #mainContent>header .title>.archive-title-text {
+    display:block;
+    font-size:inherit;
+    font-weight:inherit;
+    line-height:inherit;
+    letter-spacing:inherit;
+  }
+}
