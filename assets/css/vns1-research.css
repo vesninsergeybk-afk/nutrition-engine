@@ -19,3 +19,5 @@
 .vns1-next-step{font-weight:600;margin-top:14px}.vns1-result li{margin-bottom:7px}
 .vns1-footnote{font-size:13px}.vns1-references{font-size:13px}
 @media print{.vns1-form,.vns1-actions,.vns1-status{display:none}.vns1-result{break-inside:avoid}}
+
+.vns1-analysis-brief{margin:12px 0 16px;padding:10px 14px;border-left:3px solid currentColor;background:rgba(100,118,130,.04);font-size:14px;line-height:1.4}
