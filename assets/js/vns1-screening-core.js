@@ -19,7 +19,7 @@
   var amount=p.intakeAmount||"unknown"; // none, some, half-or-less, almost-none, unknown
   var barriers=Array.isArray(p.barriers)?p.barriers:[];
   var emergency=p.emergency||"none";
-  var blocked=["pregnancy","icu","enteral","parenteral"].indexOf(p.specialContext)>=0;
+  var blocked=["pregnancy","icu","enteral","parenteral"].indexOf(p.specialContext)>=0 || (p.age!==undefined&&p.age!==null&&Number(p.age)<18);
   if(["cannot-swallow-saliva","breathing-problem","aspiration-breathing"].indexOf(emergency)>=0) {
     urgent.push("Нарушение глотания или дыхания требует экстренной медицинской оценки.");
   } else if(emergency==="cannot-keep-fluids"){
@@ -72,7 +72,12 @@
   var max=0;
   points.forEach(function(x){max=Math.max(max,x.level);});
   if(urgent.length)max=3;
-  var enough=p.weightLossIntent!==undefined&&p.weightLossIntent!=="unknown"&&p.intakeReduced!==undefined&&p.intakeReduced!=="unknown"&&almostDays!==null;
+  var enough=p.weightLossIntent!==undefined&&p.weightLossIntent!=="unknown"&&p.intakeReduced!==undefined&&p.intakeReduced!=="unknown"&&almostDays!==null&&
+    (p.barriersPresent==="no"||(p.barriersPresent==="yes"&&barriers.length>0))&&
+    (p.foodAccess==="yes"||p.foodAccess==="no")&&
+    (p.illnessAffectsIntake==="yes"||p.illnessAffectsIntake==="no")&&
+    (p.functionDecline==="yes"||p.functionDecline==="no")&&futureDays!==null;
+  if(!enough)quality.push("Не все разделы анкеты заполнены: итог может измениться после дополнения ответов.");
   if(blocked)max=urgent.length?3:null;
   if(!blocked&&!enough&&max===0)max=null;
   var labels={0:"По указанным сведениям выраженных сигналов не выявлено",1:"Есть обстоятельства, требующие внимания",2:"Нужна медицинская оценка питания",3:"Требуется срочная медицинская помощь"};
