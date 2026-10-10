@@ -104,7 +104,7 @@
     var compatible=val('vns1_fluid')==='no'&&!edema;
     return {
       age:numeric('needs_age'),heightCm:numeric('needs_h'),weightKg:numeric('needs_w'),previousWeightKg:numeric('needs_prev_w'),
-      weightLossIntent:val('vns1_weightLossIntent')||undefined,weightReliable:compatible,edema:edema,
+      weightLossIntent:val('vns1_weightLossIntent')||undefined,weightReliable:compatible,fluidState:val('vns1_fluid')||'unknown',edema:edema,
       intakeReduced:val('vns1_intakeReduced')||undefined,intakeAmount:val('vns1_intakeAmount'),
       reducedIntakeDays:numeric('vns1_reducedDays'),
       almostNoIntakeDays:almost==='no'?(existing!==null&&existing>0?null:0):(almost==='yes'?existing:null),
