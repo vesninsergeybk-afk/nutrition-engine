@@ -41,7 +41,7 @@
     var values=add(shared,'p','vns1-shared-values','');values.id='vns1SharedValues';
     var link=add(shared,'a','','Проверить или дополнить данные профиля ↗');link.href='#needsCompact';link.addEventListener('click',function(){var needs=byId('needs');if(needs){needs.hidden=false;needs.removeAttribute('aria-hidden');}var f=byId('needsLowWeightSafety');if(f)f.open=true;},false);
     var details=add(section,'details','vns1-form');details.id='vns1Questionnaire';
-    var sum=add(details,'summary','','Открыть анкету нутритивного скрининга');
+    add(details,'summary','','Открыть анкету нутритивного скрининга');
     var content=add(details,'div','vns1-form-body');
     /* Mount form controls inside details, not outside the disclosure. */
     var root=section;section=content;
@@ -65,6 +65,7 @@
       ['appetite','Нет аппетита или быстрое насыщение'],['chewing','Боль, проблемы с зубами или жеванием'],
       ['swallowing','Трудно глотать'],['nausea','Тошнота, рвота или боль в животе'],
       ['digestion','Длительные проблемы с пищеварением'],['weakness','Выраженная слабость']]);
+    field('barriersPresent','Были ли какие-либо трудности при приёме пищи?', [['','Выберите ответ'],['no','Нет'],['yes','Да']]);
     field('barriersAffectIntake','Если трудности есть, мешают ли они съедать достаточно?',[
       ['unknown','Не знаю / не применимо'],['yes','Да'],['no','Нет']]);
     field('foodAccess','За последний месяц случалось ли, что вы не могли нормально питаться из-за нехватки продуктов, денег или помощи?',[
@@ -75,11 +76,11 @@
       ['','Выберите ответ'],['no','Нет'],['yes','Да'],['unknown','Не знаю']]);
     subsection('Возможные изменения в ближайшие дни','Этот раздел помогает заметить риск ещё до того, как питание ухудшится.');
     input('futureDays','Сколько ближайших дней, вероятно, не получится питаться достаточно?','0 — не ожидается');
+    field('support','Как вы получаете питание?', [['none','Обычное питание'],['enteral','Через зонд'],['parenteral','Внутривенно']]);
     field('pregnancy','Вы беременны?',[
       ['unknown','Нет / не применимо / не знаю'],['yes','Да']]);
     var actions=add(section,'div','vns1-actions');var btn=add(actions,'button','vns1-primary','Оценить признаки риска');btn.type='button';btn.id='vns1Evaluate';
     var status=add(section,'p','vns1-status','');status.id='vns1Status';
-    root.appendChild(add(d.createElement('div'),'span')); // no-op protected below
     section=root; // restore outer section for result rendering
     var result=add(section,'div','vns1-result');result.id='vns1Result';result.setAttribute('aria-live','polite');
     add(section,'p','vns1-footnote','Результат носит предварительный характер. При заболеваниях, требующих специального питания, решения принимает лечащий врач. ВНС-1 пока не имеет установленных чувствительности, специфичности или клинических порогов как самостоятельная шкала.');
@@ -107,10 +108,10 @@
       intakeReduced:val('vns1_intakeReduced')||undefined,intakeAmount:val('vns1_intakeAmount'),
       reducedIntakeDays:numeric('vns1_reducedDays'),
       almostNoIntakeDays:almost==='no'?(existing!==null&&existing>0?null:0):(almost==='yes'?existing:null),
-      barriers:barriers,barriersAffectIntake:val('vns1_barriersAffectIntake'),
+      barriers:barriers,barriersPresent:val('vns1_barriersPresent')||undefined,barriersAffectIntake:val('vns1_barriersAffectIntake'),
       foodAccess:val('vns1_foodAccess')||undefined,illnessAffectsIntake:val('vns1_illnessAffectsIntake')||undefined,
       functionDecline:val('vns1_functionDecline')||undefined,expectedLowIntakeDays:numeric('vns1_futureDays'),
-      specialContext:val('vns1_pregnancy')==='yes'?'pregnancy':state==='icu'?'icu':state==='dialysis'?'dialysis':state==='ckd'?'ckd':state,
+      specialContext:val('vns1_pregnancy')==='yes'?'pregnancy':val('vns1_support')==='enteral'?'enteral':val('vns1_support')==='parenteral'?'parenteral':state==='icu'?'icu':state==='dialysis'?'dialysis':state==='ckd'?'ckd':state,
       emergency:val('vns1_emergency')||'none',
       lowElectrolytes:val('needs_electrolytes')==='low'?'yes':val('needs_electrolytes')==='normal'?'no':'unknown',
       refeedingFactors:val('needs_refeeding_factors')
