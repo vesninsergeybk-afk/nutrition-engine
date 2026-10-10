@@ -14,7 +14,7 @@
 <meta name="application-name" content="Калькулятор рациона Сергея Веснина"/>
 <meta name="application-build-date" content="2026-08-06T18:49:00Z"/>
 <meta name="author" content="Веснин Сергей Вячеславович"/>
-<title>Калькулятор рациона Сергея Веснина — v6.0 beta 6 hotfix 4</title><link href="./assets/css/browser-compatibility-v5.3.192.css?v=5.3.192" rel="stylesheet" data-browser-compatibility="pass2"/><script src="./assets/js/00-browser-compatibility-gate-v5.3.210.js?v=v5.3.210-rc2-hf21" data-browser-compatibility-gate="pass2-visual-patch"></script><script data-theme-bootstrap="v2">
+<title>Nutrient — архивная версия калькулятора рациона | Сергей Веснин</title><link href="./assets/css/browser-compatibility-v5.3.192.css?v=5.3.192" rel="stylesheet" data-browser-compatibility="pass2"/><script src="./assets/js/00-browser-compatibility-gate-v5.3.210.js?v=v5.3.210-rc2-hf21" data-browser-compatibility-gate="pass2-visual-patch"></script><script data-theme-bootstrap="v2">
 (function(){
   var key='nutritionCalculator.uiTheme.v1';
   var allowed={'modern':1,'retro-2bit':1,'ivory-brass':1};
@@ -133,6 +133,7 @@
 <link href="./assets/css/interface-simplification-v6.0.0-beta8.css?v=v6.0.0-beta8-interface-pass3" rel="stylesheet" data-ui-hotfix="interface-simplification"/>
 <link href="./assets/css/visual-grammar-v6.0.0-beta9.css?v=v6.0.0-beta9-visual-grammar-a" rel="stylesheet" data-ui-hotfix="visual-grammar-a"/>
 <link href="./assets/css/entry-first-v6.1.css?v=v6.1-entry-first-2026-10-06" rel="stylesheet" data-ui-hotfix="entry-first"/>
+<link href="./assets/css/archive-edition-2026-10-10.css?v=archive-edition-2026-10-10" rel="stylesheet" data-ui-hotfix="archive-edition"/>
 </head>
 <body>
 <a class="skip-link" href="#needs_sex">Перейти к основным данным профиля</a>
@@ -172,6 +173,13 @@
 </div>
 </div>
 </header>
+<aside class="archive-edition" aria-label="Информация об архивной версии">
+  <div>
+    <span class="archive-edition__label">Nutrient · архивная редакция</span>
+    <p class="archive-edition__copy">Отдельная версия калькулятора рациона. Её интерфейс и возможности отличаются от актуального инструмента.</p>
+  </div>
+  <span class="archive-edition__note">Сохранение рациона в JSON — в разделе «Итоговый рацион»</span>
+</aside>
 <dialog aria-labelledby="normRegionHelpTitle" class="norm-region-help-dialog" id="normRegionHelp">
 <div class="norm-region-help-dialog__head">
 <div>
@@ -615,11 +623,12 @@
 </thead>
 <tbody id="rationBody"></tbody>
 </table>
+<p class="archive-json-hint" id="archiveJsonHint">Чтобы сохранить введённые продукты и их количество отдельным файлом, нажмите «Сохранить JSON». Для загрузки ранее сохранённого файла используйте «Загрузить JSON». Сохранение файла не меняет расчёт рациона.</p>
 <div class="toolbar" style="justify-content:flex-end; margin: 8px 0;">
 <button id="printRationBtn" title="Распечатать итоговый рацион">Печать</button>
 <button id="exportRationPdfBtn" title="Сохранить итоговый рацион как PDF">Сохранить PDF</button>
-<button class="secondary" id="loadRationJsonBtn" title="Загрузить сохранённый рацион из JSON" type="button">Загрузить JSON</button>
-<button aria-label="Сохранить итоговый рацион как JSON" id="exportRationJsonBtn" title="Сохранить итоговый рацион как JSON" type="button">Сохранить JSON</button>
+<button class="secondary" id="loadRationJsonBtn" title="Загрузить сохранённый рацион из JSON" aria-describedby="archiveJsonHint" type="button">Загрузить JSON</button>
+<button aria-label="Сохранить итоговый рацион как JSON" aria-describedby="archiveJsonHint" id="exportRationJsonBtn" title="Сохранить итоговый рацион как JSON" type="button">Сохранить JSON</button>
 <button class="danger" id="clearRationBtn" title="Удалить все позиции из Итогового рациона">Очистить рацион</button>
 </div>
 <div class="footer-note">Данные сохраняются локально в вашем браузере.</div>
