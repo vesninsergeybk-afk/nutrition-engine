@@ -134,6 +134,7 @@
 <link href="./assets/css/visual-grammar-v6.0.0-beta9.css?v=v6.0.0-beta9-visual-grammar-a" rel="stylesheet" data-ui-hotfix="visual-grammar-a"/>
 <link href="./assets/css/entry-first-v6.1.css?v=v6.1-entry-first-2026-10-06" rel="stylesheet" data-ui-hotfix="entry-first"/>
 <link href="./assets/css/archive-edition-2026-10-10.css?v=archive-edition-r2-2-2026-10-10" rel="stylesheet" data-ui-hotfix="archive-edition"/>
+<link href="./assets/css/archive-editorial-polish-v3.css?v=archive-editorial-polish-v3-2026-10-10" rel="stylesheet" data-ui-hotfix="archive-editorial-polish"/>
 </head>
 <body>
 <a class="skip-link" href="#needs_sex">Перейти к основным данным профиля</a>
@@ -177,9 +178,9 @@
 <aside class="archive-edition" aria-label="Информация об архивной версии">
   <div>
     <span class="archive-edition__label">Предыдущая версия Nutrient</span>
-    <p class="archive-edition__copy">Эта версия сохранена для работы с прежними рационами. Возможности могут отличаться от текущего калькулятора.</p>
+    <p class="archive-edition__copy">Сохранён прежний набор инструментов и возможность загрузки рациона.</p>
   </div>
-  <span class="archive-edition__note">Сохранение рациона в JSON — в разделе «Итоговый рацион»</span>
+  <span class="archive-edition__note">Сохранение и загрузка JSON доступны в «Итоговом рационе».</span>
 </aside>
 <dialog aria-labelledby="normRegionHelpTitle" class="norm-region-help-dialog" id="normRegionHelp">
 <div class="norm-region-help-dialog__head">
@@ -251,7 +252,7 @@
 <button class="norm-region-help-close" type="button">Понятно</button>
 </div>
 </dialog>
-<nav aria-label="Основные шаги калькулятора" class="workflow-steps"><a href="#needsCompact"><span>1</span>Потребности</a><a href="#globalSearchSection"><span>2</span>Рацион</a><a href="#heiPanel"><span>3</span>HEI</a><a href="#totalsSection"><span>4</span>Нормы</a><a href="#dietAnalysisProfilePanel"><span>5</span>Профиль</a><a href="#globalActions"><span>6</span>Отчёт</a></nav><section class="card" id="needsCompact" style="margin-bottom:16px;">
+<nav aria-label="Разделы калькулятора" class="workflow-steps"><a href="#needsCompact"><span aria-hidden="true">1</span>Потребности</a><a href="#globalSearchSection"><span aria-hidden="true">2</span>Рацион</a><a href="#heiPanel"><span aria-hidden="true">3</span>Качество питания</a><a href="#totalsSection"><span aria-hidden="true">4</span>Дневные нормы</a><a href="#dietAnalysisProfilePanel"><span aria-hidden="true">5</span>Анализ</a><a href="#globalActions"><span aria-hidden="true">6</span>Отчёт</a></nav><section class="card" id="needsCompact" style="margin-bottom:16px;">
 <dialog aria-labelledby="needsHelpTitle" id="needsHelp">
 <div class="dialog-head" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
 <strong id="needsHelpTitle">Справка: Калькулятор потребностей</strong>
@@ -624,7 +625,7 @@
 </thead>
 <tbody id="rationBody"></tbody>
 </table>
-<p class="archive-json-hint" id="archiveJsonHint">Чтобы сохранить введённые продукты и их количество отдельным файлом, нажмите «Сохранить JSON». Для загрузки ранее сохранённого файла используйте «Загрузить JSON». Сохранение файла не меняет расчёт рациона.</p>
+<p class="archive-json-hint" id="archiveJsonHint">Файл JSON позволяет сохранить рацион и позднее загрузить его в эту версию калькулятора.</p>
 <div class="toolbar" style="justify-content:flex-end; margin: 8px 0;">
 <button id="printRationBtn" title="Распечатать итоговый рацион">Печать</button>
 <button id="exportRationPdfBtn" title="Сохранить итоговый рацион как PDF">Сохранить PDF</button>
