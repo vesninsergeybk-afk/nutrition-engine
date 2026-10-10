@@ -149,7 +149,7 @@ html[data-theme="modern"] #mainContent .workflow-steps a span {
   border-radius:5px!important;
   color:var(--archive-accent)!important;
 }
-html[data-theme="modern"] #mainContent :where(button,.btn,[role="button"]) {
+html[data-theme="modern"] #mainContent :where(button,.btn,[role="button"]):not(.norm-region-help-button):not(.close-btn):not(.theme-switcher__option):not(.seg button):not([role="tab"]) {
   box-sizing:border-box;
   border-radius:9px!important;
   font-family:var(--archive-sans)!important;
@@ -157,12 +157,12 @@ html[data-theme="modern"] #mainContent :where(button,.btn,[role="button"]) {
   letter-spacing:0!important;
   transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease;
 }
-html[data-theme="modern"] #mainContent :where(button,.btn):not(.secondary):not(.ghost):not(.danger):not(.theme-switcher__option):not([aria-pressed="true"]):not([aria-pressed="false"]) {
+html[data-theme="modern"] #mainContent :where(#needs_calc_btn,#profileCalculateContinue,#geminiRationAddDraftBtn,#geminiRationRecognizeBtn,#geminiAiRunBtn,#printAllBtn,#geminiRationStopRecording) {
   border-color:var(--archive-accent)!important;
   background:var(--archive-accent)!important;
   color:#fff!important;
 }
-html[data-theme="modern"] #mainContent :where(button,.btn):not(.secondary):not(.ghost):not(.danger):not(.theme-switcher__option):not([aria-pressed="true"]):not([aria-pressed="false"]):hover:not(:disabled) {
+html[data-theme="modern"] #mainContent :where(#needs_calc_btn,#profileCalculateContinue,#geminiRationAddDraftBtn,#geminiRationRecognizeBtn,#geminiAiRunBtn,#printAllBtn,#geminiRationStopRecording):hover:not(:disabled) {
   background:var(--archive-accent-hover)!important;
   border-color:var(--archive-accent-hover)!important;
 }
@@ -375,7 +375,7 @@ html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
   }
 }
 @media (prefers-reduced-motion:reduce) {
-  html[data-theme="modern"] #mainContent :where(button,.btn,[role="button"]) {
+  html[data-theme="modern"] #mainContent :where(button,.btn,[role="button"]):not(.norm-region-help-button):not(.close-btn):not(.theme-switcher__option):not(.seg button):not([role="tab"]) {
     transition:none!important;
   }
 }
