@@ -1,0 +1,23 @@
+/* VNS-1 research section. Scoped styles, no changes to existing theme engines. */
+.vns1-card{margin-top:20px}.vns1-head h2{margin:6px 0 10px;font-size:clamp(21px,2vw,29px);line-height:1.2}
+.vns1-head p,.vns1-shared p,.vns1-footnote{color:var(--muted,#5d6875);line-height:1.55}
+.vns1-kicker{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.vns1-shared{border:1px solid rgba(112,130,145,.3);border-radius:12px;padding:14px;margin:16px 0;background:rgba(100,118,130,.04)}
+.vns1-shared a,.vns1-references a{text-decoration:underline;text-underline-offset:2px}
+.vns1-form{border:1px solid rgba(112,130,145,.3);border-radius:12px;padding:12px 16px}
+.vns1-form>summary{cursor:pointer;font-weight:700}.vns1-form-body{margin-top:18px}
+.vns1-subhead{margin:18px 0 10px}.vns1-subhead h3{font-size:18px;margin:0 0 4px}.vns1-subhead p{margin:0;font-size:13px;opacity:.8}
+.vns1-field{display:flex;flex-direction:column;gap:7px;margin:13px 0}
+.vns1-field label,.vns1-options legend{font-weight:600;font-size:14px}
+.vns1-field select,.vns1-field input{width:100%;max-width:640px;min-height:42px}
+.vns1-options{border:1px solid rgba(112,130,145,.25);border-radius:8px;padding:12px;display:grid;gap:10px}
+.vns1-option{display:flex;gap:9px;align-items:flex-start;font-weight:400}.vns1-option input{flex:none}
+.vns1-actions{margin:24px 0 10px}.vns1-primary{min-height:42px}
+.vns1-result{border:1px solid rgba(112,130,145,.32);border-radius:12px;margin:16px 0;padding:16px;line-height:1.45}
+.vns1-result--2,.vns1-result--3{border-left:4px solid #af6a28}
+.vns1-result--3{border-left-color:#a32d2d}.vns1-result-title{display:block;font-size:19px}
+.vns1-next-step{font-weight:600;margin-top:14px}.vns1-result li{margin-bottom:7px}
+.vns1-footnote{font-size:13px}.vns1-references{font-size:13px}
+@media print{.vns1-form,.vns1-actions,.vns1-status{display:none}.vns1-result{break-inside:avoid}}
+
+.vns1-analysis-brief{margin:12px 0 16px;padding:10px 14px;border-left:3px solid currentColor;background:rgba(100,118,130,.04);font-size:14px;line-height:1.4}
