@@ -39,6 +39,7 @@
     else if(loss>0){emit("weight-loss-any",1,"Есть непреднамеренное снижение массы, даже если оно меньше 5%.","Нутритивный скрининг");}
     else {quality.push("Непреднамеренная потеря массы заявлена, но измерения её не подтверждают.");}
   }
+  if(p.weightLossIntent==="none"&&past!==null&&weight!==null&&past>weight&&reliable)emit("conflicting-weight-history",1,"Прежняя масса в профиле выше текущей, хотя снижение отрицается: уточните историю изменения веса.","Проверка согласованности данных");
   if(intended&&loss>5)quality.push("Снижение массы названо намеренным: его причины и безопасность нельзя определить одним вопросом.");
   if(bmi!==null&&!reliable)warnings.push("ИМТ рассчитан ориентировочно: масса может изменяться из-за жидкости.");
   if(bmi!==null&&reliable&&age!==null&&bmi<(age>=70?22:20))emit("low-bmi",2,"ИМТ ниже возрастного порога, применяемого в критериях GLIM.","GLIM 2025");
@@ -76,7 +77,9 @@
     (p.barriersPresent==="no"||(p.barriersPresent==="yes"&&barriers.length>0))&&
     (p.foodAccess==="yes"||p.foodAccess==="no")&&
     (p.illnessAffectsIntake==="yes"||p.illnessAffectsIntake==="no")&&
-    (p.functionDecline==="yes"||p.functionDecline==="no")&&futureDays!==null;
+    (p.functionDecline==="yes"||p.functionDecline==="no")&&futureDays!==null&&
+    (p.fluidState==="no"||p.fluidState==="yes")&&
+    (p.intakeReduced!=="yes"||(days!==null&&days>0));
   if(!enough)quality.push("Не все разделы анкеты заполнены: итог может измениться после дополнения ответов.");
   if(blocked)max=urgent.length?3:null;
   if(!blocked&&!enough&&max===0)max=null;
