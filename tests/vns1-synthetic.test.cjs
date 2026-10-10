@@ -74,7 +74,7 @@ const scenarios=[
       "intakeReduced": "no",
       "almostNoIntakeDays": 0
     },
-    0
+    "insufficient"
   ],
   [
     "severe shortage",
