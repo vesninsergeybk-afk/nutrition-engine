@@ -78,6 +78,7 @@
     (p.foodAccess==="yes"||p.foodAccess==="no")&&
     (p.illnessAffectsIntake==="yes"||p.illnessAffectsIntake==="no")&&
     (p.functionDecline==="yes"||p.functionDecline==="no")&&futureDays!==null&&
+    (p.emergency==="none"||urgent.length>0)&&
     (p.fluidState==="no"||p.fluidState==="yes")&&
     (p.intakeReduced!=="yes"||(days!==null&&days>0));
   if(!enough)quality.push("Не все разделы анкеты заполнены: итог может измениться после дополнения ответов.");
