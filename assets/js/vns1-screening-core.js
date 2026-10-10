@@ -83,7 +83,7 @@
     (p.intakeReduced!=="yes"||(days!==null&&days>0));
   if(!enough)quality.push("Не все разделы анкеты заполнены: итог может измениться после дополнения ответов.");
   if(blocked)max=urgent.length?3:null;
-  if(!blocked&&!enough&&max===0)max=null;
+  if(!blocked&&max===0&&(!enough||!reliable||bmi===null||age===null))max=null;
   var labels={0:"По указанным сведениям выраженных сигналов не выявлено",1:"Есть обстоятельства, требующие внимания",2:"Нужна медицинская оценка питания",3:"Требуется срочная медицинская помощь"};
   var category=max===null?"insufficient":max;
   return {version:"vns1-0.2-research",status:"NOT_VALIDATED",category:category,title:category==="insufficient"?(blocked?"Нужна специализированная оценка":"Недостаточно сведений"):labels[category],flags:points,warnings:warnings,urgent:urgent,dataLimitations:quality,bmi:bmi===null?null:Number(bmi.toFixed(2)),weightLossPercent:unintentional&&reliable&&past!==null&&weight!==null?Number(loss.toFixed(2)):null,refeedingRiskFlag:refHigh?"needs-professional-review":"not-identified-by-known-data",complete:!!enough&&!blocked,disclaimer:"Исследовательский алгоритм, не валидирован. Не устанавливает диагноз и не заменяет клинический скрининг."};
