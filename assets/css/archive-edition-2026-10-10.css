@@ -1,0 +1,387 @@
+/* Nutrient Archive Edition — editorial visual refinement, 2026-10-10.
+   Presentation-only layer. Do not alter visibility, calculations, navigation,
+   JSON serialization, application state or printable report structure. */
+html[data-theme="modern"] {
+  --archive-paper:#f6f4ee;
+  --archive-panel:#fffefb;
+  --archive-subtle:#f2f5f2;
+  --archive-ink:#263832;
+  --archive-muted:#5f716b;
+  --archive-rule:#d8dfd9;
+  --archive-accent:#215f50;
+  --archive-accent-hover:#174a3d;
+  --archive-accent-soft:#e5f0ea;
+  --archive-serif:Georgia,"Times New Roman",serif;
+  --archive-sans:"Segoe UI",Aptos,"Helvetica Neue",Arial,sans-serif;
+  --ef-ink:var(--archive-ink);
+  --ef-muted:var(--archive-muted);
+  --ef-line:var(--archive-rule);
+  --ef-soft:var(--archive-subtle);
+  --ef-blue:var(--archive-accent);
+  --ef-blue-strong:var(--archive-accent-hover);
+  --ef-radius:13px;
+  --vg-bg:var(--archive-paper);
+  --vg-surface:var(--archive-panel);
+  --vg-subtle:var(--archive-subtle);
+  --vg-line:var(--archive-rule);
+  --vg-ink:var(--archive-ink);
+  --vg-text:var(--archive-ink);
+  --vg-muted:var(--archive-muted);
+  --vg-primary:var(--archive-accent);
+  --vg-primary-hover:var(--archive-accent-hover);
+  --vg-primary-soft:var(--archive-accent-soft);
+  --d111-bg:var(--archive-paper);
+  --d111-surface:var(--archive-panel);
+  --d111-subtle:var(--archive-subtle);
+  --d111-soft-blue:var(--archive-accent-soft);
+  --d111-ink:var(--archive-ink);
+  --d111-text:var(--archive-ink);
+  --d111-muted:var(--archive-muted);
+  --d111-border:var(--archive-rule);
+  --d111-blue:var(--archive-accent);
+  --d111-blue-dark:var(--archive-accent-hover);
+  --d111-radius:13px;
+  --d111-radius-sm:9px;
+  --d111-shadow:0 1px 2px rgba(28,50,42,.035),0 12px 32px rgba(28,50,42,.035);
+  color-scheme:light;
+}
+html[data-theme="modern"] body {
+  background:var(--archive-paper)!important;
+  color:var(--archive-ink)!important;
+  font-family:var(--archive-sans)!important;
+  font-size:15px!important;
+  line-height:1.55!important;
+  -webkit-font-smoothing:antialiased;
+}
+html[data-theme="modern"] #mainContent {
+  color:var(--archive-ink);
+  font-family:var(--archive-sans);
+}
+html[data-theme="modern"] #mainContent>header {
+  border-bottom:1px solid var(--archive-rule)!important;
+  padding:17px 0 20px!important;
+  margin-bottom:16px!important;
+}
+html[data-theme="modern"] #mainContent>header .title {
+  max-width:760px!important;
+  color:var(--archive-ink)!important;
+  font-family:var(--archive-serif)!important;
+  font-size:clamp(27px,3.2vw,41px)!important;
+  font-weight:600!important;
+  line-height:1.16!important;
+  letter-spacing:-.028em!important;
+  text-wrap:balance;
+}
+html[data-theme="modern"] #mainContent>header .entry-first-subtitle {
+  max-width:630px!important;
+  font-size:13px!important;
+  line-height:1.55!important;
+  color:var(--archive-muted)!important;
+}
+html[data-theme="modern"] #mainContent>header>#interfaceSettingsPass1 {
+  background:var(--archive-panel)!important;
+  border:1px solid var(--archive-rule)!important;
+  color:var(--archive-ink)!important;
+  border-radius:9px!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  box-shadow:none!important;
+}
+html[data-theme="modern"] #mainContent :where(h1,h2,h3,.card-title,.v40-needs-summary-title) {
+  color:var(--archive-ink)!important;
+  font-family:var(--archive-serif)!important;
+  font-weight:600!important;
+  letter-spacing:-.018em!important;
+  text-wrap:balance;
+}
+html[data-theme="modern"] #mainContent :where(h4,h5,h6) {
+  color:var(--archive-ink)!important;
+  font-family:var(--archive-sans)!important;
+  letter-spacing:-.01em;
+}
+html[data-theme="modern"] #mainContent :where(p,li,td,th,label) {
+  overflow-wrap:break-word;
+}
+html[data-theme="modern"] #mainContent :where(.muted,.small,.footer-note,.search-field-hint,.ration-subtitle) {
+  color:var(--archive-muted)!important;
+  line-height:1.5;
+}
+html[data-theme="modern"] #mainContent :where(.card,#needs,.search-field-card,.search-grams-card,.total-card) {
+  border-color:var(--archive-rule)!important;
+  border-radius:13px!important;
+  box-shadow:0 1px 1px rgba(30,49,42,.025),0 10px 28px rgba(30,49,42,.032)!important;
+}
+html[data-theme="modern"] #mainContent :where(#needs,#globalSearchSection,#rationSection,#heiPanel,#totalsSection,#dietAnalysisProfilePanel,#globalActions) {
+  background:var(--archive-panel)!important;
+}
+html[data-theme="modern"] #mainContent .step-badge {
+  padding:5px 9px!important;
+  background:var(--archive-accent-soft)!important;
+  color:var(--archive-accent)!important;
+  border:1px solid #cce1d5!important;
+  border-radius:6px!important;
+  font-family:var(--archive-sans)!important;
+  font-size:11px!important;
+  letter-spacing:.055em!important;
+  font-weight:700!important;
+}
+html[data-theme="modern"] #mainContent .workflow-steps {
+  gap:7px!important;
+  padding-bottom:2px!important;
+  scrollbar-width:thin;
+}
+html[data-theme="modern"] #mainContent .workflow-steps a {
+  background:var(--archive-panel)!important;
+  border:1px solid var(--archive-rule)!important;
+  border-radius:8px!important;
+  color:var(--archive-muted)!important;
+  font-size:12px!important;
+  font-weight:600!important;
+}
+html[data-theme="modern"] #mainContent .workflow-steps a[aria-current="step"],
+html[data-theme="modern"] #mainContent .workflow-steps a.is-active {
+  border-color:var(--archive-accent)!important;
+  background:var(--archive-accent-soft)!important;
+  color:var(--archive-accent)!important;
+}
+html[data-theme="modern"] #mainContent .workflow-steps a span {
+  background:var(--archive-subtle)!important;
+  border-radius:5px!important;
+  color:var(--archive-accent)!important;
+}
+html[data-theme="modern"] #mainContent :where(button,.btn,[role="button"]) {
+  box-sizing:border-box;
+  border-radius:9px!important;
+  font-family:var(--archive-sans)!important;
+  font-weight:650!important;
+  letter-spacing:0!important;
+  transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease;
+}
+html[data-theme="modern"] #mainContent :where(button,.btn):not(.secondary):not(.ghost):not(.danger):not(.theme-switcher__option):not([aria-pressed="true"]):not([aria-pressed="false"]) {
+  border-color:var(--archive-accent)!important;
+  background:var(--archive-accent)!important;
+  color:#fff!important;
+}
+html[data-theme="modern"] #mainContent :where(button,.btn):not(.secondary):not(.ghost):not(.danger):not(.theme-switcher__option):not([aria-pressed="true"]):not([aria-pressed="false"]):hover:not(:disabled) {
+  background:var(--archive-accent-hover)!important;
+  border-color:var(--archive-accent-hover)!important;
+}
+html[data-theme="modern"] #mainContent :where(button.secondary,button.ghost,.btn.secondary,.btn.ghost) {
+  background:var(--archive-panel)!important;
+  border-color:var(--archive-rule)!important;
+  color:var(--archive-ink)!important;
+  box-shadow:none!important;
+}
+html[data-theme="modern"] #mainContent :where(button.secondary,button.ghost,.btn.secondary,.btn.ghost):hover:not(:disabled) {
+  background:var(--archive-accent-soft)!important;
+  border-color:#b8d4c6!important;
+}
+html[data-theme="modern"] #mainContent button.danger {
+  background:#fff7f4!important;
+  border-color:#e3c3bc!important;
+  color:#873d34!important;
+}
+html[data-theme="modern"] #mainContent :where(button,input,textarea,select,a,summary):focus-visible {
+  outline:3px solid rgba(33,95,80,.30)!important;
+  outline-offset:3px!important;
+}
+html[data-theme="modern"] #mainContent :where(input[type="text"],input[type="number"],input[type="search"],input[type="date"],select,textarea) {
+  box-sizing:border-box;
+  max-width:100%;
+  background:var(--archive-panel)!important;
+  border:1px solid #c6d2ca!important;
+  border-radius:9px!important;
+  color:var(--archive-ink)!important;
+  font-family:var(--archive-sans)!important;
+  box-shadow:0 1px 2px rgba(35,54,44,.025);
+}
+html[data-theme="modern"] #mainContent :where(input,textarea)::placeholder {
+  color:#7f8d84;
+  opacity:1;
+}
+html[data-theme="modern"] #mainContent :where(input,textarea,select):focus {
+  border-color:var(--archive-accent)!important;
+  box-shadow:0 0 0 3px rgba(33,95,80,.13)!important;
+}
+html[data-theme="modern"] #mainContent :where(details>summary,.profile-hierarchy__details>summary,.workspace-alt-entry>summary) {
+  color:var(--archive-ink);
+  cursor:pointer;
+  border-radius:9px;
+  text-underline-offset:3px;
+}
+html[data-theme="modern"] #mainContent :where(details>summary):hover {
+  color:var(--archive-accent);
+}
+html[data-theme="modern"] #mainContent :where(.profile-hierarchy__details,.norm-region-comparison-details,.workspace-alt-entry) {
+  border-color:var(--archive-rule)!important;
+  border-radius:10px!important;
+}
+html[data-theme="modern"] #mainContent :where(.table-wrap,.norm-region-help-table-wrap) {
+  max-width:100%;
+  overflow-x:auto;
+  scrollbar-width:thin;
+}
+html[data-theme="modern"] #mainContent table {
+  border-collapse:separate;
+  border-spacing:0;
+  max-width:100%;
+  font-variant-numeric:tabular-nums;
+}
+html[data-theme="modern"] #mainContent table thead th {
+  background:var(--archive-subtle)!important;
+  color:#53675d!important;
+  font-family:var(--archive-sans)!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  border-bottom:1px solid var(--archive-rule)!important;
+  text-transform:none!important;
+  letter-spacing:.015em!important;
+}
+html[data-theme="modern"] #mainContent table tbody tr {
+  background:var(--archive-panel);
+}
+html[data-theme="modern"] #mainContent table tbody tr:nth-child(even) {
+  background:#fbfcfa;
+}
+html[data-theme="modern"] #mainContent table tbody td {
+  border-bottom-color:#e8ede8!important;
+}
+html[data-theme="modern"] #mainContent #rationSection>.toolbar {
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:10px 0 0!important;
+}
+html[data-theme="modern"] #mainContent #exportRationJsonBtn {
+  background:var(--archive-accent)!important;
+  border-color:var(--archive-accent)!important;
+  color:#fff!important;
+  box-shadow:0 2px 8px rgba(33,95,80,.11)!important;
+}
+html[data-theme="modern"] #mainContent #loadRationJsonBtn {
+  background:var(--archive-accent-soft)!important;
+  border-color:#b8d5c6!important;
+  color:var(--archive-accent)!important;
+}
+html[data-theme="modern"] #mainContent .archive-json-hint {
+  margin:12px 0 0;
+  padding:10px 12px;
+  background:var(--archive-subtle);
+  border-left:3px solid var(--archive-accent);
+  border-radius:0 8px 8px 0;
+  color:var(--archive-muted);
+  font-size:13px;
+  line-height:1.55;
+}
+html[data-theme="modern"] #mainContent :where(dialog,.norm-region-help-dialog) {
+  background:var(--archive-panel)!important;
+  color:var(--archive-ink)!important;
+  border:1px solid var(--archive-rule)!important;
+  border-radius:13px!important;
+  box-shadow:0 25px 70px rgba(20,35,28,.16)!important;
+}
+html[data-theme="modern"] #mainContent dialog::backdrop {
+  background:rgba(17,39,32,.48);
+}
+html[data-theme="modern"] #mainContent .search-db-count,
+html[data-theme="modern"] #mainContent .ration-kpi-strip {
+  border-color:var(--archive-rule)!important;
+}
+/* A quiet, accessible archive label. It remains visible in every theme. */
+#mainContent>.archive-edition {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px 20px;
+  margin:0 0 14px;
+  padding:10px 15px;
+  border:1px solid var(--border,#d7dfd9);
+  border-left:3px solid var(--accent,#215f50);
+  border-radius:9px;
+  background:var(--surface,#fff);
+  color:var(--text,#263832);
+}
+#mainContent>.archive-edition .archive-edition__label {
+  display:inline-block;
+  font:700 11px/1.3 "Segoe UI",Arial,sans-serif;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:inherit;
+  opacity:.78;
+}
+#mainContent>.archive-edition .archive-edition__copy {
+  display:block;
+  margin:3px 0 0;
+  font:400 13px/1.5 "Segoe UI",Arial,sans-serif;
+}
+#mainContent>.archive-edition .archive-edition__note {
+  font:600 12px/1.5 "Segoe UI",Arial,sans-serif;
+  opacity:.84;
+}
+html[data-theme="modern"] #mainContent>.archive-edition {
+  background:#eaf1eb!important;
+  border:1px solid #ceded3!important;
+  border-left:3px solid var(--archive-accent)!important;
+  color:var(--archive-ink)!important;
+}
+html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__label {
+  color:var(--archive-accent)!important;
+  opacity:1;
+}
+html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
+  color:var(--archive-muted);
+}
+@media (max-width:760px) {
+  html[data-theme="modern"] #mainContent>header {
+    gap:9px 8px!important;
+    padding:13px 0 15px!important;
+  }
+  html[data-theme="modern"] #mainContent>header .title {
+    font-size:clamp(25px,7vw,32px)!important;
+    line-height:1.17!important;
+  }
+  html[data-theme="modern"] #mainContent #needs {
+    padding:16px!important;
+  }
+  html[data-theme="modern"] #mainContent :where(.card,#globalSearchSection,#rationSection,#heiPanel,#globalActions) {
+    border-radius:11px!important;
+  }
+  html[data-theme="modern"] #mainContent .workflow-steps {
+    margin:0 0 13px!important;
+  }
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar {
+    justify-content:stretch!important;
+  }
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar>button {
+    flex:1 1 145px;
+    white-space:normal!important;
+    min-height:44px!important;
+  }
+  #mainContent>.archive-edition {
+    gap:7px;
+    padding:11px 12px;
+  }
+}
+@media (max-width:420px) {
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar>button {
+    flex-basis:calc(50% - 8px);
+    font-size:12px!important;
+    padding:8px 6px!important;
+  }
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar>#clearRationBtn {
+    flex-basis:100%;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-theme="modern"] #mainContent :where(button,.btn,[role="button"]) {
+    transition:none!important;
+  }
+}
+@media print {
+  #mainContent>.archive-edition,
+  #mainContent .archive-json-hint {
+    display:none!important;
+  }
+}
