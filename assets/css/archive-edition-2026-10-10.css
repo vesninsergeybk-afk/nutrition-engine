@@ -1085,3 +1085,454 @@ html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
     letter-spacing:inherit;
   }
 }
+
+
+/* Archive editorial polish v3 — consolidated into existing stylesheet for hosting compatibility. */
+/*
+ Nutrient Archive • editorial polish v3 • 2026-10-10
+ Scoped to Modern, screen only. A small final design layer; no layout-order,
+ visibility, calculation, storage, JSON or event-handler changes.
+*/
+@media screen {
+  html[data-theme="modern"]{
+    --na3-ink:#24352f;
+    --na3-muted:#60716b;
+    --na3-forest:#225b4b;
+    --na3-forest-hover:#194a3d;
+    --na3-wash:#e8f0e9;
+    --na3-border:#d8dfd8;
+    --na3-panel:#fffefb;
+    --na3-paper:#f7f6f1;
+    --na3-font:system-ui,-apple-system,"Segoe UI","Noto Sans",Arial,sans-serif;
+    --na3-display:Georgia,"Times New Roman",serif;
+    --bg:var(--na3-paper);
+    --card:var(--na3-panel);
+    --text:var(--na3-ink);
+    --border:var(--na3-border);
+    --primary:var(--na3-forest);
+    --primary-600:var(--na3-forest);
+    --accent:var(--na3-forest);
+    --shadow:0 1px 2px rgba(27,45,36,.035),0 8px 24px rgba(27,45,36,.028);
+  }
+  html[data-theme="modern"] body{
+    background:var(--na3-paper)!important;
+    color:var(--na3-ink)!important;
+    font-family:var(--na3-font)!important;
+    font-size:15px;
+    letter-spacing:0;
+    line-height:1.52;
+  }
+  html[data-theme="modern"] #mainContent{
+    min-width:0;
+    color:var(--na3-ink);
+    font-family:var(--na3-font)!important;
+  }
+  html[data-theme="modern"] #mainContent>header{
+    gap:9px 16px!important;
+    padding-top:12px!important;
+    padding-bottom:15px!important;
+    margin-bottom:12px!important;
+    border-color:var(--na3-border)!important;
+  }
+  html[data-theme="modern"] #mainContent>header .title{
+    gap:5px!important;
+    max-width:760px!important;
+    margin:0!important;
+  }
+  html[data-theme="modern"] #mainContent>header .archive-brandline{
+    font-family:var(--na3-font)!important;
+    color:var(--na3-forest)!important;
+    font-weight:650!important;
+    font-size:10.5px!important;
+    line-height:1.3!important;
+    letter-spacing:.105em!important;
+  }
+  html[data-theme="modern"] #mainContent>header .archive-title-text{
+    font-family:var(--na3-display)!important;
+    font-size:clamp(27px,3vw,39px)!important;
+    font-weight:500!important;
+    line-height:1.15!important;
+    letter-spacing:-.028em!important;
+    text-wrap:balance;
+  }
+  html[data-theme="modern"] #mainContent>header .entry-first-subtitle{
+    max-width:760px!important;
+    margin-top:0!important;
+    font-size:13.5px!important;
+    line-height:1.55!important;
+    color:var(--na3-muted)!important;
+    font-weight:400!important;
+  }
+  html[data-theme="modern"] #mainContent>header>#interfaceSettingsPass1{
+    min-height:40px!important;
+    padding:8px 14px!important;
+    border-radius:8px!important;
+    border-color:var(--na3-border)!important;
+    background:var(--na3-panel)!important;
+    color:var(--na3-ink)!important;
+    font:550 13px/1.3 var(--na3-font)!important;
+    text-transform:none!important;
+    letter-spacing:0!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header>#interfaceSettingsPass1[aria-expanded="true"]{
+    border-color:#99baaa!important;
+    background:var(--na3-wash)!important;
+    color:var(--na3-forest)!important;
+  }
+  /* The archive distinction is one quiet annotation, not another large card. */
+  html[data-theme="modern"] #mainContent>.archive-edition{
+    display:flex!important;
+    align-items:baseline!important;
+    justify-content:flex-start!important;
+    flex-wrap:wrap!important;
+    gap:5px 15px!important;
+    margin:0 0 12px!important;
+    padding:8px 0!important;
+    border:0!important;
+    border-bottom:1px solid var(--na3-border)!important;
+    border-radius:0!important;
+    background:transparent!important;
+    color:var(--na3-muted)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>.archive-edition>div{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:6px 12px;
+    min-width:0;
+  }
+  html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__label{
+    font:650 11px/1.4 var(--na3-font)!important;
+    letter-spacing:.02em!important;
+    text-transform:none!important;
+    color:var(--na3-forest)!important;
+  }
+  html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__copy,
+  html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note{
+    display:inline!important;
+    margin:0!important;
+    color:var(--na3-muted)!important;
+    font:400 12px/1.5 var(--na3-font)!important;
+    opacity:1!important;
+  }
+  /* Quiet tabs, not numbered circular steps. Retain every existing link. */
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps{
+    gap:3px!important;
+    padding:0!important;
+    margin:0 0 17px!important;
+    border-bottom:1px solid var(--na3-border)!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-snap-type:x proximity;
+    scrollbar-width:thin;
+  }
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps a{
+    flex:0 0 auto!important;
+    min-height:42px!important;
+    padding:9px 15px!important;
+    scroll-snap-align:start;
+    color:var(--na3-muted)!important;
+    font:550 13px/1.3 var(--na3-font)!important;
+    border:0!important;
+    border-bottom:2px solid transparent!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    letter-spacing:0!important;
+    text-decoration:none!important;
+    white-space:nowrap!important;
+  }
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent>.workflow-steps a:is(:focus-visible,:hover,.is-active,[aria-current="step"]){
+    color:var(--na3-forest)!important;
+    border-bottom-color:var(--na3-forest)!important;
+    background:rgba(34,91,75,.045)!important;
+  }
+  /* Regular, consistent editorial cards with restrained headings. */
+  html[data-theme="modern"] #mainContent :is(
+    #globalSearchSection,#rationSection,#heiPanel,#totalsSection,
+    #dietAnalysisProfilePanel,#dataQualityPanel,#globalActions,#geminiAiSection,
+    #presetsPanel
+  ){
+    border-color:var(--na3-border)!important;
+    border-radius:12px!important;
+    background:var(--na3-panel)!important;
+    box-shadow:0 1px 2px rgba(20,43,33,.03),0 8px 24px rgba(20,43,33,.022)!important;
+  }
+  html[data-theme="modern"] #mainContent :is(
+    #globalSearchSection,#rationSection,#heiPanel,#totalsSection,
+    #dietAnalysisProfilePanel,#globalActions,#geminiAiSection
+  ) :is(h2,.card-title){
+    color:var(--na3-ink)!important;
+    font-family:var(--na3-display)!important;
+    font-weight:500!important;
+    font-size:clamp(22px,2.3vw,29px)!important;
+    line-height:1.2!important;
+    letter-spacing:-.021em!important;
+  }
+  html[data-theme="modern"] #mainContent :is(h3,h4){
+    font-weight:600;
+    letter-spacing:-.01em;
+  }
+  html[data-theme="modern"] #mainContent :is(.muted,.small,.footer-note,.ration-subtitle,.search-lead){
+    color:var(--na3-muted)!important;
+    line-height:1.52!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#profileBasicSection,#needs) label{
+    font-family:var(--na3-font)!important;
+    font-size:13px!important;
+    font-weight:600!important;
+    color:var(--na3-ink)!important;
+    line-height:1.4!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#profileBasicSection,#needs) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+    background:var(--na3-panel)!important;
+    border-color:#c9d3cb!important;
+    border-radius:8px!important;
+    box-shadow:none!important;
+    color:var(--na3-ink)!important;
+    font-family:var(--na3-font)!important;
+    font-size:15px!important;
+    font-weight:400!important;
+    letter-spacing:0!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#profileBasicSection,#needs) :is(input,select,textarea):focus{
+    border-color:var(--na3-forest)!important;
+    box-shadow:0 0 0 3px rgba(34,91,75,.13)!important;
+  }
+  /* Secondary actions must no longer have the visual weight of primary tasks. */
+  html[data-theme="modern"] #mainContent :is(button,.btn){
+    font-family:var(--na3-font)!important;
+    font-size:13px!important;
+    font-weight:550!important;
+    line-height:1.35!important;
+    letter-spacing:0!important;
+    text-transform:none!important;
+    text-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent :is(button.secondary,button.ghost,.btn.secondary,.btn.ghost){
+    background:var(--na3-panel)!important;
+    border-color:var(--na3-border)!important;
+    color:var(--na3-ink)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent :is(button.secondary,button.ghost,.btn.secondary,.btn.ghost):hover:not(:disabled){
+    background:var(--na3-wash)!important;
+    border-color:#aecabb!important;
+    color:var(--na3-forest)!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#profileCalculateContinue,#needs_calc_btn,#geminiAiRunBtn,#exportRationJsonBtn){
+    background:var(--na3-forest)!important;
+    border-color:var(--na3-forest)!important;
+    border-radius:8px!important;
+    color:#fff!important;
+    font-size:13px!important;
+    font-weight:600!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#profileCalculateContinue,#needs_calc_btn,#geminiAiRunBtn,#exportRationJsonBtn):hover:not(:disabled){
+    background:var(--na3-forest-hover)!important;
+    border-color:var(--na3-forest-hover)!important;
+  }
+  html[data-theme="modern"] #mainContent :is(button,input,select,textarea,a,summary):focus-visible{
+    outline:2px solid var(--na3-forest)!important;
+    outline-offset:3px!important;
+  }
+  /* Less empty space around progress and save-profile controls. */
+  html[data-theme="modern"] #mainContent #profileContinuityPanel{
+    border-color:var(--na3-border)!important;
+    background:#f7f9f6!important;
+    border-radius:10px!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__missing{
+    gap:5px!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__missing button{
+    min-height:28px!important;
+    padding:5px 8px!important;
+    border-radius:6px!important;
+    font-size:11.5px!important;
+    font-weight:550!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__actions{
+    gap:8px!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage{
+    border-color:var(--na3-border)!important;
+    color:var(--na3-muted)!important;
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage button{
+    min-height:34px!important;
+    padding:6px 10px!important;
+    font-weight:500!important;
+    font-size:12px!important;
+  }
+  /* Compact, legible source/optional disclosures. */
+  html[data-theme="modern"] #mainContent :is(.profile-hierarchy__details,.workspace-alt-entry,.norm-region-comparison-details){
+    border-color:var(--na3-border)!important;
+    border-radius:9px!important;
+    background:var(--na3-panel)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent :is(.profile-hierarchy__details,.workspace-alt-entry,.norm-region-comparison-details)[open]{
+    border-color:#b6cdbf!important;
+  }
+  html[data-theme="modern"] #mainContent :is(.profile-hierarchy__details>summary,.workspace-alt-entry>summary,.norm-region-comparison-details>summary){
+    font:600 13px/1.4 var(--na3-font)!important;
+    color:var(--na3-ink)!important;
+    min-height:42px!important;
+    padding:10px 13px!important;
+  }
+  html[data-theme="modern"] #mainContent .help-pre{
+    white-space:pre-wrap!important;
+    overflow-wrap:anywhere!important;
+    font:400 14px/1.58 var(--na3-font)!important;
+    color:var(--na3-ink)!important;
+    max-width:100%;
+  }
+  /* Ration file controls: a succinct explanation, two distinguishable actions. */
+  html[data-theme="modern"] #mainContent #archiveJsonHint{
+    margin:12px 0 8px!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    color:var(--na3-muted)!important;
+    font:400 12.5px/1.5 var(--na3-font)!important;
+  }
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar{
+    gap:7px!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    flex-wrap:wrap!important;
+  }
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar>button{
+    flex:0 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    min-height:40px!important;
+    padding:8px 12px!important;
+    white-space:normal!important;
+    font-size:12.5px!important;
+  }
+  html[data-theme="modern"] #mainContent #loadRationJsonBtn{
+    background:var(--na3-wash)!important;
+    border-color:#b5cdbc!important;
+    color:var(--na3-forest)!important;
+  }
+  html[data-theme="modern"] #mainContent #clearRationBtn{
+    border-color:#e0c7bd!important;
+    background:#fff8f5!important;
+    color:#87463b!important;
+  }
+  html[data-theme="modern"] #mainContent #rationTable{
+    max-width:100%;
+    color:var(--na3-ink);
+    font-variant-numeric:tabular-nums;
+  }
+  html[data-theme="modern"] #mainContent #rationTable thead th{
+    font:600 12px/1.4 var(--na3-font)!important;
+    background:#f3f6f1!important;
+    border-color:var(--na3-border)!important;
+    color:#53655b!important;
+  }
+  /* Planner options: no huge capsule or heavy fluorescent blocks. */
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid{
+    gap:9px!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>span{
+    min-height:74px!important;
+    border-radius:9px!important;
+    background:var(--na3-panel)!important;
+    border:1px solid var(--na3-border)!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>input:checked+span{
+    background:var(--na3-wash)!important;
+    border-color:var(--na3-forest)!important;
+    box-shadow:inset 0 0 0 1px var(--na3-forest)!important;
+    color:var(--na3-forest)!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-task-card input:checked+span{
+    border-color:var(--na3-forest)!important;
+    box-shadow:0 0 0 2px rgba(34,91,75,.13)!important;
+    background:var(--na3-wash)!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-constraint-grid label{
+    background:#f8f9f6!important;
+    border-color:var(--na3-border)!important;
+    font-weight:450!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection :is(.ai-planner-scale-grid,.ai-planner-task-grid) label{
+    cursor:pointer;
+  }
+  /* Header settings: adapt the existing, dynamically relocated widgets. */
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open :is(.toolbar,#interfaceControlsBarHF2){
+    row-gap:10px!important;
+    column-gap:12px!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open :is(.toolbar,#interfaceControlsBarHF2)>*{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open #normRegionSwitcher{
+    border-color:var(--na3-border)!important;
+    background:#f6f8f4!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open :is(#themeSwitcher,#workspaceViewSwitcher){
+    border-color:var(--na3-border)!important;
+    background:#f6f8f4!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open :is(#themeSwitcher .theme-switcher__option,#workspaceViewSwitcher button){
+    min-width:0!important;
+    min-height:40px!important;
+    padding:7px 9px!important;
+    border-radius:7px!important;
+    font:550 12px/1.3 var(--na3-font)!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open #themeSwitcher .theme-switcher__option[aria-pressed="true"]{
+    border-color:var(--na3-forest)!important;
+    background:var(--na3-wash)!important;
+    color:var(--na3-forest)!important;
+  }
+}
+@media screen and (max-width:720px){
+  html[data-theme="modern"] #mainContent>header .archive-title-text{
+    font-size:clamp(25px,6vw,31px)!important;
+  }
+  html[data-theme="modern"] #mainContent>header .entry-first-subtitle{
+    font-size:13px!important;
+  }
+  html[data-theme="modern"] #mainContent>.archive-edition{
+    gap:5px!important;
+    padding:7px 0!important;
+  }
+  html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note{
+    font-size:11.5px!important;
+  }
+  html[data-theme="modern"] #mainContent :is(#globalSearchSection,#rationSection,#heiPanel,#globalActions){
+    border-radius:10px!important;
+  }
+  html[data-theme="modern"] #mainContent #rationSection>.toolbar>button{
+    flex:1 1 135px!important;
+  }
+  html[data-theme="modern"] #mainContent #geminiAiSection .ai-planner-scale-grid label>span{
+    min-height:63px!important;
+  }
+}
+@media screen and (prefers-reduced-motion:reduce){
+  html[data-theme="modern"] #mainContent button,
+  html[data-theme="modern"] #mainContent a{
+    transition:none!important;
+    animation:none!important;
+  }
+}
