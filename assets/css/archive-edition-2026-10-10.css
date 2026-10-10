@@ -964,3 +964,92 @@ html[data-theme="modern"] #mainContent>.archive-edition .archive-edition__note {
     white-space:normal!important;
   }
 }
+
+
+/* R2.1: The legacy shell can move #themeSwitcher directly beneath <header>,
+   while #interfaceControlsBarHF2 is a sibling of .toolbar. Treat both layouts. */
+@media screen {
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>#interfaceControlsBarHF2 {
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+    grid-area:auto!important;
+    display:flex!important;
+    flex-flow:row wrap!important;
+    align-items:start!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    box-sizing:border-box!important;
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:12px!important;
+    background:var(--archive-panel)!important;
+    border:1px solid var(--archive-rule)!important;
+    border-radius:10px!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>#interfaceControlsBarHF2> :is(#workspaceViewSwitcher,#themeSwitcher) {
+    flex:1 1 260px!important;
+    grid-column:auto!important;
+    grid-area:auto!important;
+    min-width:min(260px,100%)!important;
+    max-width:100%!important;
+    width:auto!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>#interfaceControlsBarHF2>#interfaceSettingsHF2 {
+    display:none!important; /* superseded by the accessible header settings control */
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>#themeSwitcher {
+    grid-column:1/-1!important;
+    grid-row:auto!important;
+    grid-area:auto!important;
+    justify-self:start!important;
+    align-self:start!important;
+    width:min(590px,100%)!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+
+  /* The legacy first-screen form gives all inputs a 48px minimum, including
+     native checkbox/radio inputs. Reset only native selection controls. */
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent #needs input[type="checkbox"],
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent #needs input[type="radio"] {
+    display:inline-block!important;
+    box-sizing:border-box!important;
+    flex:0 0 17px!important;
+    width:17px!important;
+    min-width:17px!important;
+    max-width:17px!important;
+    height:17px!important;
+    min-height:17px!important;
+    max-height:17px!important;
+    margin:0!important;
+    padding:0!important;
+    border-radius:3px!important;
+    box-shadow:none!important;
+    accent-color:var(--archive-accent);
+  }
+  html[data-theme="modern"] #mainContent #profileContinuityPanel .profile-continuity__storage {
+    /* Use existing entry-first visibility rules; never reveal intentionally hidden data. */
+    align-items:center!important;
+    flex-wrap:wrap!important;
+    gap:8px 16px!important;
+  }
+}
+@media screen and (max-width:920px) {
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>#interfaceControlsBarHF2 {
+    flex-direction:column!important;
+  }
+  html[data-theme="modern"] #mainContent>header.interface-settings-pass1-open>#interfaceControlsBarHF2> :is(#workspaceViewSwitcher,#themeSwitcher) {
+    flex:0 1 auto!important;
+    min-width:0!important;
+    width:100%!important;
+  }
+}
+
+@media screen and (max-width:860px) {
+  html[data-theme="modern"][data-entry-first-ui="1"] #mainContent #profileContinuityPanel .profile-continuity__storage {
+    display:none!important;
+  }
+}
