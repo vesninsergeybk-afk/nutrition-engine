@@ -71,7 +71,7 @@ try{if(Object.freeze)Object.freeze(API);}catch(_){}w.NutritionNormativeRegistry=
 /* v5.3.210-p1.3 — product provenance, nutrient confidence and uncertainty runtime. ES5-safe. */
 (function(w){'use strict';
 var VERSION='v5.3.210-p1.3';
-var DEFAULT_UNCERTAINTY={MEASURED:0.05,LABEL:0.10,CALCULATED:0.15,BORROWED:0.25,IMPUTED:0.35,SOURCE_REPORTED_ZERO:0.03,ASSUMED_ZERO:1.0,MISSING:1.0};
+var DEFAULT_UNCERTAINTY={MEASURED:0.05,LABEL:0.10,CALCULATED:0.15,BORROWED:0.25,IMPUTED:0.35,SOURCE_REPORTED:0.08,SOURCE_REPORTED_ZERO:0.03,ASSUMED_ZERO:1.0,MISSING:1.0};
 var FIELD_ALIASES={protein:'protein_per_100g',protein_g:'protein_per_100g',fat:'fat_per_100g',fat_g:'fat_per_100g',carbs:'carbs_per_100g',carbs_g:'carbs_per_100g',sugar:'sugar_per_100g',sugar_g:'sugar_per_100g',fiber:'fiber_per_100g',fiber_g:'fiber_per_100g',sfa_g:'sfa',unsaturated_fat_g:'unsat',added_sugars_g:'added_sugar',salt_g:'salt',selenium_mcg:'selenium_ug',vitamin_a_mcg_rae:'vitamin_a_mcg',folate_mcg:'vitamin_b9_mcg'};
 function num(v,d){v=Number(v);return isFinite(v)?v:(d||0);}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}

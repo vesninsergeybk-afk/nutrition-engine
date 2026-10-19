@@ -1,0 +1,174 @@
+name: Food CORE17 isolated integration
+
+on:
+  push:
+    branches:
+      - integration/food-pilot-core17-20261009
+    paths:
+      - ".github/workflows/food-core17-integration.yml"
+      - "tools/integrate_external_food_core17.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: food-core17-isolated-20261009
+  cancel-in-progress: false
+
+jobs:
+  import-and-stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - name: Check out isolated integration branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Assert branch and unchanged upstream baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "integration/food-pilot-core17-20261009"
+          test "$(python3 - <<'PY'
+          import json
+          print(json.load(open('data/products.v5.3.210-p1.3.manifest.json'))['products_count'])
+          PY
+          )" = "1105"
+      - name: Check out clean main as reproducible import baseline
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: .baseline
+          persist-credentials: false
+      - name: Check out historical Step 4F conversion (isolated research tool)
+        uses: actions/checkout@v4
+        with:
+          ref: data-source-expansion
+          path: .research
+          persist-credentials: false
+      - name: Fetch verified Step 4E evidence (no new source scraping)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(gh run view 37851579594 --repo "$GITHUB_REPOSITORY" --json conclusion --jq .conclusion)" = "success"
+          mkdir -p .step4e
+          gh run download 37851579594 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name external-food-step4e-integrity \
+            --dir .step4e
+          test -s .step4e/step4e_preview_only_proposals.json
+      - name: Recreate Step 4F preview from historical production source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .research/tools/build_external_food_preview_step4f_v15.py \
+            --proposals .step4e/step4e_preview_only_proposals.json \
+            --current-glob "data/products.v5.3.210-p1.3.part-*.json" \
+            --out-dir .stage4f
+          python3 - <<'PY'
+          import json
+          rep=json.load(open('.stage4f/step4f_preview_report.json'))
+          assert rep['status']=='PASS' and rep['preview_cards']==32 and rep['combined_preview_cards']==1137
+          PY
+      - name: Generate from clean main and copy only food-related results
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tools/integrate_external_food_core17.py .baseline/tools/integrate_external_food_core17.py
+          (
+            cd .baseline
+            python3 tools/integrate_external_food_core17.py \
+              --step4f-preview ../.stage4f/step4f_new_preview_products.json
+          )
+          for rel in \
+            data/products.external-food-core17.part-13.json \
+            assets/data/products.external-food-core17.part-13.js \
+            assets/data/products.v5.3.210-p1.3.bundle.js \
+            assets/data/products.v5.3.210-p1.3.compact.json.gz \
+            config/external-food-core17-provenance-extension.json \
+            config/runtime-assets.v6.0.0-beta6.json \
+            assets/js/02-product-data-quality-v5.3.210-p1.3.js \
+            assets/legacy/js/02-product-data-quality-v5.3.210-p1.3.js \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js.gz \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js.gz \
+            assets/js/00-runtime-bootstrap-v6.0.0-beta6.js \
+            assets/legacy/js/00-runtime-bootstrap-v6.0.0-beta6.legacy.js \
+            assets/runtime/runtime-manifest-v6.0.0-beta6.js \
+            index.html \
+            index-v5.3.210.html; do
+            cp ".baseline/$rel" "$rel"
+          done
+          mkdir -p reports
+          cp .baseline/reports/external-food-core17-integration.json reports/external-food-core17-integration.json
+      - name: Static and scientific-provenance gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, gzip
+          m=json.load(open('reports/external-food-core17-integration.json'))
+          a=json.load(open('data/products.external-food-core17.part-13.json'))
+          assert (m['status'],len(a),m['total'])==('STAGED_REVIEW_REQUIRED',16,1121)
+          assert len(m['quarantined'])==1 and m['quarantined'][0]['key']=='ext_spice_thyme'
+          assert all(x['key']!='ext_spice_thyme' for x in a)
+          assert all(x['data_quality_v1_3']['review_status']=='REVIEW_REQUIRED' for x in a)
+          assert all(x['external_import_v15']['permission']=='PILOT_REVIEW_REQUIRED' for x in a)
+          assert all(x['nutrient_provenance_v1_3'].get('ASSUMED_ZERO')==['added_sugar'] for x in a)
+          p=json.loads(gzip.decompress(open('assets/data/products.v5.3.210-p1.3.compact.json.gz','rb').read()))
+          assert len(p)==1121 and p[-16:]==a
+          cfg=json.load(open('config/runtime-assets.v6.0.0-beta6.json'))
+          assert len(cfg['product_json_chunks'])==len(cfg['product_script_chunks'])==13
+          print('CORE16 of 17 source candidates PASS; thyme quarantined')
+          PY
+          node --check assets/data/products.external-food-core17.part-13.js
+          node --check assets/js/00-runtime-bootstrap-v6.0.0-beta6.js
+          node --check assets/legacy/js/00-runtime-bootstrap-v6.0.0-beta6.legacy.js
+          node --check assets/runtime/runtime-manifest-v6.0.0-beta6.js
+          node --check assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js
+          node --check assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js
+      - name: Commit only reviewed integration outputs to isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            data/products.external-food-core17.part-13.json \
+            assets/data/products.external-food-core17.part-13.js \
+            assets/data/products.v5.3.210-p1.3.bundle.js \
+            assets/data/products.v5.3.210-p1.3.compact.json.gz \
+            config/external-food-core17-provenance-extension.json \
+            config/runtime-assets.v6.0.0-beta6.json \
+            assets/js/02-product-data-quality-v5.3.210-p1.3.js \
+            assets/legacy/js/02-product-data-quality-v5.3.210-p1.3.js \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.js.gz \
+            assets/runtime/deferred-runtime-v5.3.210-rc2-hf24.legacy.js.gz \
+            assets/js/00-runtime-bootstrap-v6.0.0-beta6.js \
+            assets/legacy/js/00-runtime-bootstrap-v6.0.0-beta6.legacy.js \
+            assets/runtime/runtime-manifest-v6.0.0-beta6.js \
+            index.html \
+            index-v5.3.210.html
+          if git diff --cached --quiet; then
+            echo 'Nothing to stage; already generated.'
+          else
+            git commit -m "fix(food): quarantine fresh thyme HEI mismatch; stage CORE16"
+            git push origin "HEAD:integration/food-pilot-core17-20261009"
+          fi
+      - name: Publish auditable evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: food-core17-20261009-audit
+          path: |
+            reports/external-food-core17-integration.json
+            .stage4f/step4f_preview_report.json
+          retention-days: 14
+          if-no-files-found: warn

@@ -1333,7 +1333,7 @@
   function nextPaint(){ return new Promise(function(resolve){ if (typeof requestAnimationFrame==='function') requestAnimationFrame(function(){resolve();}); else setTimeout(resolve,16); }); }
   function runReadinessChecks(){
     var checks=[
-      {label:'Проверяем базу продуктов…',run:function(){return Array.isArray(window.__PRODUCTS_ARRAY__)&&window.__PRODUCTS_ARRAY__.length===1105;}},
+      {label:'Проверяем базу продуктов…',run:function(){return Array.isArray(window.__PRODUCTS_ARRAY__)&&window.__PRODUCTS_ARRAY__.length===Number(RUNTIME_MANIFEST.fastStart.productCount);}},
       {label:'Проверяем расчётное ядро…',run:function(){return !!(window.NutritionCalculationCore&&window.NutritionFormulaRegistryP14&&window.NutritionNormativeRegistry);}},
       {label:'Проверяем профиль и навигацию…',run:function(){return !!(document.getElementById('needs_calc_btn')&&window.NavigationShellV1);}},
       {label:'Проверяем рабочие разделы…',run:function(){return !!(document.getElementById('globalSearchSection')&&document.getElementById('heiPanel'));}}
