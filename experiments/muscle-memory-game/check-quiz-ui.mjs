@@ -216,3 +216,88 @@ console.log("Answer reveal emphasis: visible cyan overlay + deterministic cleanu
 
 console.log("Answer reveal contract: moderate oblique focus + occluder removal + preserved context");
 
+const namingRevealBlock = app.slice(
+  app.indexOf("function revealNamedTarget("),
+  app.indexOf("\n\nfunction inspectFindTargetAccess(")
+);
+const prepareItemBlock = app.slice(
+  app.indexOf("function prepareSessionItem("),
+  app.indexOf("\n\nfunction startLearningSession(")
+);
+const pointerDownBlock = app.slice(
+  app.indexOf("function onPointerDown("),
+  app.indexOf("\n\nfunction onPointerMove(")
+);
+const pointerUpBlock = app.slice(
+  app.indexOf("function onPointerUp("),
+  app.indexOf("\n\nfunction onPointerCancel(")
+);
+
+assert(
+  namingRevealBlock.includes("verifiedCoveringStructureIds(sid)") &&
+    namingRevealBlock.includes("answerTargetSamplePoints(ids, 9)") &&
+    namingRevealBlock.includes("answerOccludersFromCamera(ids, samples)") &&
+    namingRevealBlock.includes("visibleSamples >= Math.max(1, Math.ceil(samples.length / 2))") &&
+    prepareItemBlock.includes("revealNamedTarget(promptIds)") &&
+    prepareItemBlock.includes("revealNamedTarget(ids)"),
+  "Naming and topography questions must expose most of the target surface before highlighting it"
+);
+assert(
+  pointerDownBlock.includes('appMode === "quiz" && pendingQuizMuscleAction') &&
+    !pointerDownBlock.includes('appMode === "quiz") {') &&
+    pointerUpBlock.includes('currentSessionItem(learningSession)?.skillId !== "find") return;'),
+  "Rotating or tapping the model in naming/topography mode must not erase the task highlight"
+);
+
+// Exercise the actual reveal function with a small, deterministic stand-in
+// for mesh visibility. This catches regressions beyond a string contract.
+function runNamingReveal({ samples, occluders, visibleSamples }) {
+  const hiddenStack = [];
+  const visibility = { 1: true, 2: true, 3: true };
+  let isolated = false;
+  const dependencies = {
+    anatomyMesh: {},
+    structureVisibility: visibility,
+    hiddenStack,
+    verifiedCoveringStructureIds: () => [2],
+    answerTargetSamplePoints: () => samples,
+    answerOccludersFromCamera: () => ({ ids: occluders }),
+    applyBodyPartsSurfaceConflictGuards: () => {},
+    setStructureVisible: (sid, visible) => { visibility[sid] = visible; },
+    firstVisibleStructureOnRay: (point) => visibleSamples.has(point) ? 1 : 3,
+    setVisibleStructures: (ids) => { isolated = ids.join(",") === "1"; },
+    Set,
+    Math,
+  };
+  const reveal = new Function(
+    "dependencies",
+    "const { " + Object.keys(dependencies).join(", ") + " } = dependencies; " +
+      namingRevealBlock + "; return revealNamedTarget;"
+  )(dependencies);
+  return { result: reveal([1]), hiddenStack, visibility, isolated };
+}
+
+const broadTarget = runNamingReveal({
+  samples: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  occluders: [2, 3],
+  visibleSamples: new Set([0, 1, 2, 3, 4, 5, 6, 7, 8]),
+});
+assert(
+  broadTarget.result.visible && !broadTarget.isolated &&
+    broadTarget.result.hidden === 2 &&
+    broadTarget.visibility[1] && !broadTarget.visibility[2] && !broadTarget.visibility[3] &&
+    broadTarget.hiddenStack.join(",") === "2,3",
+  "A multi-layer target must stay highlighted in context with both verified and ray-tested covers hidden"
+);
+const mostlyConcealed = runNamingReveal({
+  samples: [0, 1, 2, 3, 4, 5],
+  occluders: [2],
+  visibleSamples: new Set([0]),
+});
+assert(
+  mostlyConcealed.isolated && mostlyConcealed.result.isolated,
+  "A mostly concealed target must fall back to a clearly visible isolated muscle"
+);
+
+console.log("Quiz prompt visibility: multilayer reveal + persistent highlight on model interaction");
+

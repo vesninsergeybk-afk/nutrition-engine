@@ -2311,51 +2311,44 @@ function firstVisibleStructureOnRay(point) {
   return null;
 }
 
-function revealNamedTarget(ids, maxOccluders = 10) {
+function revealNamedTarget(ids) {
   if (!anatomyMesh || !ids.length) {
     return { hidden: 0, visible: false, isolated: false };
   }
 
   const targetSet = new Set(ids);
-  const targetPoint = nearestTargetPointToCamera(ids);
-  if (!targetPoint) {
-    setVisibleStructures(ids);
-    return { hidden: 0, visible: true, isolated: true };
+  const hidden = new Set();
+  const hideCover = (sid) => {
+    if (sid == null || targetSet.has(sid) || structureVisibility[sid] === false) return;
+    hiddenStack.push(sid);
+    setStructureVisible(sid, false);
+    hidden.add(sid);
+  };
+
+  // A single central ray can leave most of a broad or deep muscle concealed.
+  // Remove verified superficial layers for its side, then inspect several
+  // widely separated points on the camera-facing surface.
+  for (const sid of ids) {
+    for (const coverSid of verifiedCoveringStructureIds(sid)) hideCover(coverSid);
+  }
+  const samples = answerTargetSamplePoints(ids, 9);
+  const occlusion = answerOccludersFromCamera(ids, samples);
+  for (const coverSid of occlusion.ids) hideCover(coverSid);
+
+  applyBodyPartsSurfaceConflictGuards();
+  for (const sid of ids) setStructureVisible(sid, true);
+
+  const visibleSamples = samples.filter((point) =>
+    targetSet.has(firstVisibleStructureOnRay(point))
+  ).length;
+  if (visibleSamples >= Math.max(1, Math.ceil(samples.length / 2))) {
+    return { hidden: hidden.size, visible: true, isolated: false };
   }
 
-  const direction = targetPoint.clone().sub(camera.position).normalize();
-  raycaster.set(camera.position, direction);
-  const hits = raycaster.intersectObject(anatomyMesh, false);
-
-  const occluders = [];
-  let reachesTarget = false;
-
-  for (const hit of hits) {
-    const sid = structureIdFromHit(hit);
-    if (sid == null || structureVisibility[sid] === false) continue;
-    if (targetSet.has(sid)) {
-      reachesTarget = true;
-      break;
-    }
-    if (!occluders.includes(sid)) occluders.push(sid);
-  }
-
-  if (reachesTarget) {
-    for (const sid of occluders.slice(0, maxOccluders)) {
-      hiddenStack.push(sid);
-      setStructureVisible(sid, false);
-    }
-
-    const visibleSid = firstVisibleStructureOnRay(targetPoint);
-    if (visibleSid != null && targetSet.has(visibleSid)) {
-      return { hidden: Math.min(occluders.length, maxOccluders), visible: true, isolated: false };
-    }
-  }
-
-  // Fairness matters more than preserving every surrounding muscle: if the
-  // selected structure is still occluded, show it with skeletal landmarks.
+  // A source without usable surface samples must still present the question
+  // target clearly; retain skeletal landmarks while isolating its muscle mesh.
   setVisibleStructures(ids);
-  return { hidden: 0, visible: true, isolated: true };
+  return { hidden: hidden.size, visible: true, isolated: true };
 }
 
 
@@ -5079,6 +5072,7 @@ function prepareSessionItem() {
       const promptBox = boxForStructures(promptIds);
       const preferredView = bestViewDirectionForBox(promptBox);
       focusSelectedStructures(1.95, preferredView.direction);
+      revealNamedTarget(promptIds);
       highlightStructures(promptIds, "selected");
     }
 
@@ -10014,9 +10008,10 @@ function onPointerDown(event) {
   atlasSelectionMenu.hidden = true;
   if (activePointers.size === 0) tapBlocked = false;
   lastCanvasPointerType = event.pointerType || null;
-  if (appMode === "quiz") {
-    // After "Показать ответ" the session is locked until "Следующая". A touch
-    // used only to rotate/zoom the model must not clear the revealed answer.
+  if (appMode === "quiz" && pendingQuizMuscleAction) {
+    // Only a temporary find-mode candidate may be cleared here. The muscle
+    // highlighted by a naming/topography question belongs to the task and
+    // must survive every drag, pinch and click on the viewer.
     closeQuizMuscleActions({ restore: !locked });
   }
 
@@ -10066,6 +10061,9 @@ function onPointerUp(event) {
   raycaster.setFromCamera(pointer, camera);
 
   if (appMode === "quiz") {
+    // A tap is an answer action only in find mode. In naming and topography
+    // tasks even an empty tap must preserve the system-highlighted muscle.
+    if (currentSessionItem(learningSession)?.skillId !== "find") return;
     const hits = raycaster.intersectObject(anatomyMesh, false);
     for (const hit of hits) {
       const candidate = structureIdFromHit(hit);
