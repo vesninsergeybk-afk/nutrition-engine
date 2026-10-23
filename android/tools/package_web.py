@@ -95,6 +95,16 @@ def build() -> None:
         "if(!response.ok)throw Error('База продуктов не найдена (HTTP '+response.status+').');"
     )
 
+    # Emit a one-time boot result to logcat in Android, making a real WebView
+    # startup check possible on the CI emulator without adding network access.
+    for marker, signal in (
+        ("root.dataset.nutritionReady='true';", "console.info('NUTRIENT_SMOKE_READY');"),
+        ("root.dataset.nutritionReady='error';", "console.error('NUTRIENT_SMOKE_ERROR:'+String(error.message||'unknown'));"),
+    ):
+        if source.count(marker) != 1:
+            raise RuntimeError("Boot readiness hook changed; review Android startup test")
+        source = source.replace(marker, marker + signal)
+
     original_export = (
         "const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],"
         "{type:'application/json'})),link=document.createElement('a');"

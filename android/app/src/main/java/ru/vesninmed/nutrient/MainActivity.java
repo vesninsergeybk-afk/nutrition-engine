@@ -99,6 +99,14 @@ public final class MainActivity extends Activity {
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override public boolean onConsoleMessage(android.webkit.ConsoleMessage message) {
+                String value = message.message();
+                if (value != null && value.startsWith("NUTRIENT_SMOKE_")) {
+                    android.util.Log.i("NutrientSmoke", value);
+                }
+                return super.onConsoleMessage(message);
+            }
+
             @Override public boolean onShowFileChooser(WebView view,
                     ValueCallback<Uri[]> callback, FileChooserParams params) {
                 if (pendingFileChooser != null) pendingFileChooser.onReceiveValue(null);
