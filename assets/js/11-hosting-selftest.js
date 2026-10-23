@@ -42,9 +42,9 @@ async function runHostingSelfTest(){
  }catch(e){o.push(R('Devine / low-weight safety boundary tests',false,e.message));}
  try{
   var ps=products(),uniq=new Set(ps.map(function(p){return p&&p.key;})),by=new Map(ps.map(function(p){return [p.key,p];}));
-  o.push(R('Runtime: 1105 продуктов',ps.length===EXPECTED_PRODUCTS,String(ps.length)));
+  o.push(R('Runtime: 1106 продуктов',ps.length===EXPECTED_PRODUCTS+1,String(ps.length)));
   o.push(R('Runtime: ключи уникальны',uniq.size===ps.length,String(uniq.size)));
-  o.push(R('Runtime meta: v5.3.210-p1.3 / 12 частей',!!(window.__PRODUCTS_META__&&String(window.__PRODUCTS_META__.app_version||'').indexOf('v5.3.210')===0&&Number(window.__PRODUCTS_META__.products_count)===EXPECTED_PRODUCTS&&Number(window.__PRODUCTS_META__.chunk_count)===EXPECTED_CHUNKS),JSON.stringify(window.__PRODUCTS_META__||{})));
+  o.push(R('Runtime meta: v5.3.210-p1.3 / 12 частей',!!(window.__PRODUCTS_META__&&String(window.__PRODUCTS_META__.app_version||'').indexOf('v5.3.210')===0&&Number(window.__PRODUCTS_META__.products_count)===EXPECTED_PRODUCTS+1&&Number(window.__PRODUCTS_META__.chunk_count)===EXPECTED_CHUNKS),JSON.stringify(window.__PRODUCTS_META__||{})));
   o.push(R('Составные модели сохранены',ps.filter(function(p){return p&&p.composite_food_model_latest;}).length===EXPECTED_COMPOSITES,String(ps.filter(function(p){return p&&p.composite_food_model_latest;}).length)));
   var disabledMembers=(window.__PREPARATION_FAMILY_REGISTRY_V53190__&&Array.isArray(window.__PREPARATION_FAMILY_REGISTRY_V53190__.families)?window.__PREPARATION_FAMILY_REGISTRY_V53190__.families:[]).reduce(function(acc,f){return acc.concat((f.members||[]).filter(function(m){return m.selectable===false;}));},[]);
   var disabledVisible=disabledMembers.filter(function(m){var p=by.get(m.product_key);return !p||p.hidden_from_search!==true;});

@@ -9,8 +9,8 @@ if(c.mode==='unsupported')return;
 if(c.mode==='legacy'){
  load('./assets/legacy/compat-polyfills-v5.3.192.js?v=5.3.192',function(){
   load('./assets/legacy/compat-runtime-bridge-v5.3.192.js?v=5.3.192',function(){
-   load('./assets/legacy/js/00-runtime-bootstrap-v6.0.0-beta6.legacy.js?v=v6.0.0-beta6-design-refinement');
+   load('./assets/legacy/js/00-runtime-bootstrap-v6.0.0-beta6.legacy.js?v=prostokvashino-20261023');
   });
  });
-}else load('./assets/js/00-runtime-bootstrap-v6.0.0-beta6.js?v=v6.0.0-beta6-design-refinement');
+}else load('./assets/js/00-runtime-bootstrap-v6.0.0-beta6.js?v=prostokvashino-20261023');
 })(window,document);

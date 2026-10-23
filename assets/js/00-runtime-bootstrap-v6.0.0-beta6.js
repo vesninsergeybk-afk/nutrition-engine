@@ -1105,6 +1105,27 @@
   function installProducts(result){
     var dbEl = document.getElementById('db');
     if (!dbEl) throw new Error('script#db compatibility slot not found');
+    // Merge reviewed additions before core indexing, preserving the original 1105-item dataset.
+    var supplement = window.__NUTRIENT_SUPPLEMENTAL_PRODUCTS__;
+    var supplementAdded = 0;
+    if (Array.isArray(supplement)) {
+      var supplementSeen = Object.create(null);
+      for (var si = 0; si < result.products.length; si++) supplementSeen[result.products[si].key] = true;
+      for (var sj = 0; sj < supplement.length; sj++) {
+        var extra = supplement[sj];
+        if (!extra || !extra.key || supplementSeen[extra.key]) continue;
+        result.products.push(extra);
+        supplementSeen[extra.key] = true;
+        supplementAdded++;
+      }
+      result.payload = result.payload || {};
+      result.payload.products_count = result.products.length;
+      result.payload.supplemental_products_count = supplementAdded;
+    } else {
+      window.__PRODUCTS_SUPPLEMENTAL_WARNING__ = 'Supplemental catalog script is not available';
+      try { console.warn('[Nutrient] Supplemental product catalog is missing'); } catch (_) {}
+    }
+    window.__PRODUCTS_SUPPLEMENTAL_META__ = { count: supplementAdded, expected: 1, available: Array.isArray(supplement) };
     window.__PRODUCTS_ARRAY__ = result.products;
     window.__PRODUCTS_SOURCE_PAYLOAD__ = result.payload || {};
     dbEl.textContent = '[]';
@@ -1333,7 +1354,7 @@
   function nextPaint(){ return new Promise(function(resolve){ if (typeof requestAnimationFrame==='function') requestAnimationFrame(function(){resolve();}); else setTimeout(resolve,16); }); }
   function runReadinessChecks(){
     var checks=[
-      {label:'Проверяем базу продуктов…',run:function(){return Array.isArray(window.__PRODUCTS_ARRAY__)&&window.__PRODUCTS_ARRAY__.length===1105;}},
+      {label:'Проверяем базу продуктов…',run:function(){return Array.isArray(window.__PRODUCTS_ARRAY__)&&window.__PRODUCTS_ARRAY__.length===1106;}},
       {label:'Проверяем расчётное ядро…',run:function(){return !!(window.NutritionCalculationCore&&window.NutritionFormulaRegistryP14&&window.NutritionNormativeRegistry);}},
       {label:'Проверяем профиль и навигацию…',run:function(){return !!(document.getElementById('needs_calc_btn')&&window.NavigationShellV1);}},
       {label:'Проверяем рабочие разделы…',run:function(){return !!(document.getElementById('globalSearchSection')&&document.getElementById('heiPanel'));}}
