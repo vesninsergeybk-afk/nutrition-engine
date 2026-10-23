@@ -2,6 +2,7 @@
 """Fail the APK build if required local assets or offline boundaries are missing."""
 from pathlib import Path
 import re
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 BUNDLE = ROOT / "android/app/build/generated-web"
@@ -13,10 +14,16 @@ required = [
 ]
 for path in required:
     assert (BUNDLE / path).is_file(), f"Missing {path}"
-android_xml = MANIFEST.read_text(encoding="utf-8")
-assert "android.permission.INTERNET" not in android_xml.replace(
-    "<!-- Deliberately no INTERNET permission: all runtime assets and inference are local. -->", ""
-), "APK must not have network access"
+android_xml = ET.parse(MANIFEST).getroot()
+android_ns = "{http://schemas.android.com/apk/res/android}"
+tools_ns = "{http://schemas.android.com/tools}"
+internet_nodes = [p for p in android_xml.findall("uses-permission")
+                  if p.attrib.get(android_ns+"name") == "android.permission.INTERNET"]
+assert len(internet_nodes) == 1 and internet_nodes[0].attrib.get(tools_ns+"node") == "remove", (
+    "The manifest must explicitly reject transitive INTERNET permissions"
+)
+# CI separately inspects the *merged APK* with aapt. This source check cannot
+# prove that third-party manifest merger rules were actually applied.
 assert 'nutrition-ai.js?v=' not in (BUNDLE / "assets/nutrition-app.js").read_text(encoding="utf-8")
 assert "functions.yandexcloud.net" not in (BUNDLE / "assets/nutrition-ai-offline.js").read_text(encoding="utf-8")
 assert not (BUNDLE / "assets/nutrition-ai.js").exists()
