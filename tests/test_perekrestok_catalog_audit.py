@@ -69,6 +69,22 @@ class PerekrestokAuditTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             audit_module.validate_snapshot(sample)
 
+    def test_proposed_two_percent_curd_has_full_but_honest_provenance(self):
+        proposed = json.loads((ROOT / "data/catalog-reviews/proposed-curd-prostokvashino-2pct-2026-10-23.json").read_text(encoding="utf-8"))
+        policy = json.loads((ROOT / "config/product-provenance-policy.v5.3.210-p1.3.json").read_text(encoding="utf-8"))
+        fields = policy["nutrient_fields"]
+        values = proposed["nutrients_per_100g"]
+        methods = proposed["nutrient_provenance"]
+        classified = [field for group in methods.values() for field in group]
+        self.assertEqual(set(fields), set(values))
+        self.assertEqual(sorted(fields), sorted(classified))
+        self.assertTrue(all(isinstance(value, (int, float)) for value in values.values()))
+        self.assertEqual(set(methods["LABEL"]), {"kcal", "protein_per_100g", "fat_per_100g", "carbs_per_100g"})
+        for field in fields:
+            if values[field] == 0:
+                self.assertIn(field, methods["ASSUMED_ZERO"])
+        self.assertIn("NOT_READY_FOR_CANONICAL_PRODUCT_DATABASE", proposed["review_flags"])
+
 
 if __name__ == "__main__":
     unittest.main()
