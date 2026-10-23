@@ -30,7 +30,9 @@ assert not (BUNDLE / "assets/nutrition-ai.js").exists()
 ru = (BUNDLE / "tools/nutrition/index.html").read_text(encoding="utf-8")
 match = re.search(r'data-nutrition-runtime="(/tools/nutrition/runtime/[^"]+/)"', ru)
 assert match
-for name in ("engine.js","fields.json","products.json.gz"):
+for name in ("engine.js","fields.json","products.json"):
     assert (BUNDLE / match.group(1).lstrip("/") / name).is_file()
 assert "nutrient-android.css" in ru
+assert "fetch(prefix+'products.json')" in (BUNDLE / "assets/nutrition-app.js").read_text(encoding="utf-8")
+assert not (BUNDLE / match.group(1).lstrip("/") / "products.json.gz").exists()
 print("Offline static gate PASS — bundled engine, data, local AI bridge, no remote recognition")

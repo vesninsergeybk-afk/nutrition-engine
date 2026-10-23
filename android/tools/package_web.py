@@ -6,6 +6,7 @@ pages nor publishes changes to the website. The app has no INTERNET permission.
 """
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import re
@@ -49,8 +50,17 @@ def build() -> None:
     DEST.mkdir(parents=True)
 
     # The compiled engine is copied byte-for-byte; no formula or product edits.
-    for name in ("engine.js", "fields.json", "products.json.gz"):
+    for name in ("engine.js", "fields.json"):
         copy_site(runtime + name)
+
+    # Android WebView receives ordinary JSON. Keep the original gzip file in
+    # the pinned site source, verify its hash, and decode it only for the APK.
+    # This avoids .gz URL handling and DecompressionStream support differences.
+    product_json = gzip.decompress(gz.read_bytes())
+    json.loads(product_json)
+    product_target = DEST / runtime / "products.json"
+    product_target.parent.mkdir(parents=True, exist_ok=True)
+    product_target.write_bytes(product_json)
     for route in ("tools/nutrition/index.html", "tools/nutrition/en/index.html"):
         copy_site(route)
     for asset in (SITE / "assets").iterdir():
@@ -71,6 +81,19 @@ def build() -> None:
     if source.count(old) != 1:
         raise RuntimeError("AI module hook changed; review Android isolation")
     source = source.replace(old, "'./nutrition-ai-offline.js?v='+root.dataset.nutritionAiVersion")
+
+    old_database_fetch = "fetch(prefix+'products.json.gz')"
+    if source.count(old_database_fetch) != 1:
+        raise RuntimeError("Product database URL changed; review APK packing")
+    source = source.replace(old_database_fetch, "fetch(prefix+'products.json')")
+
+    old_fetch_error = "if(!response.ok||!fieldsResponse.ok)throw Error('Загрузка базы прервана.');"
+    if source.count(old_fetch_error) != 1:
+        raise RuntimeError("Database failure handling changed; review diagnostics")
+    source = source.replace(old_fetch_error,
+        "if(!fieldsResponse.ok)throw Error('Файл нутриентов не найден (HTTP '+fieldsResponse.status+').');"
+        "if(!response.ok)throw Error('База продуктов не найдена (HTTP '+response.status+').');"
+    )
 
     original_export = (
         "const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],"
@@ -120,11 +143,13 @@ def build() -> None:
     if (DEST / "assets/nutrition-ai.js").exists():
         raise RuntimeError("Remote AI module accidentally included")
     assert not (DEST / "api").exists()
-    assert (DEST / runtime / "products.json.gz").is_file()
+    assert (DEST / runtime / "products.json").is_file()
+    assert not (DEST / runtime / "products.json.gz").exists()
     print(json.dumps({
         "ok": True,
         "runtime": runtime,
-        "database_sha256": expected_hash,
+        "source_database_gzip_sha256": expected_hash,
+        "apk_database_json_sha256": hashlib.sha256(product_json).hexdigest(),
         "files": len(list(DEST.rglob("*"))),
         "total_bytes": sum(p.stat().st_size for p in DEST.rglob("*") if p.is_file()),
         "no_internet_permission_required": True,
