@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fail the APK build if required local assets or offline boundaries are missing."""
 from pathlib import Path
+import json
 import re
 import xml.etree.ElementTree as ET
 
@@ -35,4 +36,22 @@ for name in ("engine.js","fields.json","products.json"):
 assert "nutrient-android.css" in ru
 assert "fetch(prefix+'products.json')" in (BUNDLE / "assets/nutrition-app.js").read_text(encoding="utf-8")
 assert not (BUNDLE / match.group(1).lstrip("/") / "products.json.gz").exists()
-print("Offline static gate PASS — bundled engine, data, local AI bridge, no remote recognition")
+
+# The Android food supplement must be present in the actual offline APK
+# database, not only in its source JSON file.
+catalog = json.loads(
+    (BUNDLE / match.group(1).lstrip("/") / "products.json").read_text(encoding="utf-8")
+)
+assert len(catalog) == 1106, "Expected pinned 1105-food base plus one addition"
+tvorog = [p for p in catalog if p.get("key") == "tvorog_prostokvashino_2pct_200g"]
+assert len(tvorog) == 1, "Prostokvashino 2% not found in packed catalog"
+p = tvorog[0]
+assert p["name_ru"] == "Творог «Простоквашино» 2%, 200 г"
+assert p["barcode"] == "4600605029343"
+assert (p["kcal"], p["protein_per_100g"], p["fat_per_100g"],
+        p["carbs_per_100g"]) == (99, 17, 2, 3.3)
+assert round(p["kcal"] * p["package_size_g"] / 100) == 198
+assert p["dairy_cup_eq_per_100g"] == round(p["calcium_mg"] / 302, 4)
+assert len(set(sum(p["nutrient_provenance_v1_3"].values(), []))) == 33
+assert p["data_quality_v1_3"]["source_kind"] == "MIXED_SOURCE"
+print("Offline static gate PASS — 1106 foods including source-attributed Prostokvashino 2%, local engine/data, no remote recognition")
