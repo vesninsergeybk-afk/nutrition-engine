@@ -96,6 +96,9 @@ jobs:
           cp api/gemini-secret.example.php api/gemini-secret.php
           chmod 0644 api/gemini-secret.php
 
+      - name: Verify catalog update manifest and offline-app compatibility
+        run: node tests/catalog-update-contract.test.cjs
+
       - name: Run canonical V6 core and safety suites
         run: python3 tools/ci_core_gate_v6.py
 
