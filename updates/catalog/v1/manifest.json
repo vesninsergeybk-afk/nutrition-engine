@@ -1,0 +1,11 @@
+{
+  "schema": "nutrient-catalog-manifest/v1",
+  "current_revision": "2026-10-24.1",
+  "base_dataset": "products.v5.3.210-p1.3",
+  "base_count": 1105,
+  "expected_merged_count": 1111,
+  "overlay_path": "revisions/2026-10-24.1.json",
+  "overlay_sha256": "8df202c7672aee19950afb6e0c4e3294a0ee9005599cecd7685969236995a871",
+  "overlay_bytes": 38132,
+  "updater_contract": "fetch-manifest-then-verify-overlay-before-atomic-replace"
+}
