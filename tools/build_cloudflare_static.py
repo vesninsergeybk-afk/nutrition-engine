@@ -167,6 +167,34 @@ def main() -> None:
             + ", ".join(missing_public)
         )
 
+    # Publishing the HTML without the APK update feed would leave Android
+    # installs unable to discover new products. Verify the deployed closure.
+    feed_root = OUT / "updates" / "catalog" / "v1"
+    feed_manifest_path = feed_root / "manifest.json"
+    if not feed_manifest_path.is_file():
+        raise SystemExit("Cloudflare build aborted: APK catalog manifest not deployed")
+    try:
+        feed_manifest = json.loads(feed_manifest_path.read_text(encoding="utf-8"))
+        overlay_rel = PurePosixPath(feed_manifest["overlay_path"])
+        if (overlay_rel.is_absolute() or len(overlay_rel.parts) != 2
+                or overlay_rel.parts[0] != "revisions"
+                or not overlay_rel.name.endswith(".json")
+                or ".." in overlay_rel.parts):
+            raise ValueError("unsafe catalog overlay_path")
+        feed_data = (feed_root / overlay_rel.as_posix()).read_bytes()
+        if len(feed_data) != feed_manifest["overlay_bytes"]:
+            raise ValueError("catalog overlay byte length mismatch")
+        if hashlib.sha256(feed_data).hexdigest() != feed_manifest["overlay_sha256"]:
+            raise ValueError("catalog overlay SHA-256 mismatch")
+        overlay = json.loads(feed_data)
+        if (feed_manifest.get("schema") != "nutrient-catalog-manifest/v1"
+                or overlay.get("schema") != "nutrient-catalog-overlay/v1"
+                or overlay.get("revision") != feed_manifest.get("current_revision")
+                or overlay.get("expected_merged_count") != feed_manifest.get("expected_merged_count")):
+            raise ValueError("catalog update schema/revision mismatch")
+    except (ValueError, KeyError, TypeError, OSError) as error:
+        raise SystemExit("Cloudflare build aborted: invalid APK catalog feed: " + str(error))
+
     # Fail closed if server-side code or known private artifacts enter the
     # directory that Cloudflare will serve publicly.
     unsafe = []
