@@ -1105,6 +1105,28 @@
   function installProducts(result){
     var dbEl = document.getElementById('db');
     if (!dbEl) throw new Error('script#db compatibility slot not found');
+    // Correct a source-verified translation mistake without changing the stable key.
+    var corrections = window.__NUTRIENT_PRODUCT_CORRECTIONS__;
+    var corrected = 0, correctionWarnings = [];
+    if (Array.isArray(corrections)) corrections.forEach(function(change){
+      var found = null;
+      for (var ci=0; ci<result.products.length; ci++) {
+        if (result.products[ci].key === change.key) { found = result.products[ci]; break; }
+      }
+      if (!found || found.source_id !== change.expected_source_id ||
+          (change.expected_fdc_description && found.fdc_description !== change.expected_fdc_description)) {
+        correctionWarnings.push('Source/key mismatch: ' + change.key); return;
+      }
+      if (change.name) found.name = change.name;
+      if (change.name_ru) found.name_ru = change.name_ru;
+      if (change.state) found.state = change.state;
+      if (Array.isArray(change.search_aliases)) {
+        found.search_aliases = change.search_aliases.slice();
+        found.tags = (found.tags || []).concat(change.search_aliases);
+      }
+      corrected++;
+    });
+    window.__PRODUCTS_CORRECTIONS_META__ = { count: corrected, warnings: correctionWarnings };
     // Merge reviewed additions before core indexing, preserving the original 1105-item dataset.
     var supplement = window.__NUTRIENT_SUPPLEMENTAL_PRODUCTS__;
     var supplementAdded = 0;
@@ -1125,7 +1147,8 @@
       window.__PRODUCTS_SUPPLEMENTAL_WARNING__ = 'Supplemental catalog script is not available';
       try { console.warn('[Nutrient] Supplemental product catalog is missing'); } catch (_) {}
     }
-    window.__PRODUCTS_SUPPLEMENTAL_META__ = { count: supplementAdded, expected: 1, available: Array.isArray(supplement) };
+    var expectedSupplement = window.__NUTRIENT_SUPPLEMENTAL_EXPECTED_COUNT__ || 1;
+    window.__PRODUCTS_SUPPLEMENTAL_META__ = { count: supplementAdded, expected: expectedSupplement, available: Array.isArray(supplement) };
     window.__PRODUCTS_ARRAY__ = result.products;
     window.__PRODUCTS_SOURCE_PAYLOAD__ = result.payload || {};
     dbEl.textContent = '[]';
@@ -1354,7 +1377,7 @@
   function nextPaint(){ return new Promise(function(resolve){ if (typeof requestAnimationFrame==='function') requestAnimationFrame(function(){resolve();}); else setTimeout(resolve,16); }); }
   function runReadinessChecks(){
     var checks=[
-      {label:'Проверяем базу продуктов…',run:function(){return Array.isArray(window.__PRODUCTS_ARRAY__)&&window.__PRODUCTS_ARRAY__.length===1106;}},
+      {label:'Проверяем базу продуктов…',run:function(){return Array.isArray(window.__PRODUCTS_ARRAY__)&&window.__PRODUCTS_ARRAY__.length===1105+(window.__NUTRIENT_SUPPLEMENTAL_EXPECTED_COUNT__||1);}},
       {label:'Проверяем расчётное ядро…',run:function(){return !!(window.NutritionCalculationCore&&window.NutritionFormulaRegistryP14&&window.NutritionNormativeRegistry);}},
       {label:'Проверяем профиль и навигацию…',run:function(){return !!(document.getElementById('needs_calc_btn')&&window.NavigationShellV1);}},
       {label:'Проверяем рабочие разделы…',run:function(){return !!(document.getElementById('globalSearchSection')&&document.getElementById('heiPanel'));}}
