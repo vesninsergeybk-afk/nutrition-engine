@@ -1,0 +1,126 @@
+name: Nutrient Android — offline calculator and optional catalog updates
+
+on:
+  push:
+    branches:
+      - feature/nutrient-android-offline-20261023
+      - feature/nutrient-catalog-sync-20261023
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build offline-first APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Package pinned local calculator
+        run: python3 android/tools/package_web.py
+
+      - name: Validate the published data-only catalog
+        run: python3 android/tools/publish_catalog.py --check
+
+      - name: Test catalog reproducibility and integrity checks
+        run: python3 android/tools/test_catalog_protocol.py
+
+      - name: Check offline calculation and update boundary
+        run: python3 android/tools/check_offline.py
+
+      - name: Build installable alpha APK
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Verify the native catalog updater can use HTTPS
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          if ! "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -q 'android.permission.INTERNET'; then
+            echo 'The native catalog updater needs the INTERNET permission'
+            exit 1
+          fi
+          echo 'Catalog updater permission gate passed'
+
+      - name: Verify calculator files inside the finished APK
+        run: python3 android/tools/check_apk.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nutrient-android-catalog-alpha
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      # When the maintainer configures a long-lived signing key, publish an
+      # in-place-upgradeable release APK as an additional workflow artifact.
+      - name: Prepare stable release signing key
+        if: ${{ env.NUTRIENT_SIGNING_CONFIGURED == 'true' }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/nutrient-signing"
+          printf '%s' "$NUTRIENT_RELEASE_KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/nutrient-signing/release.jks"
+          echo "NUTRIENT_RELEASE_KEYSTORE=$RUNNER_TEMP/nutrient-signing/release.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed production APK
+        if: ${{ env.NUTRIENT_SIGNING_CONFIGURED == 'true' }}
+        working-directory: android
+        run: gradle --no-daemon :app:assembleRelease
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ env.NUTRIENT_SIGNING_CONFIGURED == 'true' }}
+        with:
+          name: nutrient-android-catalog-signed
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+    env:
+      NUTRIENT_SIGNING_CONFIGURED: ${{ secrets.NUTRIENT_RELEASE_KEYSTORE_B64 != '' && secrets.NUTRIENT_RELEASE_STORE_PASSWORD != '' && secrets.NUTRIENT_RELEASE_KEY_ALIAS != '' && secrets.NUTRIENT_RELEASE_KEY_PASSWORD != '' }}
+      NUTRIENT_RELEASE_KEYSTORE_B64: ${{ secrets.NUTRIENT_RELEASE_KEYSTORE_B64 }}
+      NUTRIENT_RELEASE_STORE_PASSWORD: ${{ secrets.NUTRIENT_RELEASE_STORE_PASSWORD }}
+      NUTRIENT_RELEASE_KEY_ALIAS: ${{ secrets.NUTRIENT_RELEASE_KEY_ALIAS }}
+      NUTRIENT_RELEASE_KEY_PASSWORD: ${{ secrets.NUTRIENT_RELEASE_KEY_PASSWORD }}
+
+  smoke:
+    name: Boot calculator in Android emulator
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KVM for Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: nutrient-android-catalog-alpha
+          path: apk
+
+      - name: Launch Nutrient with networks disabled and wait for calculation engine
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: default
+          arch: x86_64
+          profile: pixel_7_pro
+          disable-animations: true
+          script: bash android/tools/emulator_smoke.sh

@@ -25,3 +25,6 @@ api/*.lock
 .dev.vars.*
 .wrangler/
 .cloudflare/
+android/app/build/
+android/.gradle/
+android/build/

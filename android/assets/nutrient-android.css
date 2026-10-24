@@ -1,0 +1,90 @@
+/* Android-only layout: web-site navigation is excluded from the reading area. */
+html, body { min-height:100%; overscroll-behavior-y:contain; }
+body[data-page="nutrition"] .vm-header,
+body[data-page="nutrition"] .vm-footer,
+body[data-page="nutrition"] footer,
+body[data-page="nutrition"] .vm-channel-link,
+body[data-page="nutrition"] .nut-language {
+  display:none !important;
+}
+body[data-page="nutrition"] {
+  margin:0 !important;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom) !important;
+  -webkit-text-size-adjust:100%;
+}
+body[data-page="nutrition"] .nut-workspace {
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:clamp(12px,3vw,24px) !important;
+  padding-bottom:calc(88px + env(safe-area-inset-bottom)) !important;
+}
+body[data-page="nutrition"] button,
+body[data-page="nutrition"] select,
+body[data-page="nutrition"] input {
+  font-size:max(16px,1rem);
+}
+body[data-page="nutrition"] button,
+body[data-page="nutrition"] summary,
+body[data-page="nutrition"] .nut-nav a {
+  min-height:44px;
+}
+body[data-page="nutrition"] input,
+body[data-page="nutrition"] textarea {
+  min-width:0;
+  max-width:100%;
+}
+body[data-page="nutrition"] .nut-nav {
+  position:fixed !important;
+  inset:auto 0 0 0 !important;
+  z-index:300;
+  margin:0 !important;
+  padding:8px max(8px,env(safe-area-inset-right))
+    calc(8px + env(safe-area-inset-bottom))
+    max(8px,env(safe-area-inset-left)) !important;
+  background:#f5f8f5 !important;
+  box-shadow:0 -4px 24px rgba(7,47,42,.12);
+  display:flex !important;
+  justify-content:space-around;
+}
+body[data-page="nutrition"] .nut-nav a { flex:1; text-align:center; }
+body[data-page="nutrition"] .nut-ai .nut-hint {
+  line-height:1.5;
+}
+body[data-page="nutrition"] .nut-catalog-menu {
+  position:relative;
+  font-size:.86rem;
+}
+body[data-page="nutrition"] .nut-catalog-menu > summary {
+  cursor:pointer;
+  padding:.55rem .8rem;
+  border:1px solid #a6bcb4;
+  border-radius:.7rem;
+  white-space:nowrap;
+  font-weight:650;
+}
+body[data-page="nutrition"] .nut-catalog-panel {
+  position:absolute;
+  z-index:20;
+  right:0;
+  top:calc(100% + 6px);
+  width:min(320px,calc(100vw - 24px));
+  padding:1rem;
+  border:1px solid #bdcdc4;
+  border-radius:.8rem;
+  background:#fff;
+  box-shadow:0 8px 28px rgba(7,47,42,.16);
+}
+body[data-page="nutrition"] .nut-catalog-panel p { margin:.3rem 0 .7rem; }
+body[data-page="nutrition"] .nut-catalog-panel button { width:100%; }
+@media (max-width:450px) {
+  body[data-page="nutrition"] .nut-heading { margin-top:0; }
+  body[data-page="nutrition"] .nut-catalog-menu > summary { padding-inline:.5rem; }
+  body[data-page="nutrition"] .nut-section-heading { gap:8px; }
+  body[data-page="nutrition"] .nut-workspace { padding-inline:12px !important; }
+  body[data-page="nutrition"] .nut-nav a { font-size:12px !important; }
+}
+@media print {
+  body[data-page="nutrition"] .nut-nav { display:none !important; }
+  body[data-page="nutrition"] .nut-workspace { padding:0 !important; }
+}
