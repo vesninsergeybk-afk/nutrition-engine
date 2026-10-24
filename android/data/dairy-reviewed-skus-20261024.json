@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-24",
+  "retailer": "perekrestok.ru",
+  "status": "label-verified; full panels modeled from explicitly cited generic dairy references",
+  "products": [
+    {"sku":"3674499","key":"agrokompleks_curd_0_pct_200g","name_ru":"Творог «Агрокомплекс» обезжиренный 0%, 200 г","kcal":85.2,"protein":18,"fat":0,"carbs":3.3,"model_key":"tvorog_lowfat_0_1_8_pct","url":"https://www.perekrestok.ru/cat/117/p/tvorog-agrokompleks-obezzirennyj-0-200g-3674499"},
+    {"sku":"4121610","key":"prostokvashino_curd_0_2_pct_200g","name_ru":"Творог «Простоквашино» обезжиренный 0,2%, 200 г","kcal":87,"protein":18,"fat":0.2,"carbs":3.3,"model_key":"tvorog_lowfat_0_1_8_pct","url":"https://www.perekrestok.ru/cat/117/p/tvorog-prostokvasino-obezzirennyj-0-2-200g-4121610"},
+    {"sku":"4290625","key":"green_line_curd_18_pct_250g","name_ru":"Творог «Зелёная Линия» 18%, 250 г","kcal":229,"protein":14,"fat":18,"carbs":2.8,"model_key":"tvorog_9_pct","url":"https://www.perekrestok.ru/cat/117/p/tvorog-18-zelenaa-linia-250g-4290625"},
+    {"sku":"4326198","key":"prostokvashino_greek_yogurt_2_pct_235g","name_ru":"Йогурт греческий «Простоквашино» 2%, 235 г","kcal":63,"protein":8.7,"fat":2,"carbs":2.5,"model_key":"green_line_greek_yogurt_natural_4_pct_190g","url":"https://www.perekrestok.ru/cat/1704/p/jogurt-prostokvasino-greceskij-2-235g-4326198"},
+    {"sku":"3601417","key":"teos_greek_yogurt_2_pct_140g","name_ru":"Йогурт греческий Teos 2%, 140 г","kcal":66.8,"protein":8,"fat":2,"carbs":4.2,"model_key":"yogurt_greek_plain","url":"https://www.perekrestok.ru/cat/1704/p/jogurt-teos-greceskij-2-140g-3601417"},
+    {"sku":"3612567","key":"epica_plain_yogurt_6_pct_130g","name_ru":"Йогурт Epica натуральный 6%, 130 г","kcal":100,"protein":7,"fat":6,"carbs":4.2,"model_key":"green_line_greek_yogurt_natural_4_pct_190g","url":"https://www.perekrestok.ru/cat/119/p/jogurt-epica-naturalnyj-6-130g-3612567"},
+    {"sku":"3644213","key":"kungurskoe_soft_curd_5_pct_300g","name_ru":"Творог мягкий «Кунгурское» 5%, 300 г","kcal":85,"protein":7,"fat":5,"carbs":3,"model_key":"soft_curd_plain","url":"https://www.perekrestok.ru/cat/117/p/tvorog-kungurskoe-magkij-5-300g-3644213"},
+    {"sku":"4298986","key":"actibio_plain_yogurt_1_8_pct_260g","name_ru":"Йогурт АктиБио натуральный 1,8%, 260 г","kcal":51,"protein":3.5,"fat":1.8,"carbs":5.3,"model_key":"yogurt_plain_1_5_pct","url":"https://www.perekrestok.ru/cat/119/p/jogurt-aktibio-1-8-bzmz-260g-4298986"},
+    {"sku":"4190371","key":"agrokompleks_sour_cream_25_pct_300g","name_ru":"Сметана «Агрокомплекс» 25%, 300 г","kcal":246.6,"protein":2.3,"fat":25,"carbs":3.1,"model_key":"piskarevsky_sour_cream_20_300g_cup","url":"https://www.perekrestok.ru/cat/118/p/smetana-agrokompleks-25-300g-4190371"},
+    {"sku":"3658372","key":"president_sour_cream_30_pct_350g","name_ru":"Сметана President 30%, 350 г","kcal":292,"protein":2.3,"fat":30,"carbs":3.1,"model_key":"piskarevsky_sour_cream_20_300g_cup","url":"https://www.perekrestok.ru/cat/1749/p/smetana-president-30-350g-3658372"}
+  ]
+}
