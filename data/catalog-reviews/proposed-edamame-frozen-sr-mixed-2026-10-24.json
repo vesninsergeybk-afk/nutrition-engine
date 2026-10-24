@@ -19,7 +19,8 @@
     "url": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/168410/nutrients",
     "description": "Edamame, frozen, unprepared",
     "source_release": "SR Legacy 04/2018",
-    "transcription_crosscheck_url": "https://www.completefoods.co/diy/ingredients/edamame-frozen-unprepared"
+    "transcription_crosscheck_url": "https://www.myfoodanalysis.com/food/edamame-frozen-168410",
+    "additional_crosscheck_url": "https://getfoodfacts.com/food/edamame-frozen-unprepared-168410"
   },
   "completion_source": {
     "id": "USDA_FDC_SR:168411",
@@ -123,7 +124,8 @@
     "fatty_acid_scaling": "The prepared and unprepared USDA records are different states of the same food. Relative fatty acid fractions are provisionally assumed comparable.",
     "market_label_mismatch": "Retail 128.7 kcal, P12/F4.3/C10.5 versus reference 109 kcal, P11.2/F4.73/C7.61. This is NOT an exact formulation-level match.",
     "hei": "No HEI/FPED equivalence included: require independent review before analytical use.",
-    "zero_policy": "Assumed zeros are explicitly marked and must not be described as measured absence."
+    "zero_policy": "Assumed zeros are explicitly marked and must not be described as measured absence.",
+    "crosscheck_warning": "A third-party page titled 'Edamame, frozen, unprepared' reports different macronutrients (10.25g protein, 8.58g carbohydrate); its record mapping is not verified. The FDC 168410 profile here is corroborated by sources that agree on 11.2g protein, 7.61g carbohydrate and 109kcal."
   },
   "review_flags": [
     "PROXY_USES_PREPARED_STATE_FOR_FROZEN_UNPREPARED_FOOD",
