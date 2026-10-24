@@ -1,0 +1,205 @@
+{
+  "retailer": "perekrestok.ru",
+  "snapshot_date": "2026-10-24",
+  "collection_method": "Manual verification against publicly indexed official product cards; not exhaustive",
+  "compared_against": "Nutrient canonical 1105 plus reviewed additions in PR #41",
+  "nutrient_policy": "Macronutrients are retailer claims for SKU. Do not add without verified or explicitly modeled full 33-nutrient profile.",
+  "product_count": 13,
+  "products": [
+    {
+      "sku": "43606",
+      "name": "Редька арбузная, весовая",
+      "identity": "watermelon_radish",
+      "state": "raw",
+      "category": "vegetables",
+      "label_per_100g": {
+        "kcal": 32,
+        "protein": 2,
+        "fat": 0.2,
+        "carbs": 6.5
+      },
+      "audit_status": "MISSING_GENERIC_FOOD",
+      "source_url": "https://www.perekrestok.ru/cat/150/p/redka-arbuznaa-43606"
+    },
+    {
+      "sku": "4208257",
+      "name": "Сливки кокосовые Kati для готовки, 150 мл",
+      "identity": "coconut_cream_kati",
+      "state": "as_sold",
+      "category": "plant_fats",
+      "label_per_100g": {
+        "kcal": 237,
+        "protein": 2.5,
+        "fat": 24,
+        "carbs": 2.8
+      },
+      "audit_status": "MISSING_BRANDED_FORMULATION",
+      "source_url": "https://www.perekrestok.ru/cat/121/p/slivki-kokosovye-kati-dla-gotovki-150ml-4208257"
+    },
+    {
+      "sku": "3495707",
+      "name": "Сливки Aroy-D кокосовые 70%, 560 мл",
+      "identity": "coconut_cream_aroyd",
+      "state": "as_sold",
+      "category": "plant_fats",
+      "label_per_100g": {
+        "kcal": 215,
+        "protein": 1.6,
+        "fat": 21,
+        "carbs": 4.8
+      },
+      "audit_status": "MISSING_BRANDED_FORMULATION",
+      "source_url": "https://www.perekrestok.ru/cat/115/p/slivki-aroy-d-kokosovye-70-560ml-3495707"
+    },
+    {
+      "sku": "4245346",
+      "name": "Напиток кокосовый Green Milk на рисовой основе, 1 л",
+      "identity": "coconut_rice_drink",
+      "state": "as_sold",
+      "category": "plant_milks",
+      "label_per_100g": {
+        "kcal": 55,
+        "protein": 0.3,
+        "fat": 1.5,
+        "carbs": 10
+      },
+      "audit_status": "MISSING_BRANDED_FORMULATION",
+      "source_url": "https://www.perekrestok.ru/cat/254/p/napitok-kokosovyj-green-milk-na-risovoj-osnove-ultrapasterizovannyj-1l-4245346"
+    },
+    {
+      "sku": "4312742",
+      "name": "Напиток Planto Coconat No sugars кокосовый без сахара, 1 л",
+      "identity": "coconut_drink_no_sugar",
+      "state": "as_sold",
+      "category": "plant_milks",
+      "label_per_100g": {
+        "kcal": 13,
+        "protein": 0.1,
+        "fat": 1.2,
+        "carbs": 0.4
+      },
+      "audit_status": "MISSING_BRANDED_FORMULATION",
+      "source_url": "https://www.perekrestok.ru/cat/1162/p/napitok-planto-coconat-no-sugars-kokosovyj-bez-sahara-ultrapasterizovannyj-1l-4312742"
+    },
+    {
+      "sku": "4323942",
+      "name": "Тофу Классический Зелёная Линия, 200 г",
+      "identity": "tofu_classic",
+      "state": "as_sold",
+      "category": "soy",
+      "label_per_100g": {
+        "kcal": 75,
+        "protein": 8.7,
+        "fat": 3.7,
+        "carbs": 1.7
+      },
+      "audit_status": "ALREADY_REPRESENTED_BY_BRAND",
+      "source_url": "https://www.perekrestok.ru/cat/122/p/tofu-klassiceskij-zelenaa-linia-200g-4323942"
+    },
+    {
+      "sku": "4323943",
+      "name": "Тофу Зелёная Линия По-Итальянски, 200 г",
+      "identity": "tofu_italian",
+      "state": "as_sold",
+      "category": "soy",
+      "label_per_100g": {
+        "kcal": 92,
+        "protein": 10.6,
+        "fat": 4.2,
+        "carbs": 2.8
+      },
+      "audit_status": "ALREADY_REPRESENTED_BY_BRAND",
+      "source_url": "https://www.perekrestok.ru/cat/122/p/tofu-zelenaa-linia-po-italanski-200g-4323943"
+    },
+    {
+      "sku": "4326357",
+      "name": "Тофу-паста с томатом и базиликом Зелёная Линия, 200 г",
+      "identity": "tofu_tomato_spread",
+      "state": "as_sold",
+      "category": "soy_mixed",
+      "label_per_100g": {
+        "kcal": 224,
+        "protein": 5.6,
+        "fat": 21.5,
+        "carbs": 2.1
+      },
+      "audit_status": "MISSING_RECIPE_VARIANT",
+      "source_url": "https://www.perekrestok.ru/cat/76/p/tofu-pasta-s-tomatom-i-bazilikom-zelenaa-linia-200g-4326357"
+    },
+    {
+      "sku": "4479186",
+      "name": "Кимчи, готовый салат, 150 г",
+      "identity": "kimchi_ready_to_eat",
+      "state": "as_sold",
+      "category": "fermented_vegetables",
+      "label_per_100g": {
+        "kcal": 39,
+        "protein": 1,
+        "fat": 0,
+        "carbs": 8
+      },
+      "audit_status": "GENERIC_PRESENT_RECIPE_DIFFERS",
+      "source_url": "https://www.perekrestok.ru/cat/1619/p/kimci-150g-4479186"
+    },
+    {
+      "sku": "4225476",
+      "name": "Капуста пак-чой листовая, 80 г",
+      "identity": "pak_choi",
+      "state": "raw",
+      "category": "vegetables",
+      "label_per_100g": {
+        "kcal": 13,
+        "protein": 1.5,
+        "fat": 0.2,
+        "carbs": 2
+      },
+      "audit_status": "ALREADY_REPRESENTED_GENERIC",
+      "source_url": "https://www.perekrestok.ru/cat/151/p/kapusta-pak-coj-listovaa-v-podlozke-80g-4225476"
+    },
+    {
+      "sku": "4175043",
+      "name": "Грибы эринги, 200 г",
+      "identity": "king_oyster_mushroom",
+      "state": "raw",
+      "category": "mushrooms",
+      "label_per_100g": {
+        "kcal": 43,
+        "protein": 3,
+        "fat": 0.5,
+        "carbs": 4
+      },
+      "audit_status": "ALREADY_REPRESENTED_GENERIC",
+      "source_url": "https://www.perekrestok.ru/cat/155/p/griby-eringi-200g-4175043"
+    },
+    {
+      "sku": "4322066",
+      "name": "Микрозелень гороха",
+      "identity": "pea_microgreens",
+      "state": "raw",
+      "category": "greens",
+      "label_per_100g": {
+        "kcal": 34.2,
+        "protein": 5.4,
+        "fat": 0.8,
+        "carbs": 1.4
+      },
+      "audit_status": "ALREADY_REPRESENTED_GENERIC_LABEL_VARIABILITY",
+      "source_url": "https://www.perekrestok.ru/cat/151/p/mikrozelen-goroha-4322066"
+    },
+    {
+      "sku": "4226547",
+      "name": "Микрозелень гороха, 30 г, Другая Зелень",
+      "identity": "pea_microgreens",
+      "state": "raw",
+      "category": "greens",
+      "label_per_100g": {
+        "kcal": 124,
+        "protein": 8.8,
+        "fat": 0.7,
+        "carbs": 27.1
+      },
+      "audit_status": "ALREADY_REPRESENTED_GENERIC_LABEL_OUTLIER_REVIEW",
+      "source_url": "https://www.perekrestok.ru/cat/151/p/mikrozelen-goroha-30g-4226547"
+    }
+  ]
+}
