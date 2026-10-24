@@ -6,7 +6,8 @@
   "sampled_sku_count": 14,
   "distinct_target_variants": 13,
   "counts": {
-    "MISSING_FOOD": 4,
+    "ALREADY_REPRESENTED_MISNAMED": 1,
+    "MISSING_FOOD": 3,
     "MISSING_VARIANT": 9,
     "MISSING_VARIANT_LABEL_UNUSABLE": 1
   },
@@ -303,17 +304,27 @@
       "identity": "sweet_cherry",
       "state": "raw",
       "fat_percent": null,
-      "status": "MISSING_FOOD",
-      "related_baseline": [],
-      "matching_baseline": [],
+      "status": "ALREADY_REPRESENTED_MISNAMED",
+      "related_baseline": [
+        {
+          "key": "cherry",
+          "name_ru": "Вишня (сырая)"
+        }
+      ],
+      "matching_baseline": [
+        "cherry"
+      ],
       "label_per_100g": {
         "kcal": 52,
         "protein": 1.1,
         "fat": 0.4,
         "carbs": 10.6
       },
-      "quality_warnings": [],
-      "import_eligibility": "REQUIRES_FULL_NUTRIENT_PROFILE_AND_REVIEW",
+      "quality_warnings": [
+        "BASELINE_DISPLAY_NAME_CONFLICTS_WITH_USDA_FDC_ID",
+        "BASELINE_STATE_CONFLICTS_WITH_USDA_RAW_REFERENCE"
+      ],
+      "import_eligibility": "EXISTING_PROFILE_NEEDS_RENAME",
       "micronutrients": "NOT_PROVIDED_BY_SKU_LABEL",
       "source_url": "https://www.perekrestok.ru/cat/153/p/ceresna-5013"
     },
