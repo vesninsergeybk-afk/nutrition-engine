@@ -4,6 +4,9 @@
 set -euo pipefail
 adb logcat -c
 adb install apk/app-debug.apk
+# The calculator must boot with all Android network transports disabled.
+adb shell svc wifi disable
+adb shell svc data disable
 adb shell am start -n ru.vesninmed.nutrient/.MainActivity
 for i in $(seq 1 60); do
   if adb logcat -d -s NutrientSmoke:I '*:S' | grep -q NUTRIENT_SMOKE_READY; then

@@ -39,8 +39,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Offline-only shell for the exact, pinned VesninMed nutrition calculation engine.
- * Remote navigation is blocked and android.permission.INTERNET is intentionally absent.
+ * Offline-first shell with an optionally refreshed food database.
+ * Remote WebView navigation remains blocked; only the native catalog loader networks.
  */
 public final class MainActivity extends Activity {
     private static final String HOST = "appassets.androidplatform.net";
@@ -51,11 +51,22 @@ public final class MainActivity extends Activity {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final ExecutorService imageWorker = Executors.newSingleThreadExecutor();
     private WebView webView;
+    private CatalogUpdater catalogUpdater;
     private ValueCallback<Uri[]> pendingFileChooser;
     private String pendingJson;
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            catalogUpdater = new CatalogUpdater(this, main, status -> {
+                if (webView == null) return;
+                String js = "window.dispatchEvent(new CustomEvent('nutrient-catalog-status',"
+                        + "{detail:" + status.toString() + "}));";
+                webView.evaluateJavascript(js, null);
+            });
+        } catch (Exception error) {
+            android.util.Log.e("NutrientCatalog", "Bundled catalog metadata unavailable", error);
+        }
         final WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
                 .setDomain(HOST)
                 .addPathHandler("/", new WebViewAssetLoader.AssetsPathHandler(this))
@@ -76,7 +87,14 @@ public final class MainActivity extends Activity {
             @Override public WebResourceResponse shouldInterceptRequest(
                     @NonNull WebView view, @NonNull WebResourceRequest request) {
                 if (!HOST.equals(request.getUrl().getHost())) return deniedResponse();
-                return assetLoader.shouldInterceptRequest(request.getUrl());
+                if (catalogUpdater != null
+                        && catalogUpdater.isCatalogPath(request.getUrl().getPath())) {
+                    WebResourceResponse cached = catalogUpdater.cachedResponse();
+                    if (cached != null) return cached;
+                }
+                WebResourceResponse bundled = assetLoader.shouldInterceptRequest(request.getUrl());
+                // No network fallthrough, even for missing appassets resources.
+                return bundled != null ? bundled : deniedResponse();
             }
 
             @Override public boolean shouldOverrideUrlLoading(
@@ -127,6 +145,7 @@ public final class MainActivity extends Activity {
         });
         setContentView(webView);
         webView.loadUrl(APP_URL);
+        if (catalogUpdater != null) catalogUpdater.check(false);
     }
 
     private WebResourceResponse deniedResponse() {
@@ -169,8 +188,10 @@ public final class MainActivity extends Activity {
         if (webView != null) {
             webView.removeJavascriptInterface("NutrientNative");
             webView.destroy();
+            webView = null;
         }
         imageWorker.shutdownNow();
+        if (catalogUpdater != null) catalogUpdater.close();
         super.onDestroy();
     }
 
@@ -184,6 +205,16 @@ public final class MainActivity extends Activity {
     }
 
     private final class NativeBridge {
+        @JavascriptInterface public String getCatalogStatus() {
+            return catalogUpdater == null
+                    ? "{\"productCount\":0,\"message\":\"Встроенная база доступна без интернета.\"}"
+                    : catalogUpdater.statusJson();
+        }
+
+        @JavascriptInterface public void checkCatalogNow() {
+            if (catalogUpdater != null) catalogUpdater.check(true);
+        }
+
         @JavascriptInterface public void exportJson(String filename, String contents) {
             if (contents == null || contents.length() > 3_000_000) return;
             main.post(() -> {

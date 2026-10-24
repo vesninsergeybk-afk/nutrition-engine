@@ -1,9 +1,10 @@
-name: Nutrient Android Offline APK
+name: Nutrient Android — offline calculator and optional catalog updates
 
 on:
   push:
     branches:
       - feature/nutrient-android-offline-20261023
+      - feature/nutrient-catalog-sync-20261023
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Build offline APK
+    name: Build offline-first APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -35,31 +36,65 @@ jobs:
       - name: Package pinned local calculator
         run: python3 android/tools/package_web.py
 
-      - name: Check offline boundary
+      - name: Validate the published data-only catalog
+        run: python3 android/tools/publish_catalog.py --check
+
+      - name: Test catalog reproducibility and integrity checks
+        run: python3 android/tools/test_catalog_protocol.py
+
+      - name: Check offline calculation and update boundary
         run: python3 android/tools/check_offline.py
 
       - name: Build installable alpha APK
         working-directory: android
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Verify APK has no INTERNET permission
+      - name: Verify the native catalog updater can use HTTPS
         run: |
           APK=android/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          if "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -q 'android.permission.INTERNET'; then
-            echo 'An offline build must never request INTERNET permission'
+          if ! "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | grep -q 'android.permission.INTERNET'; then
+            echo 'The native catalog updater needs the INTERNET permission'
             exit 1
           fi
-          echo 'APK permissions gate passed'
+          echo 'Catalog updater permission gate passed'
 
       - name: Verify calculator files inside the finished APK
         run: python3 android/tools/check_apk.py
 
       - uses: actions/upload-artifact@v4
         with:
-          name: nutrient-android-offline-alpha
+          name: nutrient-android-catalog-alpha
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+
+      # When the maintainer configures a long-lived signing key, publish an
+      # in-place-upgradeable release APK as an additional workflow artifact.
+      - name: Prepare stable release signing key
+        if: ${{ env.NUTRIENT_SIGNING_CONFIGURED == 'true' }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/nutrient-signing"
+          printf '%s' "$NUTRIENT_RELEASE_KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/nutrient-signing/release.jks"
+          echo "NUTRIENT_RELEASE_KEYSTORE=$RUNNER_TEMP/nutrient-signing/release.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed production APK
+        if: ${{ env.NUTRIENT_SIGNING_CONFIGURED == 'true' }}
+        working-directory: android
+        run: gradle --no-daemon :app:assembleRelease
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ env.NUTRIENT_SIGNING_CONFIGURED == 'true' }}
+        with:
+          name: nutrient-android-catalog-signed
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+    env:
+      NUTRIENT_SIGNING_CONFIGURED: ${{ secrets.NUTRIENT_RELEASE_KEYSTORE_B64 != '' && secrets.NUTRIENT_RELEASE_STORE_PASSWORD != '' && secrets.NUTRIENT_RELEASE_KEY_ALIAS != '' && secrets.NUTRIENT_RELEASE_KEY_PASSWORD != '' }}
+      NUTRIENT_RELEASE_KEYSTORE_B64: ${{ secrets.NUTRIENT_RELEASE_KEYSTORE_B64 }}
+      NUTRIENT_RELEASE_STORE_PASSWORD: ${{ secrets.NUTRIENT_RELEASE_STORE_PASSWORD }}
+      NUTRIENT_RELEASE_KEY_ALIAS: ${{ secrets.NUTRIENT_RELEASE_KEY_ALIAS }}
+      NUTRIENT_RELEASE_KEY_PASSWORD: ${{ secrets.NUTRIENT_RELEASE_KEY_PASSWORD }}
 
   smoke:
     name: Boot calculator in Android emulator
@@ -77,10 +112,10 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: nutrient-android-offline-alpha
+          name: nutrient-android-catalog-alpha
           path: apk
 
-      - name: Launch offline Nutrient and wait for calculation engine
+      - name: Launch Nutrient with networks disabled and wait for calculation engine
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35

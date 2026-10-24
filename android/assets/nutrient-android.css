@@ -51,8 +51,35 @@ body[data-page="nutrition"] .nut-nav a { flex:1; text-align:center; }
 body[data-page="nutrition"] .nut-ai .nut-hint {
   line-height:1.5;
 }
+body[data-page="nutrition"] .nut-catalog-menu {
+  position:relative;
+  font-size:.86rem;
+}
+body[data-page="nutrition"] .nut-catalog-menu > summary {
+  cursor:pointer;
+  padding:.55rem .8rem;
+  border:1px solid #a6bcb4;
+  border-radius:.7rem;
+  white-space:nowrap;
+  font-weight:650;
+}
+body[data-page="nutrition"] .nut-catalog-panel {
+  position:absolute;
+  z-index:20;
+  right:0;
+  top:calc(100% + 6px);
+  width:min(320px,calc(100vw - 24px));
+  padding:1rem;
+  border:1px solid #bdcdc4;
+  border-radius:.8rem;
+  background:#fff;
+  box-shadow:0 8px 28px rgba(7,47,42,.16);
+}
+body[data-page="nutrition"] .nut-catalog-panel p { margin:.3rem 0 .7rem; }
+body[data-page="nutrition"] .nut-catalog-panel button { width:100%; }
 @media (max-width:450px) {
   body[data-page="nutrition"] .nut-heading { margin-top:0; }
+  body[data-page="nutrition"] .nut-catalog-menu > summary { padding-inline:.5rem; }
   body[data-page="nutrition"] .nut-section-heading { gap:8px; }
   body[data-page="nutrition"] .nut-workspace { padding-inline:12px !important; }
   body[data-page="nutrition"] .nut-nav a { font-size:12px !important; }

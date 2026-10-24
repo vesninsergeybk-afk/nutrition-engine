@@ -24,6 +24,8 @@ required = [
     "assets/nutrition.css",
     "assets/workspace-storage.js",
     "assets/nutrient-android.css",
+    "assets/nutrient-catalog-sync.js",
+    "assets/nutrient-catalog.json",
     prefix + "engine.js",
     prefix + "fields.json",
     prefix + "products.json",
@@ -52,5 +54,12 @@ with zipfile.ZipFile(APK) as archive:
         raise SystemExit("APK ships a redundant gzip database")
     if not products or not fields:
         raise SystemExit("Offline database or field definitions are empty")
+    manifest = json.loads(archive.read("assets/assets/nutrient-catalog.json"))
+    if manifest.get("format") != "nutrient-catalog-v1":
+        raise SystemExit("APK lacks the recognized catalog update manifest")
+    if manifest.get("productCount") != len(products):
+        raise SystemExit("APK catalog count disagrees with its update manifest")
+    if manifest.get("jsonSha256") != hashlib.sha256(products_bytes).hexdigest():
+        raise SystemExit("APK catalog data differs from published update manifest")
 print(f"APK bundled-asset gate PASS: {len(required)} resources verified, "
       f"JSON database {len(products_bytes)} bytes")

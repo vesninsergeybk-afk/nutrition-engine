@@ -2,6 +2,15 @@ plugins {
     id("com.android.application")
 }
 
+// Release credentials belong in a private keystore and the CI secret store.
+// A missing key deliberately leaves the release build unsigned.
+val nutrientKeystorePath = System.getenv("NUTRIENT_RELEASE_KEYSTORE")
+val nutrientStorePassword = System.getenv("NUTRIENT_RELEASE_STORE_PASSWORD")
+val nutrientKeyAlias = System.getenv("NUTRIENT_RELEASE_KEY_ALIAS")
+val nutrientKeyPassword = System.getenv("NUTRIENT_RELEASE_KEY_PASSWORD")
+val hasReleaseSigning = listOf(nutrientKeystorePath, nutrientStorePassword,
+    nutrientKeyAlias, nutrientKeyPassword).all { !it.isNullOrBlank() }
+
 android {
     namespace = "ru.vesninmed.nutrient"
     compileSdk = 35
@@ -10,13 +19,27 @@ android {
         applicationId = "ru.vesninmed.nutrient"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0-alpha"
+        versionCode = 2
+        versionName = "0.2.0-alpha"
+    }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("nutrientRelease") {
+                storeFile = file(nutrientKeystorePath!!)
+                storePassword = nutrientStorePassword!!
+                keyAlias = nutrientKeyAlias!!
+                keyPassword = nutrientKeyPassword!!
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("nutrientRelease")
+            }
         }
     }
 
@@ -32,6 +55,8 @@ val prepareNutrientWeb by tasks.registering(Exec::class) {
     commandLine("python3", "android/tools/package_web.py")
     inputs.dir(rootProject.projectDir.parentFile.resolve("site/tools/nutrition"))
     inputs.dir(rootProject.projectDir.parentFile.resolve("site/assets"))
+    inputs.dir(rootProject.projectDir.resolve("catalog"))
+    inputs.dir(rootProject.projectDir.resolve("data"))
     inputs.file(rootProject.projectDir.resolve("tools/package_web.py"))
     outputs.dir(layout.buildDirectory.dir("generated-web"))
 }

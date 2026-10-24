@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
-"""Reproducibly package the public, pinned VesninMed Nutrition runtime for Android.
-
-This only reads the current repository's site/ tree. It neither downloads live
-pages nor publishes changes to the website. The app has no INTERNET permission.
-"""
+"""Reproducibly package the pinned offline nutrition engine and updateable data."""
 from __future__ import annotations
 
-import gzip
 import hashlib
 import json
-import math
 import re
 import shutil
 from pathlib import Path
+from catalog_protocol import assemble_catalog, CATALOG_DIR, manifest_bytes
 
 ROOT = Path(__file__).resolve().parents[2]
 SITE = ROOT / "site"
@@ -54,60 +49,20 @@ def build() -> None:
     for name in ("engine.js", "fields.json"):
         copy_site(runtime + name)
 
-    # Android WebView receives ordinary JSON. Keep the original gzip file in
-    # the pinned site source, verify its hash, and decode it only for the APK.
-    # This avoids .gz URL handling and DecompressionStream support differences.
-    product_json = gzip.decompress(gz.read_bytes())
+    # The byte-identical serialized catalog is also published on GitHub as a
+    # data-only archive. CI rejects any unreviewed, stale release pointers.
+    product_json, release = assemble_catalog()
+    release_manifest = release["manifest"]
+    if (CATALOG_DIR / "latest.json").read_bytes() != manifest_bytes(release_manifest):
+        raise RuntimeError("Published update manifest does not match the APK catalog")
+    if (CATALOG_DIR / release_manifest["archive"]).read_bytes() != release["archive"]:
+        raise RuntimeError("Published update archive does not match the APK catalog")
     products = json.loads(product_json)
-    if not isinstance(products, list):
-        raise RuntimeError("Audited food catalog is not an array")
-
-    # Android-only, source-attributed food additions. The hash-verified base
-    # archive remains untouched so the website and its audited source are safe.
-    supplements = json.loads(
-        (ROOT / "android/data/products-supplemental.json").read_text(encoding="utf-8")
-    )
-    if not isinstance(supplements, list):
-        raise RuntimeError("Supplemental food catalog must be an array")
-    known_keys = {record["key"] for record in products}
-    nutrient_fields = (
-        "kcal", "protein_per_100g", "fat_per_100g", "carbs_per_100g",
-        "sugar_per_100g", "fiber_per_100g", "sfa", "unsat", "added_sugar",
-        "salt", "calcium_mg", "iron_mg", "magnesium_mg", "phosphorus_mg",
-        "potassium_mg", "sodium_mg", "zinc_mg", "copper_mg", "manganese_mg",
-        "selenium_ug", "vitamin_a_mcg", "vitamin_e_mg", "vitamin_d_mcg",
-        "vitamin_c_mg", "vitamin_b1_mg", "vitamin_b2_mg", "vitamin_b3_mg",
-        "vitamin_b5_mg", "vitamin_b6_mg", "vitamin_b9_mcg", "vitamin_b12_mcg",
-        "choline_mg", "vitamin_k_mcg",
-    )
-    for record in supplements:
-        if not isinstance(record, dict) or not isinstance(record.get("key"), str):
-            raise RuntimeError("Supplemental food must have a string key")
-        if record["key"] in known_keys:
-            raise RuntimeError("Duplicate food key: " + record["key"])
-        if any(type(record.get(field)) not in (int, float)
-               or not math.isfinite(record[field]) or record[field] < 0
-               for field in nutrient_fields):
-            raise RuntimeError("Incomplete or invalid nutrient profile: " + record["key"])
-        provenance = record.get("nutrient_provenance_v1_3")
-        if not isinstance(provenance, dict):
-            raise RuntimeError("Missing nutrient provenance: " + record["key"])
-        reported = [field for values in provenance.values() for field in values]
-        if len(reported) != len(nutrient_fields) or set(reported) != set(nutrient_fields):
-            raise RuntimeError("Nutrient provenance mismatch: " + record["key"])
-        assumed = set(provenance.get("ASSUMED_ZERO", []))
-        if any(record[field] == 0 and field not in assumed
-               and field not in provenance.get("SOURCE_REPORTED_ZERO", [])
-               for field in nutrient_fields):
-            raise RuntimeError("Zero with unclassified meaning: " + record["key"])
-        known_keys.add(record["key"])
-        products.append(record)
-    product_json = json.dumps(
-        products, ensure_ascii=False, separators=(",", ":")
-    ).encode("utf-8")
     product_target = DEST / runtime / "products.json"
     product_target.parent.mkdir(parents=True, exist_ok=True)
     product_target.write_bytes(product_json)
+    (DEST / "assets").mkdir(parents=True, exist_ok=True)
+    (DEST / "assets/nutrient-catalog.json").write_bytes(manifest_bytes(release_manifest))
     for route in ("tools/nutrition/index.html", "tools/nutrition/en/index.html"):
         copy_site(route)
     for asset in (SITE / "assets").iterdir():
@@ -171,6 +126,7 @@ def build() -> None:
     app.write_text(source, encoding="utf-8")
     shutil.copyfile(ASSETS / "nutrition-ai-offline.js", DEST / "assets/nutrition-ai-offline.js")
     shutil.copyfile(ASSETS / "nutrient-android.css", DEST / "assets/nutrient-android.css")
+    shutil.copyfile(ASSETS / "nutrient-catalog-sync.js", DEST / "assets/nutrient-catalog-sync.js")
 
     for path in (DEST / "tools/nutrition").rglob("index.html"):
         html = path.read_text(encoding="utf-8")
@@ -180,6 +136,7 @@ def build() -> None:
         html = html.replace(
             "</head>",
             '<link rel="stylesheet" href="/assets/nutrient-android.css">'
+            '<script src="/assets/nutrient-catalog-sync.js" defer></script>'
             '<script>window.print=function(){if(window.NutrientNative?.printReport)'
             'window.NutrientNative.printReport();};</script></head>',
             1,
@@ -208,10 +165,11 @@ def build() -> None:
         "source_database_gzip_sha256": expected_hash,
         "apk_database_json_sha256": hashlib.sha256(product_json).hexdigest(),
         "products_count": len(products),
-        "supplemental_products_count": len(supplements),
+        "supplemental_products_count": release_manifest["origin"]["supplementalCount"],
         "files": len(list(DEST.rglob("*"))),
         "total_bytes": sum(p.stat().st_size for p in DEST.rglob("*") if p.is_file()),
-        "no_internet_permission_required": True,
+        "offline_calculation": True,
+        "optional_network_catalog_sync": True,
     }, indent=2))
 
 
