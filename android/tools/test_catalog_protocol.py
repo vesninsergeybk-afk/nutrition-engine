@@ -26,6 +26,14 @@ class CatalogProtocolTests(unittest.TestCase):
         self.assertEqual(sha256(self.gzip_bytes), self.manifest["gzipSha256"])
         self.assertEqual(len(self.products), self.manifest["productCount"])
 
+    def test_reviewed_catalog_contains_all_1111_foods(self):
+        self.assertEqual(len(self.products), 1111)
+        self.assertEqual(self.manifest["origin"]["supplementalCount"], 6)
+        cherry = next(p for p in self.products if p["key"] == "cherry")
+        self.assertEqual(cherry["source_id"], "USDA_FDC_SR:171719")
+        self.assertEqual(cherry["name_ru"], "Черешня, свежая (сырая)")
+        self.assertEqual(len({p["key"] for p in self.products}), 1111)
+
     def test_validation_rejects_missing_nutrient(self):
         row = copy.deepcopy(self.products[0])
         row.pop("vitamin_b12_mcg")

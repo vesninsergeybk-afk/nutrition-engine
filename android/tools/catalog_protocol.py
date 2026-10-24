@@ -73,6 +73,13 @@ def assemble_catalog() -> tuple[bytes, dict]:
     products = json.loads(gzip.decompress(base_gz))
     if not isinstance(products, list):
         raise ValueError("Pinned site catalog must be an array")
+    # Reviewed correction: the pinned USDA sweet-cherry profile was
+    # previously labelled as sour cherry. Preserve its key and nutrients.
+    cherry = next((p for p in products if p.get("key") == "cherry"), None)
+    if (cherry is None or cherry.get("source_id") != "USDA_FDC_SR:171719"
+            or cherry.get("fdc_description") != "Cherries, sweet, raw"):
+        raise ValueError("Pinned USDA cherry source changed; manual review required")
+    cherry.update({"state": "raw","name": "Sweet cherries, raw","name_ru": "Черешня, свежая (сырая)","search_aliases": ["черешня","черешня свежая","sweet cherries"]})
     supplement_path = ROOT / "android/data/products-supplemental.json"
     supplements = json.loads(supplement_path.read_text(encoding="utf-8"))
     if not isinstance(supplements, list):
