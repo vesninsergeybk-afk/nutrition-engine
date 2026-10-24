@@ -5,6 +5,7 @@ import argparse
 from copy import deepcopy
 import gzip
 import json
+import re
 
 from catalog_protocol import ROOT, NUTRIENT_FIELDS, validate_products
 
@@ -30,6 +31,13 @@ def make_profile(s, ref):
              search_aliases=[s["name_ru"]], tags=["молочные продукты",
              "КБЖУ этикетки", "расчётный микронутриентный профиль"],
              category="Dairy", state="raw")
+    # A reference food's barcode or portion size never identifies this SKU.
+    p.pop("barcode", None)
+    p.pop("package_size_g", None)
+    p.pop("package_volume_ml", None)
+    match = re.search(r",\s*(\d+)\s*(г|мл)$", s["name_ru"])
+    if match:
+        p["package_size_g" if match.group(2) == "г" else "package_volume_ml"] = int(match.group(1))
     for f, label in LABELS.items():
         p[f] = s[label]
     ratio = s["fat"] / ref["fat_per_100g"] if ref["fat_per_100g"] else 0
@@ -116,10 +124,12 @@ if __name__ == "__main__":
     cli = argparse.ArgumentParser()
     cli.add_argument("--check", action="store_true")
     args = cli.parse_args()
-    result = json.dumps(assemble(), ensure_ascii=False, indent=2) + "\n"
+    foods = assemble()
+    result = json.dumps(foods, ensure_ascii=False, indent=2) + "\n"
     if args.check:
         if OUT.read_text(encoding="utf-8") != result:
             raise SystemExit("Generated profiles differ from saved data")
     else:
         OUT.write_text(result, encoding="utf-8")
-    print("PASS: 16 supplemental foods; 10 dairy with per-field provenance")
+    print(f"PASS: {len(foods)} supplemental foods; "
+          f"{len(json.loads(SPEC.read_text(encoding='utf-8'))['products'])} dairy with per-field provenance")

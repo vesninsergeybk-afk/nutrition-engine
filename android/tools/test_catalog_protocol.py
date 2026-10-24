@@ -26,21 +26,22 @@ class CatalogProtocolTests(unittest.TestCase):
         self.assertEqual(sha256(self.gzip_bytes), self.manifest["gzipSha256"])
         self.assertEqual(len(self.products), self.manifest["productCount"])
 
-    def test_reviewed_catalog_contains_all_1121_foods(self):
-        self.assertEqual(len(self.products), 1121)
-        self.assertEqual(self.manifest["origin"]["supplementalCount"], 16)
+    def test_reviewed_catalog_contains_all_1136_foods(self):
+        self.assertEqual(len(self.products), 1136)
+        self.assertEqual(self.manifest["origin"]["supplementalCount"], 31)
         cherry = next(p for p in self.products if p["key"] == "cherry")
         self.assertEqual(cherry["source_id"], "USDA_FDC_SR:171719")
         self.assertEqual(cherry["name_ru"], "Черешня, свежая (сырая)")
-        self.assertEqual(len({p["key"] for p in self.products}), 1121)
+        self.assertEqual(len({p["key"] for p in self.products}), 1136)
 
     def test_dairy_products_are_retail_label_plus_explicitly_modelled_micros(self):
         records = [p for p in self.products if p.get("source_id", "").startswith("PEREKRESTOK_SKU:")]
-        self.assertEqual(len(records), 10)
+        self.assertEqual(len(records), 25)
         for p in records:
             self.assertEqual(len(set(sum(p["nutrient_provenance_v1_3"].values(), []))), 33)
             self.assertEqual(p["data_quality_v1_3"]["confidence_tier"], "LOW")
             self.assertEqual(len(p["nutrient_provenance_v1_3"]["LABEL"]), 4)
+            self.assertEqual(p.get("barcode"), None)
 
     def test_validation_rejects_missing_nutrient(self):
         row = copy.deepcopy(self.products[0])
