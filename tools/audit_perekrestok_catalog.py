@@ -38,6 +38,11 @@ IDENTITY_RE = {
     "pork_tenderloin": r"^свинина,?\s+вырезка|^вырезка\s+свина",
 }
 
+# One historical row has the correct USDA composition of sweet cherries, but
+# its Russian display name incorrectly says sour cherry ("вишня"). Name-only
+# comparison would report a missing food and cause duplicate USDA 171719 data.
+EXACT_USDA_IDENTITY = {"sweet_cherry": "USDA_FDC_SR:171719"}
+
 COOKED_RE = re.compile(r"вар[её]н|отварн|готов|запеч|жарен|туш[её]н|гриль|печ[её]н|приготовл|су-вид")
 FROZEN_RE = re.compile(r"заморож|морожен")
 DRY_RE = re.compile(r"сух[оиа]|крупа|крупы|неприготовл")
@@ -121,20 +126,34 @@ def label_warnings(item: dict) -> list[str]:
 def classify(item: dict, baseline: list[dict]) -> dict:
     matcher = re.compile(IDENTITY_RE[item["identity"]], re.IGNORECASE)
     same_food = [p for p in baseline if matcher.search(str(p.get("name_ru", "")).casefold())]
+    crosswalk = EXACT_USDA_IDENTITY.get(item["identity"])
+    source_matches = [p for p in baseline if crosswalk and p.get("source_id") == crosswalk]
     matching = [p for p in same_food if detect_state(p) == item["state"]]
+    misnamed_match = False
+    for source_match in source_matches:
+        official_state = "raw" if source_match.get("fdc_description") == "Cherries, sweet, raw" else detect_state(source_match)
+        if official_state == item["state"] and source_match not in matching:
+            matching.append(source_match)
+            misnamed_match = True
+        if source_match not in same_food:
+            same_food.append(source_match)
     if item.get("fat_percent") is not None:
         matching = [p for p in matching if fat_pct(str(p.get("name_ru", ""))) == item["fat_percent"]]
 
     # A generic row already covers a basic food form, but a branded formulation
     # still needs a label-level review if its macros differ materially.
     if matching:
-        status = "ALREADY_REPRESENTED"
+        status = "ALREADY_REPRESENTED_MISNAMED" if misnamed_match else "ALREADY_REPRESENTED"
     elif same_food:
         status = "MISSING_VARIANT"
     else:
         status = "MISSING_FOOD"
 
     warnings = label_warnings(item)
+    if misnamed_match:
+        warnings.append("BASELINE_DISPLAY_NAME_CONFLICTS_WITH_USDA_FDC_ID")
+        if any(p.get("state") != item["state"] for p in source_matches):
+            warnings.append("BASELINE_STATE_CONFLICTS_WITH_USDA_RAW_REFERENCE")
     if warnings and status != "ALREADY_REPRESENTED":
         if "ZERO_LABEL_PLACEHOLDER_DO_NOT_IMPORT" in warnings:
             status = "MISSING_FOOD_LABEL_UNUSABLE" if not same_food else "MISSING_VARIANT_LABEL_UNUSABLE"
@@ -152,7 +171,8 @@ def classify(item: dict, baseline: list[dict]) -> dict:
         "label_per_100g": item.get("label_per_100g"),
         "quality_warnings": warnings,
         "import_eligibility": (
-            "BLOCKED_LABEL_INVALID" if warnings else "REQUIRES_FULL_NUTRIENT_PROFILE_AND_REVIEW"
+            "EXISTING_PROFILE_NEEDS_RENAME" if misnamed_match else
+            ("BLOCKED_LABEL_INVALID" if warnings else "REQUIRES_FULL_NUTRIENT_PROFILE_AND_REVIEW")
         ),
         "micronutrients": "NOT_PROVIDED_BY_SKU_LABEL",
         "source_url": item["source_url"],
