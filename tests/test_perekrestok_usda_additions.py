@@ -106,6 +106,8 @@ class PerekrestokUSDAAdditionsTests(unittest.TestCase):
 
     def test_front_end_integration_modern_and_legacy(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
+        compatible_html = (ROOT / "index-v5.3.210.html").read_text(encoding="utf-8")
+        self.assertEqual(html, compatible_html, "Both supported HTML entrypoints must stay identical")
         self.assertIn("products-perekrestok-reviewed.v20261023.js", html)
         self.assertLess(html.index("products-supplemental.v20261023.js"),
                         html.index("products-perekrestok-reviewed.v20261023.js"))
