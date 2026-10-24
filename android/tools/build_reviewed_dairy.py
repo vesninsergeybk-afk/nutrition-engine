@@ -48,14 +48,24 @@ def make_profile(s, ref):
         ref["sugar_per_100g"] / ref["carbs_per_100g"]
         if ref["carbs_per_100g"] else 0)), 4)
     p["fiber_per_100g"] = 0
-    p["added_sugar"] = 0
+    if s.get("sweetened"):
+        # The seller publishes carbohydrates but not added sugars. Estimate
+        # them from the reference food and keep the uncertainty explicit.
+        p["added_sugar"] = round(min(p["sugar_per_100g"],
+            s["carbs"] * ref["added_sugar"] / max(ref["carbs_per_100g"], 1e-6)), 4)
+        p["added_sugars_tsp_per_100g"] = round(p["added_sugar"] / 4.2, 4)
+        p["added_sugars_tsp_eq_per_100g"] = p["added_sugars_tsp_per_100g"]
+    else:
+        p["added_sugar"] = 0
     for f in FAT_VITAMINS:
         p[f] = round(ref[f] * min(ratio, 2), 5)
     p["salt"] = round(p["sodium_mg"] * 2.54 / 1000, 5)
     methods = {"LABEL": list(LABELS),
-               "CALCULATED": ["sfa", "unsat", "salt"],
+               "CALCULATED": ["sfa", "unsat", "salt"]
+                   + (["added_sugar"] if s.get("sweetened") else []),
                "IMPUTED": list(FAT_VITAMINS),
-               "ASSUMED_ZERO": ["fiber_per_100g", "added_sugar"],
+               "ASSUMED_ZERO": ["fiber_per_100g"]
+                   + ([] if s.get("sweetened") else ["added_sugar"]),
                "BORROWED": []}
     assigned = {f for v in methods.values() for f in v}
     methods["BORROWED"] = [f for f in NUTRIENT_FIELDS if f not in assigned]
@@ -91,8 +101,11 @@ def make_profile(s, ref):
         review_status="CONDITIONALLY_ACCEPTED",
         reviewed_at="2026-10-24", review_due_at="2027-01-24",
         issues=["BRAND_MICRONUTRIENTS_NOT_MEASURED",
-                "MODELED_DAIRY_VITAMINS_AND_FATTY_ACIDS"],
-        assumed_zero_count=2, missing_count=0)
+                "MODELED_DAIRY_VITAMINS_AND_FATTY_ACIDS"]
+                + (["ESTIMATED_ADDED_SUGAR_FROM_REFERENCE"]
+                   if s.get("sweetened") else []),
+        assumed_zero_count=1 if s.get("sweetened") else 2,
+        missing_count=0)
     return p
 
 

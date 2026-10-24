@@ -80,6 +80,20 @@ def assemble_catalog() -> tuple[bytes, dict]:
             or cherry.get("fdc_description") != "Cherries, sweet, raw"):
         raise ValueError("Pinned USDA cherry source changed; manual review required")
     cherry.update({"state": "raw","name": "Sweet cherries, raw","name_ru": "Черешня, свежая (сырая)","search_aliases": ["черешня","черешня свежая","sweet cherries"]})
+    # These USDA records were assigned Russian names with incorrect fat
+    # percentages. Keep stable keys (saved user diaries may reference them),
+    # but stop presenting the wrong percentages as product characteristics.
+    corrections = {
+        "kefir_3_2_pct": (0.96, "Кефир, справочный состав: 0,96 г жира/100 г"),
+        "curd_5_pct": (9.73, "Творог типа farmer’s cheese, справочный состав: 9,73 г жира/100 г"),
+        "curd_9_pct": (4.22, "Творог типа cottage cheese, справочный состав: 4,22 г жира/100 г"),
+    }
+    for key, (fat, title) in corrections.items():
+        record = next((item for item in products if item.get("key") == key), None)
+        if record is None or abs(record["fat_per_100g"] - fat) > 0.001:
+            raise ValueError("Pinned USDA fat profile changed: " + key)
+        record["name_ru"] = title
+        record["search_aliases"] = [title]
     supplement_path = ROOT / "android/data/products-supplemental.json"
     supplements = json.loads(supplement_path.read_text(encoding="utf-8"))
     if not isinstance(supplements, list):
