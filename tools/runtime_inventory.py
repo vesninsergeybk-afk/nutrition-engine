@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 CONFIG=ROOT/'config/runtime-assets.v6.0.0-beta7.json'
 TEXT_EXT={'.html','.js','.css','.json','.php','.xml','.txt','.svg','.webmanifest','.htaccess'}
-ROOT_FILES={'assets/data/normative-registry.v5.3.210-p1.2.json','data/product-provenance-registry.v5.3.210-p1.3.json','.htaccess','_headers','index.html','index-v5.3.210.html','api/gemini.php','api/utf8-safe.php','api/gemini-guard.php','api/gemini-secret.php','api/.htaccess','robots.txt'}
+ROOT_FILES={'updates/catalog/v1/manifest.json','assets/data/normative-registry.v5.3.210-p1.2.json','data/product-provenance-registry.v5.3.210-p1.3.json','.htaccess','_headers','index.html','index-v5.3.210.html','api/gemini.php','api/utf8-safe.php','api/gemini-guard.php','api/gemini-secret.php','api/.htaccess','robots.txt'}
 QUOTED_RE=re.compile(r'''["']((?:\.{0,2}/)?(?:assets|data|api)/[^"'?#\s<>]+)(?:\?[^"']*)?["']''')
 CSS_URL_RE=re.compile(r'''url\(\s*["']?([^"')?#\s]+)(?:\?[^"')]*)?["']?\s*\)''',re.I)
 HTML_RE=re.compile(r'''(?:src|href)=["']([^"'?#]+)(?:\?[^"']*)?["']''',re.I)
@@ -55,6 +55,9 @@ def legacy_path(url:str)->str:
 def compute():
     cfg=json.loads(CONFIG.read_text(encoding='utf-8'))
     roots=set(ROOT_FILES)
+    catalog_revisions=ROOT/'updates/catalog/v1/revisions'
+    if catalog_revisions.is_dir():
+        roots.update(p.relative_to(ROOT).as_posix() for p in catalog_revisions.glob('*.json') if p.is_file())
     roots.update(p.relative_to(ROOT).as_posix() for p in (ROOT/'assets/images/harvard-plate/v5').rglob('*') if p.is_file())
     # Dynamic legacy path mapping is not visible as a literal in the browser manifest.
     roots.update(legacy_path(x) for x in cfg['legacy_core_scripts'])

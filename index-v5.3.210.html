@@ -9,12 +9,12 @@
 <meta charset="utf-8"/>
 <meta name="robots" content="noindex, nofollow, noarchive"/>
 <meta name="description" content="Локальный калькулятор нутриентов. Не запрашивает пароли, платёжные данные или банковские реквизиты."/>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; worker-src 'self' blob:; manifest-src 'self'"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' https://functions.yandexcloud.net; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; worker-src 'self' blob:; manifest-src 'self'"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta name="application-name" content="Калькулятор рациона Сергея Веснина"/>
+<meta name="application-name" content="Калькулятор рациона, индекса здорового питания и дневных норм"/>
 <meta name="application-build-date" content="2026-08-06T18:49:00Z"/>
 <meta name="author" content="Веснин Сергей Вячеславович"/>
-<title>Калькулятор рациона Сергея Веснина — v6.0 beta 6 hotfix 4</title><link href="./assets/css/browser-compatibility-v5.3.192.css?v=5.3.192" rel="stylesheet" data-browser-compatibility="pass2"/><script src="./assets/js/00-browser-compatibility-gate-v5.3.210.js?v=v5.3.210-rc2-hf21" data-browser-compatibility-gate="pass2-visual-patch"></script><script data-theme-bootstrap="v2">
+<title>Калькулятор рациона, индекса здорового питания и дневных норм — Nutrient | VESNINMED</title><link href="./assets/css/browser-compatibility-v5.3.192.css?v=5.3.192" rel="stylesheet" data-browser-compatibility="pass2"/><script src="./assets/js/00-browser-compatibility-gate-v5.3.210.js?v=v5.3.210-rc2-hf21" data-browser-compatibility-gate="pass2-visual-patch"></script><script data-theme-bootstrap="v2">
 (function(){
   var key='nutritionCalculator.uiTheme.v1';
   var allowed={'modern':1,'retro-2bit':1,'ivory-brass':1};
@@ -79,7 +79,7 @@
     window.__APP_DEPLOY_VERSION__='v'+APP_VERSION;window.__EXPECTED_RUNTIME_RELEASE__='v6.0.0-beta6-design-refinement';
     var buildDate=document.documentElement.getAttribute('data-build-date')||'',buildRu=buildDate;
     try{buildRu=new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(buildDate+'T12:00:00Z'));}catch(_){}
-    window.__APP_BUILD_DATE__=buildDate;window.__APP_BUILD_DATE_RU__=buildRu;window.__APP_BRAND_NAME__='Калькулятор рациона Сергея Веснина';
+    window.__APP_BUILD_DATE__=buildDate;window.__APP_BUILD_DATE_RU__=buildRu;window.__APP_BRAND_NAME__='Калькулятор рациона, индекса здорового питания и дневных норм';
     var buildMeta=document.querySelector('meta[name="application-build-date"]');if(buildMeta)buildMeta.setAttribute('content',buildDate);
     var fillDate=function(){var nodes=document.querySelectorAll('[data-app-build-date-label]');for(var i=0;i<nodes.length;i++)nodes[i].textContent='Сборка от '+buildRu+'.';};
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fillDate,false);else fillDate();
@@ -132,13 +132,16 @@
 <link href="./assets/css/theme-parity-typography-v6.0.0-beta6-hf4.css?v=v6.0.0-beta6-hotfix4" rel="stylesheet" data-ui-hotfix="theme-parity-typography"/>
 <link href="./assets/css/interface-simplification-v6.0.0-beta8.css?v=v6.0.0-beta8-interface-pass3" rel="stylesheet" data-ui-hotfix="interface-simplification"/>
 <link href="./assets/css/visual-grammar-v6.0.0-beta9.css?v=v6.0.0-beta9-visual-grammar-a" rel="stylesheet" data-ui-hotfix="visual-grammar-a"/>
+<link href="./assets/css/entry-first-v6.1.css?v=v6.1-entry-first-2026-10-06" rel="stylesheet" data-ui-hotfix="entry-first"/>
+<link href="./assets/css/archive-edition-2026-10-10.css?v=archive-edition-r4-profile-controls-2026-10-10" rel="stylesheet" data-ui-hotfix="archive-edition"/>
 </head>
 <body>
 <a class="skip-link" href="#needs_sex">Перейти к основным данным профиля</a>
 <a class="skip-link skip-link--second" href="#globalSearchSection">Перейти к поиску продуктов</a>
 <main class="container" id="mainContent">
 <header>
-<div class="title">Калькулятор рациона Сергея Веснина</div>
+<div class="title"><span class="archive-brandline">VESNINMED / NUTRIENT</span><span class="archive-title-text">Калькулятор рациона, индекса здорового питания и дневных норм</span></div>
+<p class="entry-first-subtitle" id="entryFirstSubtitle">Введите основные данные, соберите рацион из продуктов и получите подробный отчёт.</p>
 <div class="toolbar">
 <select aria-label="Профиль норм" id="normProfile">
 <option value="adult">Нормы: Взрослый</option>
@@ -171,6 +174,13 @@
 </div>
 </div>
 </header>
+<aside class="archive-edition" aria-label="Информация об архивной версии">
+  <div>
+    <span class="archive-edition__label">Предыдущая версия Nutrient</span>
+    <p class="archive-edition__copy">Сохранён прежний набор инструментов и возможность загрузки рациона.</p>
+  </div>
+  <span class="archive-edition__note">Сохранение и загрузка JSON доступны в «Итоговом рационе».</span>
+</aside>
 <dialog aria-labelledby="normRegionHelpTitle" class="norm-region-help-dialog" id="normRegionHelp">
 <div class="norm-region-help-dialog__head">
 <div>
@@ -241,7 +251,7 @@
 <button class="norm-region-help-close" type="button">Понятно</button>
 </div>
 </dialog>
-<nav aria-label="Основные шаги калькулятора" class="workflow-steps"><a href="#needsCompact"><span>1</span>Потребности</a><a href="#globalSearchSection"><span>2</span>Рацион</a><a href="#heiPanel"><span>3</span>HEI</a><a href="#totalsSection"><span>4</span>Нормы</a><a href="#dietAnalysisProfilePanel"><span>5</span>Профиль</a><a href="#globalActions"><span>6</span>Отчёт</a></nav><section class="card" id="needsCompact" style="margin-bottom:16px;">
+<nav aria-label="Разделы калькулятора" class="workflow-steps"><a href="#needsCompact"><span aria-hidden="true">1</span>Потребности</a><a href="#globalSearchSection"><span aria-hidden="true">2</span>Рацион</a><a href="#heiPanel"><span aria-hidden="true">3</span>Качество питания</a><a href="#totalsSection"><span aria-hidden="true">4</span>Дневные нормы</a><a href="#dietAnalysisProfilePanel"><span aria-hidden="true">5</span>Анализ</a><a href="#globalActions"><span aria-hidden="true">6</span>Отчёт</a></nav><section class="card" id="needsCompact" style="margin-bottom:16px;">
 <dialog aria-labelledby="needsHelpTitle" id="needsHelp">
 <div class="dialog-head" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
 <strong id="needsHelpTitle">Справка: Калькулятор потребностей</strong>
@@ -614,11 +624,12 @@
 </thead>
 <tbody id="rationBody"></tbody>
 </table>
+<p class="archive-json-hint" id="archiveJsonHint">Файл JSON позволяет сохранить рацион и позднее загрузить его в эту версию калькулятора.</p>
 <div class="toolbar" style="justify-content:flex-end; margin: 8px 0;">
 <button id="printRationBtn" title="Распечатать итоговый рацион">Печать</button>
 <button id="exportRationPdfBtn" title="Сохранить итоговый рацион как PDF">Сохранить PDF</button>
-<button class="secondary" id="loadRationJsonBtn" title="Загрузить сохранённый рацион из JSON" type="button">Загрузить JSON</button>
-<button aria-label="Сохранить итоговый рацион как JSON" id="exportRationJsonBtn" title="Сохранить итоговый рацион как JSON" type="button">Сохранить JSON</button>
+<button class="secondary" id="loadRationJsonBtn" title="Загрузить сохранённый рацион из JSON" aria-describedby="archiveJsonHint" type="button">Загрузить JSON</button>
+<button aria-label="Сохранить итоговый рацион как JSON" aria-describedby="archiveJsonHint" id="exportRationJsonBtn" title="Сохранить итоговый рацион как JSON" type="button">Сохранить JSON</button>
 <button class="danger" id="clearRationBtn" title="Удалить все позиции из Итогового рациона">Очистить рацион</button>
 </div>
 <div class="footer-note">Данные сохраняются локально в вашем браузере.</div>
@@ -1133,15 +1144,18 @@
 <section id="legal-note">
 <h3>Границы применения.</h3>
 <p>Данный инструмент является бета-версией для ориентировочного анализа фактического или планируемого рациона. Клиническая диагностика, врачебное решение и назначение лечения остаются за лечащим врачом и мультидисциплинарной командой. Результаты зависят от введённых данных; ошибки ввода или неверное толкование показателей могут привести к ошибочным выводам. Любые изменения терапии, включая нутритивную поддержку, энтеральное или парентеральное питание, а также изменение режима белка при ХБП, должны приниматься медицинскими специалистами. Ответственность за клинические решения лежит на медицинской организации и врачах. Материалы сайта подготовлены на основе открытых некоммерческих источников. Цитирование и копирование разрешены в некоммерческих целях.</p>
-<footer class="sv-authorship" aria-label="Авторство и дата сборки"><strong>Калькулятор рациона Сергея Веснина</strong><span>Разработка и реализация Веснина Сергея Вячеславовича. 2026 год.</span><span class="sv-build-date" data-app-build-date-label></span><span><a href="./privacy.html">Конфиденциальность</a> · <a href="./security.html">Безопасность</a></span></footer>
+<footer class="sv-authorship" aria-label="Авторство и дата сборки"><strong>Калькулятор рациона</strong><span>Разработка и реализация Веснина Сергея Вячеславовича. 2026 год.</span><span class="sv-build-date" data-app-build-date-label></span><span><a href="./privacy.html">Конфиденциальность</a> · <a href="./security.html">Безопасность</a></span></footer>
 </section>
 </main>
 <script defer src="./assets/runtime/runtime-manifest-v6.0.0-beta6.js?v=v6-needs-checkpoint-2026-09-11" data-runtime-manifest="v6.0.0-beta6-design-refinement"></script>
-<script defer src="./assets/js/00-runtime-selector-v6.0.0-beta6.js?v=v6.0.0-beta6-design-refinement" data-runtime-selector="manifest-driven"></script>
+<script defer src="./assets/data/products-supplemental.v20261023.js" data-nutrient-supplemental="reviewed"></script>
+<script defer src="./assets/data/products-perekrestok-reviewed.v20261023.js" data-nutrient-supplemental="usda-reviewed"></script>
+<script defer src="./assets/js/00-runtime-selector-v6.0.0-beta6.js?v=prostokvashino-20261023" data-runtime-selector="manifest-driven"></script>
 <script defer src="./assets/js/91-navigation-access-hotfix-v6.0.0-beta6-hf1.js?v=release1-navigation-reversibility-2026-09-26" data-ui-hotfix="navigation-access"></script>
 <script defer src="./assets/js/92-usability-recovery-v6.0.0-beta6-hf2.js?v=v6.0.0-beta6-hotfix2" data-ui-hotfix="usability-recovery"></script>
 <script defer src="./assets/js/93-quality-completion-v6.0.0-beta6-hf3.js?v=v6.0.0-beta6-hotfix3" data-ui-hotfix="quality-completion"></script>
 <script defer src="./assets/js/94-theme-parity-typography-v6.0.0-beta6-hf4.js?v=v6.0.0-beta6-hotfix4" data-ui-hotfix="theme-parity-typography"></script>
 <script defer src="./assets/js/96-interface-simplification-v6.0.0-beta8.js?v=v6.0.0-beta8-interface-pass1" data-ui-hotfix="interface-simplification"></script>
+<script defer src="./assets/js/97-entry-first-v6.1.js?v=v6.1-entry-first-2026-10-06" data-ui-hotfix="entry-first"></script>
 </body>
 </html>

@@ -1,0 +1,138 @@
+{
+  "status": "PROPOSED_MODEL_NOT_PUBLISHED_REQUIRES_REVIEW",
+  "reviewed_at": "2026-10-24",
+  "key": "edamame_frozen_raw_mixed_sr_168410",
+  "name_ru": "Эдамаме замороженные, до приготовления (справочная модель)",
+  "name": "Edamame, frozen, unprepared, USDA with disclosed completion",
+  "state": "frozen",
+  "serving_basis": "100 g edible product (unprepared)",
+  "retailer_sku": "4372351",
+  "retailer_url": "https://www.perekrestok.ru/cat/59/p/boby-edamame-zamorozennye-market-collection-300g-4372351",
+  "retailer_label_per_100g": {
+    "kcal": 128.7,
+    "protein": 12,
+    "fat": 4.3,
+    "carbs": 10.5
+  },
+  "primary_source": {
+    "id": "USDA_FDC_SR:168410",
+    "url": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/168410/nutrients",
+    "description": "Edamame, frozen, unprepared",
+    "source_release": "SR Legacy 04/2018",
+    "transcription_crosscheck_url": "https://www.myfoodanalysis.com/food/edamame-frozen-168410",
+    "additional_crosscheck_url": "https://getfoodfacts.com/food/edamame-frozen-unprepared-168410"
+  },
+  "completion_source": {
+    "id": "USDA_FDC_SR:168411",
+    "url": "https://fdc.nal.usda.gov/fdc-app.html#/food-details/168411/nutrients",
+    "description": "Edamame, frozen, prepared",
+    "transcription_crosscheck_url": "https://www.completefoods.co/diy/ingredients/edamame-frozen-prepared",
+    "fields": {
+      "selenium_ug": 0.8,
+      "vitamin_a_mcg": 15
+    }
+  },
+  "nutrients_per_100g": {
+    "kcal": 109,
+    "protein_per_100g": 11.2,
+    "fat_per_100g": 4.73,
+    "carbs_per_100g": 7.61,
+    "sugar_per_100g": 2.48,
+    "fiber_per_100g": 4.8,
+    "sfa": 0.56396,
+    "unsat": 3.12726,
+    "added_sugar": 0,
+    "salt": 0.01524,
+    "calcium_mg": 60,
+    "iron_mg": 2.11,
+    "magnesium_mg": 61,
+    "phosphorus_mg": 161,
+    "potassium_mg": 482,
+    "sodium_mg": 6,
+    "zinc_mg": 1.32,
+    "copper_mg": 0.324,
+    "manganese_mg": 1.01,
+    "selenium_ug": 0.8,
+    "vitamin_a_mcg": 15,
+    "vitamin_e_mg": 0.72,
+    "vitamin_d_mcg": 0,
+    "vitamin_c_mg": 9.7,
+    "vitamin_b1_mg": 0.15,
+    "vitamin_b2_mg": 0.265,
+    "vitamin_b3_mg": 0.925,
+    "vitamin_b5_mg": 0.535,
+    "vitamin_b6_mg": 0.135,
+    "vitamin_b9_mcg": 303,
+    "vitamin_b12_mcg": 0,
+    "choline_mg": 56,
+    "vitamin_k_mcg": 31.4
+  },
+  "nutrient_provenance": {
+    "BORROWED": [
+      "kcal",
+      "protein_per_100g",
+      "fat_per_100g",
+      "carbs_per_100g",
+      "sugar_per_100g",
+      "fiber_per_100g",
+      "calcium_mg",
+      "iron_mg",
+      "magnesium_mg",
+      "phosphorus_mg",
+      "potassium_mg",
+      "sodium_mg",
+      "zinc_mg",
+      "copper_mg",
+      "manganese_mg",
+      "vitamin_e_mg",
+      "vitamin_c_mg",
+      "vitamin_b1_mg",
+      "vitamin_b2_mg",
+      "vitamin_b3_mg",
+      "vitamin_b5_mg",
+      "vitamin_b6_mg",
+      "vitamin_b9_mcg",
+      "choline_mg",
+      "vitamin_k_mcg",
+      "selenium_ug",
+      "vitamin_a_mcg"
+    ],
+    "IMPUTED": [
+      "sfa",
+      "unsat"
+    ],
+    "CALCULATED": [
+      "salt"
+    ],
+    "ASSUMED_ZERO": [
+      "added_sugar",
+      "vitamin_d_mcg",
+      "vitamin_b12_mcg"
+    ]
+  },
+  "field_method_details": {
+    "selenium_ug": "0.8 µg from USDA SR 168411, prepared product. Borrowed proxy, not measured for unprepared or retail SKU.",
+    "vitamin_a_mcg": "15 µg RAE from USDA SR 168411, prepared product; proxied across preparation state.",
+    "sfa": "0.62 g SFA per 100g donor, multiplied by 4.73/5.20 (total fat ratio); imputed.",
+    "unsat": "(1.282 g MUFA + 2.156 g PUFA) × (4.73/5.20); imputed.",
+    "salt": "6 mg sodium × 2.54/1000, derived from unprepared USDA sodium.",
+    "added_sugar": "Assumed 0 for plain unsweetened frozen edamame; not declared in USDA SR record.",
+    "vitamin_b12_mcg": "Assumed 0 for plain unfortified soybeans; not confirmed by primary USDA record.",
+    "vitamin_d_mcg": "Assumed 0 for plain unfortified soybeans; not confirmed by primary USDA record."
+  },
+  "model_assumptions": {
+    "fatty_acid_scaling": "The prepared and unprepared USDA records are different states of the same food. Relative fatty acid fractions are provisionally assumed comparable.",
+    "market_label_mismatch": "Retail 128.7 kcal, P12/F4.3/C10.5 versus reference 109 kcal, P11.2/F4.73/C7.61. This is NOT an exact formulation-level match.",
+    "hei": "No HEI/FPED equivalence included: require independent review before analytical use.",
+    "zero_policy": "Assumed zeros are explicitly marked and must not be described as measured absence.",
+    "crosscheck_warning": "A third-party page titled 'Edamame, frozen, unprepared' reports different macronutrients (10.25g protein, 8.58g carbohydrate); its record mapping is not verified. The FDC 168410 profile here is corroborated by sources that agree on 11.2g protein, 7.61g carbohydrate and 109kcal."
+  },
+  "review_flags": [
+    "PROXY_USES_PREPARED_STATE_FOR_FROZEN_UNPREPARED_FOOD",
+    "FATTY_ACIDS_SCALED_FROM_PROXY",
+    "THREE_ASSUMED_ZEROS",
+    "RETAIL_MACROS_DIFFER_FROM_USDA",
+    "HEI_EQUIVALENTS_NOT_CALIBRATED",
+    "NOT_READY_FOR_CANONICAL_PRODUCT_DATABASE"
+  ]
+}
