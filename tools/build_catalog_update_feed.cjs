@@ -92,7 +92,15 @@ function build() {
     updater_contract: 'fetch-manifest-then-verify-overlay-before-atomic-replace',
   };
   fs.mkdirSync(path.join(FEED_DIR, 'revisions'), { recursive: true });
-  fs.writeFileSync(path.join(FEED_DIR, file), bytes);
+  const revisionPath = path.join(FEED_DIR, file);
+  if (fs.existsSync(revisionPath)) {
+    // A previously released revision is immutable. A changed product list
+    // must receive a NEW REVISION identifier and file, never mutate the old.
+    assert(fs.readFileSync(revisionPath).equals(bytes),
+      'immutable catalog revision changed; increment REVISION before generating');
+  } else {
+    fs.writeFileSync(revisionPath, bytes);
+  }
   fs.writeFileSync(path.join(FEED_DIR, 'manifest.json'), json(manifest));
   console.log('Prepared', file, payload.expected_merged_count, manifest.overlay_sha256);
   return { payload, manifest };
