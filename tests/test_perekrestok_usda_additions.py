@@ -64,6 +64,7 @@ class PerekrestokUSDAAdditionsTests(unittest.TestCase):
         self.assertEqual("prepared", original["state"])
         correction = self.snapshot["existing_record_correction"]
         self.assertEqual(original["source_id"], correction["expected_source_id"])
+        self.assertEqual(original["fdc_description"], correction["expected_fdc_description"])
         self.assertEqual("Черешня, свежая (сырая)", correction["name_ru"])
         self.assertEqual("raw", correction["state"])
         self.assertIn("вишня", next(p for p in self.products if p["fdc_id"] == 173954)["search_aliases"])
@@ -116,6 +117,8 @@ class PerekrestokUSDAAdditionsTests(unittest.TestCase):
             src = path.read_text(encoding="utf-8")
             self.assertIn("__NUTRIENT_PRODUCT_CORRECTIONS__", src)
             self.assertIn("__NUTRIENT_SUPPLEMENTAL_EXPECTED_COUNT__", src)
+            self.assertIn("found.fdc_description !== change.expected_fdc_description", src)
+            self.assertIn("if (change.state) found.state = change.state", src)
             subprocess.run(["node", "--check", str(path)], check=True, capture_output=True)
 
 
