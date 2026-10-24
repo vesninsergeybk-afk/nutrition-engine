@@ -42,8 +42,14 @@ class PerekrestokAuditTests(unittest.TestCase):
         self.assertEqual(self.by_sku["4372351"]["status"], "MISSING_VARIANT")
 
     def test_missing_new_foods(self):
-        for sku in ("5013", "44173", "4192696", "4192697"):
+        for sku in ("44173", "4192696", "4192697"):
             self.assertEqual(self.by_sku[sku]["status"], "MISSING_FOOD")
+
+    def test_cherry_is_misnamed_existing_usda_profile(self):
+        cherry = self.by_sku["5013"]
+        self.assertEqual(cherry["status"], "ALREADY_REPRESENTED_MISNAMED")
+        self.assertIn("cherry", cherry["matching_baseline"])
+        self.assertEqual("EXISTING_PROFILE_NEEDS_RENAME", cherry["import_eligibility"])
 
     def test_source_bad_records_are_blocked(self):
         artichoke = self.by_sku["4388857"]
