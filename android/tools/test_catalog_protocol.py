@@ -26,22 +26,47 @@ class CatalogProtocolTests(unittest.TestCase):
         self.assertEqual(sha256(self.gzip_bytes), self.manifest["gzipSha256"])
         self.assertEqual(len(self.products), self.manifest["productCount"])
 
-    def test_reviewed_catalog_contains_all_1136_foods(self):
-        self.assertEqual(len(self.products), 1136)
-        self.assertEqual(self.manifest["origin"]["supplementalCount"], 31)
+    def test_reviewed_catalog_contains_all_1153_foods(self):
+        self.assertEqual(len(self.products), 1153)
+        self.assertEqual(self.manifest["origin"]["supplementalCount"], 48)
         cherry = next(p for p in self.products if p["key"] == "cherry")
         self.assertEqual(cherry["source_id"], "USDA_FDC_SR:171719")
         self.assertEqual(cherry["name_ru"], "Черешня, свежая (сырая)")
-        self.assertEqual(len({p["key"] for p in self.products}), 1136)
+        self.assertEqual(len({p["key"] for p in self.products}), 1153)
 
     def test_dairy_products_are_retail_label_plus_explicitly_modelled_micros(self):
         records = [p for p in self.products if p.get("source_id", "").startswith("PEREKRESTOK_SKU:")]
-        self.assertEqual(len(records), 25)
+        self.assertEqual(len(records), 42)
         for p in records:
             self.assertEqual(len(set(sum(p["nutrient_provenance_v1_3"].values(), []))), 33)
             self.assertEqual(p["data_quality_v1_3"]["confidence_tier"], "LOW")
             self.assertEqual(len(p["nutrient_provenance_v1_3"]["LABEL"]), 4)
             self.assertEqual(p.get("barcode"), None)
+
+    def test_new_dairy_fat_variants_and_mislabelled_legacy_records(self):
+        records = {p["key"]: p for p in self.products}
+        expected = {
+            "pervyy_vkus_kefir_0_pct_500ml": 0.1,
+            "agrokompleks_kefir_1_5_pct_400g": 1.5,
+            "molochnyy_znak_kefir_2_5_pct_900g": 2.5,
+            "vkusnoteevo_kefir_3_2_pct_900g": 3.2,
+            "gorodetskiy_bifido_kefir_3_5_pct_400g": 3.5,
+            "molochnyy_znak_curd_0_5_pct_180g": 0.5,
+            "prost_curd_1_8_pct_180g": 1.8,
+            "vyatushka_curd_3_pct_200g": 3,
+            "svetaevo_soft_curd_0_5_pct_150g": 0.5,
+            "parmalat_cream_11_pct_200g": 11,
+            "sheksninskiy_cream_15_pct_470g": 15,
+        }
+        for key, fat in expected.items():
+            self.assertAlmostEqual(records[key]["fat_per_100g"], fat)
+        for key in ("kefir_3_2_pct", "curd_5_pct", "curd_9_pct"):
+            self.assertIn("справочный состав", records[key]["name_ru"])
+        for key in ("alexandrov_glazed_curd_vanilla_26_pct_50g",
+                    "vkusnoteevo_sweet_curd_mass_vanilla_20_pct_180g"):
+            row = records[key]
+            self.assertGreater(row["added_sugar"], 0)
+            self.assertIn("added_sugar", row["nutrient_provenance_v1_3"]["CALCULATED"])
 
     def test_validation_rejects_missing_nutrient(self):
         row = copy.deepcopy(self.products[0])
