@@ -42,7 +42,7 @@ manifest = json.loads((BUNDLE / "assets/nutrient-catalog.json").read_text(encodi
 assert manifest["format"] == "nutrient-catalog-v1"
 assert manifest["schemaVersion"] == 1
 assert manifest["minAndroidVersionCode"] <= 2
-assert manifest["productCount"] == 1164
+assert manifest["productCount"] == 1173
 assert "android/catalog/" not in ru, "Browser must never fetch update files directly"
 
 # The Android food supplement must be present in the actual offline APK
@@ -50,7 +50,7 @@ assert "android/catalog/" not in ru, "Browser must never fetch update files dire
 catalog = json.loads(
     (BUNDLE / match.group(1).lstrip("/") / "products.json").read_text(encoding="utf-8")
 )
-assert len(catalog) == 1164, "Expected pinned 1105-food base plus 59 reviewed additions"
+assert len(catalog) == 1173, "Expected pinned 1105-food base plus 68 reviewed additions"
 tvorog = [p for p in catalog if p.get("key") == "tvorog_prostokvashino_2pct_200g"]
 assert len(tvorog) == 1, "Prostokvashino 2% not found in packed catalog"
 p = tvorog[0]
@@ -62,4 +62,4 @@ assert round(p["kcal"] * p["package_size_g"] / 100) == 198
 assert p["dairy_cup_eq_per_100g"] == round(p["calcium_mg"] / 302, 4)
 assert len(set(sum(p["nutrient_provenance_v1_3"].values(), []))) == 33
 assert p["data_quality_v1_3"]["source_kind"] == "MIXED_SOURCE"
-print("Offline-calculation gate PASS — 1164 foods, local engine and recognition, native-only optional catalog updates")
+print("Offline-calculation gate PASS — 1173 foods, local engine and recognition, native-only optional catalog updates")
