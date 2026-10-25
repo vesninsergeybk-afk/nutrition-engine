@@ -26,17 +26,17 @@ class CatalogProtocolTests(unittest.TestCase):
         self.assertEqual(sha256(self.gzip_bytes), self.manifest["gzipSha256"])
         self.assertEqual(len(self.products), self.manifest["productCount"])
 
-    def test_reviewed_catalog_contains_all_1164_foods(self):
-        self.assertEqual(len(self.products), 1164)
-        self.assertEqual(self.manifest["origin"]["supplementalCount"], 59)
+    def test_reviewed_catalog_contains_all_1173_foods(self):
+        self.assertEqual(len(self.products), 1173)
+        self.assertEqual(self.manifest["origin"]["supplementalCount"], 68)
         cherry = next(p for p in self.products if p["key"] == "cherry")
         self.assertEqual(cherry["source_id"], "USDA_FDC_SR:171719")
         self.assertEqual(cherry["name_ru"], "Черешня, свежая (сырая)")
-        self.assertEqual(len({p["key"] for p in self.products}), 1164)
+        self.assertEqual(len({p["key"] for p in self.products}), 1173)
 
     def test_dairy_products_are_retail_label_plus_explicitly_modelled_micros(self):
         records = [p for p in self.products if p.get("source_id", "").startswith("PEREKRESTOK_SKU:")]
-        self.assertEqual(len(records), 53)
+        self.assertEqual(len(records), 62)
         for p in records:
             self.assertEqual(len(set(sum(p["nutrient_provenance_v1_3"].values(), []))), 33)
             self.assertEqual(p["data_quality_v1_3"]["confidence_tier"], "LOW")
@@ -67,6 +67,15 @@ class CatalogProtocolTests(unittest.TestCase):
             "svitlogorye_glazed_curd_vanilla_16_pct_40g": 20,
             "asenevskaya_ferma_ayran_2_pct_330g": 2,
             "pestravka_ryazhenka_strawberry_2_2_pct_270g": 2.2,
+            "sernurskiy_curd_4_pct_100g": 4,
+            "lactica_soft_curd_lowfat_0_pct_120g": 0.3,
+            "kungurskiy_soft_curd_1_pct_300g": 1,
+            "domik_soft_curd_high_protein_2_pct_150g": 2,
+            "green_line_soft_curd_4_5_pct_120g": 4.5,
+            "vologzhanka_sour_cream_18_pct_240g": 18,
+            "poleznye_produkty_greek_yogurt_0_pct_165g": 0,
+            "molkom_raspberry_yogurt_0_pct_450g": 0.1,
+            "sernurskiy_goat_curd_4_pct_100g": 4,
         }
         for key, fat in expected.items():
             self.assertAlmostEqual(records[key]["fat_per_100g"], fat)
