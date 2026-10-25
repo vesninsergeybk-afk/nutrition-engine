@@ -91,6 +91,9 @@ def assemble_catalog() -> tuple[bytes, dict]:
         "cream_20_pct": (19.1, "Сливки, справочный состав: 19,1 г жира/100 г"),
         "sour_cream_15_pct": (14.1, "Сметана, справочный состав: 14,1 г жира/100 г"),
         "sour_cream_20_pct": (18, "Сметана, справочный состав: 18 г жира/100 г"),
+        "milk_0_5_pct": (0.08, "Молоко обезжиренное, справочный состав: 0,08 г жира/100 г"),
+        "milk_1_5_pct": (0.97, "Молоко, справочный состав: 0,97 г жира/100 г"),
+        "ryazhenka_3_2_pct": (3.457, "Ряженка, расчётный состав: 3,46 г жира/100 г"),
     }
     for key, (fat, title) in corrections.items():
         record = next((item for item in products if item.get("key") == key), None)

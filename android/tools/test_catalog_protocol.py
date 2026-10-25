@@ -72,8 +72,9 @@ class CatalogProtocolTests(unittest.TestCase):
             self.assertAlmostEqual(records[key]["fat_per_100g"], fat)
         for key in ("kefir_3_2_pct", "curd_5_pct", "curd_9_pct",
                     "cream_10_pct", "cream_20_pct", "sour_cream_15_pct",
-                    "sour_cream_20_pct"):
+                    "sour_cream_20_pct", "milk_0_5_pct", "milk_1_5_pct"):
             self.assertIn("справочный состав", records[key]["name_ru"])
+        self.assertIn("расчётный состав", records["ryazhenka_3_2_pct"]["name_ru"])
         self.assertEqual(records["krestyanskoe_butter_72_5_pct_180g"]["category"], "Oils & Fats")
         for key in ("alexandrov_glazed_curd_vanilla_26_pct_50g",
                     "vkusnoteevo_sweet_curd_mass_vanilla_20_pct_180g",
