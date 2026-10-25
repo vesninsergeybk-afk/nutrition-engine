@@ -26,11 +26,13 @@ def base_catalog():
 
 def make_profile(s, ref):
     p = deepcopy(ref)
+    verified_at = s.get("verified_at", "2026-10-24")
+    group = "масла и жиры" if s.get("category") == "Oils & Fats" else "молочные продукты"
     p.update(key=s["key"], name=s["name_ru"],
              name_ru=s["name_ru"] + " (микронутриенты — оценка)",
-             search_aliases=[s["name_ru"]], tags=["молочные продукты",
+             search_aliases=[s["name_ru"]], tags=[group,
              "КБЖУ этикетки", "расчётный микронутриентный профиль"],
-             category="Dairy", state="raw")
+             category=s.get("category", "Dairy"), state="raw")
     # A reference food's barcode or portion size never identifies this SKU.
     p.pop("barcode", None)
     p.pop("package_size_g", None)
@@ -77,7 +79,7 @@ def make_profile(s, ref):
     p["source_retailer_sku"] = s["sku"]
     p["reference_profile_key"] = s["model_key"]
     p["source_dataset"] = "RETAIL_KBJU_AND_GENERIC_DAIRY_PROXY"
-    p["source_version"] = "2026-10-24"
+    p["source_version"] = verified_at
     p["source_exactness"] = "LABEL_MACROS_MODELLED_MICROS"
     p["nutrition_verification_status"] = "RETAIL_LABEL_MACROS_ONLY"
     p["nutrient_completeness_status"] = "COMPLETE_NUMERIC_WITH_MODEL_UNCERTAINTY"
@@ -90,7 +92,7 @@ def make_profile(s, ref):
         p.pop(f, None)
     p["hei_equiv_status"] = "PROXY_BORROWED_APPROX"
     p["hei_equiv_confidence"] = "LOW"
-    p["verified_at"] = "2026-10-24"
+    p["verified_at"] = verified_at
     p["data_quality_v1_3"] = dict(
         schema_version=1, policy_version="v5.3.210-p1.3",
         source_registry_id="USDA_FDC", source_kind="MIXED_SOURCE",
@@ -99,7 +101,7 @@ def make_profile(s, ref):
         source_record_id=s["sku"], food_state="packaged",
         confidence_tier="LOW", confidence_score=0.49,
         review_status="CONDITIONALLY_ACCEPTED",
-        reviewed_at="2026-10-24", review_due_at="2027-01-24",
+        reviewed_at=verified_at, review_due_at=("2027-01-25" if verified_at == "2026-10-25" else "2027-01-24"),
         issues=["BRAND_MICRONUTRIENTS_NOT_MEASURED",
                 "MODELED_DAIRY_VITAMINS_AND_FATTY_ACIDS"]
                 + (["ESTIMATED_ADDED_SUGAR_FROM_REFERENCE"]
