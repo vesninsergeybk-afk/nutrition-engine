@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 from copy import deepcopy
+from datetime import date
+from calendar import monthrange
 import gzip
 import json
 import re
@@ -59,6 +61,8 @@ def make_profile(s, ref):
         p["added_sugars_tsp_eq_per_100g"] = p["added_sugars_tsp_per_100g"]
     else:
         p["added_sugar"] = 0
+        p["added_sugars_tsp_per_100g"] = 0
+        p["added_sugars_tsp_eq_per_100g"] = 0
     for f in FAT_VITAMINS:
         p[f] = round(ref[f] * min(ratio, 2), 5)
     p["salt"] = round(p["sodium_mg"] * 2.54 / 1000, 5)
@@ -93,6 +97,11 @@ def make_profile(s, ref):
     p["hei_equiv_status"] = "PROXY_BORROWED_APPROX"
     p["hei_equiv_confidence"] = "LOW"
     p["verified_at"] = verified_at
+    reviewed = date.fromisoformat(verified_at)
+    due_month = ((reviewed.month + 2) % 12) + 1
+    due_year = reviewed.year + (reviewed.month + 2) // 12
+    review_due = date(due_year, due_month,
+                      min(reviewed.day, monthrange(due_year, due_month)[1])).isoformat()
     p["data_quality_v1_3"] = dict(
         schema_version=1, policy_version="v5.3.210-p1.3",
         source_registry_id="USDA_FDC", source_kind="MIXED_SOURCE",
@@ -101,7 +110,7 @@ def make_profile(s, ref):
         source_record_id=s["sku"], food_state="packaged",
         confidence_tier="LOW", confidence_score=0.49,
         review_status="CONDITIONALLY_ACCEPTED",
-        reviewed_at=verified_at, review_due_at=("2027-01-25" if verified_at == "2026-10-25" else "2027-01-24"),
+        reviewed_at=verified_at, review_due_at=review_due,
         issues=["BRAND_MICRONUTRIENTS_NOT_MEASURED",
                 "MODELED_DAIRY_VITAMINS_AND_FATTY_ACIDS"]
                 + (["ESTIMATED_ADDED_SUGAR_FROM_REFERENCE"]
