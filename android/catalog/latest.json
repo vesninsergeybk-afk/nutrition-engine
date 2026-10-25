@@ -2,9 +2,9 @@
   "format": "nutrient-catalog-v1",
   "schemaVersion": 1,
   "minAndroidVersionCode": 2,
-  "version": "4b1565d5304c34f948218be1505a5a9939bc761f25e825d02817e50177965a90",
+  "version": "f14371e83136f562971f78f5b88008cea52ff25421ba6e1ccb464425707380d1",
   "productCount": 1164,
-  "jsonSha256": "4b1565d5304c34f948218be1505a5a9939bc761f25e825d02817e50177965a90",
+  "jsonSha256": "f14371e83136f562971f78f5b88008cea52ff25421ba6e1ccb464425707380d1",
   "origin": {
     "sourceCommit": "4e8f51d28acc7c2c842dd859e03c3aa5e8eb22bf",
     "runtime": "5ae45ce9ea3d759a",
@@ -12,6 +12,6 @@
     "baseCount": 1105,
     "supplementalCount": 59
   },
-  "gzipSha256": "1664820b588d46e9329027297daf81404b6a6dee2f248b5c07f7cf24a99280ed",
-  "archive": "catalog-1664820b588d46e9329027297daf81404b6a6dee2f248b5c07f7cf24a99280ed.json.gz"
+  "gzipSha256": "f1502fe8094d698c09860b8e16cfb1d902d84ef150b33e0ecf94f9e749767838",
+  "archive": "catalog-f1502fe8094d698c09860b8e16cfb1d902d84ef150b33e0ecf94f9e749767838.json.gz"
 }
