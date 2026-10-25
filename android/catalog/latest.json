@@ -2,16 +2,16 @@
   "format": "nutrient-catalog-v1",
   "schemaVersion": 1,
   "minAndroidVersionCode": 2,
-  "version": "46afbeb16cec0a81d870af264c9b9e677bb0414c27c08e2d91e2d063d201d733",
-  "productCount": 1136,
-  "jsonSha256": "46afbeb16cec0a81d870af264c9b9e677bb0414c27c08e2d91e2d063d201d733",
+  "version": "adc39433068bb6465b57a9b2cbd4619c13d8ea47f92a78f0a1a61ae1f5a96fbc",
+  "productCount": 1173,
+  "jsonSha256": "adc39433068bb6465b57a9b2cbd4619c13d8ea47f92a78f0a1a61ae1f5a96fbc",
   "origin": {
     "sourceCommit": "4e8f51d28acc7c2c842dd859e03c3aa5e8eb22bf",
     "runtime": "5ae45ce9ea3d759a",
     "baseSha256": "604504171763ce2b2d5f44ac88c872b4861eeab0afe4c0c794768d2f8e2c079d",
     "baseCount": 1105,
-    "supplementalCount": 31
+    "supplementalCount": 68
   },
-  "gzipSha256": "16ae85d1d5ccc8e5188e7a7fdf700f8169ec9186a4744a0a966a36567681b2ae",
-  "archive": "catalog-16ae85d1d5ccc8e5188e7a7fdf700f8169ec9186a4744a0a966a36567681b2ae.json.gz"
+  "gzipSha256": "5a213fb56dec8cf35c520ec734c87a4d557adfa0751925d8754c6b8b0c10f5e0",
+  "archive": "catalog-5a213fb56dec8cf35c520ec734c87a4d557adfa0751925d8754c6b8b0c10f5e0.json.gz"
 }
