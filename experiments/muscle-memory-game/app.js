@@ -202,6 +202,7 @@ const motionPane = document.querySelector("#motion-pane");
 const motionStateEl = document.querySelector("#motion-state");
 const viewerWrap = document.querySelector(".viewer-wrap");
 const panelEl = document.querySelector(".panel");
+const stageEl = document.querySelector(".stage");
 const questionCardEl = document.querySelector(".question-card");
 const loadingEl = document.querySelector("#loading");
 const questionLabelEl = document.querySelector("#question-label");
@@ -268,6 +269,7 @@ const displayPanelClose = document.querySelector("#display-panel-close");
 const layerDepthStatus = document.querySelector("#layer-depth-status");
 const displayLayerActions = document.querySelector("#display-layer-actions");
 const structureReferenceEl = document.querySelector("#structure-reference");
+const mobileReferenceCloseButton = document.querySelector("#mobile-reference-close");
 const structureReferenceHeading = document.querySelector("#structure-reference-heading");
 const structureReferenceLatin = document.querySelector("#structure-reference-latin");
 const structureReferenceRegion = document.querySelector("#structure-reference-region");
@@ -340,6 +342,7 @@ const quizMuscleActionsName = document.querySelector("#quiz-muscle-actions-name"
 const quizMuscleSelectButton = document.querySelector("#quiz-muscle-select");
 const quizMuscleHideButton = document.querySelector("#quiz-muscle-hide");
 const mobileMuscleCard = document.querySelector("#mobile-muscle-card");
+const mobileReferenceOpenButton = document.querySelector("#mobile-reference-open");
 const atlasRelationsRoot = document.querySelector("#atlas-relations");
 const atlasContextLayers = document.querySelector("#atlas-context-layers");
 const atlasContextButtons = [...document.querySelectorAll("[data-context-layer]")];
@@ -355,6 +358,8 @@ let ghostMuscleOpacity = 0.06;
 const mobileMuscleCardCopy = document.querySelector("#mobile-muscle-card-copy");
 const mobileMuscleKind = document.querySelector("#mobile-muscle-kind");
 const mobileMuscleName = document.querySelector("#mobile-muscle-name");
+const mobileMuscleLatin = document.querySelector("#mobile-muscle-latin");
+const mobileMuscleSummary = document.querySelector("#mobile-muscle-summary");
 const mobileHideMuscleButton = document.querySelector("#mobile-hide-muscle");
 const mobileIsolateMuscleButton = document.querySelector("#mobile-isolate-muscle");
 const mobileIsolateRegionButton = document.querySelector("#mobile-isolate-region");
@@ -506,6 +511,7 @@ let pendingNavigationSid = null;
 let pendingQuizMuscleAction = null;
 const quizManualHiddenStack = [];
 let sessionSummaryShown = false;
+let mobileReferenceExpanded = false;
 let examTimerId = null;
 let examDeadline = 0;
 let availableTargets = [];
@@ -1613,13 +1619,18 @@ function renderSourceOnlyMotionState(selectedName, selectedUnits = []) {
 }
 
 function syncQuestionCardPlacement() {
-  // The anatomy canvas stays unobstructed on every mobile workspace, including
-  // an active training session. The task card belongs below the model in the
-  // ordinary panel; only the small contextual muscle action bubble may appear
-  // temporarily over the canvas after a deliberate tap.
-  if (questionCardEl.parentElement !== panelEl) {
+  // During an active mobile session, keep the question and answer actions
+  // directly beneath the model. Both surfaces remain independently usable.
+  const dockInStage =
+    mobileTaskMedia.matches &&
+    appMode === "quiz" &&
+    document.body.classList.contains("session-active");
+  if (dockInStage) {
+    if (questionCardEl.parentElement !== stageEl) stageEl.append(questionCardEl);
+  } else if (questionCardEl.parentElement !== panelEl) {
     panelEl.prepend(questionCardEl);
   }
+  document.body.classList.toggle("training-layout", dockInStage);
   document.body.classList.remove("task-docked");
 }
 let isolated = false;
@@ -3837,6 +3848,23 @@ function renderMobileContextTrail() {
   });
 }
 
+function setMobileReferenceExpanded(open, { restoreFocus = false } = {}) {
+  const canExpand =
+    mobileTaskMedia.matches &&
+    appMode === "explore" &&
+    selectedExploreSid != null &&
+    !structureReferenceEl.hidden;
+  mobileReferenceExpanded = Boolean(open && canExpand);
+  document.body.classList.toggle("mobile-reference-open", mobileReferenceExpanded);
+  mobileReferenceOpenButton?.setAttribute("aria-expanded", String(mobileReferenceExpanded));
+  if (mobileReferenceCloseButton) mobileReferenceCloseButton.hidden = !mobileReferenceExpanded;
+  if (mobileReferenceExpanded) {
+    mobileReferenceCloseButton?.focus({ preventScroll: true });
+  } else if (restoreFocus && !mobileReferenceOpenButton?.hidden) {
+    mobileReferenceOpenButton.focus({ preventScroll: true });
+  }
+}
+
 function syncMobileMuscleCard() {
   if (!mobileMuscleCard) return;
   const sid = selectedExploreSid;
@@ -3844,13 +3872,19 @@ function syncMobileMuscleCard() {
   const hasBone = appMode === "explore" && selectedBoneId != null && boneNames[selectedBoneId];
   const hasReference = appMode === "explore" && selectedReference != null;
   const hasSelection = hasMuscle || hasBone || hasReference;
+  document.body.classList.toggle("mobile-muscle-selected", Boolean(hasMuscle && mobileTaskMedia.matches));
   const hasContext = appMode === "explore" && (mobileIsolationStack.length > 0 || atlasViewHistory.length > 0);
   if (!(hasSelection || hasContext)) {
+    if (mobileReferenceExpanded) setMobileReferenceExpanded(false);
     setSurfaceVisible(mobileMuscleCard, false);
     return;
   }
 
   mobileMuscleCardCopy.hidden = !hasSelection;
+  mobileMuscleLatin.hidden = true;
+  mobileMuscleSummary.hidden = true;
+  if (mobileReferenceOpenButton) mobileReferenceOpenButton.hidden = !hasMuscle;
+  if (!hasMuscle && mobileReferenceExpanded) setMobileReferenceExpanded(false);
   mobileHideMuscleButton.hidden = !hasSelection;
   mobileFocusStructure.hidden = !(hasBone || hasReference);
   mobileIsolateStructure.hidden = !(hasBone || hasReference);
@@ -3879,6 +3913,11 @@ function syncMobileMuscleCard() {
     mobileMuscleKind.textContent =
       reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
     mobileMuscleName.textContent = displayStructureName(sid);
+    const firstAction = reference?.actionsRu?.find((action) => typeof action === "string" && action.trim()) || "";
+    mobileMuscleLatin.textContent = reference?.latin || "";
+    mobileMuscleLatin.hidden = !mobileMuscleLatin.textContent;
+    mobileMuscleSummary.textContent = firstAction;
+    mobileMuscleSummary.hidden = !firstAction;
     mobileHideMuscleButton.disabled = structureVisibility[sid] === false;
     mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
   }
@@ -9626,6 +9665,7 @@ function setMode(mode) {
   // Primary modes are top-level navigation. The display drawer closes when
   // switching workspace so the next task starts from a clear model view.
   setDisplayPanelOpen(false);
+  if (mobileReferenceExpanded) setMobileReferenceExpanded(false);
 
   const previousMode = appMode;
   const preservedSid =
@@ -12249,6 +12289,10 @@ displayPanelToggle?.addEventListener("click", () => {
 });
 displayPanelClose?.addEventListener("click", () => setDisplayPanelOpen(false));
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && mobileReferenceExpanded) {
+    setMobileReferenceExpanded(false, { restoreFocus: true });
+    return;
+  }
   if (event.key === "Escape" && displayPanelToggle.getAttribute("aria-expanded") === "true") {
     setDisplayPanelOpen(false);
   }
@@ -12555,6 +12599,9 @@ function restoreMobileIsolationRoot() {
 }
 
 
+mobileReferenceOpenButton?.addEventListener("click", () => setMobileReferenceExpanded(true));
+mobileReferenceCloseButton?.addEventListener("click", () => setMobileReferenceExpanded(false, { restoreFocus: true }));
+
 mobileHideMuscleButton?.addEventListener("click", () => {
   hideSelectedStructure();
 });
@@ -12677,6 +12724,7 @@ showAllButton.addEventListener("click", () => {
 });
 
 mobileTaskMedia.addEventListener?.("change", () => {
+  if (mobileReferenceExpanded) setMobileReferenceExpanded(false);
   syncQuestionCardPlacement();
   syncMotionStatePlacement();
 });

@@ -38,6 +38,25 @@ const staticMotionIds = new Set(["motion-angle", "motion-angle-value", "motion-p
 checkDom(app, index, "main", motionDisabled ? staticMotionIds : new Set());
 checkDom(qualityApp, qualityHtml, "quality-lab");
 
+const productRefresh = read("product-refresh.css");
+for (const requiredId of ["mobile-reference-open", "mobile-reference-close", "mobile-muscle-latin", "mobile-muscle-summary"]) {
+  if (!htmlIds(index).has(requiredId)) errors.push("mobile reference: missing #" + requiredId);
+}
+if (!index.includes('href="./product-refresh.css"') ||
+    !productRefresh.includes("body.mobile-reference-open") ||
+    !productRefresh.includes("body.training-layout")) {
+  errors.push("mobile product refresh: stylesheet or responsive layout missing");
+}
+if (!app.includes('stageEl.append(questionCardEl)') ||
+    !app.includes('panelEl.prepend(questionCardEl)') ||
+    !app.includes('document.body.classList.toggle("training-layout", dockInStage)')) {
+  errors.push("training: question card must move between a mobile stage and desktop panel");
+}
+if (!app.includes('document.body.classList.toggle("mobile-reference-open", mobileReferenceExpanded)')) {
+  errors.push("mobile reference: expanded state must be synchronized with the UI");
+}
+
+
 for (const [label, source] of [
   ["main app", app],
   ["quality lab", qualityApp],
