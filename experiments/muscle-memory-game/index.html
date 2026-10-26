@@ -50,7 +50,15 @@
             <span>Справа появится её исходное положение с костными ориентирами.</span>
           </div>
         </div>
-        <div id="loading" class="loading">Загружаю мышечную модель…</div>
+        <div id="loading" class="loading" role="status" aria-live="polite">Загружаю мышечную модель…</div>
+        <div id="loading-recovery" class="loading-recovery" hidden role="alert" aria-live="assertive">
+          <strong id="loading-recovery-title">Загрузка занимает больше времени, чем обычно</strong>
+          <p id="loading-recovery-message">Модель ещё загружается. Если ожидание затянулось, можно обновить страницу.</p>
+          <div class="loading-recovery-actions">
+            <button id="loading-retry" type="button">Обновить страницу</button>
+            <button id="loading-alternate" type="button" hidden>Попробовать другую модель</button>
+          </div>
+        </div>
         <div id="webgl-status" class="loading webgl-status" hidden role="status" aria-live="polite">
           <span id="webgl-status-text"></span>
           <button id="webgl-reload" type="button" hidden>Обновить страницу</button>
@@ -290,7 +298,7 @@
               <option value="all">Всё тело</option>
             </select>
           </label>
-          <label id="region-isolation-field" class="scope-isolation">
+          <label id="region-isolation-field" class="scope-isolation" hidden>
             <input id="region-isolation" type="checkbox" checked />
             <span id="region-isolation-label">Показывать только выбранную область</span>
           </label>
@@ -299,9 +307,9 @@
         <div id="explore-controls" class="explore-controls">
           <label class="search-field">
             <span>Поиск по названию</span>
-            <input id="structure-search" type="search" autocomplete="off" placeholder="Название мышцы…" />
+            <input id="structure-search" type="search" autocomplete="off" aria-controls="search-results" placeholder="Мышца, кость или структура…" />
           </label>
-          <div id="search-results" class="search-results" aria-live="polite"></div>
+          <div id="search-results" class="search-results" aria-live="polite" aria-label="Результаты поиска"></div>
           <div id="restore-view-actions" class="restore-view-actions" hidden>
             <button id="show-all" type="button">Вернуть структуры области</button>
           </div>
@@ -521,6 +529,7 @@
   <div id="mobile-page-scroll" class="mobile-page-scroll" role="scrollbar" tabindex="0" aria-label="Прокрутка страницы" aria-orientation="vertical" aria-controls="atlas-page" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" hidden>
     <span class="mobile-page-scroll-thumb" aria-hidden="true"></span>
   </div>
+  <script src="./boot-feedback.js"></script>
   <script type="module" src="./mobile-scroll.js"></script>
   <script type="module" src="./ui-motion.js"></script>
   <script type="module" src="./app.js"></script>

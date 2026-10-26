@@ -22,14 +22,20 @@ function queriedIds(source) {
   );
 }
 
-function checkDom(js, html, label) {
+function checkDom(js, html, label, optionalIds = new Set()) {
   const ids = htmlIds(html);
   for (const id of queriedIds(js)) {
-    if (!ids.has(id)) errors.push(`${label}: missing DOM id #${id}`);
+    if (!ids.has(id) && !optionalIds.has(id)) errors.push(`${label}: missing DOM id #${id}`);
   }
 }
 
-checkDom(app, index, "main");
+// The static release intentionally omits controls of the disabled motion lab.
+// Keep all other HTML/JS references strict; do not hide a real DOM regression.
+const motionDisabled =
+  /id="mode-motion"[^>]*hidden[^>]*disabled/.test(index) &&
+  app.includes("const MOTION_UI_ENABLED = false");
+const staticMotionIds = new Set(["motion-angle", "motion-angle-value", "motion-play"]);
+checkDom(app, index, "main", motionDisabled ? staticMotionIds : new Set());
 checkDom(qualityApp, qualityHtml, "quality-lab");
 
 for (const [label, source] of [

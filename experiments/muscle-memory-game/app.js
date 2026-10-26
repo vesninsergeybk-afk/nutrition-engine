@@ -9763,7 +9763,14 @@ function renderSearchResults(query) {
   searchResults.replaceChildren();
   const q = query.trim().toLocaleLowerCase("ru-RU");
 
-  if (q.length < 2 || !structureNames.length) return;
+  if (q.length < 2) return;
+  if (!structureNames.length) {
+    const pending = document.createElement("p");
+    pending.className = "search-empty";
+    pending.textContent = "Поиск станет доступен после загрузки модели.";
+    searchResults.appendChild(pending);
+    return;
+  }
 
   const matches = [];
   const regional = regionIsolationActive();
@@ -12130,14 +12137,16 @@ async function loadSelectedModel(source) {
   const requestedSource = source === "bodyparts4" ? "bodyparts4" : "z-anatomy";
   modelSource.disabled = true;
   loadingEl.classList.remove("is-hidden");
+  loadingEl.dataset.state = "loading";
   loadingEl.textContent = "Загружаю анатомическую модель…";
-
-  resetLoadedModel();
-  currentModelSource = requestedSource;
-  canvas.dataset.modelSource = requestedSource;
-  syncLayerPresetAvailability();
+  document.dispatchEvent(new Event("atlas:model-loading"));
 
   try {
+    resetLoadedModel();
+    currentModelSource = requestedSource;
+    canvas.dataset.modelSource = requestedSource;
+    syncLayerPresetAvailability();
+
     if (requestedSource === "bodyparts4") {
       await loadBodyParts4Model();
     } else {
@@ -12145,7 +12154,9 @@ async function loadSelectedModel(source) {
     }
 
     loadingEl.classList.add("is-hidden");
+    loadingEl.dataset.state = "ready";
     modelSource.disabled = false;
+    document.dispatchEvent(new Event("atlas:model-ready"));
 
     if (appMode === "explore") {
       questionLabelEl.textContent = "Атлас";
@@ -12157,15 +12168,18 @@ async function loadSelectedModel(source) {
 
     setViewPreset(viewPreset.value);
     applyInitialQueryState();
+    if (searchInput.value.trim()) renderSearchResults(searchInput.value);
     notifyEmbedHeight();
   } catch (error) {
     console.error(error);
+    loadingEl.dataset.state = "error";
     loadingEl.textContent = "Не удалось загрузить выбранную 3D-модель.";
     questionEl.textContent = "Ошибка загрузки";
     feedbackEl.textContent =
-      "Попробуйте выбрать другую анатомическую модель в разделе «Отображение».";
+      "Можно повторить загрузку страницы или попробовать другую 3D-модель.";
     diagnosticsEl.textContent = String(error?.message || error);
     modelSource.disabled = false;
+    document.dispatchEvent(new Event("atlas:model-failed"));
   }
 }
 
@@ -12359,6 +12373,28 @@ searchInput.addEventListener("keydown", (event) => {
     searchInput.value = "";
     searchResults.replaceChildren();
     renderer.domElement.focus?.();
+  } else if (event.key === "ArrowDown") {
+    const first = searchResults.querySelector("button.search-result");
+    if (first) { event.preventDefault(); first.focus(); }
+  } else if (event.key === "Enter") {
+    const first = searchResults.querySelector("button.search-result");
+    if (first) { event.preventDefault(); first.click(); }
+  }
+});
+searchResults.addEventListener("keydown", (event) => {
+  if (!event.target.matches("button.search-result")) return;
+  const items = [...searchResults.querySelectorAll("button.search-result")];
+  const index = items.indexOf(event.target);
+  if (event.key === "Escape") {
+    event.preventDefault();
+    searchInput.focus();
+  } else if (event.key === "ArrowDown" && index < items.length - 1) {
+    event.preventDefault();
+    items[index + 1].focus();
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    if (index > 0) items[index - 1].focus();
+    else searchInput.focus();
   }
 });
 

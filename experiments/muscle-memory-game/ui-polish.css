@@ -601,3 +601,93 @@ input:focus-visible,
     font-size: 11px;
   }
 }
+
+/* The side panel is narrow even on a wide desktop viewport. Its controls
+   must follow panel width rather than a global viewport breakpoint. */
+.panel .scope-controls {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+}
+.panel .scope-field,
+.panel #learning-region,
+.panel .scope-isolation { min-width: 0; width: 100%; }
+.panel .scope-isolation {
+  min-height: 32px;
+  padding: 2px 0;
+  align-items: flex-start;
+  white-space: normal;
+  line-height: 1.5;
+  gap: 9px;
+}
+.panel .scope-isolation input { flex: 0 0 auto; margin-top: 3px; }
+.panel .scope-isolation span { min-width: 0; overflow-wrap: anywhere; }
+
+/* A recoverable state must remain operable above the full-screen load veil.
+   This panel is deliberately plain HTML and works without the 3D module. */
+.loading {
+  padding-top: 75px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #47566a;
+  background: rgba(244, 247, 251, .94);
+}
+.loading::before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 38px);
+  left: calc(50% - 15px);
+  width: 30px;
+  height: 30px;
+  border: 3px solid #cfdbeb;
+  border-top-color: #245da8;
+  border-radius: 50%;
+  animation: anatomy-loading-spin .8s linear infinite;
+}
+.loading[data-state="error"]::before { display: none; }
+@keyframes anatomy-loading-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .loading::before { animation: none; }
+}
+.loading-recovery {
+  position: absolute;
+  z-index: 12;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  gap: 10px;
+  width: min(430px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: clamp(18px, 3vw, 26px);
+  overflow-y: auto;
+  border: 1px solid #c7d6e5;
+  border-top: 4px solid var(--ui-accent, #245da8);
+  border-radius: 17px;
+  color: var(--ui-ink, #202b3b);
+  background: rgba(255, 255, 255, .98);
+  box-shadow: 0 18px 56px rgba(25, 45, 74, .22);
+}
+.loading-recovery strong { font-size: 17px; line-height: 1.35; }
+.loading-recovery p { margin: 0; color: #536176; font-size: 14px; line-height: 1.55; }
+.loading-recovery-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+.loading-recovery-actions button {
+  min-height: 44px;
+  flex: 1 1 165px;
+  padding: 10px 12px;
+  border: 1px solid #245da8;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 650;
+  color: #fff;
+  background: #245da8;
+}
+.loading-recovery-actions button:not(:disabled):hover { background: #194e8f; }
+.loading-recovery-actions #loading-alternate { color: #245da8; background: #eef4fc; }
+.loading-recovery-actions #loading-alternate:not(:disabled):hover { background: #e1edfb; }
+.loading-recovery[data-state="error"] { border-top-color: #bd6754; }
+@media (max-width: 430px) {
+  .loading-recovery { width: calc(100% - 20px); padding: 17px; }
+  .loading-recovery-actions { flex-direction: column; }
+  .loading-recovery-actions button { flex-basis: auto; width: 100%; }
+}
