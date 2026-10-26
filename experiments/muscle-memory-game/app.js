@@ -3872,6 +3872,7 @@ function syncMobileMuscleCard() {
   const hasBone = appMode === "explore" && selectedBoneId != null && boneNames[selectedBoneId];
   const hasReference = appMode === "explore" && selectedReference != null;
   const hasSelection = hasMuscle || hasBone || hasReference;
+  document.body.classList.toggle("mobile-muscle-selected", Boolean(hasMuscle && mobileTaskMedia.matches));
   const hasContext = appMode === "explore" && (mobileIsolationStack.length > 0 || atlasViewHistory.length > 0);
   if (!(hasSelection || hasContext)) {
     if (mobileReferenceExpanded) setMobileReferenceExpanded(false);
