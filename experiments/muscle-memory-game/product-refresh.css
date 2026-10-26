@@ -76,6 +76,9 @@ body { background: var(--ui-bg); color: var(--ui-ink); }
   .mobile-muscle-actions .mobile-reference-open:not(:disabled):active { background: #e6e1f8; }
   /* The detailed muscle reference lives in one place: a reading panel opened
      from the compact card. Other reference types retain their current flow. */
+  body.mobile-muscle-selected.explore-mode .panel .question-card > :is(#question-label, #question, #feedback, #selected-structure-actions) {
+    display: none !important;
+  }
   body.explore-mode:not(.mobile-reference-open) #structure-reference[data-reference-kind="muscle"] {
     display: none !important;
   }
