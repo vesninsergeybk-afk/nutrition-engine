@@ -18,11 +18,11 @@ assert(
   "Functional relation index does not cover the canonical reference database"
 );
 assert(
-  coverage.structuresWithFunctionalRelations >= 30,
-  "Too few structures received movement-specific functional relations"
+  coverage.structuresWithFunctionalRelations >= 151,
+  "Functional coverage regressed below the first curated pass (151/218)"
 );
 assert(
-  coverage.movementClasses >= 20,
+  coverage.movementClasses >= 50,
   "Functional movement vocabulary is unexpectedly small"
 );
 
@@ -86,6 +86,60 @@ for (const structure of structures) {
         !synergistIds.has(contextId) && !antagonistIds.has(contextId),
         structure.id + ": context-dependent role leaked into a fixed role for " + row.movementId
       );
+    }
+  }
+}
+
+function relation(structureId, movementId) {
+  return functionalRelationsForStructure(structureId).find(row => row.movementId === movementId);
+}
+
+function hasItem(row, role, id) {
+  return Boolean(row?.[role]?.some(item => item.id === id));
+}
+
+assert(
+  hasItem(relation("flexor-digitorum-profundus", "hand-dip-flexion"), "antagonists", "lumbricals-hand"),
+  "Finger DIP flexion must oppose lumbrical-assisted DIP extension"
+);
+assert(
+  !hasItem(relation("flexor-digitorum-profundus", "hand-dip-flexion"), "antagonists", "flexor-digitorum-superficialis"),
+  "Superficial finger flexor must not be assigned to DIP extension"
+);
+assert(
+  hasItem(relation("lumbricals-hand", "hand-mcp-flexion"), "synergists", "palmar-interossei") &&
+    hasItem(relation("lumbricals-hand", "hand-pip-extension"), "antagonists", "flexor-digitorum-superficialis"),
+  "Hand lumbricals must have different partners for MCP flexion and PIP extension"
+);
+assert(
+  hasItem(relation("flexor-hallucis-longus-foot", "hallux-ip-flexion"), "antagonists", "extensor-hallucis-longus"),
+  "Hallux interphalangeal antagonist is missing"
+);
+assert(
+  hasItem(relation("medial-rectus", "eye-adduction"), "antagonists", "lateral-rectus") &&
+    hasItem(relation("superior-rectus", "eye-elevation"), "synergists", "inferior-oblique-eye"),
+  "Eye relations must distinguish horizontal and vertical actions"
+);
+assert(
+  hasItem(relation("posterior-cricoarytenoid", "vocal-fold-abduction"), "antagonists", "lateral-cricoarytenoid") &&
+    hasItem(relation("lateral-cricoarytenoid", "vocal-fold-adduction"), "synergists", "transverse-arytenoid"),
+  "Laryngeal opening and closure have incorrect functional partners"
+);
+assert(
+  hasItem(relation("mylohyoid", "hyoid-elevation"), "antagonists", "sternohyoid") &&
+    hasItem(relation("zygomaticus-major", "oral-commissure-elevation"), "antagonists", "depressor-anguli-oris"),
+  "Hyoid or facial opposition is missing"
+);
+assert(
+  hasItem(relation("diaphragm", "inspiratory-chest-expansion"), "synergists", "external-intercostals") &&
+    relation("diaphragm", "inspiratory-chest-expansion").antagonists.length === 0,
+  "Quiet expiration must not create a fictitious direct antagonist of the diaphragm"
+);
+for (const structure of structures) {
+  for (const row of functionalRelationsForStructure(structure.id)) {
+    if (row.method === "curated-anatomical-function-group" || row.method === "curated-eye-movement") {
+      assert(row.sourceUrl && row.sourceTitle, structure.id + ": reviewed functional row must name a source");
+      assert(row.noteRu, structure.id + ": reviewed functional row must explain the comparison");
     }
   }
 }
