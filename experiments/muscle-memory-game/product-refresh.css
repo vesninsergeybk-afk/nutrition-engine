@@ -1,0 +1,176 @@
+/* Product refresh: shared visual language and focused mobile workspaces.
+   Kept separate from anatomical material/scene coloring. */
+:root {
+  --ink: #262831;
+  --bg: #f5f3ef;
+  --surface: #fff;
+  --surface-soft: #faf9f6;
+  --line: #e2e0de;
+  --line-strong: #d1cfcb;
+  --muted: #666771;
+  --accent: #5d50be;
+  --ui-ink: #262831;
+  --ui-ink-soft: #484b57;
+  --ui-muted: #686a76;
+  --ui-bg: #f5f3ef;
+  --ui-surface: #fff;
+  --ui-surface-subtle: #faf9f6;
+  --ui-border: #e2e0de;
+  --ui-border-strong: #ccc9cb;
+  --ui-accent: #5d50be;
+  --ui-accent-soft: #efecfa;
+  --ui-focus: #8a7ce5;
+  --ui-shadow-panel: 0 14px 42px rgba(38, 40, 49, .065);
+}
+body { background: var(--ui-bg); color: var(--ui-ink); }
+.panel { background: var(--ui-surface-subtle); }
+.question-card, .mobile-muscle-card { border-color: var(--ui-border); }
+.brand h1 { color: var(--ui-ink); }
+.mode-switch { background: #ece9e7; border-color: var(--ui-border); }
+.mode-switch button { color: var(--ui-ink-soft); }
+.mode-switch button.active,
+.reference-tabs button[aria-selected="true"] { color: var(--ui-accent); }
+.reference-tabs { background: #f0eef1; border-color: var(--ui-border); }
+.reference-tabs button[aria-selected="true"] { border-color: #ded9f2; }
+.viewer-wrap { border-color: #d9d8d7; }
+.learning-start, .actions .primary, .functional-show-group {
+  background: var(--ui-accent);
+  border-color: var(--ui-accent);
+  color: #fff;
+}
+.learning-start:not(:disabled):hover, .actions .primary:not(:disabled):hover,
+.functional-show-group:not(:disabled):hover { background: #4e40a8; border-color: #4e40a8; }
+.learning-field select, .search-field input {
+  font-size: 15px;
+  border-color: var(--ui-border-strong);
+}
+.reference-section p, .reference-section span, .reference-section li,
+.reference-function li { color: var(--ui-ink-soft); }
+.reference-section h3 { color: var(--ui-ink); }
+.reference-tabs button { font-size: 14px; }
+.structure-reference-grid dt { font-size: 12px; }
+.structure-reference-grid dd { font-size: 14px; }
+.structure-reference-head strong { font-size: 14px; }
+.reference-section .structure-reference-fact > strong { font-size: 13px; }
+.mobile-reference-close { display: none; }
+
+/* Selected-muscle summary: compact, actionable, and readable on small screens. */
+@media (max-width: 920px) {
+  .mobile-muscle-card-copy { order: 1; gap: 3px; }
+  .mobile-muscle-card-copy strong { font-size: 16px; line-height: 1.3; font-weight: 720; }
+  .mobile-muscle-card-copy .mobile-muscle-latin {
+    display: block; color: #74727a; font-size: 12px; line-height: 1.35;
+  }
+  .mobile-muscle-summary {
+    order: 2; margin: 0; color: var(--ui-ink-soft); font-size: 14px;
+    line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .mobile-muscle-card .mobile-bone-reference { order: 2; }
+  .mobile-muscle-card .atlas-relations { order: 3; }
+  .mobile-muscle-actions { order: 4; }
+  .mobile-muscle-actions .mobile-reference-open {
+    min-height: 44px; padding: 8px 12px; font-size: 14px;
+    color: #4c409f; background: #f1eefc; border-color: #d4cdef; font-weight: 720;
+  }
+  .mobile-muscle-actions .mobile-reference-open:not(:disabled):active { background: #e6e1f8; }
+  /* The detailed muscle reference lives in one place: a reading panel opened
+     from the compact card. Other reference types retain their current flow. */
+  body.explore-mode:not(.mobile-reference-open) #structure-reference[data-reference-kind="muscle"] {
+    display: none !important;
+  }
+  body.mobile-reference-open #structure-reference[data-reference-kind="muscle"]:not([hidden]) {
+    position: fixed; z-index: 61; left: 0; right: 0; bottom: 0;
+    top: max(30dvh, 145px); width: 100%; max-height: none;
+    display: block; overflow-y: auto; overscroll-behavior: contain;
+    box-sizing: border-box; margin: 0; padding: 18px 18px max(22px, env(safe-area-inset-bottom));
+    border: 1px solid var(--ui-border); border-radius: 22px 22px 0 0;
+    background: #fff; box-shadow: 0 -14px 48px rgba(38, 40, 49, .20);
+  }
+  body.mobile-reference-open .structure-reference-head {
+    position: sticky; top: -18px; z-index: 5; display: grid;
+    grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px;
+    padding: 5px 0 13px; margin-bottom: 8px;
+    background: #fff; border-bottom: 1px solid var(--ui-border);
+  }
+  body.mobile-reference-open .structure-reference-head strong {
+    grid-column: 1; grid-row: 1; font-size: 17px; line-height: 1.25;
+  }
+  body.mobile-reference-open .structure-reference-head span {
+    grid-column: 1; grid-row: 2; font-size: 13px; text-align: left;
+  }
+  body.mobile-reference-open .mobile-reference-close {
+    display: inline-flex; align-items: center; justify-content: center;
+    grid-column: 2; grid-row: 1 / span 2; align-self: center;
+    min-height: 44px; padding: 9px 13px; color: #5043a9;
+    background: #f0edfb; border: 1px solid #dcd5f3; border-radius: 11px;
+    font-size: 14px; font-weight: 700;
+  }
+  body.mobile-reference-open .reference-tabs { top: 65px; }
+  body.mobile-reference-open .structure-reference-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  body.mobile-reference-open .structure-reference-grid dd {
+    font-size: 13px; overflow-wrap: anywhere;
+  }
+  body.mobile-reference-open .reference-section p,
+  body.mobile-reference-open .reference-section li,
+  body.mobile-reference-open .reference-section span { font-size: 15px; }
+  body.mobile-reference-open .reference-tabs button { min-height: 46px; font-size: 14px; }
+  body.mobile-reference-open .functional-show-group { min-height: 48px; }
+}
+
+/* Mobile training: the model and its answer card are siblings, so neither
+   blocks gestures on the other. The answer card scrolls when content is long. */
+@media (max-width: 920px) {
+  body.training-layout { overflow: hidden; }
+  body.training-layout .app-shell {
+    display: block; height: 100dvh; min-height: 0; margin-right: 0; overflow: hidden;
+  }
+  body.training-layout .stage {
+    box-sizing: border-box; display: flex; flex-direction: column;
+    width: 100%; height: 100dvh; min-height: 0; gap: 10px;
+    padding: max(8px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+  }
+  body.training-layout .topbar,
+  body.training-layout .panel,
+  body.training-layout .attribution,
+  body.training-layout .mobile-muscle-card { display: none !important; }
+  body.training-layout .viewer-wrap {
+    flex: 1 1 auto; height: auto !important;
+    min-height: min(280px, 43dvh) !important;
+    border-radius: 16px; overflow: hidden;
+  }
+  body.training-layout .stage > .question-card {
+    flex: 0 1 auto; min-width: 0; max-height: min(44dvh, 390px);
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    margin: 0; padding: 14px 15px 12px; border-radius: 16px;
+    background: #fff; box-shadow: 0 5px 22px rgba(38,40,49,.08);
+  }
+  body.training-layout .stage > .question-card h2 {
+    font-size: clamp(19px, 5vw, 25px); line-height: 1.2; margin: 4px 0 9px;
+  }
+  body.training-layout .stage > .question-card .feedback {
+    font-size: 14px; line-height: 1.45;
+  }
+  body.training-layout .stage > .question-card .question-label { font-size: 11px; }
+  body.training-layout .stage > .question-card #quiz-actions:not([hidden]) {
+    position: sticky; z-index: 3; bottom: -12px; margin-top: 10px;
+    padding: 10px 0 0; background: #fff;
+    border-top: 1px solid var(--ui-border);
+  }
+  body.training-layout .stage > .question-card #quiz-actions button { min-height: 44px; }
+  body.training-layout .name-choice { min-height: 44px; font-size: 14px; }
+}
+@media (max-width: 390px) {
+  body.mobile-reference-open #structure-reference[data-reference-kind="muscle"]:not([hidden]) {
+    padding-left: 12px; padding-right: 12px;
+  }
+  body.mobile-reference-open .structure-reference-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  body.training-layout .stage > .question-card { padding: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.mobile-reference-open #structure-reference { scroll-behavior: auto; }
+}
