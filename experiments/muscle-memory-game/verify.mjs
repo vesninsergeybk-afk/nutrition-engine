@@ -12,7 +12,7 @@ const manifest = JSON.parse(read("anatomy-validation-shoulder.json"));
 
 const errors = [];
 
-const rawIds = [...index.matchAll(/\\sid="([^"]+)"/g)].map((m) => m[1]);
+const rawIds = [...index.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
 if (new Set(rawIds).size !== rawIds.length) {
   errors.push("main: duplicate HTML ids are not allowed");
 }
