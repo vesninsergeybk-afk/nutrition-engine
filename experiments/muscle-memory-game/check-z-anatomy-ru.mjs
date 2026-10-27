@@ -1,15 +1,10 @@
 import { structureTerm } from "./anatomy-terms-ru.js";
+import { isZAnatomyMuscleSourceName } from "./anatomy-model-names.js";
 import { muscleReferenceFor } from "./muscle-reference-data.js";
 import { buildMuscleCatalog, regionCounts } from "./learning-engine.js";
 
 const MUSCLE_MODEL_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
-
-const COVER_RE =
-  /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
-
-const NON_MUSCLE_RE =
-  /bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|fibrous sheath|iliopectineal arch|common tendinous ring/i;
 
 function parseGlbJson(arrayBuffer) {
   const view = new DataView(arrayBuffer);
@@ -34,15 +29,25 @@ function parseGlbJson(arrayBuffer) {
 const response = await fetch(MUSCLE_MODEL_URL);
 if (!response.ok) throw new Error("Could not fetch pinned Z-Anatomy muscle GLB");
 const json = parseGlbJson(await response.arrayBuffer());
+const sourceNodes = (json.nodes || []).filter(node => node.mesh !== undefined && node.name);
+for (const expected of [
+  "Epicranial aponeurosis.l",
+  "Epicranial aponeurosis.r",
+  "Tensor fasciae latae.l",
+  "Tensor fasciae latae.r",
+]) {
+  if (!sourceNodes.some(node => node.name === expected)) {
+    throw new Error("Pinned GLB lost required anatomical geometry: " + expected);
+  }
+}
 
 const names = [...new Set(
-  (json.nodes || [])
+  sourceNodes
     .filter(
       node =>
         node.mesh !== undefined &&
         node.name &&
-        !COVER_RE.test(node.name) &&
-        !NON_MUSCLE_RE.test(node.name)
+        isZAnatomyMuscleSourceName(node.name)
     )
     .map(node => node.name.trim())
 )].sort((a, b) => a.localeCompare(b));

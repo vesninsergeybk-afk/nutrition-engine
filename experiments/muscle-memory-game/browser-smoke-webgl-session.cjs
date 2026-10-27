@@ -32,7 +32,11 @@ const assert = require('node:assert/strict');
       document.getElementById('viewer').dataset.webglSessionState === 'ready', null, { timeout: 150000 });
     console.log('[smoke:webgl] real anatomy loaded');
     const pixelRatio = await page.locator('#viewer').evaluate(el => el.width / el.clientWidth);
-    assert.ok(pixelRatio > 1 && pixelRatio <= 1.51, 'Mobile framebuffer exceeds its pixel budget');
+    assert.ok(pixelRatio > 1 && pixelRatio <= 1.76, 'Mobile balanced framebuffer exceeds its pixel budget');
+    await page.selectOption('#render-quality', 'high');
+    const crispRatio = await page.locator('#viewer').evaluate(el => el.width / el.clientWidth);
+    assert.ok(crispRatio >= pixelRatio && crispRatio <= 2.01, 'Mobile high-quality framebuffer exceeds its pixel budget');
+    await page.selectOption('#render-quality', 'balanced');
     assert.equal(await page.locator('.viewer-wrap').evaluate(el => getComputedStyle(el).transitionDuration), '0s');
 
     await page.fill('#structure-search', 'широчайшая');

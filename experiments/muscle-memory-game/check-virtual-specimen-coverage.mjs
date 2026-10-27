@@ -6,6 +6,7 @@ import {
 } from "./learning-engine.js";
 import { muscleDepthInfo } from "./regional-depth-map.js";
 import { bodyPartsAnatomyKind } from "./bodyparts4-classification.js";
+import { isZAnatomyMuscleSourceName } from "./anatomy-model-names.js";
 import {
   VIRTUAL_SPECIMENS,
   filterCatalogForSpecimen,
@@ -19,11 +20,6 @@ const Z_URL =
   "https://raw.githubusercontent.com/DrMuratAltun/anatomi-simulatoru/37e85dfbbb398e11ba33c8f0e411f06f9bba592f/systems/kas.glb";
 const BP_URL =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public/models/atlas.json";
-const COVER_RE =
-  /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
-const NON_MUSCLE_RE =
-  /bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|fibrous sheath|iliopectineal arch|common tendinous ring/i;
-
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -56,8 +52,7 @@ const zNames = [...new Set(
       (node) =>
         node.mesh !== undefined &&
         node.name &&
-        !COVER_RE.test(node.name) &&
-        !NON_MUSCLE_RE.test(node.name)
+        isZAnatomyMuscleSourceName(node.name)
     )
     .map((node) => node.name.trim())
 )];
@@ -299,8 +294,8 @@ for (const specimen of VIRTUAL_SPECIMENS) {
 
   if (specimen.id === "hip-flexors") {
     assert(
-      zQuestion.length === 4 && bpQuestion.length === 5,
-      "hip-flexors: extended BodyParts3D must add tensor fasciae latae to the four-source core"
+      zQuestion.length === 5 && bpQuestion.length === 5,
+      "hip-flexors: both models must include the tensor fasciae latae"
     );
     assert(
       bpQuestion.some((target) =>

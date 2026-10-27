@@ -19,6 +19,10 @@ assert.equal(isZAnatomyMuscleSourceName("Subtendinous bursa of infraspinatus mus
 assert.equal(isZAnatomyMuscleSourceName("Intermediate tendon of digastric muscle.l"), false);
 assert.equal(isZAnatomyMuscleSourceName("Infraspinatus muscle.l"), true);
 assert.equal(isZAnatomyMuscleSourceName("Semitendinosus muscle.r"), true);
+assert.equal(isZAnatomyMuscleSourceName("Tensor fasciae latae.l"), true);
+assert.equal(isZAnatomyMuscleSourceName("Tensor fasciae latae.r"), true);
+assert.equal(isZAnatomyMuscleSourceName("Epicranial aponeurosis.l"), false);
+assert.equal(isZAnatomyMuscleSourceName("Superficial layer of temporal fascia.r"), false);
 assert.match(structureSearchText("External abdominal oblique muscle.l"), /external oblique/);
 assert.match(structureSearchText("Internal abdominal oblique muscle.r"), /internal oblique/);
 assert.match(structureSearchText("Superficial part of left masseter"), /superficial part of masseter/);
