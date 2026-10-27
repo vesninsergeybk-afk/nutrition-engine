@@ -1396,7 +1396,7 @@ const referenceUI = createReferenceUI(structureReferenceEl, {
 const atlasRelationsMedia = window.matchMedia("(max-width: 920px)");
 function syncAtlasRelationsPlacement() {
   const host = atlasRelationsMedia.matches
-    ? mobileMuscleCard
+    ? (mobileMuscleMore || mobileMuscleCard)
     : document.querySelector("#atlas-relations-desktop-slot");
   if (atlasRelationsRoot.parentElement !== host) host.append(atlasRelationsRoot);
 }
