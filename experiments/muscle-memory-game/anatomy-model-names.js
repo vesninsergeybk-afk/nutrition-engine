@@ -19,7 +19,11 @@ export function originalAnatomyName(object, parser) {
 // A name containing "infraspinatus muscle" may belong to its bursa; it must
 // not be presented as a muscle result. Geometry is retained in the scene.
 export function isZAnatomyMuscleSourceName(name) {
-  return !/fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium|bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|iliopectineal arch|common tendinous ring/i.test(String(name || ""));
+  const source = String(name || "").trim();
+  // A real hip muscle has "fasciae" in its anatomical name. The generic
+  // connective-tissue filter must not remove it from either mesh or lessons.
+  if (/^tensor fasciae latae(?:\.[lr])?$/i.test(source)) return true;
+  return !/fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium|bursa|bursae|tendon|tendinous|sheath|ligament|tract|septum|tarsus|linea alba|trochlea|synovial|iliopectineal arch|common tendinous ring/i.test(source);
 }
 
 export function stripRussianSideLabel(nameRu) {

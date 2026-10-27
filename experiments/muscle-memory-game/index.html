@@ -115,6 +115,22 @@
             <p id="model-source-note" class="viewer-setting-note">
               BodyParts3D объединяет тканевые слои 4.0 с проверенными мышцами из 3.0. Для отдельных регионов дополнения включаются только после проверки совмещения.
             </p>
+            <label class="viewer-setting-field">
+              <span>Чёткость 3D-изображения</span>
+              <select id="render-quality" aria-label="Чёткость 3D-изображения">
+                <option value="balanced" selected>Оптимальная</option>
+                <option value="high">Повышенная</option>
+              </select>
+            </label>
+            <p id="render-quality-note" class="viewer-setting-note">Сбалансированная чёткость с учётом нагрузки на телефон.</p>
+            <label class="viewer-setting-field">
+              <span>Свет и объём</span>
+              <select id="lighting-style" aria-label="Освещение 3D-модели">
+                <option value="studio" selected>Объёмный свет</option>
+                <option value="even">Ровный свет</option>
+              </select>
+            </label>
+            <p class="viewer-setting-note">Объёмный свет подчёркивает форму мышц. Ровный помогает рассмотреть структуры в тени.</p>
           </section>
 
           <section class="display-section">
@@ -167,7 +183,7 @@
               <p class="layer-control-note">Включайте только нужные структуры. Они показываются поверх мышц и остаются выбираемыми.</p>
               <label><input type="checkbox" data-connective-layer="subcutaneous" /> Подкожная клетчатка</label>
               <label><input type="checkbox" data-connective-layer="fascia" /> Фасции и удерживатели</label>
-              <label><input type="checkbox" data-connective-layer="tendon" /> Сухожилия и апоневрозы</label>
+              <label><input type="checkbox" data-connective-layer="tendon" /> Сухожилия и апоневрозы, включая сухожильный шлем</label>
               <label><input type="checkbox" data-connective-layer="ligament" /> Связки</label>
               <label><input type="checkbox" data-connective-layer="joint" /> Суставные капсулы и сумки</label>
               <label><input type="checkbox" data-connective-layer="cartilage" /> Хрящевые структуры</label>
@@ -543,6 +559,6 @@
   <script src="./boot-feedback.js?v=20261027-mobile-r4"></script>
   <script type="module" src="./mobile-scroll.js"></script>
   <script type="module" src="./ui-motion.js"></script>
-  <script type="module" src="./app.js?v=20261027-mobile-r4"></script>
+  <script type="module" src="./app.js?v=20261027-anatomy-light-v1"></script>
 </body>
 </html>

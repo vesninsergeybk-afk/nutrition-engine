@@ -30,6 +30,17 @@ assert(
   html.includes('data-connective-layer="other"'),
   "Massage-relevant connective sublayers are incomplete"
 );
+assert(
+  studyStructureTerm("Epicranial aponeurosis.l", "tendon").nameRu ===
+    "Сухожильный шлем (надчерепной апоневроз) (слева)",
+  "Z-Anatomy epicranial aponeurosis needs a specific Russian name"
+);
+assert(
+  app.includes("connectiveGeometries.get(layerKey).push(geometry)") &&
+    app.includes("connectiveMeshes.set(layerKey, mesh)") &&
+    app.includes("indexStudyRanges(mesh)"),
+  "Z-Anatomy connective anatomy must be selectable in a separate optional layer"
+);
 
 for (const layer of ["nervous", "vascular", "lymphatic"]) {
   assert(

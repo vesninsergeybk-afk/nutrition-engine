@@ -10,6 +10,11 @@ const LAYER_NAMES_RU = Object.freeze({
 });
 
 const EXACT_TERMS = [
+  [/epicranial aponeurosis|galea aponeurotica/i, "Сухожильный шлем (надчерепной апоневроз)"],
+  [/superficial layer of temporal fascia/i, "Поверхностная пластинка височной фасции"],
+  [/deep layer of temporal fascia/i, "Глубокая пластинка височной фасции"],
+  [/temporoparietal fascia/i, "Височно-теменная фасция"],
+  [/masseteric fascia/i, "Жевательная фасция"],
   [/iliotibial tract/i, "Подвздошно-большеберцовый тракт"],
   [/thoracolumbar fascia/i, "Грудопоясничная фасция"],
   [/fascia lata/i, "Широкая фасция бедра"],

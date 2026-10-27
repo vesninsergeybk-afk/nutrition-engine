@@ -1,8 +1,8 @@
-import { originalAnatomyName, isZAnatomyMuscleSourceName, stripRussianSideLabel } from "./anatomy-model-names.js";
+import { originalAnatomyName, isZAnatomyMuscleSourceName, stripRussianSideLabel } from "./anatomy-model-names.js?v=20261027-anatomy-light-v1";
 import { createReferenceUI } from "./reference-ui.js";
 import { setSurfaceVisible } from "./ui-surfaces.js";
 import { nerveMentionMatches } from "./nerve-muscle-links.js";
-import { createWebGLSession, viewerPixelRatio } from "./webgl-session.js";
+import { createWebGLSession, viewerPixelRatio } from "./webgl-session.js?v=20261027-anatomy-light-v1";
 import { functionalPartForModelName } from "./reference-data/functional-parts.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -193,9 +193,6 @@ const BODYPARTS_SOURCE_ROOT =
   "https://raw.githubusercontent.com/ashemag/human-atlas/1c38bf35c254a891200d3cedecfd57abebe83d8d/public";
 const BODYPARTS_ATLAS_URL = BODYPARTS_SOURCE_ROOT + "/models/atlas.json";
 
-const COVER_RE =
-  /fascia|aponeuros|retinacul|peritone|pleura|dura mater|pericardi|omentum|epicardium/i;
-
 const canvas = document.querySelector("#viewer");
 const motionCanvas = document.querySelector("#motion-viewer");
 const motionPane = document.querySelector("#motion-pane");
@@ -311,6 +308,9 @@ const structureReferenceGalleryNext = document.querySelector("#structure-referen
 const structureReferenceGalleryCount = document.querySelector("#structure-reference-gallery-count");
 const structureReferenceEmpty = document.querySelector("#structure-reference-empty");
 const modelSource = document.querySelector("#model-source");
+const renderQuality = document.querySelector("#render-quality");
+const renderQualityNote = document.querySelector("#render-quality-note");
+const lightingStyle = document.querySelector("#lighting-style");
 const layerPresetField = document.querySelector("#layer-preset-field");
 const layerPreset = document.querySelector("#layer-preset");
 const layerPresetNote = document.querySelector("#layer-preset-note");
@@ -430,6 +430,8 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setPixelRatio(viewerPixelRatio(window.devicePixelRatio, coarseGpuPointer));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.18;
 renderer.localClippingEnabled = true;
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -443,19 +445,51 @@ controls.panSpeed = 0.72;
 controls.rotateSpeed = 0.78;
 controls.maxPolarAngle = Math.PI * 0.98;
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x777777, 1.35));
+// Soft studio lighting: a readable main form, visible shadow-side anatomy and
+// a gentle back edge. Avoid hard cast shadows from shader-hidden structures.
+const ambient = new THREE.HemisphereLight(0xfff8f2, 0x737581, 0.93);
+scene.add(ambient);
 
-const key = new THREE.DirectionalLight(0xffffff, 2.45);
-key.position.set(3, 5, 4);
+const key = new THREE.DirectionalLight(0xfff4e9, 2.65);
+key.position.set(3.5, 5, 5);
 scene.add(key);
 
-const fill = new THREE.DirectionalLight(0xffffff, 0.62);
-fill.position.set(-4, 1, -3);
+const fill = new THREE.DirectionalLight(0xe8efff, 0.82);
+fill.position.set(-4, 1.5, 3);
 scene.add(fill);
 
-const rim = new THREE.DirectionalLight(0xffffff, 0.5);
-rim.position.set(0, 2, -4);
+const rim = new THREE.DirectionalLight(0xffffff, 0.72);
+rim.position.set(-1, 3, -5);
 scene.add(rim);
+
+function applyLightingStyle() {
+  const even = lightingStyle?.value === "even";
+  ambient.intensity = even ? 1.32 : 0.93;
+  key.intensity = even ? 1.95 : 2.65;
+  fill.intensity = even ? 1.12 : 0.82;
+  rim.intensity = even ? 0.4 : 0.72;
+  canvas.dataset.lightingStyle = even ? "even" : "studio";
+}
+
+applyLightingStyle();
+lightingStyle?.addEventListener("change", applyLightingStyle);
+
+function applyRenderQuality() {
+  const mode = renderQuality?.value === "high" ? "high" : "balanced";
+  const ratio = viewerPixelRatio(window.devicePixelRatio, coarseGpuPointer, mode);
+  renderer.setPixelRatio(ratio);
+  canvas.dataset.renderQuality = mode;
+  canvas.dataset.renderPixelRatio = ratio.toFixed(2);
+  if (renderQualityNote) {
+    renderQualityNote.textContent = mode === "high"
+      ? "Более чёткие контуры, особенно при приближении. Если вращение замедлилось, выберите оптимальную чёткость."
+      : "Сбалансированная чёткость с учётом нагрузки на телефон.";
+  }
+  resize();
+}
+
+applyRenderQuality();
+renderQuality?.addEventListener("change", applyRenderQuality);
 
 motionScene.add(new THREE.HemisphereLight(0xffffff, 0x777777, 1.35));
 const motionKey = new THREE.DirectionalLight(0xffffff, 2.45);
@@ -10923,7 +10957,7 @@ function attachStructureVisibilityShader(material, cacheKey) {
 function createMuscleMaterial() {
   const material = new THREE.MeshStandardMaterial({
     vertexColors: true,
-    roughness: 0.62,
+    roughness: 0.73,
     metalness: 0,
     side: THREE.DoubleSide,
     transparent: false,
@@ -11276,6 +11310,9 @@ function applyConnectiveDisplayMode() {
   layerTrainingNote.hidden = false;
   connectiveMode.disabled = false;
   if (clearSupportLayersButton) clearSupportLayersButton.hidden = false;
+  for (const input of connectiveLayerInputs) {
+    input.disabled = !connectiveMeshes.has(input.dataset.connectiveLayer);
+  }
 
   applyRegionStudyVisibility();
   const mode = connectiveDisplayMode;
@@ -11855,12 +11892,35 @@ async function loadZAnatomyModel() {
 
     const geometries = [];
     const vertexCounts = [];
+    const connectiveGeometries = new Map();
 
     gltf.scene.traverse((child) => {
       if (!child.isMesh) return;
 
       const name = originalAnatomyName(child, gltf.parser) || `Структура ${structureNames.length}`;
-      if (COVER_RE.test(name)) return;
+      if (!isZAnatomyMuscleSourceName(name)) {
+        // Connective and covering structures are real geometry, but should
+        // never be mixed into the muscle mesh or the muscle quiz catalogue.
+        const layerKey = connectiveLayerKey(name);
+        const studyId = studyStructures.length;
+        const color = new THREE.Color(
+          CONNECTIVE_LAYER_COLORS[layerKey] || CONNECTIVE_LAYER_COLORS.other
+        );
+        const geometry = cleanMuscleGeometry(child.geometry, child.matrixWorld, studyId, color);
+        geometry.computeBoundingBox();
+        const bounds = geometry.boundingBox;
+        studyStructures.push({
+          id: studyId,
+          sourceName: name,
+          layerKey,
+          bounds: bounds ? [bounds.min.toArray(), bounds.max.toArray()] : null,
+          nearestMuscleNameRu: "",
+          nearestMuscleSourceName: "",
+        });
+        if (!connectiveGeometries.has(layerKey)) connectiveGeometries.set(layerKey, []);
+        connectiveGeometries.get(layerKey).push(geometry);
+        return;
+      }
 
       const sid = structureNames.length;
       const color = baseColorFor(name);
@@ -11889,18 +11949,25 @@ async function loadZAnatomyModel() {
     anatomyMesh.renderOrder = 0;
     modelGroup.add(anatomyMesh);
 
+    for (const [layerKey, chunks] of connectiveGeometries) {
+      const combined = mergeGeometries(chunks, false);
+      for (const geometry of chunks) geometry.dispose();
+      if (!combined) continue;
+      const mesh = new THREE.Mesh(combined, createConnectiveMaterial(layerKey));
+      mesh.renderOrder = 2;
+      mesh.userData.layerKey = layerKey;
+      connectiveMeshes.set(layerKey, mesh);
+      modelGroup.add(mesh);
+      indexStudyRanges(mesh);
+    }
+
     fitCamera(modelGroup);
     discoverTargets();
 
-    connectiveMode.disabled = true;
-    connectiveField.hidden = true;
-    connectiveLayersField.hidden = true;
+    applyConnectiveDisplayMode();
     skinMode.disabled = true;
     skinField.hidden = true;
-    layerTrainingNote.hidden = true;
-    canvas.dataset.connectiveMode = "unavailable";
-    canvas.dataset.connectiveCount = "0";
-    canvas.dataset.connectiveVisibleLayers = "";
+    canvas.dataset.connectiveCount = String(studyStructures.length);
     canvas.dataset.skinMode = "unavailable";
     canvas.dataset.skinCount = "0";
     boneMode.disabled = true;

@@ -1,7 +1,10 @@
 // Keep one render loop, including browser backgrounding and GPU recovery.
-export function viewerPixelRatio(deviceRatio, coarsePointer) {
+export function viewerPixelRatio(deviceRatio, coarsePointer, quality = "balanced") {
   const ratio = Number.isFinite(deviceRatio) && deviceRatio > 0 ? deviceRatio : 1;
-  return Math.min(ratio, coarsePointer ? 1.5 : 2);
+  // Start with a modest resolution improvement on touch devices; let capable
+  // devices opt into a sharper view without imposing its GPU cost on everyone.
+  const limit = quality === "high" ? (coarsePointer ? 2 : 2.25) : (coarsePointer ? 1.75 : 2);
+  return Math.min(ratio, limit);
 }
 
 export function createWebGLSession({ canvas, renderFrame, onLost, onRestored }) {
