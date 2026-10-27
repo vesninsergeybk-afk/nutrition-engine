@@ -177,3 +177,144 @@ body { background: var(--ui-bg); color: var(--ui-ink); }
 @media (prefers-reduced-motion: reduce) {
   body.mobile-reference-open #structure-reference { scroll-behavior: auto; }
 }
+
+
+/* Cohesive interaction accents and readable feedback. */
+:where(.loading-recovery, .webgl-status) button,
+:where(.actions, .quiz-muscle-actions, .viewer-settings) button.primary,
+#loading-retry, #webgl-reload {
+  border-color: var(--ui-accent);
+  background: var(--ui-accent);
+  color: #fff;
+}
+:where(button, a, summary, select, input):focus-visible {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 3px;
+}
+:where(.question-card, .mobile-muscle-card, .display-panel, .structure-reference) {
+  box-shadow: var(--ui-shadow-panel);
+}
+body.mobile-reference-open { overflow: hidden; }
+
+@media (max-width: 920px) {
+  /* Reserve space for the selected muscle instead of filling the screen with the model. */
+  body:not(.session-active):not(.motion-mode)
+  .stage:has(.mobile-muscle-card:not([hidden])) .viewer-wrap {
+    flex: 0 0 auto;
+    height: clamp(240px, 46dvh, 440px) !important;
+    min-height: clamp(240px, 46dvh, 440px) !important;
+  }
+  .mobile-muscle-card-copy { order: 1; gap: 3px; }
+  .mobile-muscle-card-copy strong { font-size: 16px; }
+  .mobile-muscle-summary {
+    order: 2;
+    -webkit-line-clamp: 3;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .mobile-muscle-primary {
+    order: 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .mobile-muscle-primary button {
+    min-height: 46px;
+    border-radius: 12px;
+    padding: 8px 9px;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 720;
+  }
+  .mobile-muscle-primary .mobile-reference-open {
+    color: #fff;
+    background: var(--ui-accent);
+    border: 1px solid var(--ui-accent);
+  }
+  .mobile-muscle-primary .mobile-quick-practice {
+    color: #493d99;
+    background: var(--ui-accent-soft);
+    border: 1px solid #dcd5f3;
+  }
+  .mobile-muscle-primary button:active { filter: brightness(.94); }
+  .mobile-muscle-more { order: 4; min-width: 0; }
+  .mobile-muscle-more > summary {
+    list-style: none;
+    min-height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    border-radius: 10px;
+    color: var(--ui-ink-soft);
+    background: var(--ui-surface-subtle);
+    border: 1px solid var(--ui-border);
+    font-size: 13px;
+    font-weight: 650;
+  }
+  .mobile-muscle-more > summary::-webkit-details-marker { display: none; }
+  .mobile-muscle-more > summary::after {
+    content: "⌄";
+    font-size: 18px;
+    line-height: 1;
+    transition: transform .16s ease;
+  }
+  .mobile-muscle-more[open] > summary::after { transform: rotate(180deg); }
+  .mobile-muscle-more .mobile-muscle-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px;
+  }
+  .mobile-muscle-more .mobile-muscle-actions button {
+    flex: 1 1 auto;
+    min-height: 44px;
+    font-size: 13px;
+    line-height: 1.25;
+    padding: 9px 12px;
+    background: var(--ui-surface);
+    color: var(--ui-ink);
+    border-color: var(--ui-border-strong);
+  }
+  .mobile-muscle-more .atlas-relations { margin-top: 10px; }
+  .mobile-muscle-card:has(.atlas-relations[data-expanded="true"]) .mobile-muscle-more {
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  body:not(.session-active):not(.motion-mode)
+  .mobile-muscle-card:has(.atlas-relations[data-expanded="true"]) {
+    max-height: 56dvh;
+  }
+  body.mobile-reference-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgba(21, 20, 34, .40);
+  }
+  body.mobile-reference-open #structure-reference[data-reference-kind="muscle"]:not([hidden]) {
+    box-shadow: 0 -16px 52px rgba(20, 18, 33, .25);
+  }
+  body.training-layout .stage > .question-card {
+    max-height: min(51dvh, 420px);
+  }
+  body.training-layout .viewer-wrap {
+    min-height: min(240px, 39dvh) !important;
+  }
+  body.training-layout .session-exit:not([hidden]) {
+    position: sticky;
+    top: -14px;
+    z-index: 4;
+    width: 100%;
+    min-height: 44px;
+    background: var(--ui-accent-soft);
+    color: #493d99;
+    border-color: #dcd5f3;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-muscle-primary button { font-size: 13px; padding-inline: 6px; }
+}

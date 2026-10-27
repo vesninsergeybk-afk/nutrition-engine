@@ -259,13 +259,18 @@
           </div>
           <p id="mobile-muscle-summary" class="mobile-muscle-summary" hidden></p>
           <details id="mobile-bone-reference" class="bone-reference mobile-bone-reference" hidden></details>
-          <div class="mobile-muscle-actions">
-            <button id="mobile-hide-muscle" type="button">Скрыть</button>
+          <div id="mobile-muscle-primary" class="mobile-muscle-primary" hidden>
+            <button id="mobile-reference-open" class="mobile-reference-open" type="button" aria-controls="structure-reference" aria-expanded="false">Изучить мышцу</button>
+            <button id="mobile-quick-practice" class="mobile-quick-practice" type="button">Проверить себя</button>
+          </div>
+          <details id="mobile-muscle-more" class="mobile-muscle-more" open>
+            <summary>Другие действия и сравнение</summary>
+            <div class="mobile-muscle-actions">
+              <button id="mobile-hide-muscle" type="button">Скрыть</button>
             <button id="mobile-focus-structure" type="button" hidden>Приблизить</button>
             <button id="mobile-isolate-structure" type="button" hidden>Показать отдельно</button>
             <button id="mobile-reveal-structure" type="button" hidden title="Скрыть объекты перед выбранной структурой с текущего ракурса">Убрать перекрытия</button>
             <button id="mobile-isolate-muscle" type="button">Изолировать мышцу</button>
-            <button id="mobile-reference-open" class="mobile-reference-open" type="button" aria-controls="structure-reference" aria-expanded="false" hidden>Справка по мышце</button>
             <button id="mobile-isolate-region" type="button" hidden>Изолировать область</button>
             <button id="mobile-back-context" class="mobile-back-context" type="button" hidden>← На шаг назад</button>
             <button id="mobile-root-context" class="mobile-root-context" type="button" hidden>К первому уровню</button>
@@ -290,6 +295,7 @@
               <p id="atlas-relations-status" class="atlas-relations-status" role="status"></p>
             </div>
           </section>
+          </details>
         </aside>
     </section>
 

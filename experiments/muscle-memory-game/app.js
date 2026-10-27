@@ -343,6 +343,11 @@ const quizMuscleSelectButton = document.querySelector("#quiz-muscle-select");
 const quizMuscleHideButton = document.querySelector("#quiz-muscle-hide");
 const mobileMuscleCard = document.querySelector("#mobile-muscle-card");
 const mobileReferenceOpenButton = document.querySelector("#mobile-reference-open");
+const mobileQuickPracticeButton = document.querySelector("#mobile-quick-practice");
+const mobileMusclePrimary = document.querySelector("#mobile-muscle-primary");
+const mobileMuscleMore = document.querySelector("#mobile-muscle-more");
+let lastMobileCardSid = null;
+let quickReviewOriginSid = null;
 const atlasRelationsRoot = document.querySelector("#atlas-relations");
 const atlasContextLayers = document.querySelector("#atlas-context-layers");
 const atlasContextButtons = [...document.querySelectorAll("[data-context-layer]")];
@@ -986,9 +991,13 @@ function disposeReference3DViewer() {
 
 function appendReference3DGallerySlide(sid) {
   if (!structureReferenceIllustrations || sid == null || selectedExploreSid !== sid) return;
+  // On small screens the reference is closed by default. Allocating an extra
+  // WebGL context here would consume GPU memory before the user opens it.
+  if (mobileTaskMedia.matches && !mobileReferenceExpanded) return;
 
   requestAnimationFrame(() => {
     if (selectedExploreSid !== sid || !structureNames[sid] || !anatomyMesh || !skeletonMesh) return;
+    if (mobileTaskMedia.matches && !mobileReferenceExpanded) return;
 
     disposeReference3DViewer();
     structureReferenceIllustrations
@@ -1387,7 +1396,7 @@ const referenceUI = createReferenceUI(structureReferenceEl, {
 const atlasRelationsMedia = window.matchMedia("(max-width: 920px)");
 function syncAtlasRelationsPlacement() {
   const host = atlasRelationsMedia.matches
-    ? mobileMuscleCard
+    ? (mobileMuscleMore || mobileMuscleCard)
     : document.querySelector("#atlas-relations-desktop-slot");
   if (atlasRelationsRoot.parentElement !== host) host.append(atlasRelationsRoot);
 }
@@ -3859,9 +3868,23 @@ function setMobileReferenceExpanded(open, { restoreFocus = false } = {}) {
   mobileReferenceOpenButton?.setAttribute("aria-expanded", String(mobileReferenceExpanded));
   if (mobileReferenceCloseButton) mobileReferenceCloseButton.hidden = !mobileReferenceExpanded;
   if (mobileReferenceExpanded) {
+    structureReferenceEl.setAttribute("role", "dialog");
+    structureReferenceEl.setAttribute("aria-modal", "true");
+    appendReference3DGallerySlide(selectedExploreSid);
     mobileReferenceCloseButton?.focus({ preventScroll: true });
-  } else if (restoreFocus && !mobileReferenceOpenButton?.hidden) {
-    mobileReferenceOpenButton.focus({ preventScroll: true });
+  } else {
+    structureReferenceEl.removeAttribute("role");
+    structureReferenceEl.removeAttribute("aria-modal");
+    if (mobileTaskMedia.matches) {
+      disposeReference3DViewer();
+      structureReferenceIllustrations
+        ?.querySelector('[data-reference-3d="true"]')
+        ?.remove();
+      syncReferenceGalleryControls();
+    }
+    if (restoreFocus && !mobileReferenceOpenButton?.hidden) {
+      mobileReferenceOpenButton.focus({ preventScroll: true });
+    }
   }
 }
 
@@ -3873,6 +3896,12 @@ function syncMobileMuscleCard() {
   const hasReference = appMode === "explore" && selectedReference != null;
   const hasSelection = hasMuscle || hasBone || hasReference;
   document.body.classList.toggle("mobile-muscle-selected", Boolean(hasMuscle && mobileTaskMedia.matches));
+  if (mobileMusclePrimary) mobileMusclePrimary.hidden = !hasMuscle;
+  if (mobileMuscleMore) {
+    if (!hasMuscle) mobileMuscleMore.open = true;
+    else if (lastMobileCardSid !== sid) mobileMuscleMore.open = false;
+  }
+  lastMobileCardSid = hasMuscle ? sid : null;
   const hasContext = appMode === "explore" && (mobileIsolationStack.length > 0 || atlasViewHistory.length > 0);
   if (!(hasSelection || hasContext)) {
     if (mobileReferenceExpanded) setMobileReferenceExpanded(false);
@@ -3913,16 +3942,23 @@ function syncMobileMuscleCard() {
     mobileMuscleKind.textContent =
       reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
     mobileMuscleName.textContent = displayStructureName(sid);
-    const firstAction = reference?.actionsRu?.find((action) => typeof action === "string" && action.trim()) || "";
+    const actions = (reference?.actionsRu || [])
+      .filter((action) => typeof action === "string" && action.trim());
+    const firstAction = actions[0] || "";
     mobileMuscleLatin.textContent = reference?.latin || "";
     mobileMuscleLatin.hidden = !mobileMuscleLatin.textContent;
-    mobileMuscleSummary.textContent = firstAction;
+    // A first-item excerpt is a partial function, especially for muscles
+    // with distinct subdivisions. Say so explicitly until curated summaries exist.
+    mobileMuscleSummary.textContent = actions.length > 1
+      ? `Одна из ${actions.length} перечисленных функций: ${firstAction}`
+      : firstAction;
     mobileMuscleSummary.hidden = !firstAction;
     mobileHideMuscleButton.disabled = structureVisibility[sid] === false;
     mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
   }
 
   const target = hasMuscle ? learningTargetBySid.get(sid) || null : null;
+  if (mobileQuickPracticeButton) mobileQuickPracticeButton.hidden = !target;
   const regionId = target?.region || "";
   const canIsolateRegion =
     hasMuscle && regionId && regionId !== "all" &&
@@ -5155,17 +5191,27 @@ function prepareSessionItem() {
 
   if (examMode) startExamTimer();
   else clearExamTimer();
+
+  if (mobileTaskMedia.matches && document.body.classList.contains("training-layout")) {
+    requestAnimationFrame(() => {
+      if (document.body.classList.contains("training-layout")) {
+        questionEl.tabIndex = -1;
+        questionEl.focus({ preventScroll: true });
+      }
+    });
+  }
 }
 
-function startLearningSession(modeOverride = null) {
+function startLearningSession(modeOverride = null, targetOverride = null) {
   if (!availableTargets.length || appMode !== "quiz") return;
+  if (!targetOverride) quickReviewOriginSid = null;
 
   const sessionMode = modeOverride || learningSessionMode.value;
   if (!modeOverride) {
     selectedSessionMode = sessionMode;
     updateLearningSummary();
   }
-  const size = Number(learningSessionSize.value) || 10;
+  const size = targetOverride ? 1 : Number(learningSessionSize.value) || 10;
 
   if (sessionMode === "topography") {
     const context = currentTopographyContext();
@@ -5182,7 +5228,7 @@ function startLearningSession(modeOverride = null) {
   } else {
     learningSession = createLearningSession({
       mode: sessionMode,
-      catalog: availableTargets,
+      catalog: targetOverride ? [targetOverride] : availableTargets,
       store: learningStore,
       size,
     });
@@ -5211,6 +5257,9 @@ function startLearningSession(modeOverride = null) {
   startLearningSessionButton.textContent = "Перезапустить";
   syncQuestionCardPlacement();
   prepareSessionItem();
+  exitLearningSessionButton.textContent = quickReviewOriginSid != null
+    ? "Вернуться к мышце"
+    : "Сменить тренировку";
 
   if (mobileTaskMedia.matches) {
     viewerWrap.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -5351,7 +5400,12 @@ function finishLearningSession() {
       : "\nВсе задания выполнены без ошибок и подсказки.");
 
   sessionProgressEl.hidden = false;
-  exitLearningSessionButton.hidden = true;
+  // Mobile training hides the top navigation. The completed session must
+  // still offer a visible way out of the workspace.
+  exitLearningSessionButton.hidden = false;
+  exitLearningSessionButton.textContent = quickReviewOriginSid != null
+    ? "Вернуться к мышце"
+    : "Сменить тренировку";
   sessionProgressEl.textContent =
     `${regionNameRu(selectedLearningRegion)} · ${summary.completed} из ${summary.total}`;
 
@@ -12289,12 +12343,37 @@ displayPanelToggle?.addEventListener("click", () => {
 });
 displayPanelClose?.addEventListener("click", () => setDisplayPanelOpen(false));
 document.addEventListener("keydown", (event) => {
+  if (mobileReferenceExpanded && event.key === "Tab") {
+    const focusable = [...structureReferenceEl.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )].filter((element) => !element.hidden && element.getClientRects().length);
+    if (focusable.length) {
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !structureReferenceEl.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !structureReferenceEl.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    return;
+  }
   if (event.key === "Escape" && mobileReferenceExpanded) {
+    event.preventDefault();
     setMobileReferenceExpanded(false, { restoreFocus: true });
     return;
   }
   if (event.key === "Escape" && displayPanelToggle.getAttribute("aria-expanded") === "true") {
     setDisplayPanelOpen(false);
+  }
+});
+document.addEventListener("click", (event) => {
+  if (mobileReferenceExpanded &&
+      !structureReferenceEl.contains(event.target) &&
+      event.target !== mobileReferenceOpenButton) {
+    setMobileReferenceExpanded(false, { restoreFocus: true });
   }
 });
 
@@ -12342,8 +12421,15 @@ for (const button of learningModeButtons) {
 startLearningSessionButton.addEventListener("click", () => startLearningSession());
 todayLearningSessionButton.addEventListener("click", () => startLearningSession("today"));
 exitLearningSessionButton.addEventListener("click", () => {
+  const originSid = quickReviewOriginSid;
+  quickReviewOriginSid = null;
   resetLearningSessionUi("Выберите учебный блок и способ тренировки.");
-  focusLearningRegion();
+  if (originSid != null && structureNames[originSid]) {
+    setMode("explore");
+    selectExploreStructure(originSid);
+  } else {
+    focusLearningRegion();
+  }
 });
 
 function selectedMuscleRegionForNavigation() {
@@ -12600,6 +12686,14 @@ function restoreMobileIsolationRoot() {
 
 
 mobileReferenceOpenButton?.addEventListener("click", () => setMobileReferenceExpanded(true));
+mobileQuickPracticeButton?.addEventListener("click", () => {
+  const sid = selectedExploreSid;
+  const target = sid == null ? null : learningTargetBySid.get(sid);
+  if (!target) return;
+  setMode("quiz");
+  quickReviewOriginSid = sid;
+  startLearningSession("find", target);
+});
 mobileReferenceCloseButton?.addEventListener("click", () => setMobileReferenceExpanded(false, { restoreFocus: true }));
 
 mobileHideMuscleButton?.addEventListener("click", () => {
@@ -12725,6 +12819,9 @@ showAllButton.addEventListener("click", () => {
 
 mobileTaskMedia.addEventListener?.("change", () => {
   if (mobileReferenceExpanded) setMobileReferenceExpanded(false);
+  if (!mobileTaskMedia.matches && appMode === "explore" && selectedExploreSid != null) {
+    appendReference3DGallerySlide(selectedExploreSid);
+  }
   syncQuestionCardPlacement();
   syncMotionStatePlacement();
 });

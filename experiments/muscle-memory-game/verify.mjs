@@ -12,6 +12,11 @@ const manifest = JSON.parse(read("anatomy-validation-shoulder.json"));
 
 const errors = [];
 
+const rawIds = [...index.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+if (new Set(rawIds).size !== rawIds.length) {
+  errors.push("main: duplicate HTML ids are not allowed");
+}
+
 function htmlIds(source) {
   return new Set([...source.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
 }
@@ -39,7 +44,11 @@ checkDom(app, index, "main", motionDisabled ? staticMotionIds : new Set());
 checkDom(qualityApp, qualityHtml, "quality-lab");
 
 const productRefresh = read("product-refresh.css");
-for (const requiredId of ["mobile-reference-open", "mobile-reference-close", "mobile-muscle-latin", "mobile-muscle-summary"]) {
+for (const requiredId of [
+  "mobile-reference-open", "mobile-reference-close", "mobile-muscle-latin",
+  "mobile-muscle-summary", "mobile-muscle-primary", "mobile-muscle-more",
+  "mobile-quick-practice", "exit-learning-session",
+]) {
   if (!htmlIds(index).has(requiredId)) errors.push("mobile reference: missing #" + requiredId);
 }
 if (!index.includes('href="./product-refresh.css"') ||
@@ -54,6 +63,30 @@ if (!app.includes('stageEl.append(questionCardEl)') ||
 }
 if (!app.includes('document.body.classList.toggle("mobile-reference-open", mobileReferenceExpanded)')) {
   errors.push("mobile reference: expanded state must be synchronized with the UI");
+}
+
+const reference3d = app.slice(
+  app.indexOf("function appendReference3DGallerySlide"),
+  app.indexOf("// Reference gallery deploy marker")
+);
+if (!reference3d.includes("mobileTaskMedia.matches && !mobileReferenceExpanded")) {
+  errors.push("reference 3D: hidden mobile sheet must not allocate its own WebGL renderer");
+}
+if (!app.includes("targetOverride ? [targetOverride] : availableTargets")) {
+  errors.push("training: one-muscle practice must use the actual selected target");
+}
+if (!app.includes('mobileQuickPracticeButton?.addEventListener("click"')) {
+  errors.push("mobile card: quick practice action not wired");
+}
+const sessionEnding = app.slice(
+  app.indexOf("function finishLearningSession"),
+  app.indexOf("function recordFindMistake")
+);
+if (!sessionEnding.includes("exitLearningSessionButton.hidden = false")) {
+  errors.push("training: completed mobile session must keep a visible exit");
+}
+if (!productRefresh.includes("clamp(240px, 46dvh, 440px)")) {
+  errors.push("mobile card: model must reserve vertical space for study actions");
 }
 
 
