@@ -3937,27 +3937,31 @@ function syncMobileMuscleCard() {
     mobileHideMuscleButton.disabled = Boolean(isolatedAtlasSelection);
   }
 
+  const target = hasMuscle ? learningTargetBySid.get(sid) || null : null;
   if (hasMuscle) {
     const reference = muscleReferenceFor(structureNames[sid]);
-    mobileMuscleKind.textContent =
-      reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
+    const kind = reference?.modelCoverage === "part" ? "Часть мышцы" : "Мышца";
+    const region = target?.region && target.region !== "other"
+      ? regionNameRu(target.region) : "";
+    mobileMuscleKind.textContent = region ? `${kind} · ${region}` : kind;
     mobileMuscleName.textContent = displayStructureName(sid);
     const actions = (reference?.actionsRu || [])
       .filter((action) => typeof action === "string" && action.trim());
-    const firstAction = actions[0] || "";
+    const previewActions = actions.slice(0, 2)
+      .map((action) => action.trim().replace(/[.;\s]+$/u, ""));
+    const remainingActions = Math.max(0, actions.length - previewActions.length);
     mobileMuscleLatin.textContent = reference?.latin || "";
     mobileMuscleLatin.hidden = !mobileMuscleLatin.textContent;
-    // A first-item excerpt is a partial function, especially for muscles
-    // with distinct subdivisions. Say so explicitly until curated summaries exist.
-    mobileMuscleSummary.textContent = actions.length > 1
-      ? `Одна из ${actions.length} перечисленных функций: ${firstAction}`
-      : firstAction;
-    mobileMuscleSummary.hidden = !firstAction;
+    // Preview two known actions without implying that the reference is exhaustive.
+    // The full list remains available behind "Изучить мышцу".
+    mobileMuscleSummary.textContent = previewActions.length
+      ? `Функции: ${previewActions.join("; ")}${remainingActions ? `; ещё ${remainingActions} в справке` : ""}`
+      : "";
+    mobileMuscleSummary.hidden = previewActions.length === 0;
     mobileHideMuscleButton.disabled = structureVisibility[sid] === false;
     mobileIsolateMuscleButton.textContent = "Изолировать мышцу";
   }
 
-  const target = hasMuscle ? learningTargetBySid.get(sid) || null : null;
   if (mobileQuickPracticeButton) mobileQuickPracticeButton.hidden = !target;
   const regionId = target?.region || "";
   const canIsolateRegion =
