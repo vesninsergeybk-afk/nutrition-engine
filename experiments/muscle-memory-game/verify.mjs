@@ -51,7 +51,7 @@ for (const requiredId of [
 ]) {
   if (!htmlIds(index).has(requiredId)) errors.push("mobile reference: missing #" + requiredId);
 }
-if (!index.includes('href="./product-refresh.css"') ||
+if (!index.includes('href="./product-refresh.css') ||
     !productRefresh.includes("body.mobile-reference-open") ||
     !productRefresh.includes("body.training-layout")) {
   errors.push("mobile product refresh: stylesheet or responsive layout missing");
@@ -94,6 +94,11 @@ if (!app.includes("const previewActions = actions.slice(0, 2)") ||
 }
 if (!app.includes("mobileMuscleKind.textContent = region ?")) {
   errors.push("mobile card: selected structure must preserve anatomical area context");
+}
+if (!index.includes("product-refresh.css?v=") ||
+    !index.includes("app.js?v=") ||
+    !index.includes("boot-feedback.js?v=")) {
+  errors.push("release: changed UI assets must use versioned URLs to avoid stale browser caches");
 }
 
 
