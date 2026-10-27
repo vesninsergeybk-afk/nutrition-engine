@@ -88,6 +88,13 @@ if (!sessionEnding.includes("exitLearningSessionButton.hidden = false")) {
 if (!productRefresh.includes("clamp(240px, 46dvh, 440px)")) {
   errors.push("mobile card: model must reserve vertical space for study actions");
 }
+if (!app.includes("const previewActions = actions.slice(0, 2)") ||
+    !app.includes("remainingActions ?")) {
+  errors.push("mobile card: compact preview must expose more than the first listed function");
+}
+if (!app.includes("mobileMuscleKind.textContent = region ?")) {
+  errors.push("mobile card: selected structure must preserve anatomical area context");
+}
 
 
 for (const [label, source] of [
